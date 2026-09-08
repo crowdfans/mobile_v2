@@ -1,0 +1,326 @@
+# TODO — migração Expo (`mobile`) → Flutter (`mobile_v2`)
+
+Referência de comportamento: `../mobile` (Expo Router).  
+Não copiar `frontendapp/` (Flutter legado / Supabase).
+
+**Legenda:** `[x]` já no Flutter · `[ ]` falta · `⛔` não existe no Expo (Live / Meet) — copiar o buraco, não inventar.
+
+Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que entrou).
+
+---
+
+## 0. Fundação (já iniciado)
+
+- [x] Projeto Flutter iOS / Android / web
+- [x] Tema CrowdFans (paleta claro/escuro) + fonte Inter
+- [x] `Pages` (`lib/constants/pages.dart`)
+- [x] `ApiUrls` (núcleo; **completar** o restante da lista do Expo)
+- [x] `HttpService` (envelope `{ success, message, data }` + Bearer Firebase)
+- [x] `ApiError`
+- [x] Firebase Auth (`crowdfans-prod` via `.env`) + `POST /auth/login` + `POST /auth/verifyTokenId`
+- [x] Sessão (Riverpod) + gate de rotas públicas vs autenticadas
+- [x] Config de API (`API_MODE` local / DigitalOcean)
+- [x] Completar `ApiUrls` com **todos** os endpoints de `mobile/src/api/api-url.ts` — `lib/api/api_urls.dart` + `withParams`
+- [ ] Deep links / scheme `mobile` (Expo `app.json`)
+- [ ] Splash / ícone CrowdFans (hoje é o default Flutter)
+- [ ] Sentry (`observability/sentry.ts`)
+- [x] Variáveis de ambiente: `.env` (chaves `EXPO_PUBLIC_*` do Expo) via `EnvService`
+- [ ] `flutterfire configure` no `crowdfans-prod` → `lib/firebase_options.dart` + `google-services.json` + `GoogleService-Info.plist` (CLI logado, token atual expirado)
+- [x] Copiar `assets/` do Expo (`images`, `icons`, `logo`, `special-icons`, `fonts`, `video`, `Stickers`, `data-usage`, ringtone)
+
+---
+
+## 0.1 Assets (usar o que já está em `assets/`)
+
+- [x] Árvore copiada de `../mobile/assets` (mesmos paths: `assets/images/...`, `assets/icons/...`)
+- [ ] Ligar SVGs com `flutter_svg` (bottom nav, toolbar, feed, settings)
+- [ ] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
+- [ ] Logo `assets/logo/crowdfans-logo.svg` na toolbar
+- [ ] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData` — hoje usa `google_fonts`
+- [ ] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`
+- [ ] Stickers (`assets/Stickers/`) quando fan letters / compose pedirem
+- [ ] Avatares de demo `assets/data-usage/` só se o Expo ainda usar
+
+---
+
+## 1. Onboarding
+
+- [x] `PresentationScreen` — copy Superfã / Artista
+- [ ] `StoryBackground` + vídeos (`assets/video/first.mp4`, `second.mp4`, `third.mp4`)
+- [ ] `StoreBackgroundProgress`
+- [x] Botões `Sou um Superfã` / `Sou um Artista` (`onboarding-button-wrapper`)
+- [ ] `presentation/index.tsx` (reexport — só se o roteamento precisar)
+
+---
+
+## 2. Login
+
+- [x] `FanLoginScreen`
+- [x] `ArtistLoginScreen`
+- [x] `CredentialsFormComponent`
+- [x] `LoginTextComponent` (label gradiente)
+- [ ] `RegisterTopBarComponent` (voltar com o mesmo visual do Expo)
+- [ ] Recuperação de senha de verdade (`ProfileSecurityService.requestPasswordReset` / Firebase `sendPasswordResetEmail`)
+- [ ] `mapLoginError` completo (rede + URL da API no debug)
+- [ ] `LoginLayout`
+- [ ] Social login (comentado no Expo — **não** implementar até o Expo ligar)
+
+---
+
+## 3. Cadastro Superfã
+
+- [ ] `RegisterFanScreen` (entrada / telefone)
+- [ ] `RegisterFanOtpScreen`
+- [ ] `RegisterFanEmailScreen`
+- [ ] `RegisterFanPasswordScreen`
+- [ ] `RegisterFanNameScreen`
+- [ ] `RegisterFanBirthdateScreen`
+- [ ] `RegisterFanUsernameScreen`
+- [ ] `RegisterFanProfileScreen` (avatar)
+- [ ] `RegisterFanTermsScreen`
+- [ ] `RegisterFanSuccessScreen`
+- [ ] Layouts `register/_layout.tsx` e `register/fan/_layout.tsx`
+- [ ] `OtpService` + `useOtpVerification`
+- [ ] `firebase-phone-auth.ts`
+- [ ] reCAPTCHA (`FirebaseRecaptchaVerifierModal` + web slot)
+- [ ] `AuthService.registerFan` (`POST /register/fan`)
+- [ ] Utils: `phone-utils`, `email-utils`, `password-util`, `username-utils`, `birthday-utils`
+
+---
+
+## 4. Cadastro artista
+
+- [ ] `RegisterArtistScreen`
+- [ ] `RegisterArtistOtpScreen`
+- [ ] `RegisterArtistEmailScreen`
+- [ ] `RegisterArtistDataScreen` (conta, nome, empresa, gênero, categoria, avatar)
+- [ ] Layout `register/artist/_layout.tsx`
+- [ ] `artist-register-service` (`POST /register/artist`)
+- [ ] Models de registro artista (`artist-register-form-data`, verification status/context)
+- [ ] ⛔ Verificação Spotify / contestação de nome (também ⛔ no Expo)
+- [ ] ⛔ Consentimento parental (também ⛔ no Expo)
+
+---
+
+## 5. Shell autenticado (tabs)
+
+- [x] 4 abas: Feed / Clubes / Explorar / Eu
+- [x] Botão `+` (hoje só snackbar)
+- [ ] `BottomNavComponent` visual (ícones SVG + avatar do perfil)
+- [ ] `CreateMenuSheetComponent` (artista: post / story / etc.)
+- [ ] `create-menu-store`
+- [ ] `AppRootLayout` (init Purchases, fontes, tema)
+- [ ] `AppRootAuthGate` (paridade total com prefixos públicos do Expo)
+
+---
+
+## 6. Feed / Home
+
+- [ ] `HomeScreen` (`(main)/feed.tsx` reexporta esta)
+- [ ] `GET /api/v1/home` (paginação, pull-to-refresh, `hasMore`)
+- [ ] `FeedComponent`
+- [ ] `PostCardComponent`
+- [ ] `ExclusiveFeedCardComponent`
+- [ ] `ExclusiveFeedCardLockedContentComponent`
+- [ ] `ExclusivePostMetaRowComponent`
+- [ ] `VoteControlComponent`
+- [ ] `PostOptionsSheetComponent`
+- [ ] `PostShareSheetComponent`
+- [ ] `post-share.ts` (share nativo)
+- [ ] `StoriesRowComponent`
+- [ ] `StoryItemComponent`
+- [ ] `StoryLiveItemComponent` (chip; tela Live ainda não existe no Expo)
+- [ ] `StoryMeetAndGreetItemComponent` (chip; Meet ainda não existe no Expo)
+- [ ] Unlock de post exclusivo (`exclusive-content-access.ts` + `SubscriptionService`)
+- [ ] Model `FeedPost` / `HomeFeedDto` / `StoryItem`
+
+---
+
+## 7. Explorar / busca
+
+- [ ] `SearchScreen` (`(main)/explore.tsx`)
+- [ ] `SearchRankingScreen`
+- [ ] `SearchArtistOptionsSheetComponent`
+- [ ] `SearchService` (`GET /api/v1/search/artists`, rankings)
+
+---
+
+## 8. Fan clubs
+
+- [ ] `FanClubsScreen` (`(main)/clubs.tsx`)
+- [ ] Comunidade `fan-clubs/community/[artistId].tsx`
+- [ ] `FanClubComposeScreen`
+- [ ] `FanClubAboutScreen`
+- [ ] `FanClubModeratorsScreen`
+- [ ] `FanClubModerationScreen`
+- [ ] `FanClubRulesScreen`
+- [ ] `FanClubService`
+- [ ] `FanClubViewerService`
+- [ ] `CommunityService` (`GET/POST /api/v1/community/posts`)
+- [ ] `FollowService` (`FOLLOWS`, `ARTIST_FOLLOW`)
+
+---
+
+## 9. Perfil (aba Eu + públicos)
+
+- [ ] `ProfileScreen` (hoje Flutter só tem nome + logout)
+- [ ] Perfil público `profile/[fanHandle].tsx`
+- [ ] Fan score público `profile/fan-score/[fanHandle].tsx`
+- [ ] `ProfileArtistsScreen` (artistas seguidos)
+- [ ] Perfil de artista `artists/[artistId].tsx`
+- [ ] `ProfileService` completo (`overview`, `social`, posts por UID, update)
+- [ ] Store `current-viewer-profile-store`
+
+---
+
+## 10. Settings (hub + cada tela)
+
+- [ ] `ProfileSettingsScreen` (hub)
+- [ ] `ProfileAccountScreen`
+- [ ] `ProfileAppearanceScreen` + `appearance-settings-store`
+- [ ] `ProfileInformationScreen` (termos / ajuda)
+- [ ] `ProfileSecurityScreen` (e-mail, senha, telefone)
+- [ ] `ProfileNotificationsScreen` + `notification-preferences-service`
+- [ ] `ProfileFanScoreScreen`
+- [ ] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
+- [ ] `ProfileProScreen` (CrowdFans Pro / RevenueCat)
+- [ ] `ProfileWalletScreen` (saldo Jam Coins + packs)
+- [ ] Recarga Jam Coins via **RevenueCat IAP** (`jam_starter` / `jam_plus` / `jam_pro`, offering `jam_coins`) — produto atual; Expo local ainda pode mostrar PIX sandbox
+- [ ] Checkout sandbox `__DEV__` (`POST /api/v1/me/wallet/checkout`) só para QA
+- [ ] WS `GET /api/v1/me/ws` → evento `wallet.credited`
+- [ ] `ProfileEarningsScreen` (saque PIX artista)
+- [ ] `ProfileReferralScreen` + `ReferralService`
+- [ ] `BlockedUsersSettingsScreen` + `BlockService`
+- [ ] `HiddenPostsSettingsScreen` + `HiddenPostService`
+- [ ] `ProfileMemoriesScreen` + `SavedPostService`
+- [ ] `ModerationSettingsScreen`
+- [ ] `FanClubModerationListScreen`
+- [ ] `FanClubContestationListScreen`
+- [ ] `ArtistInsightsSettingsScreen`
+- [ ] `ArtistAudienceSettingsScreen`
+- [ ] `ArtistFanClubSettingsScreen`
+- [ ] `ProfileScreenHeaderComponent`
+- [ ] `ProfileSettingsSectionComponent`
+- [ ] `ProfileStateComponent`
+- [ ] `SidebarMenuComponent` / `SidebarSectionItemComponent` (se ainda usados)
+
+---
+
+## 11. Posts
+
+- [ ] `CreatePostScreen` (TEXT, IMAGE, CAROUSEL, VIDEO, MEMBERSHIP)
+- [ ] `MyPostsScreen` (listar / editar / deletar)
+- [ ] `PostService` (CRUD)
+- [ ] Image picker + upload (`MediaService` / Firebase Storage)
+
+---
+
+## 12. Comentários
+
+- [ ] Tela `comments/[postId].tsx`
+- [ ] `CommentService` (listar, criar, editar, deletar, votar)
+- [ ] `CommentGifService`
+
+---
+
+## 13. Fan letters
+
+- [ ] `FanLetterComposeScreen`
+- [ ] `FanLetterGalleryScreen`
+- [ ] `FanLetterService` (cota, débito Jam Coins, monetização)
+
+---
+
+## 14. Notificações
+
+- [ ] `NotificationsScreen` (abas Posts / Clubes / Meet / Fan Letter / Sistema)
+- [ ] `NotificationsService`
+- [ ] `PushTokenService` + FCM / APNs
+- [ ] Deep link ao tocar na notificação
+
+---
+
+## 15. Denúncia
+
+- [ ] `ReportScreen`
+- [ ] `ReportService` (`POST /api/v1/reports`)
+
+---
+
+## 16. Monetização / IAP
+
+- [ ] `PurchasesService` (logIn Firebase UID, offerings, purchase, restore)
+- [ ] `purchases-config` (`crowdfans_pro` + `jam_coins`)
+- [ ] `purchases-store`
+- [ ] Paywall CrowdFans Pro
+- [ ] Customer Center
+- [ ] `WalletService` (saldo, packs `productId`, checkout, WS)
+- [ ] `EarningsService` (saldo artista + withdrawals)
+
+---
+
+## 17. Votos e conteúdo exclusivo
+
+- [ ] `VoteService` (post e comentário)
+- [ ] `SubscriptionService` (assinar com Jam Coins, 402 saldo)
+- [ ] Helper `canAccessExclusivePost`
+
+---
+
+## 18. Mídia
+
+- [ ] `MediaService` (`POST /api/v1/me/media/uploads` + Storage)
+- [ ] Image picker nos fluxos: cadastro, account, create post, fan club compose, fan letter
+
+---
+
+## 19. UI compartilhada (ainda não no Flutter)
+
+- [ ] `AppButtonComponent` / `ButtonComponent`
+- [ ] `AppIconButtonComponent`
+- [ ] `InputComponent`
+- [ ] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
+- [ ] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`
+- [ ] `BottomSheetShellComponent` + `useBottomSheetShell`
+- [ ] `alert.ts` (`showAlert` / `showConfirm`)
+
+---
+
+## 20. Demo
+
+- [ ] `DemoScreen` (`Pages.DEMO`) — só se ainda for usada no Expo
+
+---
+
+## 21. Infra que o Expo tem e o Flutter ainda não
+
+- [ ] WebSocket carteira (`WalletService.subscribe`)
+- [ ] Expo Notifications → `firebase_messaging`
+- [ ] RevenueCat Flutter SDK (`purchases_flutter`)
+- [ ] `expo-image` / cache de imagem
+- [ ] `expo-video` (stories, posts vídeo, onboarding)
+- [ ] Clipboard (PIX copy-paste no saque / sandbox)
+- [ ] Secure storage da sessão (Firebase plugin já persiste; conferir)
+
+---
+
+## 22. Fora do Expo (não migrar até existir no `mobile`)
+
+- [ ] ⛔ Live: diretório, viewer, estúdio
+- [ ] ⛔ Meet & Greet: agenda, lobby, chamada, estúdio, feedback
+- [ ] ⛔ Create post de fã (se continuar ⛔ no Expo)
+
+---
+
+## Ordem sugerida
+
+1. Cadastro fã (OTP) — desbloqueia contas novas no Flutter  
+2. Feed + card de post + stories row  
+3. Perfil Eu completo + settings hub  
+4. Fan clubs + comunidade  
+5. Create post / my posts  
+6. Comentários + votos  
+7. Wallet + RevenueCat Jam Coins + Pro  
+8. Fan letters, notificações, denúncia, analytics artista  
+9. Vídeo de onboarding / stories player  
+10. Push + deep links
