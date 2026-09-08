@@ -22,7 +22,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Config de API (`API_MODE` local / DigitalOcean)
 - [x] Completar `ApiUrls` com **todos** os endpoints de `mobile/src/api/api-url.ts` — `lib/api/api_urls.dart` + `withParams`
 - [x] Deep links / scheme `mobile` (Expo `app.json`) — iOS URL types + Android intent-filter + aliases Expo em `Pages`
-- [ ] Splash / ícone CrowdFans (hoje é o default Flutter)
+- [x] Splash / ícone CrowdFans (`flutter_launcher_icons` + `flutter_native_splash`, fundo `#208AEF`)
 - [ ] Sentry (`observability/sentry.ts`)
 - [x] Variáveis de ambiente: `.env` (chaves `EXPO_PUBLIC_*` do Expo) via `EnvService`
 - [ ] `flutterfire configure` no `crowdfans-prod` → `lib/firebase_options.dart` + `google-services.json` + `GoogleService-Info.plist` (CLI logado, token atual expirado)
@@ -34,7 +34,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 - [x] Árvore copiada de `../mobile/assets` (mesmos paths: `assets/images/...`, `assets/icons/...`)
 - [ ] Ligar SVGs com `flutter_svg` (bottom nav, toolbar, feed, settings)
-- [ ] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
+- [x] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
 - [ ] Logo `assets/logo/crowdfans-logo.svg` na toolbar
 - [ ] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData` — hoje usa `google_fonts`
 - [ ] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`

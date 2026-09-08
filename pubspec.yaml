@@ -41,6 +41,7 @@ dependencies:
   http: ^1.6.0
   google_fonts: ^8.2.1
   flutter_dotenv: ^6.0.1
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,28 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/icon.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#208AEF"
+  adaptive_icon_foreground: assets/images/icon.png
+  web:
+    generate: true
+    image_path: assets/images/icon.png
+    background_color: "#208AEF"
+    theme_color: "#208AEF"
+
+flutter_native_splash:
+  color: "#208AEF"
+  image: assets/images/splash-icon.png
+  android_12:
+    color: "#208AEF"
+    image: assets/images/splash-icon.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,7 +88,57 @@ flutter:
   uses-material-design: true
   assets:
     - .env.example
-    - assets/images/
+    - .env
+    - "assets/"
+    - "assets/Stickers/"
+    - "assets/Stickers/Birthday/"
+    - "assets/Stickers/Capybara/"
+    - "assets/Stickers/Crowd Hands/"
+    - "assets/Stickers/Happy Llama/"
+    - "assets/Stickers/Koala Emoji/"
+    - "assets/Stickers/Love it/"
+    - "assets/Stickers/cute stickers 2/"
+    - "assets/Stickers/cute stickers/"
+    - "assets/Stickers/kawaii stickers/"
+    - "assets/Stickers/love Letter Illustration Set/"
+    - "assets/Stickers/romantic cute love/"
+    - "assets/Stickers/valentine romantic/"
+    - "assets/data-usage/"
+    - "assets/data-usage/Avatars/"
+    - "assets/data-usage/Fotos/"
+    - "assets/fonts/"
+    - "assets/fonts/inter/"
+    - "assets/fonts/space_mono/"
+    - "assets/icons/"
+    - "assets/icons/Charts/"
+    - "assets/icons/Communication/"
+    - "assets/icons/Development/"
+    - "assets/icons/Editor/"
+    - "assets/icons/Education/"
+    - "assets/icons/Files/"
+    - "assets/icons/Finance & eCommerce/"
+    - "assets/icons/General/"
+    - "assets/icons/Images/"
+    - "assets/icons/Layout/"
+    - "assets/icons/Maps & travel/"
+    - "assets/icons/Media & devices/"
+    - "assets/icons/Security/"
+    - "assets/icons/Shapes/"
+    - "assets/icons/Time/"
+    - "assets/icons/Users/"
+    - "assets/icons/Weather/"
+    - "assets/icons/alerts_and_feedbacks/"
+    - "assets/icons/arrows/"
+    - "assets/icons/badges/"
+    - "assets/icons/components/"
+    - "assets/images/"
+    - "assets/images/buttons/"
+    - "assets/images/common/"
+    - "assets/images/feed/"
+    - "assets/images/login/"
+    - "assets/logo/"
+    - "assets/special-icons/"
+    - "assets/video/"
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -77,6 +150,14 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter/InterVariable.ttf
+    - family: SpaceMono
+      fonts:
+        - asset: assets/fonts/space_mono/SpaceMono-Regular.ttf
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
