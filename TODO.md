@@ -37,19 +37,19 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
 - [x] Logo `assets/logo/crowdfans-logo.svg` na toolbar
 - [x] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData`
-- [ ] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`
+- [x] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`
 - [ ] Stickers (`assets/Stickers/`) quando fan letters / compose pedirem
-- [ ] Avatares de demo `assets/data-usage/` só se o Expo ainda usar
+- [x] Avatares de demo `assets/data-usage/` — Expo não usa mais; não migrar
 
 ---
 
 ## 1. Onboarding
 
 - [x] `PresentationScreen` — copy Superfã / Artista
-- [ ] `StoryBackground` + vídeos (`assets/video/first.mp4`, `second.mp4`, `third.mp4`)
-- [ ] `StoreBackgroundProgress`
+- [x] `StoryBackground` + vídeos (`assets/video/first.mp4`, `second.mp4`, `third.mp4`)
+- [x] `StoreBackgroundProgress`
 - [x] Botões `Sou um Superfã` / `Sou um Artista` (`onboarding-button-wrapper`)
-- [ ] `presentation/index.tsx` (reexport — só se o roteamento precisar)
+- [x] `presentation/index.tsx` — não aplicável (go_router aponta direto para a tela)
 
 ---
 
@@ -63,7 +63,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Recuperação de senha de verdade (`ProfileSecurityService.requestPasswordReset` / Firebase `sendPasswordResetEmail`)
 - [x] `mapLoginError` completo (rede + URL da API no debug)
 - [x] `LoginLayout`
-- [ ] Social login (comentado no Expo — **não** implementar até o Expo ligar)
+- [ ] Social login (comentado no Expo — **não** implementar até o Expo ligar) — ver `PENDENCIA.md`
 
 ---
 
@@ -298,7 +298,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] Expo Notifications → `firebase_messaging`
 - [ ] RevenueCat Flutter SDK (`purchases_flutter`)
 - [ ] `expo-image` / cache de imagem
-- [ ] `expo-video` (stories, posts vídeo, onboarding)
+- [x] `expo-video` (stories de onboarding; posts/stories autenticados ainda faltam)
 - [ ] Clipboard (PIX copy-paste no saque / sandbox)
 - [ ] Secure storage da sessão (Firebase plugin já persiste; conferir)
 

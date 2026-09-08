@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:crowdfans/components/onboarding/onboarding_buttons.dart';
 import 'package:crowdfans/components/onboarding/presentation_slide.dart';
+import 'package:crowdfans/components/story/story_background.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Onboarding inicial (texto do Expo; vídeo de stories fica para o próximo corte).
+/// Onboarding inicial com stories em vídeo (igual ao Expo).
 class PresentationScreen extends StatefulWidget {
   const PresentationScreen({super.key});
 
@@ -17,23 +16,9 @@ class PresentationScreen extends StatefulWidget {
 
 class _PresentationScreenState extends State<PresentationScreen> {
   int _index = 0;
-  Timer? _timer;
 
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _index = (_index + 1) % presentationSlides.length);
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void handleVideoChange(int index) {
+    setState(() => _index = index);
   }
 
   @override
@@ -45,17 +30,7 @@ class _PresentationScreenState extends State<PresentationScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: darkText
-                    ? const [Color(0xFFE8E0FF), AppPalette.purple400]
-                    : const [AppPalette.platinum950, AppPalette.purple700],
-              ),
-            ),
-          ),
+          StoryBackground(onVideoChange: handleVideoChange),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 42, 24, 40),
