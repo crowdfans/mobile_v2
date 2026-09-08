@@ -36,7 +36,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Ligar SVGs com `flutter_svg` (bottom nav; toolbar/feed/settings nas telas de cada domínio)
 - [x] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
 - [ ] Logo `assets/logo/crowdfans-logo.svg` na toolbar
-- [ ] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData` — hoje usa `google_fonts`
+- [x] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData`
 - [ ] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`
 - [ ] Stickers (`assets/Stickers/`) quando fan letters / compose pedirem
 - [ ] Avatares de demo `assets/data-usage/` só se o Expo ainda usar

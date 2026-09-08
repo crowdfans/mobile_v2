@@ -142,6 +142,7 @@ ThemeData buildCrowdFansTheme(Brightness brightness) {
   final base = ThemeData(
     useMaterial3: true,
     brightness: brightness,
+    fontFamily: 'Inter',
     colorScheme: ColorScheme.fromSeed(
       seedColor: colors.primary,
       brightness: brightness,
