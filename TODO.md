@@ -21,7 +21,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Sessão (Riverpod) + gate de rotas públicas vs autenticadas
 - [x] Config de API (`API_MODE` local / DigitalOcean)
 - [x] Completar `ApiUrls` com **todos** os endpoints de `mobile/src/api/api-url.ts` — `lib/api/api_urls.dart` + `withParams`
-- [ ] Deep links / scheme `mobile` (Expo `app.json`)
+- [x] Deep links / scheme `mobile` (Expo `app.json`) — iOS URL types + Android intent-filter + aliases Expo em `Pages`
 - [ ] Splash / ícone CrowdFans (hoje é o default Flutter)
 - [ ] Sentry (`observability/sentry.ts`)
 - [x] Variáveis de ambiente: `.env` (chaves `EXPO_PUBLIC_*` do Expo) via `EnvService`

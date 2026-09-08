@@ -25,6 +25,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: Pages.presentation,
     refreshListenable: refresh,
     redirect: (context, state) {
+      final rawPath =
+          '${state.uri.path}${state.uri.hasQuery ? '?${state.uri.query}' : ''}';
+      final incoming = Pages.fromIncomingLocation(
+        state.uri.scheme == 'mobile' ? state.uri.toString() : rawPath,
+      );
+      if (incoming.split('?').first != state.matchedLocation &&
+          incoming != rawPath) {
+        return incoming;
+      }
       final session = ref.read(authSessionProvider);
       if (session.isLoading) {
         return null;
@@ -81,7 +90,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: Pages.home,
                 builder: (context, state) => const PlaceholderScreen(
                   title: 'Feed',
-                  message: 'Home do Expo (`Pages.HOME`). Próximo: posts + stories.',
+                  message:
+                      'Home do Expo (`Pages.HOME`). Próximo: posts + stories.',
                 ),
               ),
             ],
