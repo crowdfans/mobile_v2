@@ -256,6 +256,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.comments,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Comentários',
+          message: 'CommentService entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
         path: Pages.demo,
         builder: (context, state) => const PlaceholderScreen(
           title: 'Demo',

@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 /// Paleta CrowdFans (espelho de `mobile/src/constants/theme.ts`).
 abstract final class AppPalette {
   static const magenta500 = Color(0xFFFF27A0);
+  static const purple50 = Color(0xFFF5F2FF);
+  static const purple100 = Color(0xFFECE8FF);
+  static const purple200 = Color(0xFFDAD4FF);
   static const purple300 = Color(0xFFC1B1FF);
   static const purple400 = Color(0xFFA285FF);
   static const purple500 = Color(0xFF7E49FF);
   static const purple600 = Color(0xFF7630F7);
   static const purple700 = Color(0xFF681EE3);
+  static const purple800 = Color(0xFF5718BF);
+  static const purple950 = Color(0xFF2C0B6A);
   static const blue400 = Color(0xFF48C7FF);
   static const blue700 = Color(0xFF0075FF);
   static const green400 = Color(0xFF24FB20);

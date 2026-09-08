@@ -136,6 +136,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               post,
                               viewerIsArtist: viewerIsArtist,
                             ),
+                            onVoteApplied: (result) {
+                              setState(() {
+                                final index = _posts.indexWhere(
+                                  (item) => item.id == result.id,
+                                );
+                                if (index >= 0) {
+                                  _posts[index] = _posts[index].copyWith(
+                                    votes: result.votes,
+                                    myVote: result.myVote,
+                                  );
+                                }
+                              });
+                            },
                           );
                         },
                       ),

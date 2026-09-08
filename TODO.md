@@ -121,8 +121,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `FeedComponent` (`FeedItem`)
 - [x] `PostCardComponent`
 - [x] `ExclusiveFeedCardComponent`
-- [ ] `ExclusiveFeedCardLockedContentComponent`
-- [ ] `ExclusivePostMetaRowComponent`
+- [x] `ExclusiveFeedCardLockedContentComponent`
+- [x] `ExclusivePostMetaRowComponent`
 - [x] `VoteControlComponent` (UI; persistência no item `VoteService`)
 - [ ] `PostOptionsSheetComponent`
 - [ ] `PostShareSheetComponent`
@@ -261,7 +261,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 17. Votos e conteúdo exclusivo
 
-- [ ] `VoteService` (post e comentário)
+- [x] `VoteService` (post e comentário; UI de comentário entra na seção 12)
 - [ ] `SubscriptionService` (assinar com Jam Coins, 402 saldo)
 - [x] Helper `canAccessExclusivePost` (memberships completos no `SubscriptionService`)
 

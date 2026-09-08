@@ -52,6 +52,28 @@ class FeedPost {
   final int comments;
   final int shares;
 
+  FeedPost copyWith({int? votes, int? myVote, bool? exclusiveLocked}) {
+    return FeedPost(
+      id: id,
+      type: type,
+      author: author,
+      artistId: artistId,
+      handle: handle,
+      minutesAgo: minutesAgo,
+      avatarUri: avatarUri,
+      text: text,
+      imageUri: imageUri,
+      carouselUris: carouselUris,
+      videoThumbnailUri: videoThumbnailUri,
+      isExclusive: isExclusive,
+      exclusiveLocked: exclusiveLocked ?? this.exclusiveLocked,
+      votes: votes ?? this.votes,
+      myVote: myVote ?? this.myVote,
+      comments: comments,
+      shares: shares,
+    );
+  }
+
   factory FeedPost.fromJson(Map<String, dynamic> json) {
     return FeedPost(
       id: json['id'] as String? ?? '',

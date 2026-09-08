@@ -2,13 +2,29 @@ import 'package:crowdfans/components/home/vote_control.dart';
 import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
 
 /// Card padrão de post do feed.
 class PostCard extends StatelessWidget {
-  const PostCard({super.key, required this.post});
+  const PostCard({
+    super.key,
+    required this.post,
+    this.contentOverride,
+    this.topContent,
+    this.onPressOpenComments,
+    this.onPressOpenProfile,
+    this.onPressOptions,
+    this.onVoteApplied,
+  });
 
   final FeedPost post;
+  final Widget? contentOverride;
+  final Widget? topContent;
+  final ValueChanged<String>? onPressOpenComments;
+  final VoidCallback? onPressOpenProfile;
+  final VoidCallback? onPressOptions;
+  final ValueChanged<VoteResult>? onVoteApplied;
 
   @override
   Widget build(BuildContext context) {
@@ -29,67 +45,98 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              PostAvatar(url: post.avatarUri),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.author,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+          if (topContent != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: topContent,
+            ),
+          GestureDetector(
+            onTap: onPressOpenProfile,
+            child: Row(
+              children: [
+                PostAvatar(url: post.avatarUri),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post.author,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${post.handle} · ${post.minutesAgo} min',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.textTertiary,
+                      Text(
+                        '${post.handle} · ${post.minutesAgo} min',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.textTertiary,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+                if (onPressOptions != null)
+                  IconButton(
+                    onPressed: onPressOptions,
+                    icon: Icon(Icons.more_horiz, color: colors.icon),
+                    tooltip: 'Opções do post',
+                  ),
+              ],
+            ),
+          ),
+          if (contentOverride != null)
+            contentOverride!
+          else ...[
+            if (post.text.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  post.text,
+                  style: TextStyle(fontSize: 14, color: colors.textPrimary),
                 ),
               ),
-            ],
-          ),
-          if (post.text.trim().isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                post.text,
-                style: TextStyle(fontSize: 14, color: colors.textPrimary),
-              ),
-            ),
-          if (media != null && media.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  media,
-                  height: 240,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+            if (media != null && media.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    media,
+                    height: 240,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                VoteControl(post: post, onVoteApplied: onVoteApplied),
+                const Spacer(),
+                GestureDetector(
+                  onTap: onPressOpenComments == null
+                      ? null
+                      : () => onPressOpenComments!(post.id),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.mode_comment_outlined,
+                        size: 18,
+                        color: colors.icon,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${post.comments}',
+                        style: TextStyle(color: colors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              VoteControl(post: post),
-              const Spacer(),
-              Icon(Icons.mode_comment_outlined, size: 18, color: colors.icon),
-              const SizedBox(width: 4),
-              Text(
-                '${post.comments}',
-                style: TextStyle(color: colors.textSecondary),
-              ),
-            ],
-          ),
+          ],
         ],
       ),
     );
