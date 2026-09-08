@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/pages.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
@@ -149,9 +150,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.fanClubCommunity,
-        builder: (context, state) => PlaceholderScreen(
-          title: 'Comunidade',
-          message: 'Feed do fan club entra no próximo corte.',
+        builder: (context, state) => FanClubCommunityScreen(
+          artistId: state.pathParameters['artistId'] ?? '',
         ),
       ),
       GoRoute(

@@ -148,15 +148,15 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 8. Fan clubs
 
 - [x] `FanClubsScreen` (`(main)/clubs.tsx`)
-- [ ] Comunidade `fan-clubs/community/[artistId].tsx`
+- [x] Comunidade `fan-clubs/community/[artistId].tsx` (hero + feed; compose/about ainda placeholder)
 - [ ] `FanClubComposeScreen`
 - [ ] `FanClubAboutScreen`
 - [ ] `FanClubModeratorsScreen`
 - [ ] `FanClubModerationScreen`
 - [ ] `FanClubRulesScreen`
-- [ ] `FanClubService`
+- [x] `FanClubService` (`getArtistFanClubFeed`; moderação entra nas telas de settings)
 - [ ] `FanClubViewerService`
-- [ ] `CommunityService` (`GET/POST /api/v1/community/posts`)
+- [x] `CommunityService` (`GET /api/v1/community/posts`)
 - [x] `FollowService` (`FOLLOWS`; follow/unfollow no perfil do artista)
 
 ---
