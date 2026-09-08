@@ -177,7 +177,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 - [x] `ProfileSettingsScreen` (hub; telas filhas ainda placeholder)
 - [x] `ProfileAccountScreen` (nome/username/bio/foto; upload via `MediaService`)
-- [ ] `ProfileAppearanceScreen` + `appearance-settings-store`
+- [x] `ProfileAppearanceScreen` + `appearanceSettingsProvider` (persiste em SharedPreferences)
 - [ ] `ProfileInformationScreen` (termos / ajuda)
 - [ ] `ProfileSecurityScreen` (e-mail, senha, telefone)
 - [ ] `ProfileNotificationsScreen` + `notification-preferences-service`

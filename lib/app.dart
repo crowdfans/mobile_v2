@@ -1,5 +1,6 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/router/app_router.dart';
+import 'package:crowdfans/state/appearance_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,11 +10,13 @@ class CrowdFansApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themePreference = ref.watch(appearanceSettingsProvider);
     return MaterialApp.router(
       title: 'CrowdFans',
       debugShowCheckedModeBanner: false,
       theme: buildCrowdFansTheme(Brightness.light),
       darkTheme: buildCrowdFansTheme(Brightness.dark),
+      themeMode: appearanceThemeMode(themePreference),
       routerConfig: router,
     );
   }

@@ -13,6 +13,7 @@ import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
 import 'package:crowdfans/screens/profile/profile_account_screen.dart';
+import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
@@ -185,10 +186,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileAppearance,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Aparência',
-          message: 'ProfileAppearanceScreen entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileAppearanceScreen(),
       ),
       GoRoute(
         path: Pages.profileNotifications,
