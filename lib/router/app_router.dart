@@ -5,6 +5,16 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_name_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_otp_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_password_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_profile_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_success_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_terms_screen.dart';
+import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,10 +77,43 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.registerFan,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Cadastro Superfã',
-          message: 'Próximo na migração Expo → Flutter.',
-        ),
+        builder: (context, state) => const RegisterFanScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanOtp,
+        builder: (context, state) => const RegisterFanOtpScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanEmail,
+        builder: (context, state) => const RegisterFanEmailScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanPassword,
+        builder: (context, state) => const RegisterFanPasswordScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanName,
+        builder: (context, state) => const RegisterFanNameScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanBirthdate,
+        builder: (context, state) => const RegisterFanBirthdateScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanUsername,
+        builder: (context, state) => const RegisterFanUsernameScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanProfile,
+        builder: (context, state) => const RegisterFanProfileScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanTerms,
+        builder: (context, state) => const RegisterFanTermsScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerFanSuccess,
+        builder: (context, state) => const RegisterFanSuccessScreen(),
       ),
       GoRoute(
         path: Pages.registerArtist,

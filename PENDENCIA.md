@@ -33,6 +33,8 @@ Bundle Flutter atual: `com.crowdfans.crowdfans`. Expo: `com.crowdfans.crowdfansm
 
 Comentado no Expo. **Não implementar** até o `mobile` ligar.
 
-## Cadastro: reCAPTCHA nativo
+## Cadastro: reCAPTCHA nativo / web
 
-OTP SMS no Flutter precisa de App Check / Play Integrity / APNs. Travado no mesmo `flutterfire configure` + SHA do Android no `crowdfans-prod`.
+OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — bloqueado até o `flutterfire configure` e um slot web equivalente ao `FirebaseRecaptchaVerifierModal`.
+
+Avatar no cadastro Superfã: bio entra agora; image picker fica com `MediaService`.

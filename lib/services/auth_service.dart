@@ -3,6 +3,27 @@ import 'package:crowdfans/services/http_service.dart';
 
 /// Login/registro no backend Go a partir do token Firebase.
 abstract final class AuthService {
+  static Future<void> registerFan({
+    required String email,
+    required String token,
+    String? displayName,
+    String? phone,
+    bool phoneVerified = false,
+  }) async {
+    await HttpService.request<dynamic>(
+      ApiUrls.registerFan,
+      method: Method.post,
+      body: {
+        'email': email,
+        'token': token,
+        'displayName': ?displayName,
+        'phone': ?phone,
+        'phoneVerified': phoneVerified,
+      },
+      requireAuth: false,
+    );
+  }
+
   static Future<void> loginBackendWithFirebaseToken(String idToken) async {
     await HttpService.request<dynamic>(
       ApiUrls.authLogin,

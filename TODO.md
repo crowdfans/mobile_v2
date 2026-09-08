@@ -69,22 +69,22 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 3. Cadastro Superfã
 
-- [ ] `RegisterFanScreen` (entrada / telefone)
-- [ ] `RegisterFanOtpScreen`
-- [ ] `RegisterFanEmailScreen`
-- [ ] `RegisterFanPasswordScreen`
-- [ ] `RegisterFanNameScreen`
-- [ ] `RegisterFanBirthdateScreen`
-- [ ] `RegisterFanUsernameScreen`
-- [ ] `RegisterFanProfileScreen` (avatar)
-- [ ] `RegisterFanTermsScreen`
-- [ ] `RegisterFanSuccessScreen`
-- [ ] Layouts `register/_layout.tsx` e `register/fan/_layout.tsx`
-- [ ] `OtpService` + `useOtpVerification`
-- [ ] `firebase-phone-auth.ts`
-- [ ] reCAPTCHA (`FirebaseRecaptchaVerifierModal` + web slot)
-- [ ] `AuthService.registerFan` (`POST /register/fan`)
-- [ ] Utils: `phone-utils`, `email-utils`, `password-util`, `username-utils`, `birthday-utils`
+- [x] `RegisterFanScreen` (entrada / telefone)
+- [x] `RegisterFanOtpScreen`
+- [x] `RegisterFanEmailScreen`
+- [x] `RegisterFanPasswordScreen`
+- [x] `RegisterFanNameScreen`
+- [x] `RegisterFanBirthdateScreen`
+- [x] `RegisterFanUsernameScreen`
+- [x] `RegisterFanProfileScreen` (bio; avatar via picker fica no `MediaService`)
+- [x] `RegisterFanTermsScreen`
+- [x] `RegisterFanSuccessScreen`
+- [x] Layouts `register/_layout.tsx` e `register/fan/_layout.tsx` — `RegisterFanScaffold` + store
+- [x] `OtpService` + verificação no `RegisterFanOtpScreen`
+- [x] `firebase-phone-auth.ts` (`FirebasePhoneAuthService`)
+- [ ] reCAPTCHA (`FirebaseRecaptchaVerifierModal` + web slot) — ver `PENDENCIA.md`
+- [x] `AuthService.registerFan` (`POST /register/fan`)
+- [x] Utils: `phone-utils`, `email-utils`, `password-util`, `username-utils`, `birthday-utils`
 
 ---
 
@@ -276,9 +276,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 19. UI compartilhada (ainda não no Flutter)
 
-- [ ] `AppButtonComponent` / `ButtonComponent`
+- [x] `AppButtonComponent` / `ButtonComponent`
 - [x] `AppIconButtonComponent`
-- [ ] `InputComponent`
+- [x] `InputComponent`
 - [x] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
 - [x] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`
 - [ ] `BottomSheetShellComponent` + `useBottomSheetShell`
