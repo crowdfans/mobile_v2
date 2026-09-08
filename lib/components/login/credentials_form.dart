@@ -1,6 +1,8 @@
+import 'package:crowdfans/components/login/password_field.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
+/// Form de e-mail, senha, entrar e esqueci senha.
 class CredentialsForm extends StatelessWidget {
   const CredentialsForm({
     super.key,
@@ -46,7 +48,7 @@ class CredentialsForm extends StatelessWidget {
           style: TextStyle(color: colors.textPrimary, fontSize: 18),
         ),
         const SizedBox(height: 16),
-        _PasswordField(onChanged: onPasswordChanged),
+        PasswordField(onChanged: onPasswordChanged),
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
@@ -72,51 +74,6 @@ class CredentialsForm extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _PasswordField extends StatefulWidget {
-  const _PasswordField({required this.onChanged});
-
-  final ValueChanged<String> onChanged;
-
-  @override
-  State<_PasswordField> createState() => _PasswordFieldState();
-}
-
-class _PasswordFieldState extends State<_PasswordField> {
-  bool _visible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = CrowdFansTheme.of(context);
-    return TextField(
-      key: const Key('login-password'),
-      obscureText: !_visible,
-      onChanged: widget.onChanged,
-      decoration: InputDecoration(
-        hintText: 'Senha',
-        hintStyle: TextStyle(color: colors.textTertiary),
-        filled: true,
-        fillColor: colors.inputBackground,
-        suffixIcon: IconButton(
-          onPressed: () => setState(() => _visible = !_visible),
-          icon: Icon(
-            _visible ? Icons.visibility_off : Icons.visibility,
-            color: colors.textSecondary,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.inputBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.primary),
-        ),
-      ),
-      style: TextStyle(color: colors.textPrimary, fontSize: 18),
     );
   }
 }

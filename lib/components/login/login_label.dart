@@ -1,6 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
+/// Label "Login" com gradiente fã ou artista.
 class LoginLabel extends StatelessWidget {
   const LoginLabel({super.key, required this.isArtist});
 
@@ -10,9 +11,9 @@ class LoginLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = isArtist ? AuthAccentPalette.artist : AuthAccentPalette.fan;
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: [accent.start, accent.end],
-      ).createShader(bounds),
+      shaderCallback: (bounds) =>
+          LinearGradient(colors: [accent.start, accent.end])
+              .createShader(bounds),
       child: const Text(
         'Login',
         textAlign: TextAlign.center,

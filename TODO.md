@@ -33,7 +33,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 0.1 Assets (usar o que já está em `assets/`)
 
 - [x] Árvore copiada de `../mobile/assets` (mesmos paths: `assets/images/...`, `assets/icons/...`)
-- [ ] Ligar SVGs com `flutter_svg` (bottom nav, toolbar, feed, settings)
+- [x] Ligar SVGs com `flutter_svg` (bottom nav; toolbar/feed/settings nas telas de cada domínio)
 - [x] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
 - [ ] Logo `assets/logo/crowdfans-logo.svg` na toolbar
 - [ ] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData` — hoje usa `google_fonts`
@@ -106,7 +106,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 - [x] 4 abas: Feed / Clubes / Explorar / Eu
 - [x] Botão `+` (hoje só snackbar)
-- [ ] `BottomNavComponent` visual (ícones SVG + avatar do perfil)
+- [x] `BottomNavComponent` visual (ícones SVG + avatar do perfil)
 - [ ] `CreateMenuSheetComponent` (artista: post / story / etc.)
 - [ ] `create-menu-store`
 - [ ] `AppRootLayout` (init Purchases, fontes, tema)
@@ -277,7 +277,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 19. UI compartilhada (ainda não no Flutter)
 
 - [ ] `AppButtonComponent` / `ButtonComponent`
-- [ ] `AppIconButtonComponent`
+- [x] `AppIconButtonComponent`
 - [ ] `InputComponent`
 - [ ] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
 - [ ] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`

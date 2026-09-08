@@ -1,44 +1,10 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-class OnboardingButtons extends StatelessWidget {
-  const OnboardingButtons({
+/// Botão de papel no onboarding (Superfã / Artista).
+class OnboardingRoleButton extends StatelessWidget {
+  const OnboardingRoleButton({
     super.key,
-    required this.onSuperfan,
-    required this.onArtist,
-    this.darkMode = false,
-  });
-
-  final VoidCallback onSuperfan;
-  final VoidCallback onArtist;
-  final bool darkMode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _RoleButton(
-          asset: 'assets/images/crowd.png',
-          labelPrefix: 'Sou um ',
-          labelStrong: 'Superfã',
-          darkMode: darkMode,
-          onPressed: onSuperfan,
-        ),
-        const SizedBox(height: 14),
-        _RoleButton(
-          asset: 'assets/images/mic.png',
-          labelPrefix: 'Sou um ',
-          labelStrong: 'Artista',
-          darkMode: darkMode,
-          onPressed: onArtist,
-        ),
-      ],
-    );
-  }
-}
-
-class _RoleButton extends StatelessWidget {
-  const _RoleButton({
     required this.asset,
     required this.labelPrefix,
     required this.labelStrong,
@@ -75,7 +41,10 @@ class _RoleButton extends StatelessWidget {
             Text.rich(
               TextSpan(
                 text: labelPrefix,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
                 children: [
                   TextSpan(
                     text: labelStrong,
