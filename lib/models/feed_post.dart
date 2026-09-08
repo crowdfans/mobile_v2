@@ -1,6 +1,15 @@
 /// Tipos de post do feed.
 enum PostType { text, image, carousel, video, membership, unknown }
 
+/// Tipos escolhíveis na criação de post (sem `unknown`).
+const createPostTypes = [
+  PostType.text,
+  PostType.image,
+  PostType.carousel,
+  PostType.video,
+  PostType.membership,
+];
+
 PostType postTypeFrom(String? raw) {
   return switch (raw?.toLowerCase()) {
     'text' => PostType.text,
@@ -9,6 +18,30 @@ PostType postTypeFrom(String? raw) {
     'video' => PostType.video,
     'membership' => PostType.membership,
     _ => PostType.unknown,
+  };
+}
+
+/// Valor enviado ao backend (`text`, `image`, ...).
+String postTypeToApi(PostType type) {
+  return switch (type) {
+    PostType.text => 'text',
+    PostType.image => 'image',
+    PostType.carousel => 'carousel',
+    PostType.video => 'video',
+    PostType.membership => 'membership',
+    PostType.unknown => 'text',
+  };
+}
+
+/// Rótulo de UI do tipo de post.
+String postTypeLabel(PostType type) {
+  return switch (type) {
+    PostType.text => 'Texto',
+    PostType.image => 'Imagem',
+    PostType.carousel => 'Carrossel',
+    PostType.video => 'Vídeo',
+    PostType.membership => 'Membership',
+    PostType.unknown => 'Post',
   };
 }
 

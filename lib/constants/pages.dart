@@ -42,6 +42,10 @@ abstract final class Pages {
   static const notifications = '/notifications';
   static const createPost = '/post/create';
   static const myPosts = '/post/mine';
+
+  /// Edição de post (`CreatePostScreen?postId=`).
+  static String createPostEdit(String postId) =>
+      '$createPost?postId=${Uri.encodeQueryComponent(postId)}';
   static const demo = '/demo';
 
   static const profileAccount = '/me/settings/account';

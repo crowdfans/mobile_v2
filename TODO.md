@@ -209,10 +209,10 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 11. Posts
 
-- [ ] `CreatePostScreen` (TEXT, IMAGE, CAROUSEL, VIDEO, MEMBERSHIP)
-- [ ] `MyPostsScreen` (listar / editar / deletar)
-- [ ] `PostService` (CRUD)
-- [ ] Image picker + upload (`MediaService` / Firebase Storage)
+- [x] `CreatePostScreen` (TEXT, IMAGE, CAROUSEL, VIDEO, MEMBERSHIP; edição via `?postId=`)
+- [x] `MyPostsScreen` (listar / editar / deletar)
+- [x] `PostService` (CRUD)
+- [x] Image picker + upload (`MediaService` via presign Spaces; picker também nas telas de account)
 
 ---
 
@@ -270,8 +270,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 18. Mídia
 
-- [ ] `MediaService` (`POST /api/v1/me/media/uploads` + Storage)
-- [ ] Image picker nos fluxos: cadastro, account, create post, fan club compose, fan letter
+- [x] `MediaService` (`POST /api/v1/me/media/uploads` + PUT Spaces)
+- [ ] Image picker nos fluxos: cadastro, account, create post, fan club compose, fan letter — create post já usa; o resto entra nas telas de cada domínio
 
 ---
 

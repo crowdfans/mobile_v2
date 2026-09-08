@@ -9,6 +9,8 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
+import 'package:crowdfans/screens/post/create_post_screen.dart';
+import 'package:crowdfans/screens/post/my_posts_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
@@ -230,17 +232,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.createPost,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Criar post',
-          message: 'CreatePostScreen entra no próximo corte.',
+        builder: (context, state) => CreatePostScreen(
+          postId: state.uri.queryParameters['postId'],
+          targetArtistId: state.uri.queryParameters['targetArtistId'],
         ),
       ),
       GoRoute(
         path: Pages.myPosts,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Meus posts',
-          message: 'MyPostsScreen entra no próximo corte.',
-        ),
+        builder: (context, state) => const MyPostsScreen(),
       ),
       GoRoute(
         path: Pages.fanClubCompose,

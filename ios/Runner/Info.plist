@@ -8,6 +8,14 @@
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
 		<string>CrowdFans</string>
+		<key>NSCameraUsageDescription</key>
+		<string>O CrowdFans usa a câmera para foto de perfil e posts.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>O CrowdFans acessa suas fotos para avatar e posts.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>O CrowdFans pode salvar imagens na galeria quando você pedir.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>O CrowdFans usa o microfone ao gravar vídeo para posts.</string>
 		<key>NSAppTransportSecurity</key>
 		<dict>
 			<key>NSAllowsLocalNetworking</key>
