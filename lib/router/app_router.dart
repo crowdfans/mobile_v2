@@ -28,8 +28,10 @@ import 'package:crowdfans/screens/register/artist/register_artist_email_screen.d
 import 'package:crowdfans/screens/register/artist/register_artist_otp_screen.dart';
 import 'package:crowdfans/screens/register/artist/register_artist_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart';
+import 'package:crowdfans/screens/report/report_screen.dart';
 import 'package:crowdfans/screens/search/search_ranking_screen.dart';
 import 'package:crowdfans/screens/search/search_screen.dart';
+import 'package:crowdfans/services/report_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -275,9 +277,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.report,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Denúncia',
-          message: 'ReportScreen entra no próximo corte.',
+        builder: (context, state) => ReportScreen(
+          contextKind: ReportService.parseContext(
+            state.uri.queryParameters['context'],
+          ),
+          targetId: state.uri.queryParameters['targetId'],
+          displayName: state.uri.queryParameters['displayName'],
         ),
       ),
       GoRoute(

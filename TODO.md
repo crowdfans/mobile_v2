@@ -243,8 +243,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 15. Denúncia
 
-- [ ] `ReportScreen`
-- [ ] `ReportService` (`POST /api/v1/reports`)
+- [x] `ReportScreen` (motivo → detalhes → sucesso; query `context`/`targetId`/`displayName`)
+- [x] `ReportService` (`POST /api/v1/reports`; oculta post denunciado best-effort)
 
 ---
 
