@@ -124,9 +124,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `ExclusiveFeedCardLockedContentComponent`
 - [x] `ExclusivePostMetaRowComponent`
 - [x] `VoteControlComponent` (UI; persistência no item `VoteService`)
-- [ ] `PostOptionsSheetComponent`
-- [ ] `PostShareSheetComponent`
-- [ ] `post-share.ts` (share nativo)
+- [x] `PostOptionsSheetComponent`
+- [x] `PostShareSheetComponent`
+- [x] `post-share.ts` (share nativo via `share_plus`)
 - [x] `StoriesRowComponent`
 - [x] `StoryItemComponent`
 - [ ] `StoryLiveItemComponent` (chip; tela Live ainda não existe no Expo)
@@ -288,7 +288,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 20. Demo
 
-- [ ] `DemoScreen` (`Pages.DEMO`) — só se ainda for usada no Expo
+- [ ] Remover `DemoScreen` (`Pages.DEMO`)
 
 ---
 
@@ -309,6 +309,13 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] ⛔ Live: diretório, viewer, estúdio
 - [ ] ⛔ Meet & Greet: agenda, lobby, chamada, estúdio, feedback
 - [ ] ⛔ Create post de fã (se continuar ⛔ no Expo)
+
+---
+
+## 23. Firebase
+
+- [ ] Instalar Firebase CLI local
+- [ ] Configurar App Distribution
 
 ---
 

@@ -1,5 +1,7 @@
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/feed/stories_row.dart';
+import 'package:crowdfans/components/post/post_options_sheet.dart';
+import 'package:crowdfans/components/post/post_share_sheet.dart';
 import 'package:crowdfans/components/toolbar/image_toolbar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
@@ -26,6 +28,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _loading = true;
   var _loadingMore = false;
   String? _error;
+  FeedPost? _optionsPost;
+  FeedPost? _sharePost;
 
   @override
   void initState() {
@@ -81,81 +85,112 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: ImageToolbar(),
-            ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_error!, style: TextStyle(color: colors.danger)),
-              ),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                      onRefresh: handleRefresh,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
-                        itemCount: _posts.length + 2,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return StoriesRow(stories: _stories);
-                          }
-                          if (index == _posts.length + 1) {
-                            if (_hasMore && !_loadingMore) {
-                              handleLoad(page: _page + 1, append: true);
-                            }
-                            if (_loadingMore) {
-                              return const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-                            if (_posts.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 48),
-                                child: Text(
-                                  'Nada por aqui ainda. Siga artistas para ver o feed.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: colors.textSecondary),
-                                ),
-                              );
-                            }
-                            return const SizedBox(height: 24);
-                          }
-                          final post = _posts[index - 1];
-                          return FeedItem(
-                            post: post,
-                            canAccessExclusive: canAccessExclusivePost(
-                              post,
-                              viewerIsArtist: viewerIsArtist,
-                            ),
-                            onVoteApplied: (result) {
-                              setState(() {
-                                final index = _posts.indexWhere(
-                                  (item) => item.id == result.id,
-                                );
-                                if (index >= 0) {
-                                  _posts[index] = _posts[index].copyWith(
-                                    votes: result.votes,
-                                    myVote: result.myVote,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: ImageToolbar(),
+                ),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      _error!,
+                      style: TextStyle(color: colors.danger),
+                    ),
+                  ),
+                Expanded(
+                  child: _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : RefreshIndicator(
+                          onRefresh: handleRefresh,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                            itemCount: _posts.length + 2,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return StoriesRow(stories: _stories);
+                              }
+                              if (index == _posts.length + 1) {
+                                if (_hasMore && !_loadingMore) {
+                                  handleLoad(page: _page + 1, append: true);
+                                }
+                                if (_loadingMore) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   );
                                 }
-                              });
+                                if (_posts.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 48),
+                                    child: Text(
+                                      'Nada por aqui ainda. Siga artistas para ver o feed.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: colors.textSecondary,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox(height: 24);
+                              }
+                              final post = _posts[index - 1];
+                              return FeedItem(
+                                post: post,
+                                canAccessExclusive: canAccessExclusivePost(
+                                  post,
+                                  viewerIsArtist: viewerIsArtist,
+                                ),
+                                onVoteApplied: (result) {
+                                  setState(() {
+                                    final voteIndex = _posts.indexWhere(
+                                      (item) => item.id == result.id,
+                                    );
+                                    if (voteIndex >= 0) {
+                                      _posts[voteIndex] = _posts[voteIndex]
+                                          .copyWith(
+                                            votes: result.votes,
+                                            myVote: result.myVote,
+                                          );
+                                    }
+                                  });
+                                },
+                                onPressOptions: () {
+                                  setState(() => _optionsPost = post);
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
-                    ),
+                          ),
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          PostOptionsSheet(
+            visible: _optionsPost != null,
+            post: _optionsPost,
+            onClose: () => setState(() => _optionsPost = null),
+            onPostHidden: (postId) {
+              setState(() {
+                _posts.removeWhere((item) => item.id == postId);
+              });
+            },
+            onOpenShare: (post) {
+              setState(() => _sharePost = post);
+            },
+          ),
+          PostShareSheet(
+            visible: _sharePost != null,
+            post: _sharePost,
+            onClose: () => setState(() => _sharePost = null),
+          ),
+        ],
       ),
     );
   }

@@ -263,6 +263,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.report,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Denúncia',
+          message: 'ReportScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
         path: Pages.demo,
         builder: (context, state) => const PlaceholderScreen(
           title: 'Demo',
