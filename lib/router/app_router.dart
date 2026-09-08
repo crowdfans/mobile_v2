@@ -17,6 +17,10 @@ import 'package:crowdfans/screens/register/fan/register_fan_profile_screen.dart'
 import 'package:crowdfans/screens/register/fan/register_fan_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_success_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_terms_screen.dart';
+import 'package:crowdfans/screens/register/artist/register_artist_data_screen.dart';
+import 'package:crowdfans/screens/register/artist/register_artist_email_screen.dart';
+import 'package:crowdfans/screens/register/artist/register_artist_otp_screen.dart';
+import 'package:crowdfans/screens/register/artist/register_artist_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart';
 import 'package:crowdfans/screens/search/search_screen.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -121,10 +125,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.registerArtist,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Cadastro Artista',
-          message: 'Próximo na migração Expo → Flutter.',
-        ),
+        builder: (context, state) => const RegisterArtistScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerArtistOtp,
+        builder: (context, state) => const RegisterArtistOtpScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerArtistEmail,
+        builder: (context, state) => const RegisterArtistEmailScreen(),
+      ),
+      GoRoute(
+        path: Pages.registerArtistData,
+        builder: (context, state) => const RegisterArtistDataScreen(),
       ),
       GoRoute(
         path: Pages.artistProfile,

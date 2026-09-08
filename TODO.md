@@ -90,15 +90,15 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 4. Cadastro artista
 
-- [ ] `RegisterArtistScreen`
-- [ ] `RegisterArtistOtpScreen`
-- [ ] `RegisterArtistEmailScreen`
-- [ ] `RegisterArtistDataScreen` (conta, nome, empresa, gênero, categoria, avatar)
-- [ ] Layout `register/artist/_layout.tsx`
-- [ ] `artist-register-service` (`POST /register/artist`)
-- [ ] Models de registro artista (`artist-register-form-data`, verification status/context)
-- [ ] ⛔ Verificação Spotify / contestação de nome (também ⛔ no Expo)
-- [ ] ⛔ Consentimento parental (também ⛔ no Expo)
+- [x] `RegisterArtistScreen` — telefone + OTP SMS
+- [x] `RegisterArtistOtpScreen`
+- [x] `RegisterArtistEmailScreen`
+- [x] `RegisterArtistDataScreen` (nome, username, senha — o Expo ainda não pede empresa/gênero/avatar)
+- [x] Layout `register/artist/_layout.tsx` — `artistRegisterProvider` + rotas
+- [x] `ArtistRegisterService` (`POST /register/artist`)
+- [x] Models (`artist_register_form_data`, verification status/platform)
+- [x] ⛔ Verificação Spotify / contestação de nome — buraco copiado do Expo, sem UI
+- [x] ⛔ Consentimento parental — buraco copiado do Expo, sem UI
 
 ---
 
