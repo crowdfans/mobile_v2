@@ -40,6 +40,26 @@ class Profile {
   final bool isArtist;
   final ProfileStats stats;
 
+  Profile copyWith({
+    String? userUid,
+    String? displayName,
+    String? name,
+    String? description,
+    String? photoUrl,
+    bool? isArtist,
+    ProfileStats? stats,
+  }) {
+    return Profile(
+      userUid: userUid ?? this.userUid,
+      displayName: displayName ?? this.displayName,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      photoUrl: photoUrl ?? this.photoUrl,
+      isArtist: isArtist ?? this.isArtist,
+      stats: stats ?? this.stats,
+    );
+  }
+
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
       userUid: json['userUid'] as String? ?? '',

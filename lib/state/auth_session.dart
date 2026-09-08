@@ -93,6 +93,11 @@ class AuthSessionNotifier extends Notifier<AuthSession> {
     }
   }
 
+  /// Atualiza o perfil em memória após `PUT /api/v1/profile`.
+  void applyProfile(Profile profile) {
+    state = state.copyWith(profile: profile);
+  }
+
   Future<void> logout() async {
     await FirebaseService.auth.signOut();
     state = const AuthSession(isLoading: false);

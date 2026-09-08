@@ -11,6 +11,7 @@ import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
+import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
@@ -162,10 +163,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileAccount,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Conta',
-          message: 'ProfileAccountScreen entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileAccountScreen(),
       ),
       GoRoute(
         path: Pages.profileSecurity,

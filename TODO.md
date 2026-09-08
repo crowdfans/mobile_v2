@@ -169,14 +169,14 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ProfileArtistsScreen` (artistas seguidos)
 - [x] Perfil de artista `artists/[artistId].tsx` (follow, membership, posts; fan letters ainda placeholder)
 - [x] `ProfileService` completo (`overview`/`social` ainda nas telas públicas; posts por UID + update já entram)
-- [ ] Store `current-viewer-profile-store`
+- [x] Store `current-viewer-profile-store` — no Flutter o viewer fica no `authSessionProvider` (`applyProfile`)
 
 ---
 
 ## 10. Settings (hub + cada tela)
 
 - [x] `ProfileSettingsScreen` (hub; telas filhas ainda placeholder)
-- [ ] `ProfileAccountScreen`
+- [x] `ProfileAccountScreen` (nome/username/bio/foto; upload via `MediaService`)
 - [ ] `ProfileAppearanceScreen` + `appearance-settings-store`
 - [ ] `ProfileInformationScreen` (termos / ajuda)
 - [ ] `ProfileSecurityScreen` (e-mail, senha, telefone)
@@ -271,7 +271,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 18. Mídia
 
 - [x] `MediaService` (`POST /api/v1/me/media/uploads` + PUT Spaces)
-- [ ] Image picker nos fluxos: cadastro, account, create post, fan club compose, fan letter — create post já usa; o resto entra nas telas de cada domínio
+- [ ] Image picker nos fluxos: cadastro, fan club compose, fan letter — account e create post já usam
 
 ---
 
