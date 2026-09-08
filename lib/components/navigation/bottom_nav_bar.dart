@@ -52,17 +52,7 @@ class BottomNavBar extends ConsumerWidget {
                 selected: false,
                 showIndicator: false,
                 semanticLabel: 'Criar conteúdo',
-                onTap:
-                    onPressPlus ??
-                    () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Criar post / fan club entra no próximo corte.',
-                          ),
-                        ),
-                      );
-                    },
+                onTap: onPressPlus ?? () {},
               ),
               BottomNavSvgTab(
                 asset: 'assets/special-icons/search-menu-01.svg',

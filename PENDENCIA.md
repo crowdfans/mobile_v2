@@ -37,14 +37,16 @@ Comentado no Expo. **Não implementar** até o `mobile` ligar.
 
 OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — bloqueado até o `flutterfire configure` e um slot web equivalente ao `FirebaseRecaptchaVerifierModal`.
 
+## AppRootLayout — RevenueCat
+
+Fontes e tema já sobem no `CrowdFansApp`. `PurchasesService.configure()` no start só entra quando o SDK (`purchases_flutter`) for ligado (seção 16).
+
 ## Cadastro artista — Spotify / parental (⛔)
 
 O Expo também não tem tela de verificação Spotify, contestação de nome nem consentimento parental. O Flutter copiou o buraco: enums no model, sem UI e sem endpoint extra.
 
-## Ainda no `TODO.md` (não bloqueado, só não deu neste corte)
+## Ainda no `TODO.md` (não bloqueado)
 
-Cadastro artista, comunidade do fan club, telas filhas de settings, create post, comentários, fan letters, notificações, denúncia, RevenueCat/IAP, wallet WS, push/FCM.
+Comunidade do fan club, telas filhas de settings, create post, comentários, fan letters, notificações, denúncia, RevenueCat/IAP, wallet WS, push/FCM.
 
-Continuar a partir da seção 4 do `TODO.md`.
-
-Ainda faltam no feed: `PostOptionsSheet`, share nativo, chips Live/Meet, `SubscriptionService` para unlock de membership (hoje o card exclusivo só olha `exclusiveLocked` + se o viewer é artista).
+Feed: `PostOptionsSheet`, share nativo, chips Live/Meet, `SubscriptionService` para unlock de membership.

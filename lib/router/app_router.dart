@@ -227,6 +227,41 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           message: 'Analytics artista entra no próximo corte.',
         ),
       ),
+      GoRoute(
+        path: Pages.createPost,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Criar post',
+          message: 'CreatePostScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.myPosts,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Meus posts',
+          message: 'MyPostsScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanClubCompose,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Post no fã clube',
+          message: 'FanClubComposeScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanLetterGallery,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Fan Letters',
+          message: 'FanLetterGalleryScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.demo,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Demo',
+          message: 'Só existe se o Expo ainda usar esta rota.',
+        ),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainShell(navigationShell: navigationShell);

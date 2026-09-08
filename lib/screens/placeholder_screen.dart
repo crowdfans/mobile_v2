@@ -1,5 +1,7 @@
+import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Tela temporária até a feature correspondente do Expo ser migrada.
 class PlaceholderScreen extends StatelessWidget {
@@ -23,6 +25,8 @@ class PlaceholderScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (context.canPop())
+                ToolbarBackButton(onPressed: () => context.pop()),
               Text(
                 title,
                 style: TextStyle(

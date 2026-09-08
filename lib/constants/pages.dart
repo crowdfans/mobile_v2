@@ -68,7 +68,8 @@ abstract final class Pages {
   static const profileArtistFanClub = '/me/settings/artist-fan-club';
 
   /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
-  static const publicPrefixes = ['/onboarding', '/login', '/register'];
+  /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
+  static const publicPrefixes = ['/onboarding', '/login', '/register', '/demo'];
 
   static const _expoAliases = <String, String>{
     '/pages/demo/DemoScreen': demo,

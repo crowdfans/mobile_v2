@@ -105,12 +105,12 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 5. Shell autenticado (tabs)
 
 - [x] 4 abas: Feed / Clubes / Explorar / Eu
-- [x] Botão `+` (hoje só snackbar)
+- [x] Botão `+` abre o `CreateMenuSheet`
 - [x] `BottomNavComponent` visual (ícones SVG + avatar do perfil)
-- [ ] `CreateMenuSheetComponent` (artista: post / story / etc.)
-- [ ] `create-menu-store`
-- [ ] `AppRootLayout` (init Purchases, fontes, tema)
-- [ ] `AppRootAuthGate` (paridade total com prefixos públicos do Expo)
+- [x] `CreateMenuSheetComponent` (artista: post / story / etc.)
+- [x] `create-menu-store` (`createMenuProvider`)
+- [x] `AppRootLayout` (fontes Inter + tema no `CrowdFansApp`; init Purchases fica no item 16)
+- [x] `AppRootAuthGate` (prefixos públicos do Expo + `/demo`; spinner de sessão ainda no go_router)
 
 ---
 
@@ -281,7 +281,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `InputComponent`
 - [x] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
 - [x] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`
-- [ ] `BottomSheetShellComponent` + `useBottomSheetShell`
+- [x] `BottomSheetShellComponent` + `useBottomSheetShell` (`BottomSheetShell` anima no próprio State)
 - [x] `alert.ts` (`showAlert` / `showConfirm`)
 
 ---
