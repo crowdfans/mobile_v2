@@ -138,16 +138,16 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 7. Explorar / busca
 
-- [ ] `SearchScreen` (`(main)/explore.tsx`)
+- [x] `SearchScreen` (`(main)/explore.tsx`)
 - [ ] `SearchRankingScreen`
 - [ ] `SearchArtistOptionsSheetComponent`
-- [ ] `SearchService` (`GET /api/v1/search/artists`, rankings)
+- [x] `SearchService` (`GET /api/v1/search/artists`, rankings)
 
 ---
 
 ## 8. Fan clubs
 
-- [ ] `FanClubsScreen` (`(main)/clubs.tsx`)
+- [x] `FanClubsScreen` (`(main)/clubs.tsx`)
 - [ ] Comunidade `fan-clubs/community/[artistId].tsx`
 - [ ] `FanClubComposeScreen`
 - [ ] `FanClubAboutScreen`
@@ -157,7 +157,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `FanClubService`
 - [ ] `FanClubViewerService`
 - [ ] `CommunityService` (`GET/POST /api/v1/community/posts`)
-- [ ] `FollowService` (`FOLLOWS`, `ARTIST_FOLLOW`)
+- [x] `FollowService` (`FOLLOWS`; follow/unfollow no perfil do artista)
 
 ---
 

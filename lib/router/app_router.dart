@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/pages.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
 import 'package:crowdfans/screens/login/fan_login_screen.dart';
@@ -16,6 +17,7 @@ import 'package:crowdfans/screens/register/fan/register_fan_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_success_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_terms_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart';
+import 'package:crowdfans/screens/search/search_screen.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,6 +125,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           message: 'Próximo na migração Expo → Flutter.',
         ),
       ),
+      GoRoute(
+        path: Pages.artistProfile,
+        builder: (context, state) => PlaceholderScreen(
+          title: state.pathParameters['artistId'] ?? 'Artista',
+          message: 'Perfil público do artista entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanClubCommunity,
+        builder: (context, state) => PlaceholderScreen(
+          title: 'Comunidade',
+          message: 'Feed do fan club entra no próximo corte.',
+        ),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainShell(navigationShell: navigationShell);
@@ -140,10 +156,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Pages.clubs,
-                builder: (context, state) => const PlaceholderScreen(
-                  title: 'Clubes',
-                  message: 'Fan clubs (`Pages.FAN_CLUBS`).',
-                ),
+                builder: (context, state) => const FanClubsScreen(),
               ),
             ],
           ),
@@ -151,10 +164,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Pages.explore,
-                builder: (context, state) => const PlaceholderScreen(
-                  title: 'Explorar',
-                  message: 'Busca de artistas (`Pages.SEARCH`).',
-                ),
+                builder: (context, state) => const SearchScreen(),
               ),
             ],
           ),
