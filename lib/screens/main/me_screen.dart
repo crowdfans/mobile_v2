@@ -1,8 +1,11 @@
 import 'package:crowdfans/components/toolbar/image_toolbar.dart';
+import 'package:crowdfans/components/toolbar/toolbar_menu_button.dart';
+import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Aba Perfil — dados do `GET /api/v1/profile` + logout.
 class MeScreen extends ConsumerWidget {
@@ -21,7 +24,11 @@ class MeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ImageToolbar(),
+              ImageToolbar(
+                trailing: ToolbarMenuButton(
+                  onPressed: () => context.push(Pages.profileSettings),
+                ),
+              ),
               const SizedBox(height: 16),
               Text(
                 profile?.displayName.isNotEmpty == true

@@ -7,6 +7,7 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
+import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_name_screen.dart';
@@ -137,6 +138,80 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => PlaceholderScreen(
           title: 'Comunidade',
           message: 'Feed do fan club entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileSettings,
+        builder: (context, state) => const ProfileSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileAccount,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Conta',
+          message: 'ProfileAccountScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileSecurity,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Segurança',
+          message: 'ProfileSecurityScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileAppearance,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Aparência',
+          message: 'ProfileAppearanceScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileNotifications,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Notificações',
+          message: 'ProfileNotificationsScreen entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileWallet,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Carteira',
+          message: 'Wallet + RevenueCat entram no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profilePro,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'CrowdFans Pro',
+          message: 'Paywall RevenueCat entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileMemberships,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Memberships',
+          message: 'SubscriptionService entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileReferral,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Indicações',
+          message: 'ReferralService entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileEarnings,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Ganhos',
+          message: 'Saque PIX artista entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileArtistInsights,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Insights',
+          message: 'Analytics artista entra no próximo corte.',
         ),
       ),
       StatefulShellRoute.indexedStack(

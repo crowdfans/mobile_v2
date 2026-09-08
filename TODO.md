@@ -175,7 +175,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 10. Settings (hub + cada tela)
 
-- [ ] `ProfileSettingsScreen` (hub)
+- [x] `ProfileSettingsScreen` (hub; telas filhas ainda placeholder)
 - [ ] `ProfileAccountScreen`
 - [ ] `ProfileAppearanceScreen` + `appearance-settings-store`
 - [ ] `ProfileInformationScreen` (termos / ajuda)
@@ -200,7 +200,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ArtistAudienceSettingsScreen`
 - [ ] `ArtistFanClubSettingsScreen`
 - [ ] `ProfileScreenHeaderComponent`
-- [ ] `ProfileSettingsSectionComponent`
+- [x] `ProfileSettingsSectionComponent`
 - [ ] `ProfileStateComponent`
 - [ ] `SidebarMenuComponent` / `SidebarSectionItemComponent` (se ainda usados)
 
