@@ -25,7 +25,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Splash / ícone CrowdFans (`flutter_launcher_icons` + `flutter_native_splash`, fundo `#208AEF`)
 - [x] Sentry (`observability/sentry.ts`) — `SentryService`, só inicializa se houver DSN
 - [x] Variáveis de ambiente: `.env` (chaves `EXPO_PUBLIC_*` do Expo) via `EnvService`
-- [ ] `flutterfire configure` no `crowdfans-prod` → `lib/firebase_options.dart` + `google-services.json` + `GoogleService-Info.plist` (CLI logado, token atual expirado)
+- [ ] `flutterfire configure` no `crowdfans-prod` → ver `PENDENCIA.md` (token Firebase CLI expirado)
 - [x] Copiar `assets/` do Expo (`images`, `icons`, `logo`, `special-icons`, `fonts`, `video`, `Stickers`, `data-usage`, ringtone)
 
 ---

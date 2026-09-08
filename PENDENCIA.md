@@ -1,0 +1,38 @@
+# Pendências — `mobile_v2`
+
+Itens do `TODO.md` que não dá para fechar agora. Revisar e destravar.
+
+## flutterfire configure (`crowdfans-prod`)
+
+**TODO:** `google-services.json` / `GoogleService-Info.plist` / `lib/firebase_options.dart`
+
+O `admin@crowdfans.app` aparece logado no CLI, mas o access token está expirado (refresh 400 → API 401). Sem reauth o `flutterfire configure` e o `firebase apps:list` não rodam.
+
+O que já está no repo:
+
+- `.firebaserc` aponta para `crowdfans-prod`
+- `package.json` com `firebase-tools`
+- Auth no Dart usa as chaves web do `.env` (`EXPO_PUBLIC_FIREBASE_*`)
+
+O que falta depois do login:
+
+```bash
+npx firebase-tools@latest login --reauth
+dart pub global activate flutterfire_cli
+dart pub global run flutterfire_cli:flutterfire configure \
+  --project=crowdfans-prod --platforms=ios,android,web --yes
+```
+
+Trocar `FirebaseService` para `DefaultFirebaseOptions.currentPlatform`.
+
+App Distribution só depois disso.
+
+Bundle Flutter atual: `com.crowdfans.crowdfans`. Expo: `com.crowdfans.crowdfansmobile`. Decidir se reusa o app nativo do Expo ou cria um novo no console.
+
+## Social login
+
+Comentado no Expo. **Não implementar** até o `mobile` ligar.
+
+## Cadastro: reCAPTCHA nativo
+
+OTP SMS no Flutter precisa de App Check / Play Integrity / APNs. Travado no mesmo `flutterfire configure` + SHA do Android no `crowdfans-prod`.

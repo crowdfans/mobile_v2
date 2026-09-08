@@ -1,0 +1,12 @@
+{
+  "name": "crowdfans-mobile-v2",
+  "private": true,
+  "scripts": {
+    "firebase": "firebase",
+    "firebase:login": "firebase login --reauth",
+    "flutterfire": "dart pub global activate flutterfire_cli && dart pub global run flutterfire_cli:flutterfire configure --project=crowdfans-prod --platforms=ios,android,web --yes"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.29.0"
+  }
+}

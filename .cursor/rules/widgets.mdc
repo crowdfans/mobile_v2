@@ -1,0 +1,21 @@
+---
+description: Widgets em lib/components — um arquivo por componente, pasta por domínio
+globs: lib/**/*.dart
+alwaysApply: true
+---
+
+# Componentes
+
+Todo widget com responsabilidade visual própria mora em `lib/components/<domínio>/<nome>.dart`.
+
+```dart
+// ❌ lib/screens/onboarding/presentation_screen.dart
+class _Slide extends StatelessWidget { ... }
+
+// ✅ lib/components/onboarding/presentation_slide.dart
+class PresentationSlide extends StatelessWidget { ... }
+```
+
+- Um widget público por arquivo. Nome do arquivo = snake_case da classe.
+- O `State` da **tela** (`_PresentationScreenState`) fica na tela. O `State` de um componente (`_PasswordFieldState`) fica no arquivo do componente.
+- Não deixar `lib/widgets/` solto na raiz: usar `lib/components/`.

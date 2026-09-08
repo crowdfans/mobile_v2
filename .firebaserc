@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "crowdfans-prod",
+    "prod": "crowdfans-prod"
+  }
+}

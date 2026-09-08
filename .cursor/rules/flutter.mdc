@@ -1,0 +1,14 @@
+---
+description: Padrões Flutter CrowdFans — telas, rotas, API, serviços, português
+alwaysApply: true
+---
+
+# Flutter CrowdFans
+
+Leia `AGENTS.md` neste repo. Migração a partir do Expo `../mobile`; não copiar `frontendapp/`.
+
+- Telas em `lib/screens/`. Estado da tela fica no arquivo da tela.
+- Widgets visuais em `lib/components/<domínio>/`, **um arquivo por widget**. Proibido `class _Foo extends StatelessWidget` dentro de tela (vale o `State` da tela).
+- Rotas: `Pages` em `lib/constants/pages.dart`. HTTP: `ApiUrls` + `HttpService`.
+- Serviço = facade (`AuthService.metodo`), não funções soltas.
+- Comentários, dartdoc e strings de UI em português.
