@@ -139,8 +139,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 7. Explorar / busca
 
 - [x] `SearchScreen` (`(main)/explore.tsx`)
-- [ ] `SearchRankingScreen`
-- [ ] `SearchArtistOptionsSheetComponent`
+- [x] `SearchRankingScreen`
+- [x] `SearchArtistOptionsSheetComponent`
 - [x] `SearchService` (`GET /api/v1/search/artists`, rankings)
 
 ---

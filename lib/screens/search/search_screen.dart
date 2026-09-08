@@ -1,5 +1,7 @@
 import 'package:crowdfans/components/input/app_text_field.dart';
-import 'package:crowdfans/components/post/post_avatar.dart';
+import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
+import 'package:crowdfans/components/search/search_artist_rank_row.dart';
+import 'package:crowdfans/components/search/search_ranking_card.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/search_service.dart';
@@ -15,25 +17,27 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  var _artists = <ArtistSearchItem>[];
+  var _topArtists = <ArtistSearchItem>[];
+  var _results = <ArtistSearchItem>[];
+  var _query = '';
   var _loading = true;
   String? _error;
-  final _kind = 'fan-clubs';
+  ArtistSearchItem? _selected;
 
   @override
   void initState() {
     super.initState();
-    handleLoadRanking();
+    handleLoadTop();
   }
 
-  Future<void> handleLoadRanking() async {
+  Future<void> handleLoadTop() async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      final data = await SearchService.rankArtists(_kind);
-      setState(() => _artists = data.artists);
+      final data = await SearchService.rankArtists('fan-clubs', limit: 3);
+      setState(() => _topArtists = data.artists);
     } catch (_) {
       setState(() => _error = 'Não foi possível carregar o ranking.');
     } finally {
@@ -44,15 +48,16 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> handleSearch(String query) async {
+    _query = query;
     if (query.trim().isEmpty) {
-      await handleLoadRanking();
+      setState(() => _results = []);
       return;
     }
     setState(() => _loading = true);
     try {
       final data = await SearchService.searchArtists(query);
       setState(() {
-        _artists = data.artists;
+        _results = data.artists;
         _error = null;
       });
     } catch (_) {
@@ -64,71 +69,109 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void handleOpenRanking(String kind) {
+    context.push('${Pages.searchRanking}?kind=$kind');
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final searching = _query.trim().isNotEmpty;
+    final list = searching ? _results : _topArtists;
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Explorar',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Explorar',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      AppTextField(
+                        hint: 'Buscar artistas',
+                        onChanged: handleSearch,
+                      ),
+                    ],
+                  ),
+                ),
+                if (!searching)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: Row(
+                      children: [
+                        SearchRankingCard(
+                          title: 'Top Fã Clubes',
+                          subtitle: 'Mais seguidores',
+                          onPressed: () => handleOpenRanking('fan-clubs'),
+                        ),
+                        const SizedBox(width: 8),
+                        SearchRankingCard(
+                          title: 'Top Ativos',
+                          subtitle: 'Atividade nas últimas 24h',
+                          onPressed: () => handleOpenRanking('active'),
+                        ),
+                        const SizedBox(width: 8),
+                        SearchRankingCard(
+                          title: 'Top Engajados',
+                          subtitle: 'Posts recentes',
+                          onPressed: () => handleOpenRanking('engaged'),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  AppTextField(
-                    hint: 'Buscar artistas',
-                    onChanged: (value) {
-                      handleSearch(value);
-                    },
-                  ),
-                ],
-              ),
-            ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(_error!, style: TextStyle(color: colors.danger)),
-              ),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _artists.length,
-                      itemBuilder: (context, index) {
-                        final artist = _artists[index];
-                        return ListTile(
-                          leading: PostAvatar(url: artist.avatarUri, size: 48),
-                          title: Text(artist.name),
-                          subtitle: Text(
-                            artist.membersLabel.isEmpty
-                                ? artist.handle
-                                : artist.membersLabel,
-                          ),
-                          onTap: () => context.push(
-                            Pages.artistProfile.replaceAll(
-                              ':artistId',
-                              artist.id,
-                            ),
-                          ),
-                        );
-                      },
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      _error!,
+                      style: TextStyle(color: colors.danger),
                     ),
+                  ),
+                Expanded(
+                  child: _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                          itemCount: list.length,
+                          itemBuilder: (context, index) {
+                            final artist = list[index];
+                            return SearchArtistRankRow(
+                              artist: artist,
+                              onPressed: () => context.push(
+                                Pages.artistProfile.replaceAll(
+                                  ':artistId',
+                                  artist.id,
+                                ),
+                              ),
+                              onPressMore: () {
+                                setState(() => _selected = artist);
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          SearchArtistOptionsSheet(
+            visible: _selected != null,
+            artist: _selected,
+            onClose: () => setState(() => _selected = null),
+          ),
+        ],
       ),
     );
   }

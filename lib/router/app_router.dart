@@ -22,6 +22,7 @@ import 'package:crowdfans/screens/register/artist/register_artist_email_screen.d
 import 'package:crowdfans/screens/register/artist/register_artist_otp_screen.dart';
 import 'package:crowdfans/screens/register/artist/register_artist_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart';
+import 'package:crowdfans/screens/search/search_ranking_screen.dart';
 import 'package:crowdfans/screens/search/search_screen.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/foundation.dart';
@@ -260,6 +261,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PlaceholderScreen(
           title: 'Comentários',
           message: 'CommentService entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.searchRanking,
+        builder: (context, state) => SearchRankingScreen(
+          kind: state.uri.queryParameters['kind'] ?? 'fan-clubs',
         ),
       ),
       GoRoute(

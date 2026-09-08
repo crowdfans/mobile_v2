@@ -9,6 +9,8 @@ class ArtistSearchItem {
     required this.avatarUri,
     required this.memberCount,
     required this.membersLabel,
+    this.rank,
+    this.rankingValueLabel,
   });
 
   final String id;
@@ -17,6 +19,8 @@ class ArtistSearchItem {
   final String avatarUri;
   final int memberCount;
   final String membersLabel;
+  final int? rank;
+  final String? rankingValueLabel;
 
   factory ArtistSearchItem.fromJson(Map<String, dynamic> json) {
     return ArtistSearchItem(
@@ -26,6 +30,8 @@ class ArtistSearchItem {
       avatarUri: json['avatarUri'] as String? ?? '',
       memberCount: (json['memberCount'] as num?)?.toInt() ?? 0,
       membersLabel: json['membersLabel'] as String? ?? '',
+      rank: (json['rank'] as num?)?.toInt(),
+      rankingValueLabel: json['rankingValueLabel'] as String?,
     );
   }
 }
@@ -58,8 +64,11 @@ abstract final class SearchService {
     );
   }
 
-  static Future<ArtistSearchResponse> rankArtists(String kind) {
-    final params = Uri(queryParameters: {'kind': kind, 'limit': '100'});
+  static Future<ArtistSearchResponse> rankArtists(
+    String kind, {
+    int limit = 100,
+  }) {
+    final params = Uri(queryParameters: {'kind': kind, 'limit': '$limit'});
     return HttpService.request(
       '${ApiUrls.searchArtistRankings}?${params.query}',
       parse: ArtistSearchResponse.fromJson,
