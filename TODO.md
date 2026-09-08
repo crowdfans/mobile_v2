@@ -35,7 +35,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Árvore copiada de `../mobile/assets` (mesmos paths: `assets/images/...`, `assets/icons/...`)
 - [x] Ligar SVGs com `flutter_svg` (bottom nav; toolbar/feed/settings nas telas de cada domínio)
 - [x] Ícone / splash / favicon nativos (`assets/images/icon.png`, `splash-icon.png`, `images/common/favicon.png`)
-- [ ] Logo `assets/logo/crowdfans-logo.svg` na toolbar
+- [x] Logo `assets/logo/crowdfans-logo.svg` na toolbar
 - [x] Fonte Inter local (`assets/fonts/inter/InterVariable.ttf`) no `ThemeData`
 - [ ] Vídeos de onboarding `assets/video/first.mp4` / `second.mp4` / `third.mp4`
 - [ ] Stickers (`assets/Stickers/`) quando fan letters / compose pedirem
@@ -59,10 +59,10 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `ArtistLoginScreen`
 - [x] `CredentialsFormComponent`
 - [x] `LoginTextComponent` (label gradiente)
-- [ ] `RegisterTopBarComponent` (voltar com o mesmo visual do Expo)
-- [ ] Recuperação de senha de verdade (`ProfileSecurityService.requestPasswordReset` / Firebase `sendPasswordResetEmail`)
-- [ ] `mapLoginError` completo (rede + URL da API no debug)
-- [ ] `LoginLayout`
+- [x] `RegisterTopBarComponent` (voltar com o mesmo visual do Expo)
+- [x] Recuperação de senha de verdade (`ProfileSecurityService.requestPasswordReset` / Firebase `sendPasswordResetEmail`)
+- [x] `mapLoginError` completo (rede + URL da API no debug)
+- [x] `LoginLayout`
 - [ ] Social login (comentado no Expo — **não** implementar até o Expo ligar)
 
 ---
@@ -279,10 +279,10 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `AppButtonComponent` / `ButtonComponent`
 - [x] `AppIconButtonComponent`
 - [ ] `InputComponent`
-- [ ] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
-- [ ] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`
+- [x] `ToolbarBackButtonComponent` / `ToolbarMenuButtonComponent`
+- [x] `StickyToolbarComponent` / `ImageToolbarComponent` / `TextToolbar`
 - [ ] `BottomSheetShellComponent` + `useBottomSheetShell`
-- [ ] `alert.ts` (`showAlert` / `showConfirm`)
+- [x] `alert.ts` (`showAlert` / `showConfirm`)
 
 ---
 

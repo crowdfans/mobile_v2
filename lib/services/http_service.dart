@@ -31,7 +31,9 @@ abstract final class HttpService {
     final url = path.startsWith('http') ? path : '${apiBaseUrl()}$path';
     if (kDebugMode) {
       final debug = apiConfigDebug();
-      debugPrint('[http] ${method.name.toUpperCase()} $url (api:${debug.mode})');
+      debugPrint(
+        '[http] ${method.name.toUpperCase()} $url (api:${debug.mode})',
+      );
     }
 
     late http.Response response;

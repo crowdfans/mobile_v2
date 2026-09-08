@@ -1,3 +1,4 @@
+import 'package:crowdfans/components/toolbar/image_toolbar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class MeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const ImageToolbar(),
+              const SizedBox(height: 16),
               Text(
                 profile?.displayName.isNotEmpty == true
                     ? profile!.displayName
@@ -35,8 +38,8 @@ class MeScreen extends ConsumerWidget {
                 profile == null
                     ? 'Perfil ainda não carregou.'
                     : profile.isArtist
-                        ? 'Conta de artista'
-                        : 'Conta Superfã',
+                    ? 'Conta de artista'
+                    : 'Conta Superfã',
                 style: TextStyle(fontSize: 16, color: colors.textSecondary),
               ),
               const Spacer(),

@@ -138,20 +138,23 @@ class CrowdFansTheme extends ThemeExtension<CrowdFansTheme> {
 
 /// Material 3 alinhado à paleta Superfã.
 ThemeData buildCrowdFansTheme(Brightness brightness) {
-  final colors = brightness == Brightness.dark ? AppColors.dark : AppColors.light;
+  final colors = brightness == Brightness.dark
+      ? AppColors.dark
+      : AppColors.light;
   final base = ThemeData(
     useMaterial3: true,
     brightness: brightness,
     fontFamily: 'Inter',
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: colors.primary,
-      brightness: brightness,
-    ).copyWith(
-      surface: colors.surface,
-      primary: colors.primary,
-      onPrimary: colors.buttonPrimaryText,
-      error: colors.danger,
-    ),
+    colorScheme:
+        ColorScheme.fromSeed(
+          seedColor: colors.primary,
+          brightness: brightness,
+        ).copyWith(
+          surface: colors.surface,
+          primary: colors.primary,
+          onPrimary: colors.buttonPrimaryText,
+          error: colors.danger,
+        ),
     scaffoldBackgroundColor: colors.background,
   );
   return base.copyWith(extensions: [CrowdFansTheme(colors: colors)]);

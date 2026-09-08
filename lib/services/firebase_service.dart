@@ -1,3 +1,4 @@
+import 'package:crowdfans/services/api_config.dart';
 import 'package:crowdfans/services/env_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -64,6 +65,13 @@ String mapLoginError(Object error) {
   final message = error.toString();
   if (RegExp('user not registered', caseSensitive: false).hasMatch(message)) {
     return 'Conta existe no Firebase, mas ainda não está registrada no CrowdFans.';
+  }
+  if (RegExp(
+    'Falha de rede|Tempo de resposta|Failed to fetch|Network request failed|SocketException|ClientException',
+    caseSensitive: false,
+  ).hasMatch(message)) {
+    final debug = apiConfigDebug();
+    return 'API inacessível (${debug.mode}): ${debug.baseUrl}\n$message';
   }
   if (kDebugMode) {
     return message;

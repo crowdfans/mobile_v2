@@ -99,5 +99,6 @@ class AuthSessionNotifier extends Notifier<AuthSession> {
   }
 }
 
-final authSessionProvider =
-    NotifierProvider<AuthSessionNotifier, AuthSession>(AuthSessionNotifier.new);
+final authSessionProvider = NotifierProvider<AuthSessionNotifier, AuthSession>(
+  AuthSessionNotifier.new,
+);

@@ -39,8 +39,7 @@ class _PresentationScreenState extends State<PresentationScreen> {
   @override
   Widget build(BuildContext context) {
     final darkText = _index == 1;
-    final textColor =
-        darkText ? AppPalette.platinum950 : AppPalette.platinum50;
+    final textColor = darkText ? AppPalette.platinum950 : AppPalette.platinum50;
 
     return Scaffold(
       body: Stack(
