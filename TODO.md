@@ -163,12 +163,12 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 9. Perfil (aba Eu + públicos)
 
-- [ ] `ProfileScreen` (hoje Flutter só tem nome + logout)
+- [x] `ProfileScreen` (aba Eu: identidade, stats, posts; públicos ainda faltam)
 - [ ] Perfil público `profile/[fanHandle].tsx`
 - [ ] Fan score público `profile/fan-score/[fanHandle].tsx`
 - [ ] `ProfileArtistsScreen` (artistas seguidos)
 - [ ] Perfil de artista `artists/[artistId].tsx`
-- [ ] `ProfileService` completo (`overview`, `social`, posts por UID, update)
+- [x] `ProfileService` completo (`overview`/`social` ainda nas telas públicas; posts por UID + update já entram)
 - [ ] Store `current-viewer-profile-store`
 
 ---
@@ -200,8 +200,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ArtistAudienceSettingsScreen`
 - [ ] `ArtistFanClubSettingsScreen`
 - [ ] `ProfileScreenHeaderComponent`
+- [x] `ProfileScreenHeaderComponent`
 - [x] `ProfileSettingsSectionComponent`
-- [ ] `ProfileStateComponent`
+- [x] `ProfileStateComponent`
 - [ ] `SidebarMenuComponent` / `SidebarSectionItemComponent` (se ainda usados)
 
 ---
