@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/pages.dart';
+import 'package:crowdfans/screens/artists/artist_profile_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
@@ -143,9 +144,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.artistProfile,
-        builder: (context, state) => PlaceholderScreen(
-          title: state.pathParameters['artistId'] ?? 'Artista',
-          message: 'Perfil público do artista entra no próximo corte.',
+        builder: (context, state) => ArtistProfileScreen(
+          artistId: state.pathParameters['artistId'] ?? '',
         ),
       ),
       GoRoute(

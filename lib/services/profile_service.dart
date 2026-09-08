@@ -77,6 +77,13 @@ abstract final class ProfileService {
     );
   }
 
+  static Future<Profile> getProfileByUserUid(String userUid) {
+    return HttpService.request<Profile>(
+      ApiUrls.withParams(ApiUrls.profileByUid, {'userUID': userUid}),
+      parse: (json) => Profile.fromJson(json! as Map<String, dynamic>),
+    );
+  }
+
   static Future<void> updateMyProfile({
     String? displayName,
     String? name,

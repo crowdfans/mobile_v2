@@ -167,7 +167,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] Perfil público `profile/[fanHandle].tsx`
 - [ ] Fan score público `profile/fan-score/[fanHandle].tsx`
 - [ ] `ProfileArtistsScreen` (artistas seguidos)
-- [ ] Perfil de artista `artists/[artistId].tsx`
+- [x] Perfil de artista `artists/[artistId].tsx` (follow, membership, posts; fan letters ainda placeholder)
 - [x] `ProfileService` completo (`overview`/`social` ainda nas telas públicas; posts por UID + update já entram)
 - [ ] Store `current-viewer-profile-store`
 

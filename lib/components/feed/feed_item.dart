@@ -15,12 +15,14 @@ class FeedItem extends StatelessWidget {
     required this.canAccessExclusive,
     this.onVoteApplied,
     this.onPressOptions,
+    this.onPressUnlock,
   });
 
   final FeedPost post;
   final bool canAccessExclusive;
   final ValueChanged<VoteResult>? onVoteApplied;
   final VoidCallback? onPressOptions;
+  final VoidCallback? onPressUnlock;
 
   void handleOpenArtist(BuildContext context) {
     final artistId = post.artistId?.trim();
@@ -41,7 +43,7 @@ class FeedItem extends StatelessWidget {
       return ExclusiveFeedCard(
         post: post,
         unlocked: unlocked,
-        onPressUnlock: () => handleOpenArtist(context),
+        onPressUnlock: onPressUnlock ?? () => handleOpenArtist(context),
         onPressOpenProfile: () => handleOpenArtist(context),
         onPressOpenComments: unlocked
             ? (postId) => handleOpenComments(context, postId)
