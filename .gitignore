@@ -50,3 +50,5 @@ app.*.map.json
 # Ambiente local (chaves públicas de client ficam no .env.example)
 .env
 .env.local
+firebase-debug.log
+node_modules/

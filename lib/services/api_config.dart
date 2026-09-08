@@ -1,28 +1,32 @@
+import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const _defaultDevApi = 'https://crowdfans-app-dev-3zqbt.ondigitalocean.app';
-
-String _env(String key, [String fallback = '']) {
-  return dotenv.maybeGet(key)?.trim() ?? fallback;
-}
+const _defaultProdApi = 'https://crowdfans-app-prod.ondigitalocean.app';
 
 String _cleanUrl(String value) => value.replaceAll(RegExp(r'/$'), '');
 
 /// Resolve a base da API (mesmo critério do Expo `api-config.ts`).
 String apiBaseUrl() {
-  final forced = _cleanUrl(_env('API_BASE_URL'));
+  final forced = _cleanUrl(EnvService.get('API_BASE_URL'));
   if (forced.isNotEmpty) {
     return _rewriteLocalhost(forced);
   }
 
-  final mode = _env('API_MODE', 'digitalocean').toLowerCase();
+  final mode = EnvService.get('API_MODE', 'digitalocean').toLowerCase();
+  final projectId = EnvService.get('FIREBASE_PROJECT_ID');
+  final defaultDo = projectId == 'crowdfans-prod'
+      ? _defaultProdApi
+      : _defaultDevApi;
+
   final digitalOcean = _cleanUrl(
-    _env('API_DIGITALOCEAN_BASE_URL', _defaultDevApi),
+    EnvService.get('API_DIGITALOCEAN_BASE_URL', defaultDo),
   );
 
   if (mode == 'local') {
-    final local = _cleanUrl(_env('API_LOCAL_BASE_URL', 'http://localhost:8080'));
+    final local = _cleanUrl(
+      EnvService.get('API_LOCAL_BASE_URL', 'http://localhost:8080'),
+    );
     final resolved = _rewriteLocalhost(local);
     if (!kIsWeb &&
         (resolved.contains('localhost') || resolved.contains('127.0.0.1'))) {
@@ -38,7 +42,7 @@ String apiBaseUrl() {
 ({String baseUrl, String mode}) apiConfigDebug() {
   return (
     baseUrl: apiBaseUrl(),
-    mode: _env('API_MODE', 'digitalocean').toLowerCase(),
+    mode: EnvService.get('API_MODE', 'digitalocean').toLowerCase(),
   );
 }
 

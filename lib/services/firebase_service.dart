@@ -1,39 +1,18 @@
+import 'package:crowdfans/services/env_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Firebase Auth (mesmo projeto `crowdfans-dev` do Expo).
+/// Firebase Auth no projeto `crowdfans-prod`.
+///
+/// Hoje: opções do `.env` (as mesmas `EXPO_PUBLIC_FIREBASE_*` do Expo).
+/// Depois do `flutterfire configure`: trocar para `DefaultFirebaseOptions.currentPlatform`.
 abstract final class FirebaseService {
   static FirebaseAuth get auth => FirebaseAuth.instance;
 
   static Future<void> initialize() async {
-    final options = FirebaseOptions(
-      apiKey: _env(
-        'FIREBASE_API_KEY',
-        'AIzaSyDcIz2sZ2S7uf6bJm-uC0eNlYlnorFEyv4',
-      ),
-      authDomain: _env(
-        'FIREBASE_AUTH_DOMAIN',
-        'crowdfans-dev-e9703.firebaseapp.com',
-      ),
-      projectId: _env('FIREBASE_PROJECT_ID', 'crowdfans-dev-e9703'),
-      storageBucket: _env(
-        'FIREBASE_STORAGE_BUCKET',
-        'crowdfans-dev-e9703.firebasestorage.app',
-      ),
-      messagingSenderId: _env(
-        'FIREBASE_MESSAGING_SENDER_ID',
-        '831877043516',
-      ),
-      appId: _env(
-        'FIREBASE_APP_ID',
-        '1:831877043516:web:ff725e9f6c5b0a5a2a7a39',
-      ),
-    );
-
     if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(options: options);
+      await Firebase.initializeApp(options: _fromEnv());
     }
     await auth.setLanguageCode('pt-BR');
   }
@@ -46,12 +25,23 @@ abstract final class FirebaseService {
     return user.getIdToken(forceRefresh);
   }
 
-  static String _env(String key, String fallback) {
-    final value = dotenv.maybeGet(key)?.trim();
-    if (value == null || value.isEmpty) {
-      return fallback;
-    }
-    return value;
+  static FirebaseOptions _fromEnv() {
+    final appId = EnvService.require('FIREBASE_APP_ID');
+    final senderFromAppId = RegExp(r'^1:(\d+):').firstMatch(appId)?.group(1);
+    final sender = EnvService.maybe('FIREBASE_MESSAGING_SENDER_ID');
+    final messagingSenderId =
+        senderFromAppId ??
+        sender ??
+        EnvService.require('FIREBASE_MESSAGING_SENDER_ID');
+
+    return FirebaseOptions(
+      apiKey: EnvService.require('FIREBASE_API_KEY'),
+      authDomain: EnvService.require('FIREBASE_AUTH_DOMAIN'),
+      projectId: EnvService.require('FIREBASE_PROJECT_ID'),
+      storageBucket: EnvService.require('FIREBASE_STORAGE_BUCKET'),
+      messagingSenderId: messagingSenderId,
+      appId: appId,
+    );
   }
 }
 
@@ -63,8 +53,7 @@ String mapLoginError(Object error) {
       'invalid-credential' ||
       'wrong-password' ||
       'user-not-found' ||
-      'invalid-login-credentials' =>
-        'E-mail ou senha inválidos.',
+      'invalid-login-credentials' => 'E-mail ou senha inválidos.',
       'too-many-requests' =>
         'Muitas tentativas. Aguarde um pouco e tente de novo.',
       'network-request-failed' =>

@@ -23,7 +23,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] Completar `ApiUrls` com **todos** os endpoints de `mobile/src/api/api-url.ts` — `lib/api/api_urls.dart` + `withParams`
 - [x] Deep links / scheme `mobile` (Expo `app.json`) — iOS URL types + Android intent-filter + aliases Expo em `Pages`
 - [x] Splash / ícone CrowdFans (`flutter_launcher_icons` + `flutter_native_splash`, fundo `#208AEF`)
-- [ ] Sentry (`observability/sentry.ts`)
+- [x] Sentry (`observability/sentry.ts`) — `SentryService`, só inicializa se houver DSN
 - [x] Variáveis de ambiente: `.env` (chaves `EXPO_PUBLIC_*` do Expo) via `EnvService`
 - [ ] `flutterfire configure` no `crowdfans-prod` → `lib/firebase_options.dart` + `google-services.json` + `GoogleService-Info.plist` (CLI logado, token atual expirado)
 - [x] Copiar `assets/` do Expo (`images`, `icons`, `logo`, `special-icons`, `fonts`, `video`, `Stickers`, `data-usage`, ringtone)
