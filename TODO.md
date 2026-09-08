@@ -116,23 +116,23 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 6. Feed / Home
 
-- [ ] `HomeScreen` (`(main)/feed.tsx` reexporta esta)
-- [ ] `GET /api/v1/home` (paginação, pull-to-refresh, `hasMore`)
-- [ ] `FeedComponent`
-- [ ] `PostCardComponent`
-- [ ] `ExclusiveFeedCardComponent`
+- [x] `HomeScreen` (`(main)/feed.tsx` reexporta esta)
+- [x] `GET /api/v1/home` (paginação, pull-to-refresh, `hasMore`)
+- [x] `FeedComponent` (`FeedItem`)
+- [x] `PostCardComponent`
+- [x] `ExclusiveFeedCardComponent`
 - [ ] `ExclusiveFeedCardLockedContentComponent`
 - [ ] `ExclusivePostMetaRowComponent`
-- [ ] `VoteControlComponent`
+- [x] `VoteControlComponent` (UI; persistência no item `VoteService`)
 - [ ] `PostOptionsSheetComponent`
 - [ ] `PostShareSheetComponent`
 - [ ] `post-share.ts` (share nativo)
-- [ ] `StoriesRowComponent`
-- [ ] `StoryItemComponent`
+- [x] `StoriesRowComponent`
+- [x] `StoryItemComponent`
 - [ ] `StoryLiveItemComponent` (chip; tela Live ainda não existe no Expo)
 - [ ] `StoryMeetAndGreetItemComponent` (chip; Meet ainda não existe no Expo)
 - [ ] Unlock de post exclusivo (`exclusive-content-access.ts` + `SubscriptionService`)
-- [ ] Model `FeedPost` / `HomeFeedDto` / `StoryItem`
+- [x] Model `FeedPost` / `HomeFeedDto` / `StoryItem`
 
 ---
 
@@ -263,7 +263,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 - [ ] `VoteService` (post e comentário)
 - [ ] `SubscriptionService` (assinar com Jam Coins, 402 saldo)
-- [ ] Helper `canAccessExclusivePost`
+- [x] Helper `canAccessExclusivePost` (memberships completos no `SubscriptionService`)
 
 ---
 

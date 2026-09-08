@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/pages.dart';
+import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
 import 'package:crowdfans/screens/login/fan_login_screen.dart';
 import 'package:crowdfans/screens/main/main_shell.dart';
@@ -131,11 +132,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Pages.home,
-                builder: (context, state) => const PlaceholderScreen(
-                  title: 'Feed',
-                  message:
-                      'Home do Expo (`Pages.HOME`). Próximo: posts + stories.',
-                ),
+                builder: (context, state) => const HomeScreen(),
               ),
             ],
           ),

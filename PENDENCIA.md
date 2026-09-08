@@ -37,4 +37,6 @@ Comentado no Expo. **Não implementar** até o `mobile` ligar.
 
 OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — bloqueado até o `flutterfire configure` e um slot web equivalente ao `FirebaseRecaptchaVerifierModal`.
 
-Avatar no cadastro Superfã: bio entra agora; image picker fica com `MediaService`.
+## Feed — sheets e unlock
+
+Ainda faltam no feed: `PostOptionsSheet`, share nativo, chips Live/Meet, `SubscriptionService` para unlock de membership (hoje o card exclusivo só olha `exclusiveLocked` + se o viewer é artista).
