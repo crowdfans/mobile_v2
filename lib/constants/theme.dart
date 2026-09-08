@@ -15,12 +15,15 @@ abstract final class AppPalette {
   static const purple950 = Color(0xFF2C0B6A);
   static const blue400 = Color(0xFF48C7FF);
   static const blue700 = Color(0xFF0075FF);
+  static const green100 = Color(0xFFCBFFC5);
   static const green400 = Color(0xFF24FB20);
+  static const green500 = Color(0xFF00DD00);
   static const green700 = Color(0xFF028907);
   static const yellow400 = Color(0xFFFFE50D);
   static const yellow500 = Color(0xFFFFD600);
   static const orange600 = Color(0xFFFF7A00);
   static const orange700 = Color(0xFFCC5802);
+  static const red100 = Color(0xFFFFE1DF);
   static const red400 = Color(0xFFFF6C64);
   static const red500 = Color(0xFFFF2C20);
   static const platinum50 = Color(0xFFF8FAFC);

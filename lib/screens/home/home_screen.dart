@@ -7,6 +7,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/services/home_feed_service.dart';
+import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _error;
   FeedPost? _optionsPost;
   FeedPost? _sharePost;
+  var _subscribedUids = <String>{};
+  var _subscribedNames = <String>{};
 
   @override
   void initState() {
@@ -43,6 +46,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     try {
       final data = await HomeFeedService.load(page: page);
+      if (!append) {
+        try {
+          final subscriptions = await SubscriptionService.listSubscriptions();
+          final uids = <String>{};
+          final names = <String>{};
+          for (final item in subscriptions) {
+            if (!item.isActive) {
+              continue;
+            }
+            uids.add(item.artistUid);
+            final nameKey = normalizeExclusiveIdentity(item.artistName);
+            if (nameKey.isNotEmpty) {
+              names.add(nameKey);
+            }
+          }
+          _subscribedUids = uids;
+          _subscribedNames = names;
+        } catch (_) {
+          _subscribedUids = {};
+          _subscribedNames = {};
+        }
+      }
       setState(() {
         _page = page;
         _hasMore = data.hasMore;
@@ -80,8 +105,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final viewerIsArtist =
-        ref.watch(authSessionProvider).profile?.isArtist ?? false;
+    final viewer = ref.watch(authSessionProvider).profile;
+    final exclusiveContext = ExclusiveAccessContext(
+      subscribedArtistUids: _subscribedUids,
+      subscribedArtistNames: _subscribedNames,
+      viewerDisplayName: viewer?.displayName ?? viewer?.name,
+      viewerIsArtist: viewer?.isArtist ?? false,
+    );
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -145,7 +175,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 post: post,
                                 canAccessExclusive: canAccessExclusivePost(
                                   post,
-                                  viewerIsArtist: viewerIsArtist,
+                                  exclusiveContext,
                                 ),
                                 onVoteApplied: (result) {
                                   setState(() {

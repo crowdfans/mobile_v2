@@ -31,6 +31,7 @@ class FeedPost {
     this.videoThumbnailUri,
     this.isExclusive = false,
     this.exclusiveLocked = false,
+    this.membershipLocked = false,
     this.myVote = 0,
   });
 
@@ -47,6 +48,7 @@ class FeedPost {
   final String? videoThumbnailUri;
   final bool isExclusive;
   final bool exclusiveLocked;
+  final bool membershipLocked;
   final int votes;
   final int myVote;
   final int comments;
@@ -67,6 +69,7 @@ class FeedPost {
       videoThumbnailUri: videoThumbnailUri,
       isExclusive: isExclusive,
       exclusiveLocked: exclusiveLocked ?? this.exclusiveLocked,
+      membershipLocked: membershipLocked,
       votes: votes ?? this.votes,
       myVote: myVote ?? this.myVote,
       comments: comments,
@@ -92,6 +95,7 @@ class FeedPost {
       videoThumbnailUri: json['videoThumbnailUri'] as String?,
       isExclusive: json['isExclusive'] == true,
       exclusiveLocked: json['exclusiveLocked'] == true,
+      membershipLocked: json['membershipLocked'] == true,
       votes: (json['votes'] as num?)?.toInt() ?? 0,
       myVote: (json['myVote'] as num?)?.toInt() ?? 0,
       comments: (json['comments'] as num?)?.toInt() ?? 0,

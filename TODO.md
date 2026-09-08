@@ -129,9 +129,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `post-share.ts` (share nativo via `share_plus`)
 - [x] `StoriesRowComponent`
 - [x] `StoryItemComponent`
-- [ ] `StoryLiveItemComponent` (chip; tela Live ainda não existe no Expo)
-- [ ] `StoryMeetAndGreetItemComponent` (chip; Meet ainda não existe no Expo)
-- [ ] Unlock de post exclusivo (`exclusive-content-access.ts` + `SubscriptionService`)
+- [x] `StoryLiveItemComponent` (chip visual; tap sem tela — ⛔ no Expo)
+- [x] `StoryMeetAndGreetItemComponent` (chip visual; tap sem tela — ⛔ no Expo)
+- [x] Unlock de post exclusivo (`SubscriptionService.list` + `canAccessExclusivePost`; assinar no perfil do artista)
 - [x] Model `FeedPost` / `HomeFeedDto` / `StoryItem`
 
 ---
@@ -262,7 +262,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 17. Votos e conteúdo exclusivo
 
 - [x] `VoteService` (post e comentário; UI de comentário entra na seção 12)
-- [ ] `SubscriptionService` (assinar com Jam Coins, 402 saldo)
+- [x] `SubscriptionService` (assinar com Jam Coins, 402 saldo — UI de compra no perfil do artista)
 - [x] Helper `canAccessExclusivePost` (memberships completos no `SubscriptionService`)
 
 ---
