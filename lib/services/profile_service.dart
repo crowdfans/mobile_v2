@@ -70,6 +70,18 @@ class UserProfilePost {
 
 /// Perfil do usuário autenticado e posts por UID.
 abstract final class ProfileService {
+  /// Normaliza handle de fã para comparação / navegação (`fan/username`).
+  static String normalizeFanHandle(String value) {
+    var handle = value.trim().toLowerCase().replaceFirst(RegExp(r'^@'), '');
+    if (handle.isEmpty) {
+      return '';
+    }
+    if (handle.startsWith('fan/')) {
+      return handle;
+    }
+    return 'fan/${handle.replaceAll(RegExp(r'\s+'), '')}';
+  }
+
   static Future<Profile> getMyProfile() {
     return HttpService.request<Profile>(
       ApiUrls.profile,

@@ -218,9 +218,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 12. Comentários
 
-- [ ] Tela `comments/[postId].tsx`
-- [ ] `CommentService` (listar, criar, editar, deletar, votar)
-- [ ] `CommentGifService`
+- [x] Tela `comments/[postId].tsx` (`CommentsScreen`)
+- [x] `CommentService` (listar, criar, editar, deletar, votar)
+- [x] `CommentGifService` (Tenor; chave `TENOR_API_KEY` / fallback do Expo)
 
 ---
 

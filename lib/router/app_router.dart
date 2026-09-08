@@ -1,5 +1,6 @@
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/screens/artists/artist_profile_screen.dart';
+import 'package:crowdfans/screens/comments/comments_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
@@ -158,6 +159,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.fanProfile,
+        builder: (context, state) => PlaceholderScreen(
+          title: 'Perfil',
+          message:
+              'Perfil público do superfã (@${state.pathParameters['fanHandle'] ?? ''}) entra no próximo corte.',
+        ),
+      ),
+      GoRoute(
         path: Pages.profileSettings,
         builder: (context, state) => const ProfileSettingsScreen(),
       ),
@@ -255,10 +264,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.comments,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Comentários',
-          message: 'CommentService entra no próximo corte.',
-        ),
+        builder: (context, state) =>
+            CommentsScreen(postId: state.pathParameters['postId'] ?? ''),
       ),
       GoRoute(
         path: Pages.searchRanking,
