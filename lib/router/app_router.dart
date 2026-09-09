@@ -19,6 +19,7 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/notifications/notifications_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
+import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
 import 'package:crowdfans/screens/profile/artist_audience_settings_screen.dart';
@@ -349,6 +350,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.myPosts,
         builder: (context, state) => const MyPostsScreen(),
+      ),
+      GoRoute(
+        path: Pages.liveUnavailable,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Live',
+          message:
+              'Live ainda não está disponível no app. Em breve você poderá criar e transmitir por aqui.',
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetUnavailable,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Meet & Greet',
+          message:
+              'Meet & Greet ainda não está disponível no app. Em breve você poderá criar e atender chamadas por aqui.',
+        ),
       ),
       GoRoute(
         path: Pages.fanClubCompose,

@@ -57,6 +57,10 @@ abstract final class Pages {
   static const createPost = '/post/create';
   static const myPosts = '/post/mine';
 
+  /// ⛔ Live / Meet — buracos Espelho Expo até existirem no produto.
+  static const liveUnavailable = '/live';
+  static const meetUnavailable = '/meet';
+
   /// Edição de post (`CreatePostScreen?postId=`).
   static String createPostEdit(String postId) =>
       '$createPost?postId=${Uri.encodeQueryComponent(postId)}';
