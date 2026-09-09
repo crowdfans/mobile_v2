@@ -21,6 +21,14 @@ class _PresentationScreenState extends State<PresentationScreen> {
     setState(() => _index = index);
   }
 
+  void handleSuperfan() {
+    context.push(Pages.loginFan);
+  }
+
+  void handleArtist() {
+    context.push(Pages.loginArtist);
+  }
+
   @override
   Widget build(BuildContext context) {
     final darkText = _index == 1;
@@ -44,8 +52,8 @@ class _PresentationScreenState extends State<PresentationScreen> {
                   const Spacer(),
                   OnboardingButtons(
                     darkMode: darkText,
-                    onSuperfan: () => context.push(Pages.loginFan),
-                    onArtist: () => context.push(Pages.loginArtist),
+                    onSuperfan: handleSuperfan,
+                    onArtist: handleArtist,
                   ),
                 ],
               ),
