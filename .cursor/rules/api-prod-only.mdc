@@ -7,14 +7,14 @@ alwaysApply: true
 
 **Proibido** apontar o app (Flutter, Expo, web, scripts, `.env`, defaults de código, EAS, Firebase Hosting) para:
 
-- `https://crowdfans-app-dev-3zqbt.ondigitalocean.app`
+- `https://crowdfans-app-dev-3zqbt.ondigitalocean.app` (não resolve / morto)
 - qualquer host `crowdfans-app-dev*`
+- `https://crowdfans-app-prod.ondigitalocean.app` (também **não resolve DNS** — não usar)
 
-**Usar sempre** a API de produção:
+**Usar sempre** a API de produção que responde:
 
-- `https://crowdfans-app-prod.ondigitalocean.app`
-- ou `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` (mesmo backend prod)
+- `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`
 
-Não inventar fallback “dev” quando `FIREBASE_PROJECT_ID` / `.env` falhar — o default é **prod**.
+Default de código, `.env`, `--dart-define` e build web = esse host. Sem fallback “dev” nem `crowdfans-app-prod`.
 
-`API_MODE=local` (localhost) continua ok para desenvolvimento local. DigitalOcean = prod.
+`API_MODE=local` (localhost) continua ok para desenvolvimento local.
