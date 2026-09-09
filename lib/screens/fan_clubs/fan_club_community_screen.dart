@@ -1,15 +1,17 @@
-import 'package:crowdfans/components/fan_club/fan_club_community_toolbar.dart';
+import 'package:crowdfans/components/fan_club/fan_club_community_cover.dart';
+import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
 import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/post/post_options_sheet.dart';
 import 'package:crowdfans/components/post/post_share_sheet.dart';
-import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
+import 'package:crowdfans/components/profile/me_posts_filter_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
+import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +48,9 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   var _loading = true;
   var _loadingMore = false;
   var _following = false;
+  var _favorite = false;
+  var _searchOpen = false;
+  var _searchQuery = '';
   String? _error;
   String _avatarUrl = '';
   FeedPost? _optionsPost;
@@ -55,7 +60,16 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   void initState() {
     super.initState();
     _avatarUrl = widget.seedAvatarUrl?.trim() ?? '';
+    handleLoadFavorites();
     handleLoad();
+  }
+
+  Future<void> handleLoadFavorites() async {
+    final ids = await SidebarArtistsStore.loadFavoriteIds();
+    if (!mounted) {
+      return;
+    }
+    setState(() => _favorite = ids.contains(widget.artistId));
   }
 
   FeedPost mapClubPost(FanClubFeedPost post, ArtistFanClub club) {
@@ -94,8 +108,23 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     return merged;
   }
 
+  bool isMediaPost(FeedPost post) {
+    return post.type == PostType.image ||
+        post.type == PostType.carousel ||
+        post.type == PostType.video ||
+        (post.imageUri?.trim().isNotEmpty ?? false);
+  }
+
   List<FeedPost> sortedPosts() {
-    final list = [..._posts];
+    final query = _searchQuery.trim().toLowerCase();
+    final list = [
+      for (final post in _posts)
+        if (query.isEmpty ||
+            post.text.toLowerCase().contains(query) ||
+            post.author.toLowerCase().contains(query) ||
+            post.handle.toLowerCase().contains(query))
+          post,
+    ];
     if (_sortPopular) {
       list.sort((a, b) {
         final byVotes = b.votes.compareTo(a.votes);
@@ -111,14 +140,11 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
       _ClubFeedFilter.all => list,
       _ClubFeedFilter.posts => [
         for (final post in list)
-          if (post.type == PostType.text) post,
+          if (!isMediaPost(post)) post,
       ],
       _ClubFeedFilter.media => [
         for (final post in list)
-          if (post.type == PostType.image ||
-              post.type == PostType.carousel ||
-              post.type == PostType.video)
-            post,
+          if (isMediaPost(post)) post,
       ],
     };
   }
@@ -246,8 +272,29 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
 
   void handleOpenArtistProfile() {
     context.push(
-      Pages.artistProfile.replaceAll(':artistId', widget.artistId),
+      Pages.artistProfileOf(
+        widget.artistId,
+        name: _club?.artistName ?? widget.seedName,
+        avatarUrl: _avatarUrl,
+      ),
     );
+  }
+
+  void handleToggleSearch() {
+    setState(() {
+      _searchOpen = !_searchOpen;
+      if (!_searchOpen) {
+        _searchQuery = '';
+      }
+    });
+  }
+
+  Future<void> handleToggleFavorite() async {
+    final next = await SidebarArtistsStore.toggleFavorite(widget.artistId);
+    if (!mounted) {
+      return;
+    }
+    setState(() => _favorite = next.contains(widget.artistId));
   }
 
   Future<void> handleMore() async {
@@ -271,7 +318,9 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
               ),
               ListTile(
                 leading: Icon(
-                  _following ? Icons.person_remove_outlined : Icons.person_add_alt,
+                  _following
+                      ? Icons.person_remove_outlined
+                      : Icons.person_add_alt,
                   color: colors.textPrimary,
                 ),
                 title: Text(_following ? 'Deixar de seguir' : 'Seguir'),
@@ -291,7 +340,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                 ),
                 ListTile(
                   leading: Icon(Icons.info_outline, color: colors.textPrimary),
-                  title: const Text('Sobre o Fã Clube'),
+                  title: const Text('Ver mais'),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
                     handleAbout();
@@ -299,7 +348,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                 ),
                 ListTile(
                   leading: Icon(Icons.rule, color: colors.textPrimary),
-                  title: const Text('Regras do Fã Clube'),
+                  title: const Text('Regras'),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
                     handleRules();
@@ -353,176 +402,268 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
       backgroundColor: colors.background,
       body: Stack(
         children: [
-          SafeArea(
-            child: Column(
-              children: [
-                FanClubCommunityToolbar(
-                  artistName: artistName,
-                  avatarUrl: _avatarUrl,
-                  onBack: () => context.pop(),
-                  onMore: handleMore,
-                ),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(_error!, style: TextStyle(color: colors.danger)),
-                  ),
-                Expanded(
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : NotificationListener<ScrollNotification>(
-                          onNotification: (notification) {
-                            if (notification.metrics.extentAfter < 240) {
-                              handleLoadMore();
-                            }
-                            return false;
-                          },
-                          child: RefreshIndicator(
-                            onRefresh: () => handleLoad(page: 1),
-                            child: ListView.builder(
-                              padding: const EdgeInsets.only(bottom: 24),
-                              itemCount: 2 +
-                                  (posts.isEmpty ? 1 : posts.length) +
-                                  (_loadingMore ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index == 0) {
-                                  if (club == null) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(24),
-                                      child: Text(
-                                        'Este artista ainda não tem fã clube.',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: colors.textSecondary,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return SizedBox(
-                                    height: 48,
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      children: [
-                                        FanClubSortTab(
-                                          label: 'Novos',
-                                          selected: !_sortPopular,
-                                          onPressed: () {
-                                            setState(() => _sortPopular = false);
-                                          },
-                                        ),
-                                        FanClubSortTab(
-                                          label: 'Populares',
-                                          selected: _sortPopular,
-                                          onPressed: () {
-                                            setState(() => _sortPopular = true);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                if (index == 1) {
-                                  if (club == null) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      16,
-                                      8,
-                                      16,
-                                      8,
-                                    ),
-                                    child: Wrap(
-                                      spacing: 8,
-                                      children: [
-                                        ArtistMeFeedFilterChip(
-                                          label: 'Todos',
-                                          selected:
-                                              _feedFilter == _ClubFeedFilter.all,
-                                          onPressed: () {
-                                            setState(
-                                              () => _feedFilter =
-                                                  _ClubFeedFilter.all,
-                                            );
-                                          },
-                                        ),
-                                        ArtistMeFeedFilterChip(
-                                          label: 'Posts',
-                                          selected: _feedFilter ==
-                                              _ClubFeedFilter.posts,
-                                          onPressed: () {
-                                            setState(
-                                              () => _feedFilter =
-                                                  _ClubFeedFilter.posts,
-                                            );
-                                          },
-                                        ),
-                                        ArtistMeFeedFilterChip(
-                                          label: 'Media',
-                                          selected: _feedFilter ==
-                                              _ClubFeedFilter.media,
-                                          onPressed: () {
-                                            setState(
-                                              () => _feedFilter =
-                                                  _ClubFeedFilter.media,
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                if (posts.isEmpty) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(24),
-                                    child: Text(
-                                      'Nenhum post na comunidade ainda.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: colors.textSecondary,
-                                      ),
-                                    ),
-                                  );
-                                }
-                                final postIndex = index - 2;
-                                if (postIndex >= posts.length) {
-                                  return const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 16),
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }
-                                final post = posts[postIndex];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  child: FeedItem(
-                                    post: post,
-                                    canAccessExclusive: canAccessExclusivePost(
-                                      post,
-                                      const ExclusiveAccessContext(),
-                                    ),
-                                    onVoteApplied: handleVoteApplied,
-                                    onPressOptions: () {
-                                      setState(() => _optionsPost = post);
-                                    },
-                                    onPressShare: () {
-                                      setState(() => _sharePost = post);
-                                    },
-                                  ),
-                                );
-                              },
+          Column(
+            children: [
+              if (_searchOpen)
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: handleToggleSearch,
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            autofocus: true,
+                            onChanged: (value) {
+                              setState(() => _searchQuery = value);
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Buscar conteúdo no fã clube',
+                              filled: true,
+                              fillColor: colors.surfaceAlt,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              Expanded(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : NotificationListener<ScrollNotification>(
+                        onNotification: (notification) {
+                          if (notification.metrics.extentAfter < 240) {
+                            handleLoadMore();
+                          }
+                          return false;
+                        },
+                        child: RefreshIndicator(
+                          onRefresh: () => handleLoad(page: 1),
+                          child: ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            itemCount:
+                                1 +
+                                (club == null ? 0 : 3) +
+                                (posts.isEmpty ? 1 : posts.length) +
+                                (_loadingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                if (_searchOpen) {
+                                  return const SizedBox.shrink();
+                                }
+                                return FanClubCommunityCover(
+                                  imageUrl: _avatarUrl,
+                                  onBack: () => context.pop(),
+                                  onSearch: handleToggleSearch,
+                                  onMore: handleMore,
+                                );
+                              }
+                              if (club == null) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Text(
+                                    'Este artista ainda não tem fã clube.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                );
+                              }
+                              if (index == 1) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (_error != null)
+                                      Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Text(
+                                          _error!,
+                                          style: TextStyle(
+                                            color: colors.danger,
+                                          ),
+                                        ),
+                                      ),
+                                    FanClubCommunityHero(
+                                      artistName: artistName,
+                                      memberCount: club.memberCount,
+                                      isFavorite: _favorite,
+                                      onToggleFavorite: handleToggleFavorite,
+                                      onOpenArtist: handleOpenArtistProfile,
+                                      onAbout: handleAbout,
+                                      onRules: handleRules,
+                                    ),
+                                  ],
+                                );
+                              }
+                              if (index == 2) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        4,
+                                        16,
+                                        0,
+                                      ),
+                                      child: Text(
+                                        'Ordenar postagens por:',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: colors.textTertiary,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 44,
+                                      child: ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        children: [
+                                          FanClubSortTab(
+                                            label: 'Novos',
+                                            selected: !_sortPopular,
+                                            onPressed: () {
+                                              setState(
+                                                () => _sortPopular = false,
+                                              );
+                                            },
+                                          ),
+                                          FanClubSortTab(
+                                            label: 'Populares',
+                                            selected: _sortPopular,
+                                            onPressed: () {
+                                              setState(
+                                                () => _sortPopular = true,
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              if (index == 3) {
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    4,
+                                    16,
+                                    8,
+                                  ),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    children: [
+                                      MePostsFilterChip(
+                                        label: 'Todos',
+                                        selected:
+                                            _feedFilter == _ClubFeedFilter.all,
+                                        onPressed: () {
+                                          setState(
+                                            () => _feedFilter =
+                                                _ClubFeedFilter.all,
+                                          );
+                                        },
+                                      ),
+                                      MePostsFilterChip(
+                                        label: 'Posts',
+                                        selected:
+                                            _feedFilter ==
+                                            _ClubFeedFilter.posts,
+                                        onPressed: () {
+                                          setState(
+                                            () => _feedFilter =
+                                                _ClubFeedFilter.posts,
+                                          );
+                                        },
+                                      ),
+                                      MePostsFilterChip(
+                                        label: 'Media',
+                                        selected:
+                                            _feedFilter ==
+                                            _ClubFeedFilter.media,
+                                        onPressed: () {
+                                          setState(
+                                            () => _feedFilter =
+                                                _ClubFeedFilter.media,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              final postStart = 4;
+                              if (posts.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Text(
+                                    _searchQuery.trim().isEmpty
+                                        ? 'Nenhum post na comunidade ainda.'
+                                        : 'Nenhum resultado para esta busca.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                );
+                              }
+                              final postIndex = index - postStart;
+                              if (postIndex >= posts.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                              final post = posts[postIndex];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: FeedItem(
+                                  post: post,
+                                  canAccessExclusive: canAccessExclusivePost(
+                                    post,
+                                    const ExclusiveAccessContext(),
+                                  ),
+                                  onVoteApplied: handleVoteApplied,
+                                  onPressOptions: () {
+                                    setState(() => _optionsPost = post);
+                                  },
+                                  onPressShare: () {
+                                    setState(() => _sharePost = post);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+              ),
+            ],
           ),
           PostOptionsSheet(
             visible: _optionsPost != null,

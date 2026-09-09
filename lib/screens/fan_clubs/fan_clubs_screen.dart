@@ -1,8 +1,11 @@
-import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/fan_clubs/fan_club_artist_chip.dart';
+import 'package:crowdfans/components/fan_clubs/fan_clubs_feed_header.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
+import 'package:crowdfans/components/post/post_avatar.dart';
+import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
@@ -12,14 +15,21 @@ import 'package:go_router/go_router.dart';
 
 const _pageSize = 20;
 
+enum _ClubsContentFilter { all, posts, media }
+
 class _ClubArtist {
-  const _ClubArtist({required this.artistUid, required this.artistName});
+  const _ClubArtist({
+    required this.artistUid,
+    required this.artistName,
+    this.avatarUrl = '',
+  });
 
   final String artistUid;
   final String artistName;
+  final String avatarUrl;
 }
 
-/// Aba Clubes: chips de artistas e feed da comunidade.
+/// Aba Clubes: chrome do mock Feed Fã Clubes + posts da comunidade.
 class FanClubsScreen extends StatefulWidget {
   const FanClubsScreen({super.key});
 
@@ -35,16 +45,60 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   var _loading = true;
   var _loadingMore = false;
   var _sortPopular = true;
+  var _contentFilter = _ClubsContentFilter.all;
+  var _sidebarVisible = false;
+  var _searchOpen = false;
+  var _searchQuery = '';
   String? _error;
 
-  List<CommunityPost> sortedPosts() {
-    final posts = [..._posts];
+  bool isMediaPost(CommunityPost post) {
+    final type = post.type.toLowerCase();
+    return type == 'image' ||
+        type == 'carousel' ||
+        type == 'video' ||
+        (post.imageUri?.trim().isNotEmpty ?? false);
+  }
+
+  List<CommunityPost> visiblePosts() {
+    final sorted = [..._posts];
     if (_sortPopular) {
-      posts.sort((a, b) => b.votes.compareTo(a.votes));
+      sorted.sort((a, b) => b.votes.compareTo(a.votes));
     } else {
-      posts.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
+      sorted.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
     }
-    return posts;
+    return switch (_contentFilter) {
+      _ClubsContentFilter.all => sorted,
+      _ClubsContentFilter.posts => [
+        for (final post in sorted)
+          if (!isMediaPost(post)) post,
+      ],
+      _ClubsContentFilter.media => [
+        for (final post in sorted)
+          if (isMediaPost(post)) post,
+      ],
+    };
+  }
+
+  List<_ClubArtist> searchArtists() {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) {
+      return _artists;
+    }
+    return [
+      for (final artist in _artists)
+        if (artist.artistName.toLowerCase().contains(query)) artist,
+    ];
+  }
+
+  List<HomeFollowedArtist> sidebarArtists() {
+    return [
+      for (final artist in _artists)
+        HomeFollowedArtist(
+          id: artist.artistUid,
+          username: artist.artistName,
+          avatarUrl: artist.avatarUrl,
+        ),
+    ];
   }
 
   @override
@@ -98,6 +152,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
             _ClubArtist(
               artistUid: item.artistUid,
               artistName: item.artistName,
+              avatarUrl: item.avatarUrl,
             ),
           );
         }
@@ -149,7 +204,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   }
 
   Future<void> handleLoadMore() async {
-    if (_loadingMore || _loading || !_hasMore) {
+    if (_loadingMore || _loading || !_hasMore || _searchOpen) {
       return;
     }
     setState(() => _loadingMore = true);
@@ -164,18 +219,50 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
 
   void handleOpenCommunity(_ClubArtist artist) {
     context.push(
-      Pages.fanClubCommunityOf(artist.artistUid, name: artist.artistName),
+      Pages.fanClubCommunityOf(
+        artist.artistUid,
+        name: artist.artistName,
+        avatarUrl: artist.avatarUrl,
+      ),
     );
   }
 
   void handleOpenArtist(_ClubArtist artist) {
     context.push(
-      Pages.artistProfile.replaceAll(':artistId', artist.artistUid),
+      Pages.artistProfileOf(
+        artist.artistUid,
+        name: artist.artistName,
+        avatarUrl: artist.avatarUrl,
+      ),
     );
   }
 
-  void handleSelectAll() {
-    handleLoad();
+  void handleOpenMenu() {
+    setState(() => _sidebarVisible = true);
+  }
+
+  void handleCloseSidebar() {
+    setState(() => _sidebarVisible = false);
+  }
+
+  void handlePressSidebarArtist(HomeFollowedArtist artist) {
+    handleCloseSidebar();
+    handleOpenCommunity(
+      _ClubArtist(
+        artistUid: artist.id,
+        artistName: artist.username,
+        avatarUrl: artist.avatarUrl,
+      ),
+    );
+  }
+
+  void handleToggleSearch() {
+    setState(() {
+      _searchOpen = !_searchOpen;
+      if (!_searchOpen) {
+        _searchQuery = '';
+      }
+    });
   }
 
   void handleVoteApplied(VoteResult result) {
@@ -209,111 +296,181 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final posts = visiblePosts();
+    final artists = searchArtists();
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Postagens dos Fã Clubes',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_searchOpen)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 12, 8),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: handleToggleSearch,
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            autofocus: true,
+                            onChanged: (value) {
+                              setState(() => _searchQuery = value);
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Buscar fã clube',
+                              filled: true,
+                              fillColor: colors.surfaceAlt,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  FanClubsFeedHeader(
+                    sortPopular: _sortPopular,
+                    filterAll: _contentFilter == _ClubsContentFilter.all,
+                    filterPosts: _contentFilter == _ClubsContentFilter.posts,
+                    filterMedia: _contentFilter == _ClubsContentFilter.media,
+                    onOpenMenu: handleOpenMenu,
+                    onOpenSearch: handleToggleSearch,
+                    onSortPopular: () => setState(() => _sortPopular = true),
+                    onSortNew: () => setState(() => _sortPopular = false),
+                    onFilterAll: () {
+                      setState(() => _contentFilter = _ClubsContentFilter.all);
+                    },
+                    onFilterPosts: () {
+                      setState(
+                        () => _contentFilter = _ClubsContentFilter.posts,
+                      );
+                    },
+                    onFilterMedia: () {
+                      setState(
+                        () => _contentFilter = _ClubsContentFilter.media,
+                      );
+                    },
+                  ),
+                if (!_searchOpen && _artists.isNotEmpty)
+                  SizedBox(
+                    height: 44,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      children: [
+                        for (final artist in _artists) ...[
+                          FanClubArtistChip(
+                            label: artist.artistName,
+                            selected: false,
+                            onPressed: () => handleOpenCommunity(artist),
+                            onLongPressed: () => handleOpenArtist(artist),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Toque em um artista para abrir a comunidade · segure para o perfil',
-                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Ordenar postagens por:',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: [
-                  FanClubSortTab(
-                    label: 'Popularidade',
-                    selected: _sortPopular,
-                    onPressed: () => setState(() => _sortPopular = true),
-                  ),
-                  FanClubSortTab(
-                    label: 'Novos',
-                    selected: !_sortPopular,
-                    onPressed: () => setState(() => _sortPopular = false),
-                  ),
-                ],
-              ),
-            ),
-            if (_artists.isNotEmpty)
-              SizedBox(
-                height: 44,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  children: [
-                    FanClubArtistChip(
-                      label: 'Todos',
-                      selected: true,
-                      onPressed: handleSelectAll,
-                    ),
-                    const SizedBox(width: 8),
-                    for (final artist in _artists) ...[
-                      FanClubArtistChip(
-                        label: artist.artistName,
-                        selected: false,
-                        onPressed: () => handleOpenCommunity(artist),
-                        onLongPressed: () => handleOpenArtist(artist),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.textSecondary,
                       ),
-                      const SizedBox(width: 8),
-                    ],
-                  ],
-                ),
-              ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  _error!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                ),
-              ),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : NotificationListener<ScrollNotification>(
-                      onNotification: (notification) {
-                        if (notification.metrics.extentAfter < 240) {
-                          handleLoadMore();
-                        }
-                        return false;
-                      },
-                      child: RefreshIndicator(
-                        onRefresh: handleRefresh,
-                        child: Builder(
-                          builder: (context) {
-                            final posts = sortedPosts();
-                            return ListView.builder(
+                    ),
+                  ),
+                Expanded(
+                  child: _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _searchOpen
+                      ? ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          itemCount: artists.isEmpty ? 1 : artists.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            if (artists.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 40),
+                                child: Text(
+                                  _artists.isEmpty
+                                      ? 'Siga artistas para buscar fã clubes.'
+                                      : 'Nenhum fã clube encontrado.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: colors.textSecondary,
+                                  ),
+                                ),
+                              );
+                            }
+                            final artist = artists[index];
+                            return Material(
+                              color: colors.surface,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                side: BorderSide(color: colors.border),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: () => handleOpenCommunity(artist),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      PostAvatar(
+                                        url: artist.avatarUrl,
+                                        size: 44,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          artist.artistName,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: colors.textPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : NotificationListener<ScrollNotification>(
+                          onNotification: (notification) {
+                            if (notification.metrics.extentAfter < 240) {
+                              handleLoadMore();
+                            }
+                            return false;
+                          },
+                          child: RefreshIndicator(
+                            onRefresh: handleRefresh,
+                            child: ListView.builder(
                               padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
                               itemCount: posts.isEmpty
                                   ? 1
@@ -349,14 +506,20 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                                   onVoteApplied: handleVoteApplied,
                                 );
                               },
-                            );
-                          },
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          SidebarMenu(
+            visible: _sidebarVisible,
+            artists: sidebarArtists(),
+            onClose: handleCloseSidebar,
+            onPressArtist: handlePressSidebarArtist,
+          ),
+        ],
       ),
     );
   }

@@ -1,108 +1,162 @@
-import 'package:crowdfans/components/buttons/app_button.dart';
-import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:flutter/material.dart';
 
-/// Cabeçalho da comunidade do artista.
+/// Identidade do Fã Clube sob o cover: nome, membros, favorito, Ver mais / Regras.
 class FanClubCommunityHero extends StatelessWidget {
   const FanClubCommunityHero({
     super.key,
-    required this.club,
-    required this.following,
-    required this.onToggleFollow,
-    required this.onCompose,
+    required this.artistName,
+    required this.memberCount,
+    required this.isFavorite,
+    required this.onToggleFavorite,
+    required this.onOpenArtist,
     required this.onAbout,
     required this.onRules,
-    this.onOpenArtist,
-    this.avatarUrl = '',
   });
 
-  final ArtistFanClub club;
-  final bool following;
-  final VoidCallback onToggleFollow;
-  final VoidCallback onCompose;
+  final String artistName;
+  final int memberCount;
+  final bool isFavorite;
+  final VoidCallback onToggleFavorite;
+  final VoidCallback onOpenArtist;
   final VoidCallback onAbout;
   final VoidCallback onRules;
-  final VoidCallback? onOpenArtist;
-  final String avatarUrl;
+
+  static String formatMemberCount(int count) {
+    return count.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]}.',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final name = artistName.trim().isEmpty ? 'Artista' : artistName.trim();
+    final members = formatMemberCount(memberCount);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PostAvatar(url: avatarUrl, size: 72),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      club.artistName.isEmpty ? club.name : club.artistName,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textPrimary,
+                    InkWell(
+                      onTap: onOpenArtist,
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: name,
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w600,
+                                      color: colors.textPrimary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: ' Fã Clube',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: colors.textTertiary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 22,
+                            color: colors.textTertiary,
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      '${club.memberCount} membros${club.isMember ? ' · Você é membro' : ''}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colors.textSecondary,
+                    const SizedBox(height: 2),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: members,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' membros',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
+              IconButton(
+                key: const Key('fan-club-favorite'),
+                onPressed: onToggleFavorite,
+                tooltip: isFavorite ? 'Remover dos favoritos' : 'Favoritar',
+                icon: Icon(
+                  isFavorite ? Icons.star : Icons.star_border,
+                  size: 28,
+                  color: isFavorite
+                      ? AppPalette.yellow500
+                      : colors.textTertiary,
+                ),
+              ),
             ],
           ),
-          if (club.description.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              club.description,
-              style: TextStyle(fontSize: 14, color: colors.textSecondary),
-            ),
-          ],
-          const SizedBox(height: 12),
-          AppButton(
-            label: following ? 'Seguindo' : 'Seguir',
-            variant: following
-                ? AppButtonVariant.outline
-                : AppButtonVariant.primary,
-            onPressed: onToggleFollow,
-          ),
-          if (onOpenArtist != null) ...[
-            const SizedBox(height: 8),
-            AppButton(
-              label: 'Ver perfil do artista',
-              variant: AppButtonVariant.outline,
-              onPressed: onOpenArtist!,
-            ),
-          ],
           const SizedBox(height: 8),
-          AppButton(
-            label: 'Publicar no clube',
-            variant: AppButtonVariant.outline,
-            onPressed: onCompose,
-          ),
-          const SizedBox(height: 8),
-          AppButton(
-            label: 'Sobre o Fã Clube',
-            variant: AppButtonVariant.outline,
-            onPressed: onAbout,
-          ),
-          const SizedBox(height: 8),
-          AppButton(
-            label: 'Regras do Fã Clube',
-            variant: AppButtonVariant.outline,
-            onPressed: onRules,
+          Row(
+            children: [
+              TextButton(
+                key: const Key('fan-club-ver-mais'),
+                onPressed: onAbout,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppPalette.blue500,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Ver mais',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 22),
+              TextButton(
+                key: const Key('fan-club-regras'),
+                onPressed: onRules,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppPalette.blue500,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Regras',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
           ),
         ],
       ),

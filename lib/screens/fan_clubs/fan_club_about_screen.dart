@@ -179,7 +179,7 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Sobre', onBack: handleBack),
+            ProfileScreenHeader(title: 'Ver mais', onBack: handleBack),
             Expanded(
               child: _loading
                   ? const ProfileState(loading: true)
@@ -193,40 +193,21 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             style: TextStyle(color: colors.textSecondary),
                           )
                         else if (club != null) ...[
-                          Text(
-                            club.name.isEmpty
-                                ? (widget.artistName ?? 'Fã Clube')
-                                : club.name,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
+                          if (club.description.trim().isNotEmpty) ...[
+                            Text(
+                              club.description,
+                              style: TextStyle(
+                                fontSize: 15,
+                                height: 1.45,
+                                color: colors.textPrimary,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
+                            const SizedBox(height: 22),
+                          ],
                           Text(
-                            '${club.artistName.isEmpty ? (widget.artistName ?? 'Artista') : club.artistName} · ${club.memberCount} membros',
+                            'Moderadores do fã-clube',
                             style: TextStyle(
-                              fontSize: 14,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            club.description.trim().isEmpty
-                                ? 'Este fã clube ainda não tem uma descrição.'
-                                : club.description,
-                            style: TextStyle(
-                              fontSize: 15,
-                              height: 1.45,
-                              color: colors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 22),
-                          Text(
-                            'Moderadores',
-                            style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: colors.textPrimary,
                             ),
@@ -274,25 +255,34 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             ),
                           ],
                           if (canRequest) ...[
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 28),
                             Text(
-                              'Solicitar moderação',
+                              'Quero ajudar como moderador(a)',
                               style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: colors.textSecondary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 8),
+                            Text(
+                              'Se você quiser participar da moderação desse fã-clube, envie uma solicitação para o artista contando por que faria sentido assumir esse papel.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.45,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
                             AppTextField(
                               key: ValueKey('request-$_formNonce'),
-                              hint: 'Conte por que você quer ajudar a moderar este fã clube',
+                              hint: 'Explique por que você quer ser moderador(a) e como ajudaria esse fã-clube.',
                               maxLines: 4,
                               onChanged: (value) => _requestReason = value,
                             ),
                             const SizedBox(height: 12),
                             AppButton(
-                              label: 'Enviar pedido',
+                              label: 'Solicitar moderação',
                               loading: _requesting,
                               onPressed: handleRequestModeration,
                             ),
