@@ -17,32 +17,37 @@ class _PasswordFieldState extends State<PasswordField> {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return TextField(
-      key: const Key('login-password'),
-      obscureText: !_visible,
-      onChanged: widget.onChanged,
-      decoration: InputDecoration(
-        hintText: 'Senha',
-        hintStyle: TextStyle(color: colors.textTertiary),
-        filled: true,
-        fillColor: colors.inputBackground,
-        suffixIcon: IconButton(
-          onPressed: () => setState(() => _visible = !_visible),
-          icon: Icon(
-            _visible ? Icons.visibility_off : Icons.visibility,
-            color: colors.textSecondary,
+    return SizedBox(
+      height: 45,
+      child: TextField(
+        key: const Key('login-password'),
+        obscureText: !_visible,
+        onChanged: widget.onChanged,
+        decoration: InputDecoration(
+          hintText: 'Senha',
+          hintStyle: TextStyle(color: colors.textTertiary),
+          filled: true,
+          fillColor: colors.inputBackground,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          suffixIcon: IconButton(
+            onPressed: () => setState(() => _visible = !_visible),
+            icon: Icon(
+              _visible ? Icons.visibility_off : Icons.visibility,
+              color: colors.textSecondary,
+              size: 18,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: colors.inputBorder),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: colors.primary),
           ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.inputBorder),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.primary),
-        ),
+        style: TextStyle(color: colors.textPrimary, fontSize: 18),
       ),
-      style: TextStyle(color: colors.textPrimary, fontSize: 18),
     );
   }
 }

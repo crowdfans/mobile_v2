@@ -55,6 +55,7 @@ class AppColors {
     required this.buttonPrimary,
     required this.buttonPrimaryText,
     required this.danger,
+    required this.success,
     required this.inputBackground,
     required this.inputBorder,
     required this.overlay,
@@ -73,6 +74,7 @@ class AppColors {
   final Color buttonPrimary;
   final Color buttonPrimaryText;
   final Color danger;
+  final Color success;
   final Color inputBackground;
   final Color inputBorder;
   final Color overlay;
@@ -91,6 +93,7 @@ class AppColors {
     buttonPrimary: AppPalette.purple500,
     buttonPrimaryText: AppPalette.platinum50,
     danger: AppPalette.red500,
+    success: AppPalette.green700,
     inputBackground: AppPalette.platinum50,
     inputBorder: AppPalette.platinum200,
     overlay: Color(0x7A020617),
@@ -110,6 +113,7 @@ class AppColors {
     buttonPrimary: AppPalette.platinum50,
     buttonPrimaryText: AppPalette.platinum950,
     danger: AppPalette.red400,
+    success: AppPalette.green400,
     inputBackground: AppPalette.platinum950,
     inputBorder: AppPalette.platinum800,
     overlay: Color(0xB8020617),

@@ -22,6 +22,7 @@ class ArtistLoginScreen extends ConsumerStatefulWidget {
 class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
   String _email = '';
   String _password = '';
+  bool _loading = false;
 
   Future<void> handleLogin() async {
     final email = _email.trim();
@@ -33,6 +34,7 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
       );
       return;
     }
+    setState(() => _loading = true);
     try {
       final credential = await FirebaseService.auth.signInWithEmailAndPassword(
         email: email,
@@ -80,6 +82,10 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
           message: mapLoginError(error),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -89,7 +95,7 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
       await AppAlert.show(
         context,
         title: 'Recuperar senha',
-        message: 'Informe o e-mail da conta para enviar o link.',
+        message: 'Informe o e-mail da conta no campo acima e toque novamente.',
       );
       return;
     }
@@ -99,7 +105,7 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
         await AppAlert.show(
           context,
           title: 'Recuperar senha',
-          message: 'Enviamos um e-mail com o link para redefinir a senha.',
+          message: 'Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha.',
         );
       }
     } catch (error) {
@@ -113,21 +119,26 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
     }
   }
 
+  void handleCreateAccount() {
+    context.push(Pages.registerArtist);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final heroHeight = MediaQuery.sizeOf(context).height * 0.15;
     return LoginLayout(
       onBack: () => context.go(Pages.presentation),
       child: Column(
         children: [
-          const SizedBox(height: 48),
+          SizedBox(height: heroHeight),
           const LoginLabel(isArtist: true),
           Text(
             'Artista',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 60,
-              height: 1.05,
+              height: 64 / 60,
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
@@ -136,6 +147,7 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
           CredentialsForm(
             email: _email,
             password: _password,
+            loading: _loading,
             onEmailChanged: (value) => _email = value,
             onPasswordChanged: (value) => _password = value,
             onSubmit: handleLogin,
@@ -144,7 +156,8 @@ class _ArtistLoginScreenState extends ConsumerState<ArtistLoginScreen> {
           const SizedBox(height: 34),
           Center(
             child: TextButton(
-              onPressed: () => context.push(Pages.registerArtist),
+              key: const Key('login-create-account'),
+              onPressed: handleCreateAccount,
               style: TextButton.styleFrom(
                 backgroundColor: colors.surfaceAlt,
                 padding: const EdgeInsets.symmetric(

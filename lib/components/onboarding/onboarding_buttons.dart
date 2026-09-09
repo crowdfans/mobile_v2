@@ -19,6 +19,7 @@ class OnboardingButtons extends StatelessWidget {
     return Column(
       children: [
         OnboardingRoleButton(
+          key: const Key('onboarding-superfan'),
           asset: 'assets/images/crowd.png',
           labelPrefix: 'Sou um ',
           labelStrong: 'Superfã',
@@ -27,6 +28,7 @@ class OnboardingButtons extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         OnboardingRoleButton(
+          key: const Key('onboarding-artist'),
           asset: 'assets/images/mic.png',
           labelPrefix: 'Sou um ',
           labelStrong: 'Artista',

@@ -24,6 +24,7 @@ class FanLoginScreen extends ConsumerStatefulWidget {
 class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
   String _email = '';
   String _password = '';
+  bool _loading = false;
 
   Future<void> handleLogin() async {
     final email = _email.trim();
@@ -35,6 +36,7 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
       );
       return;
     }
+    setState(() => _loading = true);
     try {
       final credential = await FirebaseService.auth.signInWithEmailAndPassword(
         email: email,
@@ -82,6 +84,10 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
           message: mapLoginError(error),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -91,7 +97,7 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
       await AppAlert.show(
         context,
         title: 'Recuperar senha',
-        message: 'Informe o e-mail da conta para enviar o link.',
+        message: 'Informe o e-mail da conta no campo acima e toque novamente.',
       );
       return;
     }
@@ -101,7 +107,7 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
         await AppAlert.show(
           context,
           title: 'Recuperar senha',
-          message: 'Enviamos um e-mail com o link para redefinir a senha.',
+          message: 'Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha.',
         );
       }
     } catch (error) {
@@ -115,22 +121,27 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
     }
   }
 
+  void handleCreateAccount() {
+    context.push(Pages.registerFan);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final debug = kDebugMode ? apiConfigDebug() : null;
+    final heroHeight = MediaQuery.sizeOf(context).height * 0.15;
     return LoginLayout(
       onBack: () => context.go(Pages.presentation),
       child: Column(
         children: [
-          const SizedBox(height: 48),
+          SizedBox(height: heroHeight),
           const LoginLabel(isArtist: false),
           Text(
             'Fan',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 60,
-              height: 1.05,
+              height: 64 / 60,
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
@@ -139,6 +150,7 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
           CredentialsForm(
             email: _email,
             password: _password,
+            loading: _loading,
             onEmailChanged: (value) => _email = value,
             onPasswordChanged: (value) => _password = value,
             onSubmit: handleLogin,
@@ -147,7 +159,8 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
           const SizedBox(height: 34),
           Center(
             child: TextButton(
-              onPressed: () => context.push(Pages.registerFan),
+              key: const Key('login-create-account'),
+              onPressed: handleCreateAccount,
               style: TextButton.styleFrom(
                 backgroundColor: colors.surfaceAlt,
                 padding: const EdgeInsets.symmetric(
