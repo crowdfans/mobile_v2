@@ -63,6 +63,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.6
+  patrol: ^4.9.0
+  integration_test:
+    sdk: flutter
 
 flutter_launcher_icons:
   android: true
@@ -186,3 +189,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# CF-123 — Patrol (CLI: patrol_cli; testes em integration_test/)
+patrol:
+  app_name: CrowdFans
+  test_directory: integration_test
+  android:
+    package_name: com.crowdfans.crowdfans
+  ios:
+    bundle_id: com.crowdfans.crowdfans
+
