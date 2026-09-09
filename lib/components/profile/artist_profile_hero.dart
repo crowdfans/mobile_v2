@@ -2,7 +2,7 @@ import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Hero do perfil público do artista (avatar, nome, meta).
+/// Hero do perfil público do artista (avatar, nome, rank, meta).
 class ArtistProfileHero extends StatelessWidget {
   const ArtistProfileHero({
     super.key,
@@ -10,12 +10,14 @@ class ArtistProfileHero extends StatelessWidget {
     required this.handle,
     required this.avatarUrl,
     required this.meta,
+    this.rank,
   });
 
   final String displayName;
   final String handle;
   final String avatarUrl;
   final String meta;
+  final int? rank;
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +30,41 @@ class ArtistProfileHero extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                displayName,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
-                ),
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      displayName,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  if (rank != null) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: colors.border),
+                      ),
+                      child: Text(
+                        '#$rank',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
               Text(
                 handle,
