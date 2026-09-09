@@ -80,7 +80,7 @@ Ordem quando o IPA estiver no ar (ou em paralelo, se você preferir):
 2. ~~Perfil público do fã + fan score + artistas seguidos~~
 3. Settings que faltam: fan score, wallet, Pro, ganhos, referral, insights
 4. Fan letters
-5. Push (FCM/APNs) + deep link
+5. ~~Push (FCM/APNs)~~ (token sync); falta deep link ao tocar
 6. RevenueCat (`purchases_flutter`) + Jam Coins + WS da carteira
 7. Remover `DemoScreen`
 

@@ -4,7 +4,9 @@ import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/auth_service.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
+import 'package:crowdfans/services/push_token_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Sessão Firebase + validação no backend CrowdFans.
@@ -42,10 +44,15 @@ class AuthSession {
 
 class AuthSessionNotifier extends Notifier<AuthSession> {
   StreamSubscription<User?>? _sub;
+  VoidCallback? _detachPush;
 
   @override
   AuthSession build() {
-    ref.onDispose(() => _sub?.cancel());
+    _detachPush = PushTokenService.attachForegroundNotificationHandler();
+    ref.onDispose(() {
+      _sub?.cancel();
+      _detachPush?.call();
+    });
     _sub = FirebaseService.auth.authStateChanges().listen(_onAuth);
     return const AuthSession();
   }
@@ -82,6 +89,7 @@ class AuthSessionNotifier extends Notifier<AuthSession> {
         isLoading: false,
         isBackendValidated: true,
       );
+      unawaited(PushTokenService.syncPushTokenWithBackend());
       return true;
     } catch (_) {
       state = AuthSession(

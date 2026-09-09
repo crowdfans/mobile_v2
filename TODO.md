@@ -233,9 +233,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 14. Notificações
 
-- [ ] `NotificationsScreen` (abas Posts / Clubes / Meet / Fan Letter / Sistema)
-- [ ] `NotificationsService`
-- [ ] `PushTokenService` + FCM / APNs
+- [x] `NotificationsScreen` (abas Posts / Clubes / Meet / Fan Letter / Sistema)
+- [x] `NotificationsService`
+- [x] `PushTokenService` + FCM / APNs
 - [ ] Deep link ao tocar na notificação
 
 ---
@@ -295,7 +295,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 21. Infra que o Expo tem e o Flutter ainda não
 
 - [ ] WebSocket carteira (`WalletService.subscribe`)
-- [ ] Expo Notifications → `firebase_messaging`
+- [x] Expo Notifications → `firebase_messaging`
 - [ ] RevenueCat Flutter SDK (`purchases_flutter`)
 - [ ] `expo-image` / cache de imagem
 - [x] `expo-video` (stories de onboarding; posts/stories autenticados ainda faltam)
