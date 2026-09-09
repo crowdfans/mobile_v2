@@ -1,7 +1,8 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Faixa de post exclusivo desbloqueado (print CF-67).
+/// Faixa/badge de post exclusivo (print Artista Feed Home CF-111).
 class ExclusivePostMetaRow extends StatelessWidget {
   const ExclusivePostMetaRow({
     super.key,
@@ -16,46 +17,90 @@ class ExclusivePostMetaRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final chipBg = isDark ? AppPalette.purple950 : AppPalette.purple50;
-    final chipFg = isDark ? AppPalette.purple300 : AppPalette.purple700;
+    if (unlocked) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppPalette.purple100,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/Media & devices/music-note-01.svg',
+                  width: 14,
+                  height: 14,
+                  colorFilter: const ColorFilter.mode(
+                    AppPalette.purple700,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Text(
+                  'Exclusivo',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppPalette.purple700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        _chip('Exclusivo', chipBg, chipFg),
-        if (unlocked)
-          _chip('Disponível para membros', chipBg, chipFg)
-        else if (onPressUnlock != null)
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppPalette.purple50,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: Text(
+              'Exclusivo',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppPalette.purple700,
+              ),
+            ),
+          ),
+        ),
+        if (onPressUnlock != null)
           GestureDetector(
             onTap: onPressUnlock,
-            child: _chip(
-              'Desbloquear @$memberName',
-              AppPalette.purple100,
-              AppPalette.purple700,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppPalette.purple100,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                child: Text(
+                  'Desbloquear @$memberName',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppPalette.purple700,
+                  ),
+                ),
+              ),
             ),
           ),
       ],
-    );
-  }
-
-  Widget _chip(String label, Color background, Color foreground) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: foreground,
-          ),
-        ),
-      ),
     );
   }
 }

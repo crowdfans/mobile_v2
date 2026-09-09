@@ -6,12 +6,14 @@ class ExclusiveAccessContext {
     this.subscribedArtistUids = const {},
     this.subscribedArtistNames = const {},
     this.viewerDisplayName,
+    this.viewerUserUid,
     this.viewerIsArtist = false,
   });
 
   final Set<String> subscribedArtistUids;
   final Set<String> subscribedArtistNames;
   final String? viewerDisplayName;
+  final String? viewerUserUid;
   final bool viewerIsArtist;
 }
 
@@ -48,6 +50,14 @@ bool canAccessExclusivePost(FeedPost post, ExclusiveAccessContext context) {
   if (post.exclusiveLocked == false && post.membershipLocked != true) {
     return true;
   }
+  final artistId = post.artistId?.trim() ?? '';
+  final viewerUid = context.viewerUserUid?.trim() ?? '';
+  if (context.viewerIsArtist &&
+      viewerUid.isNotEmpty &&
+      artistId.isNotEmpty &&
+      artistId == viewerUid) {
+    return true;
+  }
   final authorKey = normalizeExclusiveIdentity(post.author);
   final handleKey = normalizeExclusiveIdentity(post.handle);
   if (context.viewerIsArtist && (context.viewerDisplayName ?? '').isNotEmpty) {
@@ -65,7 +75,6 @@ bool canAccessExclusivePost(FeedPost post, ExclusiveAccessContext context) {
       context.subscribedArtistNames.contains(handleKey)) {
     return true;
   }
-  final artistId = post.artistId?.trim() ?? '';
   if (artistId.isNotEmpty && context.subscribedArtistUids.contains(artistId)) {
     return true;
   }

@@ -191,6 +191,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         if (_subscribed) normalizeExclusiveIdentity(displayName()),
       },
       viewerDisplayName: viewer?.displayName ?? viewer?.name,
+      viewerUserUid: viewer?.userUid,
       viewerIsArtist: viewer?.isArtist ?? false,
     );
   }

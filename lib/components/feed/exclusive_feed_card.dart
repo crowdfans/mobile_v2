@@ -50,15 +50,15 @@ class ExclusiveFeedCard extends StatelessWidget {
         ),
       );
     }
+    // Desbloqueado: card normal + badge ♪ Exclusivo (print Feed Home Artista).
     return PostCard(
       post: post,
-      backgroundColor: tint,
-      borderColor: border,
       onPressOpenComments: onPressOpenComments,
       onPressOpenProfile: onPressOpenProfile,
       onPressOptions: onPressOptions,
       onPressShare: onPressShare,
       onVoteApplied: onVoteApplied,
+      topContentAfterHeader: true,
       topContent: ExclusivePostMetaRow(
         memberName: resolvedUsername,
         unlocked: true,

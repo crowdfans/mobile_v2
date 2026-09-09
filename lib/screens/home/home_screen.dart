@@ -170,6 +170,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       subscribedArtistUids: _subscribedUids,
       subscribedArtistNames: _subscribedNames,
       viewerDisplayName: viewer?.displayName ?? viewer?.name,
+      viewerUserUid: viewer?.userUid,
       viewerIsArtist: viewer?.isArtist ?? false,
     );
 
