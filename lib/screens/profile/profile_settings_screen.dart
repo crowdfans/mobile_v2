@@ -55,22 +55,27 @@ class ProfileSettingsScreen extends ConsumerWidget {
               title: 'Conta',
               items: [
                 ProfileSettingItem(
+                  id: 'profile',
                   label: 'Conta',
                   onTap: () => context.push(Pages.profileAccount),
                 ),
                 ProfileSettingItem(
+                  id: 'security',
                   label: 'Segurança',
                   onTap: () => context.push(Pages.profileSecurity),
                 ),
                 ProfileSettingItem(
+                  id: 'appearance',
                   label: 'Aparência',
                   onTap: () => context.push(Pages.profileAppearance),
                 ),
                 ProfileSettingItem(
+                  id: 'notifications',
                   label: 'Notificações',
                   onTap: () => context.push(Pages.profileNotifications),
                 ),
                 ProfileSettingItem(
+                  id: 'information',
                   label: 'Ajuda e documentos',
                   onTap: () => context.push(Pages.profileInformation),
                 ),
@@ -80,18 +85,22 @@ class ProfileSettingsScreen extends ConsumerWidget {
               title: 'Superfã',
               items: [
                 ProfileSettingItem(
+                  id: 'wallet',
                   label: 'Carteira',
                   onTap: () => context.push(Pages.profileWallet),
                 ),
                 ProfileSettingItem(
+                  id: 'crowdfans-pro',
                   label: 'CrowdFans Pro',
                   onTap: () => context.push(Pages.profilePro),
                 ),
                 ProfileSettingItem(
+                  id: 'memberships',
                   label: 'Memberships',
                   onTap: () => context.push(Pages.profileMemberships),
                 ),
                 ProfileSettingItem(
+                  id: 'referral',
                   label: 'Indicações',
                   onTap: () => context.push(Pages.profileReferral),
                 ),
@@ -102,10 +111,12 @@ class ProfileSettingsScreen extends ConsumerWidget {
                 title: 'Artista',
                 items: [
                   ProfileSettingItem(
+                    id: 'earnings',
                     label: 'Ganhos',
                     onTap: () => context.push(Pages.profileEarnings),
                   ),
                   ProfileSettingItem(
+                    id: 'insights',
                     label: 'Insights',
                     onTap: () => context.push(Pages.profileArtistInsights),
                   ),
@@ -115,14 +126,17 @@ class ProfileSettingsScreen extends ConsumerWidget {
               title: 'Privacidade e conteúdo',
               items: [
                 ProfileSettingItem(
+                  id: 'hidden-posts',
                   label: 'Posts ocultos',
                   onTap: () => context.push(Pages.profileHiddenPosts),
                 ),
                 ProfileSettingItem(
+                  id: 'memories',
                   label: 'Memórias',
                   onTap: () => context.push(Pages.profileMemories),
                 ),
                 ProfileSettingItem(
+                  id: 'blocked-users',
                   label: 'Bloqueados',
                   onTap: () => context.push(Pages.profileBlockedUsers),
                 ),
@@ -131,6 +145,7 @@ class ProfileSettingsScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(24),
               child: OutlinedButton(
+                key: const Key('settings-item-logout'),
                 onPressed: handleLogout,
                 child: const Text('Sair'),
               ),

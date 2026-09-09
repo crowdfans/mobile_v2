@@ -338,6 +338,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.notifications,
+        builder: (context, state) => const PlaceholderScreen(
+          title: 'Notificações',
+          message: 'Inbox de notificações entra no corte da CF-68.',
+        ),
+      ),
+      GoRoute(
         path: Pages.demo,
         builder: (context, state) => const PlaceholderScreen(
           title: 'Demo',

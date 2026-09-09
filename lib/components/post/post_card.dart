@@ -15,6 +15,7 @@ class PostCard extends StatelessWidget {
     this.onPressOpenComments,
     this.onPressOpenProfile,
     this.onPressOptions,
+    this.onPressShare,
     this.onVoteApplied,
   });
 
@@ -24,6 +25,7 @@ class PostCard extends StatelessWidget {
   final ValueChanged<String>? onPressOpenComments;
   final VoidCallback? onPressOpenProfile;
   final VoidCallback? onPressOptions;
+  final VoidCallback? onPressShare;
   final ValueChanged<VoteResult>? onVoteApplied;
 
   @override
@@ -79,6 +81,7 @@ class PostCard extends StatelessWidget {
                 ),
                 if (onPressOptions != null)
                   IconButton(
+                    key: const Key('post-more'),
                     onPressed: onPressOptions,
                     icon: Icon(Icons.more_horiz, color: colors.icon),
                     tooltip: 'Opções do post',
@@ -116,6 +119,7 @@ class PostCard extends StatelessWidget {
                 VoteControl(post: post, onVoteApplied: onVoteApplied),
                 const Spacer(),
                 GestureDetector(
+                  key: const Key('post-comments'),
                   onTap: onPressOpenComments == null
                       ? null
                       : () => onPressOpenComments!(post.id),
@@ -129,6 +133,21 @@ class PostCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '${post.comments}',
+                        style: TextStyle(color: colors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  key: const Key('post-share'),
+                  onTap: onPressShare,
+                  child: Row(
+                    children: [
+                      Icon(Icons.send_outlined, size: 18, color: colors.icon),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${post.shares}',
                         style: TextStyle(color: colors.textSecondary),
                       ),
                     ],

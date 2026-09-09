@@ -81,6 +81,7 @@ class _VoteControlBarState extends State<VoteControlBar> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
+            key: const Key('vote-up'),
             visualDensity: VisualDensity.compact,
             onPressed: () => handleVote(1),
             icon: Icon(
@@ -89,6 +90,7 @@ class _VoteControlBarState extends State<VoteControlBar> {
             ),
           ),
           Text(
+            key: const Key('vote-count'),
             '$_voteCount',
             style: TextStyle(
               fontWeight: FontWeight.w700,
@@ -96,6 +98,7 @@ class _VoteControlBarState extends State<VoteControlBar> {
             ),
           ),
           IconButton(
+            key: const Key('vote-down'),
             visualDensity: VisualDensity.compact,
             onPressed: () => handleVote(-1),
             icon: Icon(

@@ -48,16 +48,19 @@ class CommentComposer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppTextField(
-              key: ValueKey(
-                'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+            KeyedSubtree(
+              key: const Key('comment-composer'),
+              child: AppTextField(
+                key: ValueKey(
+                  'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+                ),
+                hint: replyAuthor != null
+                    ? 'Responder a $replyAuthor'
+                    : 'Escreva um comentário',
+                maxLines: 3,
+                initialValue: draft,
+                onChanged: onDraftChanged,
               ),
-              hint: replyAuthor != null
-                  ? 'Responder a $replyAuthor'
-                  : 'Escreva um comentário',
-              maxLines: 3,
-              initialValue: draft,
-              onChanged: onDraftChanged,
             ),
             if (editing)
               TextButton(
@@ -103,6 +106,7 @@ class CommentComposer extends StatelessWidget {
               children: [
                 Expanded(
                   child: AppButton(
+                    key: const Key('comment-gif'),
                     label: 'GIF',
                     variant: AppButtonVariant.outline,
                     onPressed: onPickGif,
@@ -112,6 +116,7 @@ class CommentComposer extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: AppButton(
+                    key: const Key('comment-submit'),
                     label: submitting
                         ? (editing ? 'Salvando...' : 'Publicando...')
                         : (editing ? 'Salvar' : 'Publicar'),

@@ -266,6 +266,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     children: [
                       for (final type in createPostTypes)
                         CreatePostTypeChip(
+                          key: Key('create-post-type-${postTypeToApi(type)}'),
                           type: type,
                           selected: _selectedType == type,
                           onPressed: () => handleSelectType(type),
@@ -273,13 +274,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  AppTextField(
-                    key: ValueKey(widget.postId ?? 'new-post'),
-                    label: 'Conteúdo',
-                    hint: 'Digite o conteúdo do seu post...',
-                    maxLines: 6,
-                    initialValue: _text,
-                    onChanged: handleTextChange,
+                  KeyedSubtree(
+                    key: const Key('create-post-content'),
+                    child: AppTextField(
+                      key: ValueKey(widget.postId ?? 'new-post'),
+                      label: 'Conteúdo',
+                      hint: 'Digite o conteúdo do seu post...',
+                      maxLines: 6,
+                      initialValue: _text,
+                      onChanged: handleTextChange,
+                    ),
                   ),
                   if (needsImage) ...[
                     const SizedBox(height: 24),
@@ -325,6 +329,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ],
                     )
                   : AppButton(
+                      key: const Key('create-post-submit'),
                       label: _isEdit ? 'Salvar alterações' : 'Publicar Post',
                       disabled: _selectedType == null || _text.trim().isEmpty,
                       onPressed: handlePublish,

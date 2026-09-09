@@ -15,6 +15,7 @@ class ExclusiveFeedCard extends StatelessWidget {
     this.onPressOpenComments,
     this.onPressOpenProfile,
     this.onPressOptions,
+    this.onPressShare,
     this.onVoteApplied,
   });
 
@@ -24,6 +25,7 @@ class ExclusiveFeedCard extends StatelessWidget {
   final ValueChanged<String>? onPressOpenComments;
   final VoidCallback? onPressOpenProfile;
   final VoidCallback? onPressOptions;
+  final VoidCallback? onPressShare;
   final ValueChanged<VoteResult>? onVoteApplied;
 
   @override
@@ -34,6 +36,7 @@ class ExclusiveFeedCard extends StatelessWidget {
         post: post,
         onPressOpenProfile: onPressOpenProfile,
         onPressOptions: onPressOptions,
+        onPressShare: onPressShare,
         contentOverride: ExclusiveFeedCardLockedContent(
           resolvedUsername: resolvedUsername,
           canUnlock: onPressUnlock != null,
@@ -46,6 +49,7 @@ class ExclusiveFeedCard extends StatelessWidget {
       onPressOpenComments: onPressOpenComments,
       onPressOpenProfile: onPressOpenProfile,
       onPressOptions: onPressOptions,
+      onPressShare: onPressShare,
       onVoteApplied: onVoteApplied,
       topContent: ExclusivePostMetaRow(
         memberName: resolvedUsername,

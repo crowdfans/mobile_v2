@@ -26,15 +26,39 @@ class StoryItem {
   }
 }
 
+/// Artista seguido no payload de `GET /api/v1/home` (sidebar).
+class HomeFollowedArtist {
+  const HomeFollowedArtist({
+    required this.id,
+    required this.username,
+    required this.avatarUrl,
+  });
+
+  final String id;
+  final String username;
+  final String avatarUrl;
+
+  factory HomeFollowedArtist.fromJson(Object? json) {
+    final map = json as Map<String, dynamic>? ?? {};
+    return HomeFollowedArtist(
+      id: map['id'] as String? ?? '',
+      username: map['username'] as String? ?? '',
+      avatarUrl: map['avatarUrl'] as String? ?? '',
+    );
+  }
+}
+
 class HomeFeedDto {
   const HomeFeedDto({
     required this.feedPosts,
     required this.stories,
+    this.followedArtists = const [],
     this.hasMore = false,
   });
 
   final List<FeedPost> feedPosts;
   final List<StoryItem> stories;
+  final List<HomeFollowedArtist> followedArtists;
   final bool hasMore;
 
   factory HomeFeedDto.fromJson(Object? json) {
@@ -47,6 +71,10 @@ class HomeFeedDto {
       stories: [
         for (final item in map['stories'] as List? ?? const [])
           StoryItem.fromJson(item as Map<String, dynamic>),
+      ],
+      followedArtists: [
+        for (final item in map['followedArtists'] as List? ?? const [])
+          HomeFollowedArtist.fromJson(item as Map<String, dynamic>),
       ],
       hasMore: map['hasMore'] == true,
     );

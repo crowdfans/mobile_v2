@@ -78,6 +78,7 @@ class MyPostRow extends StatelessWidget {
               ),
             ),
             IconButton(
+              key: const Key('my-posts-item-menu'),
               onPressed: onOpenMenu,
               icon: Icon(Icons.more_vert, color: colors.textSecondary),
             ),

@@ -186,6 +186,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     return RefreshIndicator(
       onRefresh: handleRefresh,
       child: ListView.separated(
+        key: const Key('my-posts-list'),
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         itemCount: _posts.length,
         separatorBuilder: (context, index) => const SizedBox(height: 12),

@@ -2,7 +2,9 @@ import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/feed/stories_row.dart';
 import 'package:crowdfans/components/post/post_options_sheet.dart';
 import 'package:crowdfans/components/post/post_share_sheet.dart';
+import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
 import 'package:crowdfans/components/toolbar/image_toolbar.dart';
+import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
@@ -12,6 +14,7 @@ import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Home / feed autenticado.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -33,6 +36,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   FeedPost? _sharePost;
   var _subscribedUids = <String>{};
   var _subscribedNames = <String>{};
+  var _followedArtists = <HomeFollowedArtist>[];
+  var _sidebarVisible = false;
 
   @override
   void initState() {
@@ -84,6 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ..clear()
             ..addAll(data.feedPosts);
           _stories = data.stories;
+          _followedArtists = data.followedArtists;
         }
       });
     } catch (_) {
@@ -100,6 +106,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> handleRefresh() async {
     await handleLoad(page: 1);
+  }
+
+  void handleOpenMenu() {
+    setState(() => _sidebarVisible = true);
+  }
+
+  void handleCloseSidebar() {
+    setState(() => _sidebarVisible = false);
+  }
+
+  void handlePressSidebarArtist(HomeFollowedArtist artist) {
+    final artistId = artist.id.trim();
+    if (artistId.isEmpty) {
+      return;
+    }
+    context.push(Pages.artistProfile.replaceAll(':artistId', artistId));
+  }
+
+  void handleOpenNotifications() {
+    context.push(Pages.notifications);
   }
 
   @override
@@ -120,9 +146,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SafeArea(
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: ImageToolbar(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: ImageToolbar(
+                    onMenu: handleOpenMenu,
+                    onNotifications: handleOpenNotifications,
+                  ),
                 ),
                 if (_error != null)
                   Padding(
@@ -194,6 +223,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 onPressOptions: () {
                                   setState(() => _optionsPost = post);
                                 },
+                                onPressShare: () {
+                                  setState(() => _sharePost = post);
+                                },
                               );
                             },
                           ),
@@ -219,6 +251,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             visible: _sharePost != null,
             post: _sharePost,
             onClose: () => setState(() => _sharePost = null),
+          ),
+          SidebarMenu(
+            visible: _sidebarVisible,
+            artists: _followedArtists,
+            onClose: handleCloseSidebar,
+            onPressArtist: handlePressSidebarArtist,
           ),
         ],
       ),
