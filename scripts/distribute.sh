@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Gera o APK (e o IPA, se o signing existir) e envia ao Firebase App Distribution.
+# Gera o APK (IPA se houver signing) e envia ao App Distribution.
+# Web vai para o Firebase Hosting (canal testers) — App Distribution não aceita web.
 #
 # Uso:
 #   npm run distribute              # Android (padrão)
 #   npm run distribute:ios
+#   npm run distribute:web
 #   npm run distribute:all
 #   ./scripts/distribute.sh android --notes "o que mudou"
-#   ./scripts/distribute.sh android --skip-build
+#   ./scripts/distribute.sh web --skip-build
 #
 # Variáveis opcionais: BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER.
 
@@ -19,19 +21,22 @@ ANDROID_APP_ID='1:658897248078:android:edd3c987eb54bcdc2c881f'
 IOS_APP_ID='1:658897248078:ios:874725d168494cab2c881f'
 FIREBASE_PROJECT='crowdfans-prod'
 TESTER_GROUP='flutter-testers'
+WEB_CHANNEL='testers'
+WEB_EXPIRES='14d'
 APK_PATH='build/app/outputs/flutter-apk/app-release.apk'
+WEB_INDEX='build/web/index.html'
 
 PLATFORM='android'
 SKIP_BUILD=0
 NOTES="${RELEASE_NOTES:-}"
 
 usage() {
-  sed -n '2,12p' "$0"
+  sed -n '2,14p' "$0"
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    android | ios | all)
+    android | ios | web | all)
       PLATFORM="$1"
       shift
       ;;
@@ -153,6 +158,29 @@ build_ios() {
     --build-number="$build_number"
 }
 
+build_web() {
+  echo "→ Web $build_name ($build_number)"
+  flutter build web --release \
+    --build-name="$build_name" \
+    --build-number="$build_number"
+}
+
+upload_web() {
+  if [[ ! -f "$WEB_INDEX" ]]; then
+    echo "Build web não encontrada: $WEB_INDEX" >&2
+    echo "Rode sem --skip-build, ou: flutter build web --release" >&2
+    exit 1
+  fi
+  echo "→ Hosting canal $WEB_CHANNEL (expira em $WEB_EXPIRES)"
+  echo "  Notas: $NOTES"
+  firebase hosting:channel:deploy "$WEB_CHANNEL" \
+    --project "$FIREBASE_PROJECT" \
+    --expires "$WEB_EXPIRES"
+  echo
+  echo "Cole o host do URL acima em Authentication → Authorized domains."
+  echo "OTP no browser ainda precisa do reCAPTCHA (PENDENCIA.md)."
+}
+
 run_android() {
   if [[ "$SKIP_BUILD" -eq 0 ]]; then
     build_android
@@ -167,16 +195,25 @@ run_ios() {
   upload_ios
 }
 
-echo "CrowdFans → App Distribution ($FIREBASE_PROJECT / $TESTER_GROUP)"
+run_web() {
+  if [[ "$SKIP_BUILD" -eq 0 ]]; then
+    build_web
+  fi
+  upload_web
+}
+
+echo "CrowdFans → testers ($FIREBASE_PROJECT / $TESTER_GROUP)"
 echo "Notas: $NOTES"
 
 status=0
 case "$PLATFORM" in
   android) run_android ;;
   ios) run_ios || status=1 ;;
+  web) run_web ;;
   all)
     run_android
     run_ios || echo "Android enviado; iOS não."
+    run_web || echo "Web não enviada."
     ;;
 esac
 

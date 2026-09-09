@@ -27,10 +27,13 @@ Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm i
 ```bash
 npm run distribute          # gera o APK e envia (o atalho do dia a dia)
 npm run distribute:ios      # IPA ad-hoc, se o signing Apple existir
+npm run distribute:web      # Flutter web no Hosting (canal testers)
 npm run distribute:all
 ```
 
-No Cursor: **Terminal → Run Task… → App Distribution: Android**. Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
+Web **não** entra no App Distribution (só APK/IPA). O script sobe um [preview channel](https://firebase.google.com/docs/hosting/manage-preview-channels) `testers` em `crowdfans-prod` (expira em 14 dias) e imprime o URL. No console: Authentication → Authorized domains → cole esse host. OTP no browser ainda precisa do reCAPTCHA (`PENDENCIA.md`).
+
+No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
 
 ## Estrutura
 
