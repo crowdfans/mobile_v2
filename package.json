@@ -14,7 +14,11 @@
     "distribute:ios:upload": "bash scripts/distribute.sh ios --skip-build",
     "distribute:web:upload": "bash scripts/distribute.sh web --skip-build",
     "test:patrol:smoke": "patrol test -t integration_test/smoke_test.dart",
-    "test:patrol:superfan": "patrol test -t integration_test/superfan_onboarding_login_test.dart"
+    "test:patrol:superfan": "patrol test -t integration_test/superfan_onboarding_login_test.dart",
+    "test:patrol:e2e:128": "patrol test -t integration_test/e2e_artist_post_fan_comment_test.dart",
+    "test:patrol:e2e:129": "patrol test -t integration_test/e2e_superfan_vote_club_logout_test.dart",
+    "test:patrol:e2e:130": "patrol test -t integration_test/e2e_artist_edit_delete_post_test.dart",
+    "ftl:android:dry": "bash scripts/ftl_android.sh --dry-run"
   },
   "devDependencies": {
     "firebase-tools": "^15.29.0"
