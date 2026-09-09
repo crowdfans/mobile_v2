@@ -15,6 +15,7 @@ class JamCoinPack {
     required this.coins,
     required this.priceCents,
     required this.label,
+    this.productId,
     this.sandboxOnly = false,
   });
 
@@ -22,17 +23,30 @@ class JamCoinPack {
   final int coins;
   final int priceCents;
   final String label;
+  final String? productId;
   final bool sandboxOnly;
 
   factory JamCoinPack.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
     return JamCoinPack(
       id: map['id']?.toString() ?? '',
+      productId: map['productId']?.toString(),
       coins: (map['coins'] as num?)?.toInt() ?? 0,
       priceCents: (map['priceCents'] as num?)?.toInt() ?? 0,
       label: map['label']?.toString() ?? '',
       sandboxOnly: map['sandboxOnly'] == true,
     );
+  }
+
+  String get resolvedProductId {
+    final value = productId?.trim() ?? '';
+    if (value.isNotEmpty) {
+      return value;
+    }
+    if (id.startsWith('jam_')) {
+      return id;
+    }
+    return 'jam_$id';
   }
 }
 

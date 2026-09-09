@@ -1,19 +1,45 @@
 import 'dart:async';
 
-import 'package:crowdfans/components/profile/membership_balance_banner.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
-import 'package:crowdfans/components/profile/wallet_pack_card.dart';
-import 'package:crowdfans/components/profile/wallet_pix_receipt.dart';
+import 'package:crowdfans/components/profile/wallet_home_balance_card.dart';
+import 'package:crowdfans/components/profile/wallet_membership_banner.dart';
+import 'package:crowdfans/components/profile/wallet_promo_banner.dart';
+import 'package:crowdfans/components/profile/wallet_scan_earn_row.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/wallet_service.dart';
-import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-/// Carteira Jam Coins: saldo, pacotes e checkout sandbox.
+DateTime nextSundayEnd() {
+  final now = DateTime.now();
+  final daysUntilSunday = now.weekday == DateTime.sunday ? 0 : 7 - now.weekday;
+  return DateTime(
+    now.year,
+    now.month,
+    now.day + daysUntilSunday,
+    23,
+    59,
+    59,
+    999,
+  );
+}
+
+String formatCountdown(DateTime target) {
+  final remaining = target.difference(DateTime.now());
+  if (remaining.isNegative) {
+    return '00:00:00';
+  }
+  final hours = remaining.inHours;
+  final minutes = remaining.inMinutes.remainder(60);
+  final seconds = remaining.inSeconds.remainder(60);
+  return '${hours.toString().padLeft(2, '0')}:'
+      '${minutes.toString().padLeft(2, '0')}:'
+      '${seconds.toString().padLeft(2, '0')}';
+}
+
+/// Home de Jam Coins (CF-76): saldo, promo, membership e convite.
 class ProfileWalletScreen extends StatefulWidget {
   const ProfileWalletScreen({super.key});
 
@@ -23,10 +49,10 @@ class ProfileWalletScreen extends StatefulWidget {
 
 class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
   WalletSnapshot? _wallet;
-  WalletCheckoutResult? _receipt;
   var _loading = true;
   String? _error;
-  String? _busyId;
+  var _countdown = formatCountdown(nextSundayEnd());
+  Timer? _countdownTimer;
   VoidCallback? _unsubscribeWs;
 
   @override
@@ -34,10 +60,17 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
     super.initState();
     handleLoad();
     unawaited(handleSubscribe());
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _countdown = formatCountdown(nextSundayEnd()));
+    });
   }
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _unsubscribeWs?.call();
     super.dispose();
   }
@@ -54,9 +87,7 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
         return;
       }
       _unsubscribeWs = stop;
-    } catch (_) {
-      // WS é best-effort; saldo ainda atualiza no pull/checkout.
-    }
+    } catch (_) {}
   }
 
   void handleBack() {
@@ -97,42 +128,8 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
     }
   }
 
-  Future<void> handleBuy(JamCoinPack pack) async {
-    setState(() => _busyId = pack.id);
-    try {
-      final result = await WalletService.checkout(pack.id);
-      await handleLoad();
-      if (mounted) {
-        setState(() => _receipt = result);
-      }
-    } catch (error) {
-      if (mounted) {
-        await AppAlert.show(
-          context,
-          title: 'Jam Coins',
-          message: error.toString(),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busyId = null);
-      }
-    }
-  }
-
-  Future<void> handleCopyPix() async {
-    final pix = _receipt?.pixCopyPaste?.trim() ?? '';
-    if (pix.isEmpty) {
-      return;
-    }
-    await Clipboard.setData(ClipboardData(text: pix));
-    if (mounted) {
-      await AppAlert.show(
-        context,
-        title: 'PIX',
-        message: 'Código copia e cola copiado.',
-      );
-    }
+  void handleRecharge() {
+    context.push(Pages.profileWalletRecharge);
   }
 
   @override
@@ -158,51 +155,23 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
-                        MembershipBalanceBanner(
+                        WalletHomeBalanceCard(
                           balance: wallet?.displayBalance ?? '0',
+                          onRecharge: handleRecharge,
                         ),
-                        if (_receipt != null) ...[
-                          const SizedBox(height: 22),
-                          WalletPixReceipt(
-                            receipt: _receipt!,
-                            onCopyPix: handleCopyPix,
-                          ),
-                        ],
-                        const SizedBox(height: 22),
-                        Text(
-                          'Pacotes',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
+                        const SizedBox(height: 16),
+                        WalletPromoBanner(
+                          countdown: _countdown,
+                          onRecharge: handleRecharge,
                         ),
-                        const SizedBox(height: 10),
-                        for (final pack
-                            in wallet?.packs ?? const <JamCoinPack>[]) ...[
-                          WalletPackCard(
-                            pack: pack,
-                            busy: _busyId == pack.id,
-                            onBuy: () => handleBuy(pack),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.surfaceAlt,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text(
-                              'Sandbox credita na hora e devolve payload PIX para copiar. Compra na loja (RevenueCat) entra depois.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                height: 18 / 12,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
+                        const SizedBox(height: 16),
+                        WalletMembershipBanner(
+                          onSubscribe: () =>
+                              context.push(Pages.profileMemberships),
+                        ),
+                        const SizedBox(height: 16),
+                        WalletScanEarnRow(
+                          onPressed: () => context.push(Pages.profileReferral),
                         ),
                       ],
                     ),

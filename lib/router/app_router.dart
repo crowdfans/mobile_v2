@@ -44,6 +44,8 @@ import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
+import 'package:crowdfans/screens/profile/profile_wallet_payment_screen.dart';
+import 'package:crowdfans/screens/profile/profile_wallet_recharge_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
@@ -274,6 +276,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileWallet,
         builder: (context, state) => const ProfileWalletScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileWalletRecharge,
+        builder: (context, state) => const ProfileWalletRechargeScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileWalletPayment,
+        builder: (context, state) => ProfileWalletPaymentScreen(
+          packId: state.uri.queryParameters['packId'] ?? '',
+          productId: state.uri.queryParameters['productId'],
+          label: state.uri.queryParameters['label'],
+          coins: state.uri.queryParameters['coins'],
+          priceCents: int.tryParse(
+            state.uri.queryParameters['priceCents'] ?? '',
+          ),
+        ),
       ),
       GoRoute(
         path: Pages.profilePro,
