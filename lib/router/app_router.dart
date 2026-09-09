@@ -8,6 +8,8 @@ import 'package:crowdfans/screens/fan_clubs/fan_club_moderation_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_moderators_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_rules_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
+import 'package:crowdfans/screens/fan_letter/fan_letter_compose_screen.dart';
+import 'package:crowdfans/screens/fan_letter/fan_letter_gallery_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
 import 'package:crowdfans/screens/login/fan_login_screen.dart';
@@ -18,19 +20,30 @@ import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
+import 'package:crowdfans/screens/profile/artist_audience_settings_screen.dart';
+import 'package:crowdfans/screens/profile/artist_fan_club_settings_screen.dart';
+import 'package:crowdfans/screens/profile/artist_insights_settings_screen.dart';
 import 'package:crowdfans/screens/profile/blocked_users_settings_screen.dart';
+import 'package:crowdfans/screens/profile/fan_club_contestation_list_screen.dart';
+import 'package:crowdfans/screens/profile/fan_club_moderation_list_screen.dart';
 import 'package:crowdfans/screens/profile/fan_profile_screen.dart';
 import 'package:crowdfans/screens/profile/fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/hidden_posts_settings_screen.dart';
+import 'package:crowdfans/screens/profile/moderation_settings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
 import 'package:crowdfans/screens/profile/profile_artists_screen.dart';
+import 'package:crowdfans/screens/profile/profile_earnings_screen.dart';
+import 'package:crowdfans/screens/profile/profile_fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notifications_screen.dart';
+import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
+import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
+import 'package:crowdfans/screens/profile/profile_wallet_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_email_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_name_screen.dart';
@@ -254,17 +267,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileWallet,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Carteira',
-          message: 'Wallet + RevenueCat entram no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileWalletScreen(),
       ),
       GoRoute(
         path: Pages.profilePro,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'CrowdFans Pro',
-          message: 'Paywall RevenueCat entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileProScreen(),
       ),
       GoRoute(
         path: Pages.profileMemberships,
@@ -272,24 +279,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileReferral,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Indicações',
-          message: 'ReferralService entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileReferralScreen(),
       ),
       GoRoute(
         path: Pages.profileEarnings,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Ganhos',
-          message: 'Saque PIX artista entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileEarningsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileFanScore,
+        builder: (context, state) => const ProfileFanScoreScreen(),
       ),
       GoRoute(
         path: Pages.profileArtistInsights,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Insights',
-          message: 'Analytics artista entra no próximo corte.',
-        ),
+        builder: (context, state) => const ArtistInsightsSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileArtistAudience,
+        builder: (context, state) => const ArtistAudienceSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileArtistFanClub,
+        builder: (context, state) => const ArtistFanClubSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileModeration,
+        builder: (context, state) => const ModerationSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileModerationList,
+        builder: (context, state) => const FanClubModerationListScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileContestations,
+        builder: (context, state) => const FanClubContestationListScreen(),
       ),
       GoRoute(
         path: Pages.createPost,
@@ -312,9 +334,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.fanLetterGallery,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Fan Letters',
-          message: 'FanLetterGalleryScreen entra no próximo corte.',
+        builder: (context, state) => const FanLetterGalleryScreen(),
+      ),
+      GoRoute(
+        path: Pages.fanLetterCompose,
+        builder: (context, state) => FanLetterComposeScreen(
+          artistId: state.uri.queryParameters['artistId'],
+          artistName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
         ),
       ),
       GoRoute(

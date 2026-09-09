@@ -1,12 +1,10 @@
 import 'package:crowdfans/components/sidebar/sidebar_artist_row.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/home_feed.dart';
+import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-const _favoriteArtistsStorageKey = 'sidebar.favoriteArtistIds';
-
-/// Menu lateral com artistas seguidos (espelho do `SidebarMenuComponent`).
+/// Menu lateral com favoritos, visitados recentemente e artistas seguidos.
 class SidebarMenu extends StatefulWidget {
   const SidebarMenu({
     super.key,
@@ -31,7 +29,8 @@ class _SidebarMenuState extends State<SidebarMenu>
   late final Animation<Offset> _slide;
   late final Animation<double> _fade;
   var _favoriteIds = <String>{};
-  var _favoritesReady = false;
+  var _recent = <HomeFollowedArtist>[];
+  var _ready = false;
 
   @override
   void initState() {
@@ -45,7 +44,7 @@ class _SidebarMenuState extends State<SidebarMenu>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    handleLoadFavorites();
+    handleLoadStore();
     if (widget.visible) {
       _controller.value = 1;
     }
@@ -54,6 +53,11 @@ class _SidebarMenuState extends State<SidebarMenu>
   @override
   void didUpdateWidget(covariant SidebarMenu oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.visible && !oldWidget.visible) {
+      handleLoadStore();
+      _controller.forward();
+      return;
+    }
     if (widget.visible == oldWidget.visible) {
       return;
     }
@@ -70,47 +74,25 @@ class _SidebarMenuState extends State<SidebarMenu>
     super.dispose();
   }
 
-  Future<void> handleLoadFavorites() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getStringList(_favoriteArtistsStorageKey) ?? const [];
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _favoriteIds = raw.toSet();
-        _favoritesReady = true;
-      });
-    } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _favoritesReady = true);
+  Future<void> handleLoadStore() async {
+    final ids = await SidebarArtistsStore.loadFavoriteIds();
+    final recent = await SidebarArtistsStore.loadRecent();
+    if (!mounted) {
+      return;
     }
-  }
-
-  Future<void> handlePersistFavorites(Set<String> ids) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(_favoriteArtistsStorageKey, ids.toList());
-    } catch (_) {
-      // Favoritos ainda valem na sessão se o disco falhar.
-    }
-  }
-
-  void handleToggleFavorite(String artistId) {
     setState(() {
-      final next = {..._favoriteIds};
-      if (next.contains(artistId)) {
-        next.remove(artistId);
-      } else {
-        next.add(artistId);
-      }
-      _favoriteIds = next;
+      _favoriteIds = ids;
+      _recent = recent;
+      _ready = true;
     });
-    if (_favoritesReady) {
-      handlePersistFavorites(_favoriteIds);
+  }
+
+  Future<void> handleToggleFavorite(String artistId) async {
+    final next = await SidebarArtistsStore.toggleFavorite(artistId);
+    if (!mounted) {
+      return;
     }
+    setState(() => _favoriteIds = next);
   }
 
   void handlePressArtist(HomeFollowedArtist artist) {
@@ -159,6 +141,33 @@ class _SidebarMenuState extends State<SidebarMenu>
                     child: ListView(
                       padding: const EdgeInsets.fromLTRB(30, 86, 30, 34),
                       children: [
+                        Text(
+                          'Visitado recentemente',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        if (!_ready || _recent.isEmpty)
+                          Text(
+                            'Nenhum artista visitado recentemente.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colors.textTertiary,
+                            ),
+                          )
+                        else
+                          for (final artist in _recent)
+                            SidebarArtistRow(
+                              artist: artist,
+                              isFavorite: _favoriteIds.contains(artist.id),
+                              onPressed: () => handlePressArtist(artist),
+                              onToggleFavorite: () =>
+                                  handleToggleFavorite(artist.id),
+                            ),
+                        const SizedBox(height: 30),
                         if (favorites.isNotEmpty) ...[
                           Text(
                             'Favoritos',

@@ -45,6 +45,7 @@ class FanClubContestation {
     required this.expelledAt,
     this.appealStatus,
     this.appealDefense,
+    this.appealRejectionReason,
   });
 
   final String artistUid;
@@ -55,6 +56,7 @@ class FanClubContestation {
   final String expelledAt;
   final String? appealStatus;
   final String? appealDefense;
+  final String? appealRejectionReason;
 
   factory FanClubContestation.fromJson(Map<String, dynamic> json) {
     final appeal = json['appeal'] as Map<String, dynamic>?;
@@ -67,6 +69,7 @@ class FanClubContestation {
       expelledAt: json['expelledAt'] as String? ?? '',
       appealStatus: appeal?['status'] as String?,
       appealDefense: appeal?['defense'] as String?,
+      appealRejectionReason: appeal?['rejectionReason'] as String?,
     );
   }
 }

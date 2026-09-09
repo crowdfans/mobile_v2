@@ -5,9 +5,8 @@ import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/post_share_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-/// Compartilhar post: copiar link ou share nativo.
+/// Compartilhar post: copiar, WhatsApp ou Stories.
 class PostShareSheet extends StatelessWidget {
   const PostShareSheet({
     super.key,
@@ -26,9 +25,7 @@ class PostShareSheet extends StatelessWidget {
       return;
     }
     try {
-      await Clipboard.setData(
-        ClipboardData(text: 'https://crowdfans.app/posts/${current.id}'),
-      );
+      await PostShareService.copyLink(current);
       onClose();
       if (context.mounted) {
         await AppAlert.show(context, title: 'Link', message: 'Link copiado.');
@@ -44,13 +41,25 @@ class PostShareSheet extends StatelessWidget {
     }
   }
 
-  Future<void> handleShare() async {
+  Future<void> handleWhatsApp() async {
     final current = post;
     if (current == null) {
       return;
     }
     try {
-      await PostShareService.shareFeedPost(current);
+      await PostShareService.shareWhatsApp(current);
+    } finally {
+      onClose();
+    }
+  }
+
+  Future<void> handleStories() async {
+    final current = post;
+    if (current == null) {
+      return;
+    }
+    try {
+      await PostShareService.shareStories(current);
     } finally {
       onClose();
     }
@@ -81,14 +90,19 @@ class PostShareSheet extends StatelessWidget {
               child: Column(
                 children: [
                   PostSheetListItem(
-                    label: 'Copiar link',
+                    label: 'Copiar',
                     onPressed: () {
                       handleCopyLink(context);
                     },
                   ),
                   PostSheetListItem(
-                    label: 'Mais opções',
-                    onPressed: handleShare,
+                    label: 'WhatsApp',
+                    onPressed: handleWhatsApp,
+                    showDivider: true,
+                  ),
+                  PostSheetListItem(
+                    label: 'Stories',
+                    onPressed: handleStories,
                     showDivider: true,
                   ),
                 ],

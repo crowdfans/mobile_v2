@@ -9,6 +9,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/services/home_feed_service.dart';
+import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/exclusive_content_access.dart';
@@ -121,6 +122,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (artistId.isEmpty) {
       return;
     }
+    SidebarArtistsStore.recordVisit(artist);
     context.push(Pages.artistProfile.replaceAll(':artistId', artistId));
   }
 
@@ -238,13 +240,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             visible: _optionsPost != null,
             post: _optionsPost,
             onClose: () => setState(() => _optionsPost = null),
-            onPostHidden: (postId) {
+            onUnfollowed: (artistId) {
               setState(() {
-                _posts.removeWhere((item) => item.id == postId);
+                _followedArtists.removeWhere((item) => item.id == artistId);
               });
-            },
-            onOpenShare: (post) {
-              setState(() => _sharePost = post);
             },
           ),
           PostShareSheet(

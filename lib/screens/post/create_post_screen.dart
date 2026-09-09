@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
+import 'package:crowdfans/components/post/create_post_exclusive_toggle.dart';
 import 'package:crowdfans/components/post/create_post_feedback_banner.dart';
 import 'package:crowdfans/components/post/create_post_image_picker.dart';
 import 'package:crowdfans/components/post/create_post_preview.dart';
@@ -33,12 +34,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? _selectedImageUri;
   Uint8List? _selectedImageBytes;
   String? _selectedImageMime;
+  var _isExclusive = false;
   var _loading = false;
   var _hydrating = false;
   String? _error;
   String? _success;
 
   bool get _isEdit => (widget.postId ?? '').isNotEmpty;
+
+  bool get _isFanClubPost => (widget.targetArtistId ?? '').trim().isNotEmpty;
+
+  bool get _hasMedia =>
+      _selectedImageUri != null && _selectedImageUri!.isNotEmpty;
+
+  bool get _canPublish =>
+      _selectedType != null &&
+      (_text.trim().isNotEmpty || _hasMedia) &&
+      _text.length <= 280;
 
   @override
   void initState() {
@@ -72,6 +84,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _text = post.text;
         _selectedImageUri = post.imageUri;
         _selectedImageBytes = null;
+        _isExclusive = post.isExclusive;
         _hydrating = false;
       });
     } catch (error) {
@@ -132,13 +145,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       setState(() => _error = 'Por favor, selecione um tipo de post');
       return false;
     }
-    if (_text.trim().isEmpty) {
-      setState(() => _error = 'O conteúdo do post não pode estar vazio');
+    if (_text.length > 280) {
+      setState(() => _error = 'O post pode ter no máximo 280 caracteres');
+      return false;
+    }
+    if (_text.trim().isEmpty && !_hasMedia) {
+      setState(() => _error = 'Escreva um texto ou adicione uma mídia');
       return false;
     }
     if ((_selectedType == PostType.image ||
             _selectedType == PostType.carousel) &&
-        (_selectedImageUri == null || _selectedImageUri!.isEmpty)) {
+        !_hasMedia) {
       setState(() => _error = 'Por favor, selecione pelo menos uma imagem');
       return false;
     }
@@ -169,6 +186,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         text: _text.trim(),
         imageUri: imageUri,
         targetArtistId: widget.targetArtistId,
+        isExclusive: _isExclusive || _selectedType == PostType.membership,
       );
       if (_isEdit) {
         await PostService.updatePost(widget.postId!, payload);
@@ -243,7 +261,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   Text(
                     _isEdit
                         ? 'Atualize o conteúdo e publique novamente'
-                        : 'Compartilhe seu conteúdo com seus fãs',
+                        : _isFanClubPost
+                        ? 'Post no Fã Clube'
+                        : 'Post na Home',
                     style: TextStyle(fontSize: 16, color: colors.textSecondary),
                   ),
                   const SizedBox(height: 24),
@@ -281,10 +301,32 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       label: 'Conteúdo',
                       hint: 'Digite o conteúdo do seu post...',
                       maxLines: 6,
+                      maxLength: 280,
                       initialValue: _text,
                       onChanged: handleTextChange,
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '${_text.length}/280',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _text.length > 280
+                            ? colors.danger
+                            : colors.textTertiary,
+                      ),
+                    ),
+                  ),
+                  if (!_isFanClubPost) ...[
+                    const SizedBox(height: 8),
+                    CreatePostExclusiveToggle(
+                      value: _isExclusive,
+                      onChanged: (value) {
+                        setState(() => _isExclusive = value);
+                      },
+                    ),
+                  ],
                   if (needsImage) ...[
                     const SizedBox(height: 24),
                     Text(
@@ -303,7 +345,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       onPressed: handlePickImage,
                     ),
                   ],
-                  if (_selectedType != null && _text.trim().isNotEmpty) ...[
+                  if (_selectedType != null &&
+                      (_text.trim().isNotEmpty || _hasMedia)) ...[
                     const SizedBox(height: 24),
                     CreatePostPreview(
                       text: _text,
@@ -331,7 +374,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   : AppButton(
                       key: const Key('create-post-submit'),
                       label: _isEdit ? 'Salvar alterações' : 'Publicar Post',
-                      disabled: _selectedType == null || _text.trim().isEmpty,
+                      disabled: !_canPublish,
                       onPressed: handlePublish,
                     ),
             ),

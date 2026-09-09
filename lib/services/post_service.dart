@@ -16,6 +16,7 @@ class UserPost {
     this.videoUri,
     this.videoDurationMs,
     this.membershipTitle,
+    this.isExclusive = false,
   });
 
   final String id;
@@ -27,6 +28,7 @@ class UserPost {
   final String? videoUri;
   final int? videoDurationMs;
   final String? membershipTitle;
+  final bool isExclusive;
   final String createdAt;
   final String updatedAt;
 
@@ -50,6 +52,7 @@ class UserPost {
       videoUri: map['videoUri'] as String?,
       videoDurationMs: (map['videoDurationMs'] as num?)?.toInt(),
       membershipTitle: map['membershipTitle'] as String?,
+      isExclusive: map['isExclusive'] == true,
       createdAt: map['createdAt'] as String? ?? '',
       updatedAt:
           map['updatedAt'] as String? ?? map['createdAt'] as String? ?? '',
@@ -68,6 +71,7 @@ class PostWriteRequest {
     this.videoDurationMs,
     this.membershipTitle,
     this.targetArtistId,
+    this.isExclusive = false,
   });
 
   final PostType type;
@@ -78,6 +82,7 @@ class PostWriteRequest {
   final int? videoDurationMs;
   final String? membershipTitle;
   final String? targetArtistId;
+  final bool isExclusive;
 
   Map<String, Object?> toJson() {
     return {
@@ -89,6 +94,7 @@ class PostWriteRequest {
       if (videoDurationMs != null) 'videoDurationMs': videoDurationMs,
       if (membershipTitle != null) 'membershipTitle': membershipTitle,
       if (targetArtistId != null) 'targetArtistId': targetArtistId,
+      'isExclusive': isExclusive,
     };
   }
 }
