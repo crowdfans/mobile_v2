@@ -111,6 +111,23 @@ class ProfileSettingsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+            ProfileSettingsSection(
+              title: 'Privacidade e conteúdo',
+              items: [
+                ProfileSettingItem(
+                  label: 'Posts ocultos',
+                  onTap: () => context.push(Pages.profileHiddenPosts),
+                ),
+                ProfileSettingItem(
+                  label: 'Memórias',
+                  onTap: () => context.push(Pages.profileMemories),
+                ),
+                ProfileSettingItem(
+                  label: 'Bloqueados',
+                  onTap: () => context.push(Pages.profileBlockedUsers),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: OutlinedButton(

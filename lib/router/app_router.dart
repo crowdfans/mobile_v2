@@ -12,9 +12,12 @@ import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
+import 'package:crowdfans/screens/profile/blocked_users_settings_screen.dart';
+import 'package:crowdfans/screens/profile/hidden_posts_settings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
+import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
@@ -190,6 +193,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileInformation,
         builder: (context, state) => const ProfileInformationScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileHiddenPosts,
+        builder: (context, state) => const HiddenPostsSettingsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileMemories,
+        builder: (context, state) => const ProfileMemoriesScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileBlockedUsers,
+        builder: (context, state) => const BlockedUsersSettingsScreen(),
       ),
       GoRoute(
         path: Pages.profileNotifications,

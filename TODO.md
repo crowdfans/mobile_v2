@@ -190,9 +190,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] WS `GET /api/v1/me/ws` → evento `wallet.credited`
 - [ ] `ProfileEarningsScreen` (saque PIX artista)
 - [ ] `ProfileReferralScreen` + `ReferralService`
-- [ ] `BlockedUsersSettingsScreen` + `BlockService`
-- [ ] `HiddenPostsSettingsScreen` + `HiddenPostService`
-- [ ] `ProfileMemoriesScreen` + `SavedPostService`
+- [x] `BlockedUsersSettingsScreen` + `BlockService`
+- [x] `HiddenPostsSettingsScreen` + `HiddenPostService`
+- [x] `ProfileMemoriesScreen` + `SavedPostService`
 - [ ] `ModerationSettingsScreen`
 - [ ] `FanClubModerationListScreen`
 - [ ] `FanClubContestationListScreen`
