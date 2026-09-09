@@ -18,7 +18,19 @@ API_MODE=local
 API_LOCAL_BASE_URL=http://localhost:8080
 ```
 
-Login usa o mesmo projeto Firebase `crowdfans-dev` do Expo.
+Login nativo usa o Firebase **`crowdfans-prod`**.
+
+## App Distribution
+
+Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm install` e `npm run firebase:login`.
+
+```bash
+npm run distribute          # gera o APK e envia (o atalho do dia a dia)
+npm run distribute:ios      # IPA ad-hoc, se o signing Apple existir
+npm run distribute:all
+```
+
+No Cursor: **Terminal → Run Task… → App Distribution: Android**. Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
 
 ## Estrutura
 
