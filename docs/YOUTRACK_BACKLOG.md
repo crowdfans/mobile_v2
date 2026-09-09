@@ -15,7 +15,7 @@
 | Artista core | CF-110 ✅ [#24](https://github.com/crowdfans/mobile_v2/pull/24); CF-111 ✅ [#25](https://github.com/crowdfans/mobile_v2/pull/25); CF-113 ✅ [#27](https://github.com/crowdfans/mobile_v2/pull/27) | **YT Done** (gus) |
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
-| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
+| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 env-gated real flows (sem Done até run verde com creds); CF-125/126/127 FTL **adiado** + `scripts/ftl_android.sh` | Ver §1.2 |
 | Bags | CF-82 / CF-83 ✅ [#41](https://github.com/crowdfans/mobile_v2/pull/41) | **YT Done** (gus); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community chrome [#44](https://github.com/crowdfans/mobile_v2/pull/44); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40)/[#42](https://github.com/crowdfans/mobile_v2/pull/42)/[#43](https://github.com/crowdfans/mobile_v2/pull/43) |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
@@ -58,9 +58,9 @@
 | CF-103 | [Superfã] Onboarding — slides Superfã/Artista iguais ao mock | Backlog | gus | Não (Backlog) | Aguardar prints Drive / anexos YT; não inventar layout. |
 | CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Backlog | — | Não | Esperar CF-125 (FTL API/SA); depois `patrol build` + `gcloud firebase test`. |
 | CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | — | Não | Esperar CF-125 + signing iOS (`PENDENCIA.md`). |
-| CF-128 | [Mobile] Patrol — E2E artista posta / superfã comenta | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
-| CF-129 | [Mobile] Patrol — E2E Superfã voto / clube / logout | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
-| CF-130 | [Mobile] Patrol — E2E Artista editar/apagar post | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
+| CF-128 | [Mobile] Patrol — E2E artista posta / superfã comenta | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_ARTIST_*`+`E2E_FAN_*` (ver README Patrol). |
+| CF-129 | [Mobile] Patrol — E2E Superfã voto / clube / logout | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_FAN_*` (+ `E2E_ARTIST_UID` recomendado). |
+| CF-130 | [Mobile] Patrol — E2E Artista editar/apagar post | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_ARTIST_*`. |
 
 #### Firebase Test Lab — deferral (CF-125 / CF-126 / CF-127)
 

@@ -37,10 +37,61 @@ patrol test -t integration_test/smoke_test.dart
 patrol test -t integration_test/superfan_onboarding_login_test.dart
 ```
 
-E2E autenticados (CF-128/129/130) estão **skip** até existirem `E2E_ARTIST_*` / `E2E_FAN_*`.
+### E2E autenticados (CF-128 / CF-129 / CF-130)
 
-Firebase Test Lab (CF-125/126/127) está **adiado** — ver `docs/YOUTRACK_BACKLOG.md` (API/`gcloud` + SA no `crowdfans-prod` ainda não prontos).
+Fluxos reais contra a API de produção
+(`https://crowdfans-server-prod-h9qb6.ondigitalocean.app`). Sem credenciais o
+teste fica `skip` com mensagem clara — **não** finge verde.
 
+1. Copie o exemplo e preencha contas de teste (nunca committe):
+
+```bash
+cp .env.e2e.example .env.e2e
+```
+
+2. Injete as variáveis no Patrol (`String.fromEnvironment`). Opções:
+
+```bash
+# Opção A — --dart-define explícito
+patrol test -t integration_test/e2e_artist_post_fan_comment_test.dart \
+  --dart-define=E2E_ARTIST_EMAIL='...' \
+  --dart-define=E2E_ARTIST_PASSWORD='...' \
+  --dart-define=E2E_FAN_EMAIL='...' \
+  --dart-define=E2E_FAN_PASSWORD='...'
+
+patrol test -t integration_test/e2e_superfan_vote_club_logout_test.dart \
+  --dart-define=E2E_FAN_EMAIL='...' \
+  --dart-define=E2E_FAN_PASSWORD='...' \
+  --dart-define=E2E_ARTIST_UID='...'   # opcional, comunidade direta
+
+patrol test -t integration_test/e2e_artist_edit_delete_post_test.dart \
+  --dart-define=E2E_ARTIST_EMAIL='...' \
+  --dart-define=E2E_ARTIST_PASSWORD='...'
+
+# Opção B — .patrol.env na raiz (gitignored; Patrol carrega automaticamente)
+# E2E_FAN_EMAIL=...
+# E2E_FAN_PASSWORD=...
+```
+
+Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
+(espelho do Expo `../mobile/.env.e2e.example`).
+
+| Ticket | Arquivo | Credenciais |
+|---|---|---|
+| CF-128 | `e2e_artist_post_fan_comment_test.dart` | artista + fã |
+| CF-129 | `e2e_superfan_vote_club_logout_test.dart` | fã (+ `E2E_ARTIST_UID` recomendado) |
+| CF-130 | `e2e_artist_edit_delete_post_test.dart` | artista |
+
+Helpers: `integration_test/helpers/e2e_env.dart`, `e2e_auth.dart`.
+
+### Firebase Test Lab (CF-125 / CF-126 / CF-127)
+
+Ainda **adiado** até API/`gcloud` + SA no `crowdfans-prod` (ver
+`docs/YOUTRACK_BACKLOG.md`). Placeholder do fluxo Android:
+
+```bash
+./scripts/ftl_android.sh --dry-run
+```
 ## App Distribution
 
 Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm install` e `npm run firebase:login`.

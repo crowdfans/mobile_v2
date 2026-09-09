@@ -1,21 +1,63 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-/// CF-130 — E2E Artista: editar e apagar o próprio post.
+import 'helpers/app_harness.dart';
+import 'helpers/e2e_auth.dart';
+import 'helpers/e2e_env.dart';
+
+/// CF-130 — E2E Artista: editar e apagar o próprio post (API prod).
 ///
-/// Depende de sessão artista (`E2E_ARTIST_*`) e post próprio criado no setup.
+/// Requer `E2E_ARTIST_*`. Cria o post no setup (não depende de fixture prévia).
 void main() {
+  final missingCreds = !E2eEnv.hasArtist;
+  if (missingCreds) {
+    // ignore: avoid_print
+    print('SKIP CF-130: ${E2eEnv.artistMissingMessage}');
+  }
+
   patrolTest(
-    // skip: precisa E2E_ARTIST_* e post próprio fixture
     'E2E Artista: editar e apagar o próprio post',
-    skip: true,
+    skip: missingCreds,
+    timeout: const Timeout(Duration(minutes: 4)),
     ($) async {
-      // TODO(CF-130):
-      // 1. Login artista
-      // 2. Criar post (ou usar fixture)
-      // 3. Editar texto/mídia
-      // 4. Apagar post e assert sumiu do feed
-      fail('não implementado sem fixtures E2E');
+      await bootstrapCrowdFansForPatrol($);
+      await E2eAuth.loginAsArtist($);
+
+      final stamp = await E2eAuth.createArtistTextPost($);
+      expect($('load-e2e $stamp'), findsWidgets);
+
+      // --- Editar ---
+      final editStamp = 'edit-${DateTime.now().millisecondsSinceEpoch}';
+      await $(const Key('my-posts-item-menu')).tap();
+      await E2eAuth.pumpFrames($);
+      await $(const Key('my-posts-edit')).waitUntilVisible(
+        timeout: const Duration(seconds: 15),
+      );
+      await $(const Key('my-posts-edit')).tap();
+      await E2eAuth.pumpFrames($, times: 3);
+
+      await $('Editar Post').waitUntilVisible(
+        timeout: const Duration(seconds: 20),
+      );
+      await $(const Key('create-post-content')).enterText('editado $editStamp');
+      await $(const Key('create-post-submit')).tap();
+      await E2eAuth.pumpFrames($, times: 6);
+
+      await $('Meus Posts').waitUntilVisible(
+        timeout: const Duration(seconds: 30),
+      );
+      expect($('editado $editStamp'), findsWidgets);
+
+      // --- Apagar ---
+      await $(const Key('my-posts-item-menu')).tap();
+      await E2eAuth.pumpFrames($);
+      await $(const Key('my-posts-delete')).tap();
+      await E2eAuth.confirmDialog($, 'Deletar');
+      await E2eAuth.pumpFrames($, times: 4);
+
+      expect($('editado $editStamp'), findsNothing);
+      expect($('Meus Posts'), findsOneWidget);
     },
   );
 }
