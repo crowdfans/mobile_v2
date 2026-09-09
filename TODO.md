@@ -184,9 +184,10 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ProfileFanScoreScreen`
 - [x] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
 - [ ] `ProfileProScreen` (CrowdFans Pro / RevenueCat)
-- [x] `ProfileWalletScreen` (saldo Jam Coins + packs)
+- [x] `ProfileWalletScreen` (home saldo + recarga + promo)
+- [x] `ProfileWalletRechargeScreen` / `ProfileWalletPaymentScreen`
 - [ ] Recarga Jam Coins via **RevenueCat IAP** (`jam_starter` / `jam_plus` / `jam_pro`, offering `jam_coins`) — produto atual; Expo local ainda pode mostrar PIX sandbox
-- [x] Checkout sandbox `__DEV__` (`POST /api/v1/me/wallet/checkout`) só para QA
+- [x] Checkout sandbox (`POST /api/v1/me/wallet/checkout`) só para QA
 - [x] WS `GET /api/v1/me/ws` → evento `wallet.credited`
 - [ ] `ProfileEarningsScreen` (saque PIX artista)
 - [ ] `ProfileReferralScreen` + `ReferralService`

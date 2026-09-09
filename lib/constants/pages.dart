@@ -109,6 +109,26 @@ abstract final class Pages {
       avatarUrl: avatarUrl,
     );
   }
+
+  /// Pagamento de pacote Jam Coins.
+  static String profileWalletPaymentOf({
+    required String packId,
+    String? productId,
+    String? label,
+    int? coins,
+    int? priceCents,
+  }) {
+    return Uri(
+      path: profileWalletPayment,
+      queryParameters: {
+        'packId': packId,
+        if ((productId ?? '').trim().isNotEmpty) 'productId': productId!.trim(),
+        if ((label ?? '').trim().isNotEmpty) 'label': label!.trim(),
+        if (coins != null) 'coins': '$coins',
+        if (priceCents != null) 'priceCents': '$priceCents',
+      },
+    ).toString();
+  }
   static String fanClubComposeOf({
     String? artistId,
     String? name,
@@ -171,6 +191,8 @@ abstract final class Pages {
   static const profileMemberships = '/me/settings/memberships';
   static const profilePro = '/me/settings/pro';
   static const profileWallet = '/me/settings/wallet';
+  static const profileWalletRecharge = '/me/settings/wallet/recharge';
+  static const profileWalletPayment = '/me/settings/wallet/payment';
   static const profileEarnings = '/me/settings/earnings';
   static const profileNotifications = '/me/settings/notifications';
   static const profileSecurity = '/me/settings/security';
@@ -219,6 +241,9 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileMembershipsScreen': profileMemberships,
     '/pages/profile/settings/ProfileProScreen': profilePro,
     '/pages/profile/settings/ProfileWalletScreen': profileWallet,
+    '/pages/profile/settings/ProfileWalletRechargeScreen':
+        profileWalletRecharge,
+    '/pages/profile/settings/ProfileWalletPaymentScreen': profileWalletPayment,
     '/pages/profile/settings/ProfileEarningsScreen': profileEarnings,
     '/pages/profile/settings/ProfileNotificationsScreen': profileNotifications,
     '/pages/profile/settings/ProfileSecurityScreen': profileSecurity,
