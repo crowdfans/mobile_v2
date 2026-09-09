@@ -1,3 +1,5 @@
+import 'package:crowdfans/components/fan_letter/fan_letter_background_chip.dart';
+import 'package:crowdfans/components/fan_letter/fan_letter_canvas_preview.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +10,24 @@ class FanLetterCard extends StatelessWidget {
 
   final FanLetter letter;
 
+  FanLetterBackgroundPreset get _preset {
+    return fanLetterBackgroundPresets.firstWhere(
+      (item) => item.id == (letter.backgroundId ?? ''),
+      orElse: () => fanLetterBackgroundPresets.first,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final posted = letter.postedAt > 0
         ? DateTime.fromMillisecondsSinceEpoch(letter.postedAt)
         : null;
+    final hasImage = (letter.imageUri ?? '').trim().isNotEmpty;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: colors.border),
       ),
       child: Padding(
@@ -36,11 +46,39 @@ class FanLetterCard extends StatelessWidget {
             if (posted != null) ...[
               const SizedBox(height: 4),
               Text(
-                posted.toLocal().toString().split('.').first,
+                '${MaterialLocalizations.of(context).formatFullDate(posted.toLocal())} · ${posted.toLocal().hour.toString().padLeft(2, '0')}:${posted.toLocal().minute.toString().padLeft(2, '0')}',
                 style: TextStyle(fontSize: 12, color: colors.textTertiary),
               ),
             ],
-            if ((letter.bodyText ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            AspectRatio(
+              aspectRatio: 3 / 4,
+              child: hasImage
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.network(
+                        letter.imageUri!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return FanLetterCanvasPreview(
+                            preset: _preset,
+                            bodyText: letter.bodyText ?? '',
+                            stickers: const [],
+                            strokes: const [],
+                            compact: true,
+                          );
+                        },
+                      ),
+                    )
+                  : FanLetterCanvasPreview(
+                      preset: _preset,
+                      bodyText: letter.bodyText ?? '',
+                      stickers: const [],
+                      strokes: const [],
+                      compact: true,
+                    ),
+            ),
+            if ((letter.bodyText ?? '').trim().isNotEmpty && hasImage) ...[
               const SizedBox(height: 8),
               Text(
                 letter.bodyText!.trim(),
@@ -48,21 +86,6 @@ class FanLetterCard extends StatelessWidget {
                   fontSize: 14,
                   height: 20 / 14,
                   color: colors.textPrimary,
-                ),
-              ),
-            ],
-            if ((letter.imageUri ?? '').trim().isNotEmpty) ...[
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  letter.imageUri!,
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox.shrink();
-                  },
                 ),
               ),
             ],

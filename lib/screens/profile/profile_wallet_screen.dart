@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:crowdfans/components/profile/artist_jam_coins_balance_card.dart';
+import 'package:crowdfans/components/profile/artist_jam_coins_earnings_section.dart';
+import 'package:crowdfans/components/profile/artist_jam_coins_math.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_home_balance_card.dart';
@@ -8,8 +11,11 @@ import 'package:crowdfans/components/profile/wallet_promo_banner.dart';
 import 'package:crowdfans/components/profile/wallet_scan_earn_row.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/services/earnings_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
+import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 DateTime nextSundayEnd() {
@@ -39,16 +45,17 @@ String formatCountdown(DateTime target) {
       '${seconds.toString().padLeft(2, '0')}';
 }
 
-/// Home de Jam Coins (CF-76): saldo, promo, membership e convite.
-class ProfileWalletScreen extends StatefulWidget {
+/// Home de Jam Coins: superfã (CF-76) ou artista (CF-118).
+class ProfileWalletScreen extends ConsumerStatefulWidget {
   const ProfileWalletScreen({super.key});
 
   @override
-  State<ProfileWalletScreen> createState() => _ProfileWalletScreenState();
+  ConsumerState<ProfileWalletScreen> createState() => _ProfileWalletScreenState();
 }
 
-class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
+class _ProfileWalletScreenState extends ConsumerState<ProfileWalletScreen> {
   WalletSnapshot? _wallet;
+  EarningsSnapshot? _earnings;
   var _loading = true;
   String? _error;
   var _countdown = formatCountdown(nextSundayEnd());
@@ -99,6 +106,8 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
   }
 
   Future<void> handleLoad({bool silent = false}) async {
+    final isArtist =
+        ref.read(authSessionProvider).profile?.isArtist ?? false;
     if (!silent) {
       setState(() {
         _loading = true;
@@ -107,11 +116,20 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
     }
     try {
       final wallet = await WalletService.getWallet();
+      EarningsSnapshot? earnings;
+      if (isArtist) {
+        try {
+          earnings = await EarningsService.getEarnings();
+        } catch (_) {
+          earnings = null;
+        }
+      }
       if (!mounted) {
         return;
       }
       setState(() {
         _wallet = wallet;
+        _earnings = earnings;
         _loading = false;
         _error = null;
       });
@@ -132,10 +150,40 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
     context.push(Pages.profileWalletRecharge);
   }
 
+  void handleRedeem() {
+    context.push(Pages.profileEarnings);
+  }
+
+  List<ArtistJamCoinsEarningRow> get _earningRows {
+    final available = _earnings?.available ?? 0;
+    if (available <= 0) {
+      return const [
+        ArtistJamCoinsEarningRow(title: 'Membership', value: '0 JC'),
+        ArtistJamCoinsEarningRow(title: 'Lives', value: '0 JC'),
+      ];
+    }
+    // API ainda não quebra origem; mostra o disponível em Membership
+    // e deixa Lives em 0 até o backend expor o breakdown.
+    return [
+      ArtistJamCoinsEarningRow(
+        title: 'Membership',
+        value: '${ArtistJamCoinsMath.formatPtBr(available)} JC',
+      ),
+      const ArtistJamCoinsEarningRow(title: 'Lives', value: '0 JC'),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final wallet = _wallet;
+    final isArtist =
+        ref.watch(authSessionProvider).profile?.isArtist ?? false;
+    final redeemable = _earnings?.available ?? 0;
+    final redeemableReais = ArtistJamCoinsMath.formatReais(
+      ArtistJamCoinsMath.convertJamCoinsToReais(redeemable),
+    );
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -155,24 +203,48 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
-                        WalletHomeBalanceCard(
-                          balance: wallet?.displayBalance ?? '0',
-                          onRecharge: handleRecharge,
-                        ),
-                        const SizedBox(height: 16),
-                        WalletPromoBanner(
-                          countdown: _countdown,
-                          onRecharge: handleRecharge,
-                        ),
-                        const SizedBox(height: 16),
-                        WalletMembershipBanner(
-                          onSubscribe: () =>
-                              context.push(Pages.profileMemberships),
-                        ),
-                        const SizedBox(height: 16),
-                        WalletScanEarnRow(
-                          onPressed: () => context.push(Pages.profileReferral),
-                        ),
+                        if (isArtist) ...[
+                          ArtistJamCoinsBalanceCard(
+                            label: 'Jam Coins para usar',
+                            balance: wallet?.displayBalance ?? '0',
+                            helperText:
+                                'Saldo comprado com dinheiro real para usar em memberships, ativações e experiências dentro do app.',
+                            actionLabel: 'Recarregar',
+                            onAction: handleRecharge,
+                          ),
+                          const SizedBox(height: 12),
+                          ArtistJamCoinsBalanceCard(
+                            label: 'Jam Coins para resgatar',
+                            balance: ArtistJamCoinsMath.formatPtBr(redeemable),
+                            secondaryValue: redeemableReais,
+                            helperText:
+                                'Valor acumulado pelas suas receitas. A conversão em reais exibida aqui é estimada, e o valor final do saque considera a retenção de 30% no momento da solicitação.',
+                            actionLabel: 'Solicitar resgate',
+                            onAction: handleRedeem,
+                          ),
+                          const SizedBox(height: 16),
+                          ArtistJamCoinsEarningsSection(rows: _earningRows),
+                        ] else ...[
+                          WalletHomeBalanceCard(
+                            balance: wallet?.displayBalance ?? '0',
+                            onRecharge: handleRecharge,
+                          ),
+                          const SizedBox(height: 16),
+                          WalletPromoBanner(
+                            countdown: _countdown,
+                            onRecharge: handleRecharge,
+                          ),
+                          const SizedBox(height: 16),
+                          WalletMembershipBanner(
+                            onSubscribe: () =>
+                                context.push(Pages.profileMemberships),
+                          ),
+                          const SizedBox(height: 16),
+                          WalletScanEarnRow(
+                            onPressed: () =>
+                                context.push(Pages.profileReferral),
+                          ),
+                        ],
                       ],
                     ),
             ),
