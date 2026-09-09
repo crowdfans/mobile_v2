@@ -1,4 +1,5 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/fan_score_artist_card.dart';
 import 'package:crowdfans/components/profile/fan_score_cycle_card.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
@@ -7,10 +8,11 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/profile_service.dart';
+import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Fan Score público por handle.
+/// FanScore público por handle (mock Fanscore).
 class FanScoreScreen extends StatefulWidget {
   const FanScoreScreen({super.key, required this.fanHandle});
 
@@ -25,6 +27,7 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
   var _loading = true;
   String? _error;
   String? _expandedArtistId;
+  var _search = '';
 
   String get _handle {
     return ProfileService.normalizeFanHandle(
@@ -86,17 +89,51 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
     });
   }
 
+  Future<void> handleOpenInfo() async {
+    await AppAlert.show(
+      context,
+      title: 'Como funciona o FanScore',
+      message:
+          'Há um score diferente para cada artista, recalculado a cada ciclo mensal. '
+          'O ranking compara você com outros fãs do mesmo artista. '
+          'Membership e doações pesam mais na pontuação.',
+    );
+  }
+
+  List<FanScoreEntry> filteredEntries() {
+    final entries = _data?.entries ?? const <FanScoreEntry>[];
+    final query = _search.trim().toLowerCase();
+    if (query.isEmpty) {
+      return entries;
+    }
+    return [
+      for (final entry in entries)
+        if (entry.artistName.toLowerCase().contains(query)) entry,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final entries = _data?.entries ?? const <FanScoreEntry>[];
+    final entries = filteredEntries();
     final cycle = _data?.cycleDetails;
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Fan Score', onBack: handleBack),
+            ProfileScreenHeader(
+              title: 'FanScore',
+              onBack: handleBack,
+              action: IconButton(
+                onPressed: handleOpenInfo,
+                icon: Icon(
+                  Icons.info_outline_rounded,
+                  color: colors.textPrimary,
+                ),
+                tooltip: 'Como funciona',
+              ),
+            ),
             Expanded(
               child: _loading
                   ? const ProfileState(loading: true)
@@ -117,11 +154,22 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
                         ],
                         if (cycle != null) ...[
                           FanScoreCycleCard(details: cycle),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
+                        ],
+                        if (_error == null) ...[
+                          AppTextField(
+                            hint: 'Buscar artista',
+                            onChanged: (value) {
+                              setState(() => _search = value);
+                            },
+                          ),
+                          const SizedBox(height: 14),
                         ],
                         if (_error == null && entries.isEmpty)
                           Text(
-                            'Sem scores ainda. Assine artistas para começar a pontuar.',
+                            _search.trim().isEmpty
+                                ? 'Sem scores ainda. Assine artistas para começar a pontuar.'
+                                : 'Nenhum artista encontrado para essa busca.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,

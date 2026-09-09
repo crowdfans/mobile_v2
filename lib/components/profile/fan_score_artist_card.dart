@@ -4,7 +4,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:flutter/material.dart';
 
-/// Cartão de Fan Score por artista (gradiente + insights).
+/// Cartão de Fan Score por artista (mock Fanscore).
 class FanScoreArtistCard extends StatelessWidget {
   const FanScoreArtistCard({
     super.key,
@@ -28,9 +28,10 @@ class FanScoreArtistCard extends StatelessWidget {
     final border = _parseHex(entry.tier.border) ?? colors.border;
     final badgeText =
         _parseHex(entry.tier.badgeText) ?? const Color(0xFF111827);
-    final deltaColor = entry.deltaPercentage > 0
+    final delta = entry.deltaPercentage;
+    final deltaColor = delta > 0
         ? const Color(0xFF15803D)
-        : entry.deltaPercentage < 0
+        : delta < 0
         ? const Color(0xFFB91C1C)
         : const Color(0xFF374151);
     return DecoratedBox(
@@ -48,23 +49,25 @@ class FanScoreArtistCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: border),
-                gradient: LinearGradient(colors: badgeGradient),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+            Center(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: border),
+                  gradient: LinearGradient(colors: badgeGradient),
                 ),
-                child: Text(
-                  entry.tier.label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: badgeText,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    entry.tier.label.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: badgeText,
+                    ),
                   ),
                 ),
               ),
@@ -124,7 +127,7 @@ class FanScoreArtistCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   _formatScore(entry.currentScore),
@@ -134,29 +137,56 @@ class FanScoreArtistCard extends StatelessWidget {
                     color: Color(0xFF111827),
                   ),
                 ),
+                const SizedBox(width: 10),
+                Text(
+                  _formatDelta(delta),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: deltaColor,
+                  ),
+                ),
                 const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      _formatDelta(entry.deltaPercentage),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                if (entry.fanRank != null)
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0x66FFFFFF),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        '#${entry.fanRank}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1F2937),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (delta != 0) ...[
+                  const SizedBox(width: 8),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: deltaColor.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        delta > 0
+                            ? Icons.arrow_upward_rounded
+                            : Icons.arrow_downward_rounded,
+                        size: 16,
                         color: deltaColor,
                       ),
                     ),
-                    Text(
-                      entry.fanRank == null
-                          ? 'Sem ranking'
-                          : '#${entry.fanRank}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ],
             ),
             if (expanded) ...[

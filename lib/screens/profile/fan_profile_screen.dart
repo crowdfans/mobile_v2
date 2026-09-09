@@ -1,9 +1,9 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/profile/fan_profile_actions_sheet.dart';
-import 'package:crowdfans/components/profile/fan_profile_followed_artist_chip.dart';
 import 'package:crowdfans/components/profile/fan_profile_header.dart';
 import 'package:crowdfans/components/profile/fan_profile_stats_row.dart';
+import 'package:crowdfans/components/profile/me_followed_artists_section.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -106,6 +106,14 @@ class _FanProfileScreenState extends ConsumerState<FanProfileScreen> {
     context.push(Pages.fanScorePublicOf(handle));
   }
 
+  void handleOpenArtists() {
+    final handle = _targetHandle;
+    if (handle.isEmpty) {
+      return;
+    }
+    context.push(Pages.profileArtistsOf(handle: handle));
+  }
+
   Future<void> handleReport() async {
     final uid = _overview?.profile.userUid?.trim() ?? '';
     if (uid.isEmpty) {
@@ -197,13 +205,16 @@ class _FanProfileScreenState extends ConsumerState<FanProfileScreen> {
     final profile = overview?.profile;
     final posts = overview?.posts ?? const <FeedPost>[];
     final artists = overview?.followedArtists ?? const <FollowedArtist>[];
+    final title = (profile?.displayName.trim().isNotEmpty ?? false)
+        ? profile!.displayName.trim()
+        : 'Perfil';
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Perfil',
+              title: title,
               onBack: handleBack,
               action: profile?.userUid == null || profile!.userUid!.isEmpty
                   ? null
@@ -238,91 +249,57 @@ class _FanProfileScreenState extends ConsumerState<FanProfileScreen> {
                             postsCount: profile.postsCount,
                             cardsCount: profile.cardsCount,
                             artistsCount: '${artists.length}',
+                            onArtistsTap: handleOpenArtists,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Bio',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
+                          if (profile.bio.trim().isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Text(
+                              profile.bio.trim(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 21 / 14,
+                                color: colors.textPrimary,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            profile.bio.trim().isEmpty
-                                ? 'Nenhuma bio ainda.'
-                                : profile.bio,
-                            style: TextStyle(
-                              fontSize: 14,
-                              height: 20 / 14,
-                              color: colors.textSecondary,
-                            ),
-                          ),
+                          ],
                           const SizedBox(height: 12),
                           AppButton(
                             label: 'Ver Fan Score',
                             variant: AppButtonVariant.outline,
                             onPressed: handleOpenFanScore,
                           ),
+                          if (artists.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            MeFollowedArtistsSection(
+                              artists: artists,
+                              onSeeAll: handleOpenArtists,
+                              onPressArtist: (artist) {
+                                if (artist.id.isEmpty) {
+                                  return;
+                                }
+                                context.push(
+                                  Pages.artistProfile.replaceAll(
+                                    ':artistId',
+                                    artist.id,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                           const SizedBox(height: 16),
                           Text(
-                            'Artistas seguidos',
+                            'Publicações',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          if (artists.isEmpty)
-                            Text(
-                              'Nenhum artista seguido.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.textSecondary,
-                              ),
-                            )
-                          else
-                            SizedBox(
-                              height: 92,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: artists.length,
-                                separatorBuilder: (_, _) =>
-                                    const SizedBox(width: 10),
-                                itemBuilder: (context, index) {
-                                  final artist = artists[index];
-                                  return FanProfileFollowedArtistChip(
-                                    artist: artist,
-                                    onTap: () {
-                                      if (artist.id.isEmpty) {
-                                        return;
-                                      }
-                                      context.push(
-                                        Pages.artistProfile.replaceAll(
-                                          ':artistId',
-                                          artist.id,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Posts',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
                               color: colors.textPrimary,
                             ),
                           ),
                           if (posts.isEmpty)
                             const ProfileState(
-                              title: 'Nenhum post',
-                              message: 'Nenhum post encontrado.',
+                              title: 'Nenhuma publicação',
+                              message:
+                                  'As publicações deste perfil aparecerão aqui.',
                             )
                           else
                             for (final post in posts)

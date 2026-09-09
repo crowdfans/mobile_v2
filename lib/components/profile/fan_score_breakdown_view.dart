@@ -1,8 +1,8 @@
-import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/components/profile/fan_score_breakdown_metric.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:flutter/material.dart';
 
-/// Linhas de breakdown do Fan Score.
+/// Grade de métricas do breakdown (mock Fanscore expandido).
 class FanScoreBreakdownView extends StatelessWidget {
   const FanScoreBreakdownView({
     super.key,
@@ -11,49 +11,48 @@ class FanScoreBreakdownView extends StatelessWidget {
   });
 
   final FanScoreBreakdown breakdown;
+
+  /// Mantido por compatibilidade com o cartão de artista.
   final int? deltaPercentage;
 
   @override
   Widget build(BuildContext context) {
-    final colors = CrowdFansTheme.of(context);
-    final delta = deltaPercentage;
-    final rows = <(String, String)>[
-      ('Membership ativa', breakdown.hasMembership ? 'Sim' : 'Não'),
-      ('Comentários', '${breakdown.commentsMade}'),
-      ('Votos', '${breakdown.upvotesMade}'),
-      ('Fan Letters', '${breakdown.fanLettersPosted}'),
-      ('Participações em live', '${breakdown.liveParticipations}'),
-      ('Doações em live', '${breakdown.liveDonations}'),
-      ('Posts no Fã Clube', '${breakdown.fanClubPosts}'),
-      if (delta != null)
-        (
-          'Variação no ciclo',
-          '${delta >= 0 ? '+' : ''}$delta%',
-        ),
+    final metrics = <(String, String)>[
+      ('${breakdown.fanClubPosts}', 'Posts FC'),
+      ('${breakdown.fanLettersPosted}', 'Cartas'),
+      ('${breakdown.commentsMade}', 'Coment.'),
+      ('${breakdown.upvotesMade}', 'Upvotes'),
+      ('${breakdown.liveParticipations}', 'Lives'),
+      ('${breakdown.liveDonations}', 'Doações'),
+      (breakdown.hasMembership ? '1' : '0', 'Membership'),
     ];
+    // deltaPercentage não entra na grade — o mock mostra delta na linha de score.
     return Column(
       children: [
-        for (final row in rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  row.$1,
-                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
+        Row(
+          children: [
+            for (final metric in metrics.take(4))
+              Expanded(
+                child: FanScoreBreakdownMetric(
+                  value: metric.$1,
+                  label: metric.$2,
                 ),
-                Text(
-                  row.$2,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            for (final metric in metrics.skip(4))
+              Expanded(
+                child: FanScoreBreakdownMetric(
+                  value: metric.$1,
+                  label: metric.$2,
                 ),
-              ],
-            ),
-          ),
+              ),
+            const Expanded(child: SizedBox.shrink()),
+          ],
+        ),
       ],
     );
   }
