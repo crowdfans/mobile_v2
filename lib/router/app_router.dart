@@ -255,7 +255,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileInformation,
-        builder: (context, state) => const ProfileInformationScreen(),
+        builder: (context, state) => ProfileInformationScreen(
+          initialTab: state.uri.queryParameters['tab'],
+        ),
       ),
       GoRoute(
         path: Pages.profileHiddenPosts,
