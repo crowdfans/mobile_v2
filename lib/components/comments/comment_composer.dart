@@ -56,7 +56,7 @@ class CommentComposer extends StatelessWidget {
                 ),
                 hint: replyAuthor != null
                     ? 'Responder a $replyAuthor'
-                    : 'Escreva um comentário',
+                    : 'Adicione um comentário...',
                 maxLines: 3,
                 initialValue: draft,
                 onChanged: onDraftChanged,

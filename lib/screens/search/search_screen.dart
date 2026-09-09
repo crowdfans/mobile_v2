@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
-import 'package:crowdfans/components/search/search_ranking_card.dart';
+import 'package:crowdfans/components/search/search_discovery_tile.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/search_service.dart';
@@ -133,49 +133,59 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Explorar',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: colors.textPrimary,
+                  child: AppTextField(
+                    hint: 'Buscar artista',
+                    onChanged: handleQueryChanged,
+                  ),
+                ),
+                if (!searching) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Top 500 Fã Clubes',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: colors.textPrimary,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      AppTextField(
-                        hint: 'Buscar artistas',
-                        onChanged: handleQueryChanged,
-                      ),
-                    ],
+                        TextButton(
+                          onPressed: () => handleOpenRanking('fan-clubs'),
+                          child: Text(
+                            'ver todos',
+                            style: TextStyle(
+                              color: colors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                  child: Row(
-                    children: [
-                      SearchRankingCard(
-                        title: 'Top Fã Clubes',
-                        subtitle: 'Mais seguidores',
-                        onPressed: () => handleOpenRanking('fan-clubs'),
-                      ),
-                      const SizedBox(width: 8),
-                      SearchRankingCard(
-                        title: 'Top Ativos',
-                        subtitle: 'Atividade nas últimas 24h',
-                        onPressed: () => handleOpenRanking('active'),
-                      ),
-                      const SizedBox(width: 8),
-                      SearchRankingCard(
-                        title: 'Top Engajados',
-                        subtitle: 'Posts recentes',
-                        onPressed: () => handleOpenRanking('engaged'),
-                      ),
-                    ],
+                ],
+                if (!searching)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: Row(
+                      children: [
+                        SearchDiscoveryTile(
+                          title: 'Top 100\nEngajados',
+                          accent: AppPalette.purple100,
+                          onPressed: () => handleOpenRanking('engaged'),
+                        ),
+                        const SizedBox(width: 10),
+                        SearchDiscoveryTile(
+                          title: 'Top 500\nAtivos',
+                          accent: AppPalette.blue50,
+                          onPressed: () => handleOpenRanking('active'),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -184,17 +194,18 @@ class _SearchScreenState extends State<SearchScreen> {
                       style: TextStyle(color: colors.danger),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Text(
-                    searching ? 'Resultados' : 'Top artistas',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                if (searching)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      'Resultados',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
