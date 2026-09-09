@@ -18,10 +18,12 @@ class ArtistProfileFeedFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Material(
-      color: selected ? colors.primary : colors.surface,
+      color: selected ? colors.surfaceAlt : colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(999),
-        side: BorderSide(color: selected ? colors.primary : colors.border),
+        side: BorderSide(
+          color: selected ? colors.textTertiary.withValues(alpha: 0.35) : colors.border,
+        ),
       ),
       child: InkWell(
         onTap: onPressed,
@@ -33,7 +35,7 @@ class ArtistProfileFeedFilterChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: selected ? colors.buttonPrimaryText : colors.textPrimary,
+              color: colors.textPrimary,
             ),
           ),
         ),

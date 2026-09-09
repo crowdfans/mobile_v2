@@ -1,13 +1,13 @@
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/components/buttons/app_button.dart';
-import 'package:crowdfans/components/fan_letter/fan_letter_card.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
-import 'package:crowdfans/components/profile/artist_profile_about_card.dart';
-import 'package:crowdfans/components/profile/artist_profile_cover.dart';
-import 'package:crowdfans/components/profile/artist_profile_cta_pill.dart';
-import 'package:crowdfans/components/profile/artist_profile_feed_filter_chip.dart';
-import 'package:crowdfans/components/profile/artist_profile_hero.dart';
-import 'package:crowdfans/components/profile/artist_profile_tab_chip.dart';
+import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
+import 'package:crowdfans/components/profile/artist_me_tab_bar.dart';
+import 'package:crowdfans/components/profile/artist_profile_exclusive_teaser.dart';
+import 'package:crowdfans/components/profile/artist_profile_letter_tile.dart';
+import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_spotify_card.dart';
+import 'package:crowdfans/components/profile/artist_profile_stat_tile.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -29,11 +29,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum _ArtistTab { feed, sobre, exclusive, fanclub, cartas }
-
 enum _FeedFilter { all, posts, media }
 
-/// Perfil público do artista — espelho Expo `origin/prod` CF-74.
+/// Perfil público do artista — cover overlay dos prints Perfil Artista.
 class ArtistProfileScreen extends ConsumerStatefulWidget {
   const ArtistProfileScreen({
     super.key,
@@ -58,7 +56,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _loading = true;
   var _subscribed = false;
   var _togglingMembership = false;
-  var _tab = _ArtistTab.feed;
+  var _tab = 'feed';
   var _feedFilter = _FeedFilter.all;
   int? _memberCount;
   int? _fanClubRank;
@@ -92,18 +90,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     return Uri.decodeComponent(widget.seedAvatarUrl ?? '').trim();
   }
 
-  String handleLabel() {
-    final slug = displayName().toLowerCase().replaceAll(RegExp(r'\s+'), '');
-    return 'artist/$slug';
-  }
-
-  String metaLabel() {
-    final members = _memberCount;
-    if (members != null) {
-      return '$members membros';
-    }
-    final posts = _profile?.stats.postsCount ?? _posts.length;
-    return '$posts posts';
+  String membersLabel() {
+    return ArtistProfilePublicCover.formatMembers(_memberCount);
   }
 
   Future<void> handleLoad() async {
@@ -196,7 +184,6 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     );
   }
 
-  /// Espelho Expo: o pill “+ Seguir” liga/desliga membership.
   Future<void> handleToggleMembership() async {
     if (_togglingMembership) {
       return;
@@ -248,9 +235,62 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     );
   }
 
+  void handleBack() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(Pages.home);
+  }
+
   void handleReport() {
     context.push(
       '${Pages.report}?context=artist-profile&targetId=${Uri.encodeComponent(widget.artistId)}&displayName=${Uri.encodeComponent(displayName())}',
+    );
+  }
+
+  Future<void> handleMore() async {
+    final colors = CrowdFansTheme.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.flag_outlined, color: colors.textPrimary),
+                title: Text(
+                  'Denunciar',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  handleReport();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.groups_outlined, color: colors.textPrimary),
+                title: Text(
+                  'Abrir fã clube',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  handleOpenFanClub();
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -277,13 +317,13 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   }
 
   List<FeedPost> feedPosts() {
-    final base = _tab == _ArtistTab.exclusive
+    final base = _tab == 'exclusivo'
         ? [
             for (final post in _posts)
               if (isExclusivePost(post)) post,
           ]
         : _posts;
-    if (_tab != _ArtistTab.feed) {
+    if (_tab != 'feed') {
       return base;
     }
     return switch (_feedFilter) {
@@ -293,246 +333,233 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     };
   }
 
+  Widget buildTabBody(AppColors colors, List<FeedPost> posts) {
+    final access = exclusiveContext();
+    final name = displayName();
+
+    if (_tab == 'cartas') {
+      if (_letters.isEmpty) {
+        return const ProfileState(
+          title: 'Fan letters',
+          message: 'Nenhuma fan letter ainda.',
+        );
+      }
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: _letters.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 3 / 4,
+        ),
+        itemBuilder: (context, index) {
+          return ArtistProfileLetterTile(letter: _letters[index]);
+        },
+      );
+    }
+
+    if (_tab == 'sobre') {
+      final bio = _profile?.description.trim().isNotEmpty == true
+          ? _profile!.description
+          : 'Este artista ainda não escreveu uma bio.';
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Sobre',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            bio,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.45,
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Expanded(
+                child: ArtistProfileStatTile(
+                  label: 'Base',
+                  value: 'Brasil',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ArtistProfileStatTile(
+                  label: 'Fã Clube',
+                  value: membersLabel(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const ArtistProfileSpotifyCard(),
+          const SizedBox(height: 14),
+          AppButton(
+            label: 'Abrir fã clube',
+            variant: AppButtonVariant.outline,
+            onPressed: handleOpenFanClub,
+          ),
+        ],
+      );
+    }
+
+    if (_tab == 'fanclub') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ArtistProfileStatTile(
+            label: 'Fã Clube',
+            value: membersLabel(),
+          ),
+          const SizedBox(height: 12),
+          AppButton(
+            label: 'Abrir fã clube',
+            onPressed: handleOpenFanClub,
+          ),
+        ],
+      );
+    }
+
+    if (_tab == 'exclusivo' && !_subscribed) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ArtistProfileExclusiveTeaser(
+            artistName: name,
+            onSubscribe: handleToggleMembership,
+          ),
+          if (posts.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            for (final post in posts)
+              FeedItem(
+                post: post,
+                canAccessExclusive: canAccessExclusivePost(post, access),
+                onPressUnlock: handleToggleMembership,
+                onVoteApplied: handleVoteApplied,
+              ),
+          ],
+        ],
+      );
+    }
+
+    if (posts.isEmpty) {
+      return ProfileState(
+        title: 'Nenhum post',
+        message: _tab == 'exclusivo'
+            ? 'Nenhum post exclusivo ainda.'
+            : 'Este artista ainda não publicou posts.',
+      );
+    }
+
+    return Column(
+      children: [
+        for (final post in posts)
+          FeedItem(
+            post: post,
+            canAccessExclusive: canAccessExclusivePost(post, access),
+            onPressUnlock: _subscribed ? null : handleToggleMembership,
+            onVoteApplied: handleVoteApplied,
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final access = exclusiveContext();
     final name = displayName();
     final avatar = avatarUrl();
     final posts = feedPosts();
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: handleLoad,
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  TextButton(
-                    onPressed: () {
-                      if (context.canPop()) {
-                        context.pop();
-                        return;
-                      }
-                      context.go(Pages.home);
-                    },
-                    child: Text(
-                      'Voltar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
-                    ),
+                  ArtistProfilePublicCover(
+                    imageUrl: avatar,
+                    displayName: name,
+                    membersLabel: membersLabel(),
+                    rank: _fanClubRank,
+                    subscribed: _subscribed,
+                    busy: _togglingMembership,
+                    onBack: handleBack,
+                    onMore: handleMore,
+                    onToggleFollow: handleToggleMembership,
                   ),
-                  Expanded(
-                    child: Text(
-                      'Artista',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Column(
+                        children: [
+                          Text(
+                            _error!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: colors.textSecondary),
+                          ),
+                          const SizedBox(height: 12),
+                          AppButton(
+                            label: 'Tentar novamente',
+                            onPressed: handleLoad,
+                          ),
+                        ],
                       ),
                     ),
+                  ArtistMeTabBar(
+                    selectedId: _tab,
+                    onSelected: (id) => setState(() => _tab = id),
                   ),
-                  TextButton(
-                    onPressed: handleReport,
-                    child: Text(
-                      'Denunciar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
+                  if (_tab == 'feed')
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Wrap(
+                        spacing: 8,
+                        children: [
+                          ArtistMeFeedFilterChip(
+                            label: 'Todos',
+                            selected: _feedFilter == _FeedFilter.all,
+                            onPressed: () {
+                              setState(() => _feedFilter = _FeedFilter.all);
+                            },
+                          ),
+                          ArtistMeFeedFilterChip(
+                            label: 'Posts',
+                            selected: _feedFilter == _FeedFilter.posts,
+                            onPressed: () {
+                              setState(() => _feedFilter = _FeedFilter.posts);
+                            },
+                          ),
+                          ArtistMeFeedFilterChip(
+                            label: 'Media',
+                            selected: _feedFilter == _FeedFilter.media,
+                            onPressed: () {
+                              setState(() => _feedFilter = _FeedFilter.media);
+                            },
+                          ),
+                        ],
                       ),
                     ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
+                    child: buildTabBody(colors, posts),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                      onRefresh: handleLoad,
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
-                        children: [
-                          if (_error != null) ...[
-                            Text(
-                              _error!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: colors.textSecondary),
-                            ),
-                            const SizedBox(height: 12),
-                            AppButton(
-                              label: 'Tentar novamente',
-                              onPressed: handleLoad,
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          ArtistProfileCover(imageUrl: avatar),
-                          const SizedBox(height: 16),
-                          ArtistProfileHero(
-                            displayName: name,
-                            handle: handleLabel(),
-                            avatarUrl: avatar,
-                            meta: metaLabel(),
-                            rank: _fanClubRank,
-                          ),
-                          const SizedBox(height: 16),
-                          ArtistProfileCtaPill(
-                            subscribed: _subscribed,
-                            busy: _togglingMembership,
-                            onPressed: handleToggleMembership,
-                          ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (final entry in const [
-                                (_ArtistTab.feed, 'Feed'),
-                                (_ArtistTab.sobre, 'Sobre'),
-                                (_ArtistTab.exclusive, 'Exclusivo'),
-                                (_ArtistTab.fanclub, 'Fã Clube'),
-                                (_ArtistTab.cartas, 'Cartas'),
-                              ])
-                                ArtistProfileTabChip(
-                                  label: entry.$2,
-                                  selected: _tab == entry.$1,
-                                  onPressed: () {
-                                    setState(() => _tab = entry.$1);
-                                  },
-                                ),
-                            ],
-                          ),
-                          if (_tab == _ArtistTab.feed) ...[
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              children: [
-                                ArtistProfileFeedFilterChip(
-                                  label: 'Todos',
-                                  selected: _feedFilter == _FeedFilter.all,
-                                  onPressed: () {
-                                    setState(() => _feedFilter = _FeedFilter.all);
-                                  },
-                                ),
-                                ArtistProfileFeedFilterChip(
-                                  label: 'Posts',
-                                  selected: _feedFilter == _FeedFilter.posts,
-                                  onPressed: () {
-                                    setState(
-                                      () => _feedFilter = _FeedFilter.posts,
-                                    );
-                                  },
-                                ),
-                                ArtistProfileFeedFilterChip(
-                                  label: 'Mídia',
-                                  selected: _feedFilter == _FeedFilter.media,
-                                  onPressed: () {
-                                    setState(
-                                      () => _feedFilter = _FeedFilter.media,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                          const SizedBox(height: 16),
-                          if (_tab == _ArtistTab.cartas)
-                            if (_letters.isEmpty)
-                              const ProfileState(
-                                title: 'Fan letters',
-                                message: 'Nenhuma fan letter ainda.',
-                              )
-                            else
-                              for (final letter in _letters) ...[
-                                FanLetterCard(letter: letter),
-                                const SizedBox(height: 12),
-                              ]
-                          else if (_tab == _ArtistTab.sobre) ...[
-                            ArtistProfileAboutCard(
-                              label: 'Bio',
-                              body:
-                                  _profile?.description.trim().isNotEmpty ==
-                                      true
-                                  ? _profile!.description
-                                  : 'Este artista ainda não escreveu uma bio.',
-                            ),
-                            const SizedBox(height: 12),
-                            const ArtistProfileAboutCard(
-                              label: 'Spotify',
-                              body:
-                                  'Preview do Spotify vem do cadastro do artista e não é editável aqui.',
-                            ),
-                            const SizedBox(height: 12),
-                            ArtistProfileAboutCard(
-                              label: 'Fã Clube',
-                              body: _memberCount != null
-                                  ? '$_memberCount membros'
-                                  : 'Comunidade do artista',
-                            ),
-                            const SizedBox(height: 10),
-                            AppButton(
-                              label: 'Abrir fã clube',
-                              variant: AppButtonVariant.outline,
-                              onPressed: handleOpenFanClub,
-                            ),
-                          ] else if (_tab == _ArtistTab.fanclub) ...[
-                            ArtistProfileAboutCard(
-                              label: 'Fã Clube',
-                              body: _memberCount != null
-                                  ? '$_memberCount membros'
-                                  : 'Comunidade do artista',
-                            ),
-                            const SizedBox(height: 10),
-                            AppButton(
-                              label: 'Abrir fã clube',
-                              onPressed: handleOpenFanClub,
-                            ),
-                          ] else ...[
-                            if (_tab == _ArtistTab.exclusive && !_subscribed) ...[
-                              ArtistProfileAboutCard(
-                                label: 'Conteúdo exclusivo',
-                                body:
-                                    'Assine a membership para ver posts exclusivos deste artista.',
-                              ),
-                              const SizedBox(height: 10),
-                              AppButton(
-                                label: 'Assinar membership',
-                                onPressed: handleToggleMembership,
-                              ),
-                              const SizedBox(height: 16),
-                            ],
-                            if (posts.isEmpty)
-                              ProfileState(
-                                title: 'Nenhum post',
-                                message: _tab == _ArtistTab.exclusive
-                                    ? 'Nenhum post exclusivo ainda.'
-                                    : 'Este artista ainda não publicou posts.',
-                              )
-                            else
-                              for (final post in posts)
-                                FeedItem(
-                                  post: post,
-                                  canAccessExclusive: canAccessExclusivePost(
-                                    post,
-                                    access,
-                                  ),
-                                  onPressUnlock: _subscribed
-                                      ? null
-                                      : handleToggleMembership,
-                                  onVoteApplied: handleVoteApplied,
-                                ),
-                          ],
-                        ],
-                      ),
-                    ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

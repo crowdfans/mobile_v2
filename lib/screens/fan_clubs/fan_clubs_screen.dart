@@ -1,3 +1,4 @@
+import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/fan_clubs/fan_club_artist_chip.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -33,7 +34,18 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   var _hasMore = true;
   var _loading = true;
   var _loadingMore = false;
+  var _sortPopular = true;
   String? _error;
+
+  List<CommunityPost> sortedPosts() {
+    final posts = [..._posts];
+    if (_sortPopular) {
+      posts.sort((a, b) => b.votes.compareTo(a.votes));
+    } else {
+      posts.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
+    }
+    return posts;
+  }
 
   @override
   void initState() {
@@ -204,14 +216,14 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Fan Clubs',
+                    'Postagens dos Fã Clubes',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: colors.textPrimary,
                     ),
@@ -221,17 +233,33 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                     'Toque em um artista para abrir a comunidade · segure para o perfil',
                     style: TextStyle(fontSize: 13, color: colors.textSecondary),
                   ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () => context.push(Pages.fanClubRules),
-                    child: Text(
-                      'Ver regras do Fã Clube',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Ordenar postagens por:',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textSecondary,
                     ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                children: [
+                  FanClubSortTab(
+                    label: 'Popularidade',
+                    selected: _sortPopular,
+                    onPressed: () => setState(() => _sortPopular = true),
+                  ),
+                  FanClubSortTab(
+                    label: 'Novos',
+                    selected: !_sortPopular,
+                    onPressed: () => setState(() => _sortPopular = false),
                   ),
                 ],
               ),
@@ -282,40 +310,45 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                       },
                       child: RefreshIndicator(
                         onRefresh: handleRefresh,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
-                          itemCount: _posts.isEmpty
-                              ? 1
-                              : _posts.length + (_loadingMore ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (_posts.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 40),
-                                child: Text(
-                                  _artists.isEmpty
-                                      ? 'Siga artistas para ver posts da comunidade aqui.'
-                                      : 'Nenhum post na comunidade ainda.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: colors.textSecondary,
-                                  ),
-                                ),
-                              );
-                            }
-                            if (index >= _posts.length) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-                            final post = _posts[index].toFeedPost();
-                            return FeedItem(
-                              post: post,
-                              canAccessExclusive: false,
-                              onVoteApplied: handleVoteApplied,
+                        child: Builder(
+                          builder: (context) {
+                            final posts = sortedPosts();
+                            return ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                              itemCount: posts.isEmpty
+                                  ? 1
+                                  : posts.length + (_loadingMore ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (posts.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 40),
+                                    child: Text(
+                                      _artists.isEmpty
+                                          ? 'Siga artistas para ver posts da comunidade aqui.'
+                                          : 'Nenhum post na comunidade ainda.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: colors.textSecondary,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                if (index >= posts.length) {
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                                final post = posts[index].toFeedPost();
+                                return FeedItem(
+                                  post: post,
+                                  canAccessExclusive: false,
+                                  onVoteApplied: handleVoteApplied,
+                                );
+                              },
                             );
                           },
                         ),
