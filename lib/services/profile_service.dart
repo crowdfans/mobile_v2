@@ -1,5 +1,6 @@
 import 'package:crowdfans/api/api_urls.dart';
 import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/models/membership.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/http_service.dart';
 
@@ -130,5 +131,13 @@ abstract final class ProfileService {
       for (final item in data['posts'] as List? ?? const [])
         UserProfilePost.fromJson(item as Map<String, dynamic>),
     ];
+  }
+
+  /// Memberships ativas e catálogo (`GET /api/v1/profiles/:handle/memberships`).
+  static Future<MembershipOverview> getMemberships(String profileHandle) {
+    return HttpService.request(
+      ApiUrls.withParams(ApiUrls.profileMemberships, {'handle': profileHandle}),
+      parse: MembershipOverview.fromJson,
+    );
   }
 }

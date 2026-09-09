@@ -2,6 +2,7 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/screens/artists/artist_profile_screen.dart';
 import 'package:crowdfans/screens/comments/comments_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_compose_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
@@ -17,7 +18,9 @@ import 'package:crowdfans/screens/profile/hidden_posts_settings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
+import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
+import 'package:crowdfans/screens/profile/profile_notifications_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/register/fan/register_fan_birthdate_screen.dart';
@@ -208,10 +211,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileNotifications,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Notificações',
-          message: 'ProfileNotificationsScreen entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileNotificationsScreen(),
       ),
       GoRoute(
         path: Pages.profileWallet,
@@ -229,10 +229,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileMemberships,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Memberships',
-          message: 'SubscriptionService entra no próximo corte.',
-        ),
+        builder: (context, state) => const ProfileMembershipsScreen(),
       ),
       GoRoute(
         path: Pages.profileReferral,
@@ -268,9 +265,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.fanClubCompose,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Post no fã clube',
-          message: 'FanClubComposeScreen entra no próximo corte.',
+        builder: (context, state) => FanClubComposeScreen(
+          artistId: state.uri.queryParameters['artistId'],
+          artistName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
         ),
       ),
       GoRoute(

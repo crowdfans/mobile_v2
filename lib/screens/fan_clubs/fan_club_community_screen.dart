@@ -2,6 +2,7 @@ import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
 import 'package:crowdfans/components/toolbar/text_toolbar.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
+import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/community_service.dart';
@@ -113,6 +114,17 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     }
   }
 
+  Future<void> handleCompose() async {
+    final club = _club;
+    context.push(
+      Pages.fanClubComposeOf(
+        artistId: widget.artistId,
+        name: club?.artistName,
+        avatarUrl: _avatarUrl,
+      ),
+    );
+  }
+
   Future<void> handleToggleFollow() async {
     try {
       if (_following) {
@@ -173,6 +185,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                               avatarUrl: _avatarUrl,
                               following: _following,
                               onToggleFollow: handleToggleFollow,
+                              onCompose: handleCompose,
                             );
                           }
                           return Padding(

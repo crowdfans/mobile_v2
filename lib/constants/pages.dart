@@ -46,6 +46,31 @@ abstract final class Pages {
   /// Edição de post (`CreatePostScreen?postId=`).
   static String createPostEdit(String postId) =>
       '$createPost?postId=${Uri.encodeQueryComponent(postId)}';
+
+  /// Comunidade do artista (`FanClubCommunityScreen`).
+  static String fanClubCommunityOf(String artistId) =>
+      '/fan-clubs/community/${Uri.encodeComponent(artistId)}';
+
+  /// Compose de post no fã clube, com artista pré-selecionado quando houver.
+  static String fanClubComposeOf({
+    String? artistId,
+    String? name,
+    String? avatarUrl,
+  }) {
+    final id = artistId?.trim() ?? '';
+    if (id.isEmpty) {
+      return fanClubCompose;
+    }
+    return Uri(
+      path: fanClubCompose,
+      queryParameters: {
+        'artistId': id,
+        if ((name ?? '').trim().isNotEmpty) 'name': name!.trim(),
+        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
+      },
+    ).toString();
+  }
+
   static const demo = '/demo';
 
   static const profileAccount = '/me/settings/account';

@@ -11,12 +11,14 @@ class FanClubCommunityHero extends StatelessWidget {
     required this.club,
     required this.following,
     required this.onToggleFollow,
+    required this.onCompose,
     this.avatarUrl = '',
   });
 
   final ArtistFanClub club;
   final bool following;
   final VoidCallback onToggleFollow;
+  final VoidCallback onCompose;
   final String avatarUrl;
 
   @override
@@ -69,6 +71,12 @@ class FanClubCommunityHero extends StatelessWidget {
                 ? AppButtonVariant.outline
                 : AppButtonVariant.primary,
             onPressed: onToggleFollow,
+          ),
+          const SizedBox(height: 8),
+          AppButton(
+            label: 'Publicar no clube',
+            variant: AppButtonVariant.outline,
+            onPressed: onCompose,
           ),
         ],
       ),

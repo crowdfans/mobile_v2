@@ -1,33 +1,98 @@
 # Pendências — `mobile_v2`
 
-Itens do `TODO.md` que não dá para fechar agora. Revisar e destravar.
+O que **você** precisa fazer, o que espera o Expo, e o que o agente continua no `TODO.md`.
 
-## flutterfire configure (`crowdfans-prod`)
+---
 
-Feito: apps nativos `com.crowdfans.crowdfans` (iOS/Android) + web existente, `lib/firebase_options.dart`, `google-services.json`, `GoogleService-Info.plist`. `FirebaseService` usa `DefaultFirebaseOptions.currentPlatform`.
+## 1. IPA iOS no App Distribution — **você faz agora**
 
-O CLI precisa do binário `firebase` no PATH (`node_modules/.bin` deste repo, via `firebase-tools`). Conta atual: `crowdfans@gmail.com`.
+Xcode 26.6, license e platform iOS 26.5 já estão ok. Falta só a conta Apple no Xcode (hoje: **0 certificados**).
 
-App Distribution: grupo `flutter-testers` criado. Falta adicionar e-mails e um IPA/APK. Scripts: `npm run distribute:android` / `npm run distribute:ios`.
+Bundle Flutter: `com.crowdfans.crowdfans` (o Expo continua `com.crowdfans.crowdfansmobile` — outro app).
 
-Bundle Flutter: `com.crowdfans.crowdfans`. Expo permanece `com.crowdfans.crowdfansmobile`.
+### Passo a passo
 
-## Social login
+1. Abra o workspace (já pode estar aberto):
+   `ios/Runner.xcworkspace`  
+   Se não abrir: Finder → `mobile_v2/ios/Runner.xcworkspace`.
+2. No Xcode: **Xcode → Settings… → Accounts**.
+3. **+** → **Apple ID** → entre com o Apple ID do **time CrowdFans** (conta paga do Apple Developer Program).
+4. Confira que o team aparece (Team ID). Sem membership paga o App Distribution iOS não assina para testers.
+5. No navigator: projeto **Runner** → target **Runner**.
+6. Aba **Signing & Capabilities**:
+   - marque **Automatically manage signing**
+   - **Team** = o time CrowdFans
+   - Bundle Identifier = `com.crowdfans.crowdfans`
+   - Signing Certificate deve virar **Apple Development** (ou Distribution). Sem aviso vermelho.
+7. Na primeira vez a Apple pode pedir para criar o App ID `com.crowdfans.crowdfans`. Deixe o Xcode criar.
+8. Avise no chat. O restante é daqui:
+   - `flutter build ipa --release --export-method ad-hoc`
+   - `npm run distribute:ios` (grupo `flutter-testers`, projeto `crowdfans-prod`)
 
-Comentado no Expo. **Não implementar** até o `mobile` ligar.
+**Não precisa** consertar CocoaPods. Este app usa Swift Package Manager.
 
-## Cadastro: reCAPTCHA nativo / web
+---
 
-OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — o app web já existe no console; falta o slot equivalente ao `FirebaseRecaptchaVerifierModal`.
+## 2. Testar o APK Android — **você faz se quiser**
 
-## AppRootLayout — RevenueCat
+Já enviado. Testers no grupo: `crowdfans@gmail.com` e `gus@crowdfans.app`.
 
-Fontes e tema já sobem no `CrowdFansApp`. `PurchasesService.configure()` no start só entra quando o SDK (`purchases_flutter`) for ligado (seção 16).
+1. Abra o [release no console](https://console.firebase.google.com/project/crowdfans-prod/appdistribution/app/android:com.crowdfans.crowdfans/releases/2a1kimr08lgc0?utm_source=firebase-tools) ou o e-mail do Firebase.
+2. No celular Android: instale o **App Tester** (Firebase) e aceite o convite.
+3. Instale o `0.1.0-alpha.1 (1)`.
+4. Login: conta Firebase de produção (`crowdfans@gmail.com`).
 
-## Cadastro artista — Spotify / parental (⛔)
+Para mais testers: mande os e-mails. Eu adiciono no grupo `flutter-testers`.
 
-O Expo também não tem tela de verificação Spotify, contestação de nome nem consentimento parental. O Flutter copiou o buraco: enums no model, sem UI e sem endpoint extra.
+---
 
-## Ainda no `TODO.md` (não bloqueado)
+## 3. OTP na **web** (reCAPTCHA) — **você no console Firebase, se for testar web**
 
-Fan club compose/about, settings filhas, fan letters, notificações/FCM, RevenueCat/IAP, wallet WS.
+OTP no iOS/Android nativo usa Play/APNs. Na **web** o Firebase exige reCAPTCHA.
+
+1. [Firebase Console](https://console.firebase.google.com/project/crowdfans-prod/authentication/providers) → Authentication → Sign-in method → **Phone**.
+2. Confira que o app web `crowdfans-prod` está autorizado (já existe: `1:658897248078:web:719078048f5878412c881f`).
+3. Domínio autorizado: o host que você usa no Flutter web (localhost na dev).
+4. Avisar no chat para ligar o verifier no Flutter (equivalente ao `FirebaseRecaptchaVerifierModal` do Expo).
+
+Sem isso, cadastro/login por SMS **no browser** continua quebrado. Nativo não depende deste passo.
+
+---
+
+## 4. Não implementar (espera o Expo)
+
+| Item | Por quê |
+| --- | --- |
+| Social login (Google/Apple) | Comentado no `mobile`. Só quando o Expo ligar. |
+| Live / Meet & Greet | ⛔ no Expo. Não inventar. |
+| Create post de fã | ⛔ no Expo se continuar assim. |
+| Cadastro artista: Spotify / parental | O Expo também não tem tela. Copiamos o buraco. |
+
+Horus / `horus-admin` continua fora.
+
+---
+
+## 5. Trabalho de código (agente / `TODO.md`) — **não é passo seu**
+
+Ordem quando o IPA estiver no ar (ou em paralelo, se você preferir):
+
+1. Fan club about / rules / moderação + `FanClubViewerService`
+2. Perfil público do fã + fan score + artistas seguidos
+3. Settings que faltam: fan score, wallet, Pro, ganhos, referral, insights
+4. Fan letters
+5. Push (FCM/APNs) + deep link
+6. RevenueCat (`purchases_flutter`) + Jam Coins + WS da carteira
+7. Remover `DemoScreen`
+
+Firebase CLI, apps nativos e APK Android **já estão feitos**.
+
+---
+
+## Já resolvido (não mexer)
+
+- `flutterfire configure` no `crowdfans-prod` (iOS/Android `com.crowdfans.crowdfans` + web)
+- `firebase_options.dart`, `google-services.json`, `GoogleService-Info.plist`
+- CLI: `node_modules/.bin/firebase`, conta `crowdfans@gmail.com`
+- Grupo App Distribution `flutter-testers`
+- APK Android `0.1.0-alpha.1 (1)` no Distribution
+- License do Xcode + download iOS 26.5

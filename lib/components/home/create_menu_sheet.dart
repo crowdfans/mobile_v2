@@ -31,15 +31,13 @@ class CreateMenuSheet extends ConsumerWidget {
 
   void handleFanClubPost(BuildContext context) {
     onClose();
-    if (fanClubArtistId != null) {
-      context.push(
-        '${Pages.fanClubCompose}?artistId=$fanClubArtistId'
-        '&name=${Uri.encodeComponent(fanClubArtistName ?? '')}'
-        '&avatarUrl=${Uri.encodeComponent(fanClubArtistAvatarUrl ?? '')}',
-      );
-      return;
-    }
-    context.push(Pages.fanClubCompose);
+    context.push(
+      Pages.fanClubComposeOf(
+        artistId: fanClubArtistId,
+        name: fanClubArtistName,
+        avatarUrl: fanClubArtistAvatarUrl,
+      ),
+    );
   }
 
   void handleMyPosts(BuildContext context) {

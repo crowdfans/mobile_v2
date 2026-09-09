@@ -148,8 +148,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 8. Fan clubs
 
 - [x] `FanClubsScreen` (`(main)/clubs.tsx`)
-- [x] Comunidade `fan-clubs/community/[artistId].tsx` (hero + feed; compose/about ainda placeholder)
-- [ ] `FanClubComposeScreen`
+- [x] Comunidade `fan-clubs/community/[artistId].tsx` (hero + feed; compose liga `FanClubComposeScreen`)
+- [x] `FanClubComposeScreen` (texto + imagem via `MediaService` / `targetArtistId`)
 - [ ] `FanClubAboutScreen`
 - [ ] `FanClubModeratorsScreen`
 - [ ] `FanClubModerationScreen`
@@ -180,9 +180,9 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `ProfileAppearanceScreen` + `appearanceSettingsProvider` (persiste em SharedPreferences)
 - [x] `ProfileInformationScreen` (ajuda / termos / privacidade)
 - [x] `ProfileSecurityScreen` (e-mail, senha; telefone ainda aguarda backend)
-- [ ] `ProfileNotificationsScreen` + `notification-preferences-service`
+- [x] `ProfileNotificationsScreen` + `notification-preferences-service`
 - [ ] `ProfileFanScoreScreen`
-- [ ] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
+- [x] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
 - [ ] `ProfileProScreen` (CrowdFans Pro / RevenueCat)
 - [ ] `ProfileWalletScreen` (saldo Jam Coins + packs)
 - [ ] Recarga Jam Coins via **RevenueCat IAP** (`jam_starter` / `jam_plus` / `jam_pro`, offering `jam_coins`) — produto atual; Expo local ainda pode mostrar PIX sandbox
@@ -270,7 +270,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 18. Mídia
 
 - [x] `MediaService` (`POST /api/v1/me/media/uploads` + PUT Spaces)
-- [ ] Image picker nos fluxos: cadastro, fan club compose, fan letter — account e create post já usam
+- [ ] Image picker nos fluxos: cadastro, fan letter — account, create post e fan club compose já usam
 
 ---
 
@@ -315,7 +315,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 23. Firebase
 
 - [x] Instalar Firebase CLI local (`firebase-tools` neste repo; usar `node_modules/.bin`)
-- [x] Configurar App Distribution (grupo `flutter-testers`; falta e-mails e IPA/APK)
+- [x] Configurar App Distribution (grupo `flutter-testers`; APK Android enviado; IPA iOS falta Apple ID / Team no Xcode — ver `PENDENCIA.md`)
 
 ---
 
