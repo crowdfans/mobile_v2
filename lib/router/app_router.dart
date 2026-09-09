@@ -188,6 +188,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Pages.fanClubCommunity,
         builder: (context, state) => FanClubCommunityScreen(
           artistId: state.pathParameters['artistId'] ?? '',
+          seedName: state.uri.queryParameters['name'],
+          seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
         ),
       ),
       GoRoute(

@@ -56,8 +56,13 @@ class ArtistSearchResponse {
 
 /// Busca e rankings de artistas.
 abstract final class SearchService {
-  static Future<ArtistSearchResponse> searchArtists(String query) {
-    final params = Uri(queryParameters: {'q': query.trim(), 'limit': '20'});
+  static Future<ArtistSearchResponse> searchArtists(
+    String query, {
+    int limit = 30,
+  }) {
+    final params = Uri(
+      queryParameters: {'q': query.trim(), 'limit': '$limit'},
+    );
     return HttpService.request(
       '${ApiUrls.searchArtists}${params.query.isEmpty ? '' : '?${params.query}'}',
       parse: ArtistSearchResponse.fromJson,

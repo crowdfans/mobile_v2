@@ -211,7 +211,13 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
       if (!mounted) {
         return;
       }
-      context.go(Pages.fanClubCommunityOf(artist.id));
+      context.go(
+        Pages.fanClubCommunityOf(
+          artist.id,
+          name: artist.name,
+          avatarUrl: artist.avatarUrl,
+        ),
+      );
     } catch (error) {
       if (!mounted) {
         return;

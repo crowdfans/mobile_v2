@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
@@ -23,11 +25,18 @@ class _SearchScreenState extends State<SearchScreen> {
   var _loading = true;
   String? _error;
   ArtistSearchItem? _selected;
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     handleLoadTop();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   Future<void> handleLoadTop() async {
@@ -37,36 +46,72 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     try {
       final data = await SearchService.rankArtists('fan-clubs', limit: 3);
-      setState(() => _topArtists = data.artists);
-    } catch (_) {
-      setState(() => _error = 'Não foi possível carregar o ranking.');
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
+      if (!mounted) {
+        return;
       }
+      setState(() {
+        _topArtists = data.artists;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _loading = false;
+        _error = 'Não foi possível carregar o ranking.';
+      });
     }
   }
 
-  Future<void> handleSearch(String query) async {
+  void handleQueryChanged(String query) {
     _query = query;
+    _debounce?.cancel();
+    if (query.trim().isEmpty) {
+      setState(() {
+        _results = [];
+        _error = null;
+      });
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 350), () {
+      handleSearch(query);
+    });
+  }
+
+  Future<void> handleSearch(String query) async {
     if (query.trim().isEmpty) {
       setState(() => _results = []);
       return;
     }
     setState(() => _loading = true);
     try {
-      final data = await SearchService.searchArtists(query);
+      final data = await SearchService.searchArtists(query, limit: 30);
+      if (!mounted || _query.trim() != query.trim()) {
+        return;
+      }
       setState(() {
         _results = data.artists;
         _error = null;
+        _loading = false;
       });
     } catch (_) {
-      setState(() => _error = 'Não foi possível buscar artistas.');
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
+      if (!mounted || _query.trim() != query.trim()) {
+        return;
       }
+      setState(() {
+        _loading = false;
+        _error = 'Não foi possível buscar artistas.';
+      });
     }
+  }
+
+  Future<void> handleRefresh() async {
+    if (_query.trim().isNotEmpty) {
+      await handleSearch(_query);
+      return;
+    }
+    await handleLoadTop();
   }
 
   void handleOpenRanking(String kind) {
@@ -102,36 +147,35 @@ class _SearchScreenState extends State<SearchScreen> {
                       const SizedBox(height: 12),
                       AppTextField(
                         hint: 'Buscar artistas',
-                        onChanged: handleSearch,
+                        onChanged: handleQueryChanged,
                       ),
                     ],
                   ),
                 ),
-                if (!searching)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        SearchRankingCard(
-                          title: 'Top Fã Clubes',
-                          subtitle: 'Mais seguidores',
-                          onPressed: () => handleOpenRanking('fan-clubs'),
-                        ),
-                        const SizedBox(width: 8),
-                        SearchRankingCard(
-                          title: 'Top Ativos',
-                          subtitle: 'Atividade nas últimas 24h',
-                          onPressed: () => handleOpenRanking('active'),
-                        ),
-                        const SizedBox(width: 8),
-                        SearchRankingCard(
-                          title: 'Top Engajados',
-                          subtitle: 'Posts recentes',
-                          onPressed: () => handleOpenRanking('engaged'),
-                        ),
-                      ],
-                    ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      SearchRankingCard(
+                        title: 'Top Fã Clubes',
+                        subtitle: 'Mais seguidores',
+                        onPressed: () => handleOpenRanking('fan-clubs'),
+                      ),
+                      const SizedBox(width: 8),
+                      SearchRankingCard(
+                        title: 'Top Ativos',
+                        subtitle: 'Atividade nas últimas 24h',
+                        onPressed: () => handleOpenRanking('active'),
+                      ),
+                      const SizedBox(width: 8),
+                      SearchRankingCard(
+                        title: 'Top Engajados',
+                        subtitle: 'Posts recentes',
+                        onPressed: () => handleOpenRanking('engaged'),
+                      ),
+                    ],
                   ),
+                ),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -140,27 +184,66 @@ class _SearchScreenState extends State<SearchScreen> {
                       style: TextStyle(color: colors.danger),
                     ),
                   ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    searching ? 'Resultados' : 'Top artistas',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                          itemCount: list.length,
-                          itemBuilder: (context, index) {
-                            final artist = list[index];
-                            return SearchArtistRankRow(
-                              artist: artist,
-                              onPressed: () => context.push(
-                                Pages.artistProfile.replaceAll(
-                                  ':artistId',
-                                  artist.id,
+                      : RefreshIndicator(
+                          onRefresh: handleRefresh,
+                          child: list.isEmpty
+                              ? ListView(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 40),
+                                      child: Text(
+                                        searching
+                                            ? 'Nenhum artista encontrado.'
+                                            : 'Nada no ranking ainda.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colors.textSecondary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    0,
+                                    16,
+                                    24,
+                                  ),
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    final artist = list[index];
+                                    return SearchArtistRankRow(
+                                      artist: artist,
+                                      position: searching
+                                          ? null
+                                          : (artist.rank ?? index + 1),
+                                      onPressed: () => context.push(
+                                        Pages.artistProfile.replaceAll(
+                                          ':artistId',
+                                          artist.id,
+                                        ),
+                                      ),
+                                      onPressMore: () {
+                                        setState(() => _selected = artist);
+                                      },
+                                    );
+                                  },
                                 ),
-                              ),
-                              onPressMore: () {
-                                setState(() => _selected = artist);
-                              },
-                            );
-                          },
                         ),
                 ),
               ],

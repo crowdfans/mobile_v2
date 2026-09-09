@@ -151,7 +151,9 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   }
 
   void handleOpenCommunity(_ClubArtist artist) {
-    context.push(Pages.fanClubCommunityOf(artist.artistUid));
+    context.push(
+      Pages.fanClubCommunityOf(artist.artistUid, name: artist.artistName),
+    );
   }
 
   void handleOpenArtist(_ClubArtist artist) {

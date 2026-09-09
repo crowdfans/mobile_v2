@@ -70,8 +70,18 @@ abstract final class Pages {
   }
 
   /// Comunidade do artista (`FanClubCommunityScreen`).
-  static String fanClubCommunityOf(String artistId) =>
-      '/fan-clubs/community/${Uri.encodeComponent(artistId)}';
+  static String fanClubCommunityOf(
+    String artistId, {
+    String? name,
+    String? avatarUrl,
+  }) {
+    return _withArtistQuery(
+      '/fan-clubs/community/${Uri.encodeComponent(artistId)}',
+      artistId: artistId,
+      name: name,
+      avatarUrl: avatarUrl,
+    );
+  }
 
   static String fanLetterComposeOf({
     String? artistId,
