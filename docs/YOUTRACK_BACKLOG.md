@@ -29,33 +29,38 @@
 | Fora de escopo | Horus / produto adiado / não somos donos |
 | Backend/Meet | Backend-only, Live, Meet/CometChat — fora da paridade Flutter por enquanto |
 
-**Totais (consulta 2026-09-09, refresh pós-#44):** 26 unresolved · 23 non-Horus · 3 Horus (CF-100–102) · amostra `$top=200` `project: CF`.
+**Totais (consulta 2026-09-09 ~17:45, refresh API `$top=200` `project: CF`):** 26 unresolved · 23 non-Horus · 3 Horus (CF-100–102).
+
+### Snapshot aberto (5 buckets)
+
+| # | Bucket | IDs | Contagem |
+|---|---|---|---|
+| 1 | Mobile/Flutter **acionável agora** | — | **0** |
+| 2 | Mobile **bloqueado** (mocks / infra / fixtures) | CF-103, CF-126, CF-127, CF-128, CF-129, CF-130 | 6 |
+| 3 | Meet / Live ⛔ | CF-10, CF-30, CF-97, CF-99, CF-120, CF-121 | 6 |
+| 4 | Backend / Financial / Infra | CF-1, CF-4, CF-9, CF-14, CF-21, CF-31, CF-51, CF-52, CF-96, CF-98, CF-125 | 11 |
+| 5 | Horus (ignorar) | CF-100, CF-101, CF-102 | 3 |
+
+**CF-103 check (2026-09-09):** anexos YouTrack = **0** (ainda vazio). `Downloads/Screens` sem pasta/arquivo de onboarding/slides; Superfã só tem Feed/Perfil/Clubes/etc. (Live/M&G vazios). Nenhum ticket Mobile aberto está com Stage Done incorreto.
 
 ---
 
-## 1. Flutter Superfã / Mobile (acionável em `mobile_v2`)
+## 1. Flutter Superfã / Mobile
 
-Tickets Mobile com impacto direto no app Flutter. Horus e Meet/Live ⛔ ficam nas seções 3–5.
+### 1.0 Acionável agora (`mobile_v2`)
 
-### 1.1 Superfã + Artista (UI / mocks) — abertos
+**Nenhum.** UI Superfã/Artista + bags CF-82/83 + Patrol smoke CF-122–124 estão em §2 (**YT Done**). Restante Mobile aberto está bloqueado (§1.1–1.2) ou é Meet/Live ⛔ (§3).
 
-UI Superfã/Artista dos PRs #23–#32 está em §2 (**YT Done**, assignee `gus`). Restam:
+### 1.1 Bloqueados — mocks / infra / fixtures (abertos)
 
-| ID | Summary | Stage | Priority | Assignee | Escopo Flutter | Notas / mocks |
-|---|---|---|---|---|---|---|
-| CF-103 | [Superfã] Onboarding — slides Superfã/Artista iguais ao mock | Backlog | Major | gus | Onboarding slides | **Bloqueado:** sem prints em `Downloads/Screens` nem anexos YouTrack; Drive não dumpado. Flutter já tem `PresentationScreen` (paridade Expo). Não inventar layout. |
-
-### 1.2 QA — Patrol / Firebase Test Lab (abertos)
-
-CF-122/123/124 estão em §2 (**YT Done**, gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). Restam FTL + E2E com fixtures:
-
-| ID | Summary | Stage | Priority | Assignee | Escopo Flutter | Notas / mocks |
-|---|---|---|---|---|---|---|
-| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Backlog | Major | — | QA FTL Android | **Adiado (2026-09-09):** bloqueado em CF-125. Não Done. |
-| CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | Normal | — | QA FTL iOS | **Adiado (2026-09-09):** bloqueado em CF-125 + signing iOS (`PENDENCIA.md`). Não Done. |
-| CF-128 | [Mobile] Patrol — fluxo ponta a ponta: artista posta e superfã comenta | Backlog | Major | — | QA E2E post/comentário | Scaffold `integration_test/e2e_artist_post_fan_comment_test.dart` com `skip: true` + TODO — sem `E2E_*` fixtures. |
-| CF-129 | [Mobile] Patrol — fluxo Superfã: voto, fã clube e logout | Backlog | Normal | — | QA E2E superfã | Scaffold `e2e_superfan_vote_club_logout_test.dart` skip + TODO. |
-| CF-130 | [Mobile] Patrol — fluxo Artista: editar e apagar o próprio post | Backlog | Normal | — | QA E2E artista post | Scaffold `e2e_artist_edit_delete_post_test.dart` skip + TODO. |
+| ID | Summary | Stage | Assignee | Done incorreto? | Próxima ação |
+|---|---|---|---|---|---|
+| CF-103 | [Superfã] Onboarding — slides Superfã/Artista iguais ao mock | Backlog | gus | Não (Backlog) | Aguardar prints Drive / anexos YT; não inventar layout. |
+| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Backlog | — | Não | Esperar CF-125 (FTL API/SA); depois `patrol build` + `gcloud firebase test`. |
+| CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | — | Não | Esperar CF-125 + signing iOS (`PENDENCIA.md`). |
+| CF-128 | [Mobile] Patrol — E2E artista posta / superfã comenta | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
+| CF-129 | [Mobile] Patrol — E2E Superfã voto / clube / logout | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
+| CF-130 | [Mobile] Patrol — E2E Artista editar/apagar post | Backlog | — | Não | Provisionar fixtures `E2E_*`; tirar `skip: true` do scaffold. |
 
 #### Firebase Test Lab — deferral (CF-125 / CF-126 / CF-127)
 
@@ -67,13 +72,11 @@ Checagem 2026-09-09 no `crowdfans-prod`:
 
 **Não** marcar CF-125/126/127 como Done. Quando a infra estiver pronta: `gcloud auth login` + habilitar Testing API + SA → scripts `patrol build` + `gcloud firebase test` (ver descrição YT).
 
-### 1.3 Bags genéricos (triagem)
+### 1.2 Bags genéricos (triagem)
 
 CF-82 / CF-83 estão em §2 (**YT Done**, gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41); follow-up polish comunidade/clubes [#44](https://github.com/crowdfans/mobile_v2/pull/44) (comentado em CF-83).
 
-**IDs acionáveis Mobile/Flutter (código):** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130  
-**Contagem código aberto:** 6  
-**Sem mais UI sem mocks/infra:** CF-103 (sem prints onboarding); CF-125→126/127 FTL adiado; CF-128–130 E2E `skip: true` sem `E2E_*`; Meet/Live ⛔.
+**Mobile aberto (código, todos bloqueados):** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130 — **0 acionáveis agora**.
 
 ---
 
@@ -197,10 +200,10 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 ### Expo vs Flutter (resumo rápido)
 
 - Expo (`../mobile`) cobre o fluxo Superfã principal e settings de artista (insights/audience/fan-club/wallet).
-- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). Abertos acionáveis = **CF-103** (mocks), E2E/FTL CF-125–130.
+- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). **0 Mobile acionável agora**; bloqueados = CF-103 (mocks) + CF-126–130 (FTL/fixtures).
 - Live/Meet: buraco nos dois — não inventar UI.
-- **Verdict 2026-09-09:** no more UI without mocks/infra.
+- **Verdict 2026-09-09 ~17:45:** 26 unresolved; CF-103 ainda sem anexos; sem mocks onboarding novos em Downloads; no more UI without mocks/infra.
 
 ---
 
-*Gerado localmente em 2026-09-09. Token YouTrack não é armazenado neste arquivo.*
+*Gerado localmente em 2026-09-09 (~17:45). Token YouTrack não é armazenado neste arquivo.*
