@@ -1,10 +1,9 @@
-import 'package:crowdfans/components/comments/comment_sort_chip.dart';
-import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
+import 'package:crowdfans/components/fan_club/fan_club_community_toolbar.dart';
+import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/post/post_options_sheet.dart';
 import 'package:crowdfans/components/post/post_share_sheet.dart';
-import 'package:crowdfans/components/toolbar/text_toolbar.dart';
-import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
+import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
@@ -17,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 const _pageSize = 20;
+
+enum _ClubFeedFilter { all, posts, media }
 
 /// Comunidade do fan club de um artista.
 class FanClubCommunityScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   ArtistFanClub? _club;
   var _posts = <FeedPost>[];
   var _sortPopular = false;
+  var _feedFilter = _ClubFeedFilter.all;
   var _page = 1;
   var _hasMore = true;
   var _loading = true;
@@ -105,7 +107,20 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     } else {
       list.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
     }
-    return list;
+    return switch (_feedFilter) {
+      _ClubFeedFilter.all => list,
+      _ClubFeedFilter.posts => [
+        for (final post in list)
+          if (post.type == PostType.text) post,
+      ],
+      _ClubFeedFilter.media => [
+        for (final post in list)
+          if (post.type == PostType.image ||
+              post.type == PostType.carousel ||
+              post.type == PostType.video)
+            post,
+      ],
+    };
   }
 
   Future<void> handleLoad({int page = 1, bool append = false}) async {
@@ -235,6 +250,69 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     );
   }
 
+  Future<void> handleMore() async {
+    final colors = CrowdFansTheme.of(context);
+    final club = _club;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.person_outline, color: colors.textPrimary),
+                title: const Text('Ver perfil do artista'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  handleOpenArtistProfile();
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  _following ? Icons.person_remove_outlined : Icons.person_add_alt,
+                  color: colors.textPrimary,
+                ),
+                title: Text(_following ? 'Deixar de seguir' : 'Seguir'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  handleToggleFollow();
+                },
+              ),
+              if (club != null) ...[
+                ListTile(
+                  leading: Icon(Icons.edit_outlined, color: colors.textPrimary),
+                  title: const Text('Publicar no clube'),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    handleCompose();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.info_outline, color: colors.textPrimary),
+                  title: const Text('Sobre o Fã Clube'),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    handleAbout();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.rule, color: colors.textPrimary),
+                  title: const Text('Regras do Fã Clube'),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    handleRules();
+                  },
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> handleToggleFollow() async {
     try {
       if (_following) {
@@ -266,11 +344,11 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     final colors = CrowdFansTheme.of(context);
     final club = _club;
     final posts = sortedPosts();
-    final title = club?.name.trim().isNotEmpty == true
-        ? club!.name
+    final artistName = club?.artistName.trim().isNotEmpty == true
+        ? club!.artistName.trim()
         : (widget.seedName?.trim().isNotEmpty == true
               ? widget.seedName!.trim()
-              : 'Comunidade');
+              : 'Artista');
     return Scaffold(
       backgroundColor: colors.background,
       body: Stack(
@@ -278,12 +356,11 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
           SafeArea(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: TextToolbar(
-                    title: title,
-                    leading: ToolbarBackButton(onPressed: () => context.pop()),
-                  ),
+                FanClubCommunityToolbar(
+                  artistName: artistName,
+                  avatarUrl: _avatarUrl,
+                  onBack: () => context.pop(),
+                  onMore: handleMore,
                 ),
                 if (_error != null)
                   Padding(
@@ -321,43 +398,76 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                       ),
                                     );
                                   }
-                                  return FanClubCommunityHero(
-                                    club: club,
-                                    avatarUrl: _avatarUrl,
-                                    following: _following,
-                                    onToggleFollow: handleToggleFollow,
-                                    onCompose: handleCompose,
-                                    onAbout: handleAbout,
-                                    onRules: handleRules,
-                                    onOpenArtist: handleOpenArtistProfile,
-                                  );
-                                }
-                                if (index == 1) {
-                                  return Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      16,
-                                      4,
-                                      16,
-                                      8,
-                                    ),
-                                    child: Row(
+                                  return SizedBox(
+                                    height: 48,
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
                                       children: [
-                                        CommentSortChip(
+                                        FanClubSortTab(
                                           label: 'Novos',
                                           selected: !_sortPopular,
                                           onPressed: () {
-                                            setState(
-                                              () => _sortPopular = false,
-                                            );
+                                            setState(() => _sortPopular = false);
                                           },
                                         ),
-                                        const SizedBox(width: 8),
-                                        CommentSortChip(
+                                        FanClubSortTab(
                                           label: 'Populares',
                                           selected: _sortPopular,
                                           onPressed: () {
+                                            setState(() => _sortPopular = true);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                if (index == 1) {
+                                  if (club == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      8,
+                                      16,
+                                      8,
+                                    ),
+                                    child: Wrap(
+                                      spacing: 8,
+                                      children: [
+                                        ArtistMeFeedFilterChip(
+                                          label: 'Todos',
+                                          selected:
+                                              _feedFilter == _ClubFeedFilter.all,
+                                          onPressed: () {
                                             setState(
-                                              () => _sortPopular = true,
+                                              () => _feedFilter =
+                                                  _ClubFeedFilter.all,
+                                            );
+                                          },
+                                        ),
+                                        ArtistMeFeedFilterChip(
+                                          label: 'Posts',
+                                          selected: _feedFilter ==
+                                              _ClubFeedFilter.posts,
+                                          onPressed: () {
+                                            setState(
+                                              () => _feedFilter =
+                                                  _ClubFeedFilter.posts,
+                                            );
+                                          },
+                                        ),
+                                        ArtistMeFeedFilterChip(
+                                          label: 'Media',
+                                          selected: _feedFilter ==
+                                              _ClubFeedFilter.media,
+                                          onPressed: () {
+                                            setState(
+                                              () => _feedFilter =
+                                                  _ClubFeedFilter.media,
                                             );
                                           },
                                         ),

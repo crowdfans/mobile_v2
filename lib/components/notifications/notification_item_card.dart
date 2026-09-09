@@ -23,80 +23,87 @@ class NotificationItemCard extends StatelessWidget {
         if (uri.trim().isNotEmpty) uri,
     ];
     final thumb = item.thumbnailUri?.trim() ?? '';
+    final row = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMeet ? 12 : 0,
+        vertical: isMeet ? 12 : 10,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildAvatars(avatars, colors),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      for (final segment in item.content)
+                        TextSpan(
+                          text: segment.text,
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 20 / 14,
+                            fontWeight: segment.accent
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color: segment.accent
+                                ? colors.primary
+                                : colors.textPrimary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  item.time,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (thumb.isNotEmpty) ...[
+            const SizedBox(width: 10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                thumb,
+                width: 44,
+                height: 44,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => ColoredBox(
+                  color: colors.surfaceAlt,
+                  child: const SizedBox(width: 44, height: 44),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
+    if (!isMeet) {
+      return InkWell(onTap: onPressed, child: row);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: isMeet ? AppPalette.green50 : colors.surface,
+        color: AppPalette.green50,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: isMeet ? AppPalette.green200 : colors.border,
-          ),
+          side: const BorderSide(color: AppPalette.green200),
         ),
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildAvatars(avatars, colors),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            for (final segment in item.content)
-                              TextSpan(
-                                text: segment.text,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  height: 20 / 14,
-                                  fontWeight: segment.accent
-                                      ? FontWeight.w700
-                                      : FontWeight.w400,
-                                  color: segment.accent
-                                      ? colors.primary
-                                      : colors.textPrimary,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.time,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textTertiary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (thumb.isNotEmpty) ...[
-                  const SizedBox(width: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      thumb,
-                      width: 44,
-                      height: 44,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stack) => ColoredBox(
-                        color: colors.surfaceAlt,
-                        child: const SizedBox(width: 44, height: 44),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+          child: row,
         ),
       ),
     );

@@ -4,7 +4,6 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 /// Inbox de notificações (espelho do `NotificationsScreen` / mock PDF).
@@ -112,19 +111,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () => context.push(Pages.profileNotifications),
-                    tooltip: 'Preferências',
-                    icon: SvgPicture.asset(
-                      'assets/icons/General/settings-02.svg',
-                      width: 22,
-                      height: 22,
-                      colorFilter: ColorFilter.mode(
-                        colors.textPrimary,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(width: 48),
                 ],
               ),
             ),
