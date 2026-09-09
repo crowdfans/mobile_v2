@@ -29,6 +29,20 @@ abstract final class Pages {
   static const fanScorePublic = '/profile/fan-score/:fanHandle';
   static const artistProfile = '/artists/:artistId';
   static const comments = '/comments/:postId';
+
+  /// Perfil público do artista com seeds opcionais de nome/avatar.
+  static String artistProfileOf(
+    String artistId, {
+    String? name,
+    String? avatarUrl,
+  }) {
+    return _withArtistQuery(
+      '/artists/${Uri.encodeComponent(artistId)}',
+      artistId: artistId,
+      name: name,
+      avatarUrl: avatarUrl,
+    );
+  }
   static const fanClubCommunity = '/fan-clubs/community/:artistId';
   static const fanClubCompose = '/fan-clubs/compose';
   static const fanClubAbout = '/fan-clubs/about';
@@ -149,8 +163,6 @@ abstract final class Pages {
     ).toString();
   }
 
-  static const demo = '/demo';
-
   static const profileAccount = '/me/settings/account';
   static const profileAppearance = '/me/settings/appearance';
   static const profileArtists = '/me/artists';
@@ -176,10 +188,10 @@ abstract final class Pages {
 
   /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
   /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
-  static const publicPrefixes = ['/onboarding', '/login', '/register', '/demo'];
+  static const publicPrefixes = ['/onboarding', '/login', '/register'];
 
   static const _expoAliases = <String, String>{
-    '/pages/demo/DemoScreen': demo,
+    '/pages/demo/DemoScreen': home,
     '/pages/feed': home,
     '/pages/clubs': clubs,
     '/pages/explore': explore,

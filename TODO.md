@@ -288,7 +288,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 20. Demo
 
-- [ ] Remover `DemoScreen` (`Pages.DEMO`)
+- [x] Remover `DemoScreen` (`Pages.DEMO`)
 
 ---
 
