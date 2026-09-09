@@ -40,11 +40,6 @@ class CreateMenuSheet extends ConsumerWidget {
     );
   }
 
-  void handleMyPosts(BuildContext context) {
-    onClose();
-    context.push(Pages.myPosts);
-  }
-
   void handleFanLetters(BuildContext context) {
     onClose();
     context.push(Pages.fanLetterGallery);
@@ -61,49 +56,34 @@ class CreateMenuSheet extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Criar',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: ColoredBox(
-              color: colors.surfaceAlt,
+              color: colors.surface,
               child: Column(
                 children: [
+                  CreateMenuItemButton(
+                    key: const Key('create-menu-fan-letters'),
+                    asset: 'assets/icons/Communication/mail-01.svg',
+                    label: 'Fan Letter',
+                    onPressed: () => handleFanLetters(context),
+                  ),
+                  CreateMenuItemButton(
+                    key: const Key('create-menu-fan-club-post'),
+                    asset:
+                        'assets/icons/Communication/message-heart-circle.svg',
+                    label: 'Post Fã Clube',
+                    onPressed: () => handleFanClubPost(context),
+                    showDivider: true,
+                  ),
                   if (isArtist)
                     CreateMenuItemButton(
                       key: const Key('create-menu-create-post'),
                       asset: 'assets/icons/General/edit-03.svg',
-                      label: 'Criar post',
+                      label: 'Post Home',
                       onPressed: () => handleCreatePost(context),
+                      showDivider: true,
                     ),
-                  CreateMenuItemButton(
-                    key: const Key('create-menu-fan-club-post'),
-                    asset: 'assets/icons/Users/users-01.svg',
-                    label: 'Post no Fã Clube',
-                    onPressed: () => handleFanClubPost(context),
-                    showDivider: isArtist,
-                  ),
-                  CreateMenuItemButton(
-                    key: const Key('create-menu-fan-letters'),
-                    asset: 'assets/icons/General/home-line.svg',
-                    label: 'Minhas Fan Letters',
-                    onPressed: () => handleFanLetters(context),
-                    showDivider: true,
-                  ),
-                  CreateMenuItemButton(
-                    key: const Key('create-menu-my-posts'),
-                    asset: 'assets/icons/General/home-line.svg',
-                    label: 'Meus posts',
-                    onPressed: () => handleMyPosts(context),
-                    showDivider: true,
-                  ),
                 ],
               ),
             ),

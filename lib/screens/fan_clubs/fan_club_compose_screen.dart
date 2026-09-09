@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
-import 'package:crowdfans/components/fan_club/fan_club_compose_artist_card.dart';
-import 'package:crowdfans/components/fan_club/fan_club_compose_artist_pick_row.dart';
-import 'package:crowdfans/components/fan_club/fan_club_compose_image_preview.dart';
-import 'package:crowdfans/components/input/app_text_field.dart';
-import 'package:crowdfans/components/post/create_post_image_picker.dart';
-import 'package:crowdfans/components/profile/profile_screen_header.dart';
+import 'package:crowdfans/components/fan_club/fan_club_selector_dropdown.dart';
+import 'package:crowdfans/components/fan_club/fan_club_selector_field.dart';
+import 'package:crowdfans/components/post/novo_post_composer_body.dart';
+import 'package:crowdfans/components/post/novo_post_header.dart';
+import 'package:crowdfans/components/post/novo_post_media_toolbar.dart';
+import 'package:crowdfans/components/post/novo_post_secret_banner.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -16,13 +15,17 @@ import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/media_service.dart';
 import 'package:crowdfans/services/post_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
+import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// Compose de post no fã clube (fã ou artista membro).
-class FanClubComposeScreen extends StatefulWidget {
+const _maxCharacters = 280;
+
+/// Compose de post no fã clube — layout Twitter/Reddit dos prints CF-75.
+class FanClubComposeScreen extends ConsumerStatefulWidget {
   const FanClubComposeScreen({
     super.key,
     this.artistId,
@@ -35,11 +38,15 @@ class FanClubComposeScreen extends StatefulWidget {
   final String? avatarUrl;
 
   @override
-  State<FanClubComposeScreen> createState() => _FanClubComposeScreenState();
+  ConsumerState<FanClubComposeScreen> createState() =>
+      _FanClubComposeScreenState();
 }
 
-class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
-  late FanClubComposeArtist? _selected;
+class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
+  final _textController = TextEditingController();
+  final _focusNode = FocusNode();
+
+  FanClubComposeArtist? _selected;
   var _candidates = <FanClubComposeArtist>[];
   var _text = '';
   String? _imageUri;
@@ -48,6 +55,18 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
   var _loadingArtists = false;
   var _publishing = false;
   var _lockedArtist = false;
+  var _clubSelectorOpen = false;
+  var _isSecretMode = false;
+
+  bool get _hasMedia =>
+      (_imageUri ?? '').isNotEmpty ||
+      (_imageBytes != null && _imageBytes!.isNotEmpty);
+
+  bool get _canPublish =>
+      _selected != null &&
+      (_text.trim().isNotEmpty || _hasMedia) &&
+      _text.length <= _maxCharacters &&
+      !_publishing;
 
   @override
   void initState() {
@@ -69,6 +88,13 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   Future<void> handleLoadArtists() async {
     setState(() => _loadingArtists = true);
     try {
@@ -76,14 +102,10 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
       var follows = <ArtistFollow>[];
       try {
         subs = await SubscriptionService.listSubscriptions();
-      } catch (_) {
-        // Sem memberships — a lista ainda pode vir dos follows.
-      }
+      } catch (_) {}
       try {
         follows = await FollowService.listFollows();
-      } catch (_) {
-        // Sem follows — mostra só as assinaturas ativas.
-      }
+      } catch (_) {}
       final merged = <String, FanClubComposeArtist>{};
       for (final row in subs.where((item) => item.isActive)) {
         merged[row.artistUid] = FanClubComposeArtist(
@@ -119,7 +141,7 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
     }
   }
 
-  void handleBack() {
+  void handleCancel() {
     if (context.canPop()) {
       context.pop();
       return;
@@ -131,20 +153,82 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
     setState(() => _text = value);
   }
 
+  void handleToggleSecret() {
+    setState(() => _isSecretMode = !_isSecretMode);
+  }
+
+  void handleToggleClubSelector() {
+    if (_lockedArtist) {
+      return;
+    }
+    setState(() {
+      _clubSelectorOpen = !_clubSelectorOpen;
+      if (_clubSelectorOpen) {
+        _focusNode.unfocus();
+      }
+    });
+  }
+
   void handleSelectArtist(FanClubComposeArtist artist) {
-    setState(() => _selected = artist);
+    setState(() {
+      _selected = artist;
+      _clubSelectorOpen = false;
+    });
+    _focusNode.requestFocus();
   }
 
-  void handleClearArtist() {
-    setState(() => _selected = null);
+  void handleComposerFocus() {
+    if (_clubSelectorOpen) {
+      setState(() => _clubSelectorOpen = false);
+    }
   }
 
-  Future<void> handlePickImage() async {
+  void handleRemoveImage() {
+    setState(() {
+      _imageUri = null;
+      _imageBytes = null;
+      _imageMime = null;
+    });
+  }
+
+  Future<void> handlePickFromGallery() async {
     try {
       final picker = ImagePicker();
       final file = await picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,
+      );
+      if (file == null) {
+        return;
+      }
+      await _applyPickedImage(file);
+    } catch (_) {
+      await _showMediaError();
+    }
+  }
+
+  Future<void> handleTakePhoto() async {
+    try {
+      final picker = ImagePicker();
+      final file = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
+      if (file == null) {
+        return;
+      }
+      await _applyPickedImage(file);
+    } catch (_) {
+      await _showMediaError();
+    }
+  }
+
+  Future<void> handlePickVideo() async {
+    try {
+      final picker = ImagePicker();
+      final file = await picker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(minutes: 2),
       );
       if (file == null) {
         return;
@@ -156,18 +240,34 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
       setState(() {
         _imageUri = file.path.isNotEmpty ? file.path : file.name;
         _imageBytes = bytes;
-        _imageMime = file.mimeType;
+        _imageMime = file.mimeType ?? 'video/mp4';
       });
     } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      await AppAlert.show(
-        context,
-        title: 'Imagem',
-        message: 'Não foi possível selecionar a imagem.',
-      );
+      await _showMediaError();
     }
+  }
+
+  Future<void> _applyPickedImage(XFile file) async {
+    final bytes = await file.readAsBytes();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _imageUri = file.path.isNotEmpty ? file.path : file.name;
+      _imageBytes = bytes;
+      _imageMime = file.mimeType;
+    });
+  }
+
+  Future<void> _showMediaError() async {
+    if (!mounted) {
+      return;
+    }
+    await AppAlert.show(
+      context,
+      title: 'Mídia',
+      message: 'Não foi possível selecionar a mídia.',
+    );
   }
 
   Future<void> handlePublish() async {
@@ -176,36 +276,45 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
       await AppAlert.show(
         context,
         title: 'Fã Clube',
-        message: 'Escolha um artista para publicar.',
+        message: 'Escolha um fã clube para publicar.',
       );
       return;
     }
-    final content = _text.trim();
-    if (content.isEmpty) {
-      await AppAlert.show(
-        context,
-        title: 'Fã Clube',
-        message: 'Escreva algo para publicar.',
-      );
+    if (!_canPublish) {
       return;
     }
     setState(() => _publishing = true);
     try {
       String? imageUri;
+      String? videoUri;
+      final isVideo = (_imageMime ?? '').startsWith('video/');
       if ((_imageUri ?? '').isNotEmpty) {
-        imageUri = await MediaService.resolveMediaUrl(
+        final remote = await MediaService.resolveMediaUrl(
           uri: _imageUri!,
           kind: MediaKind.fanClub,
           mimeType: _imageMime,
           bytes: _imageBytes,
         );
+        if (isVideo) {
+          videoUri = remote;
+        } else {
+          imageUri = remote;
+        }
       }
+      final content = _text.trim();
+      final type = videoUri != null
+          ? PostType.video
+          : imageUri == null
+          ? PostType.text
+          : PostType.image;
       await PostService.createPost(
         PostWriteRequest(
-          type: imageUri == null ? PostType.text : PostType.image,
+          type: type,
           text: content,
           imageUri: imageUri,
+          videoUri: videoUri,
           targetArtistId: artist.id,
+          isSecret: _isSecretMode,
         ),
       );
       if (!mounted) {
@@ -237,81 +346,81 @@ class _FanClubComposeScreenState extends State<FanClubComposeScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final selected = _selected;
+    final profile = ref.watch(authSessionProvider).profile;
+    final avatarUrl = profile?.photoUrl ?? '';
+    final remaining = _maxCharacters - _text.length;
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Post no Fã Clube', onBack: handleBack),
+            NovoPostHeader(
+              subtitle: 'Fã Clube',
+              canSubmit: _canPublish,
+              publishing: _publishing,
+              onCancel: handleCancel,
+              onPublish: handlePublish,
+              showSecretToggle: true,
+              isSecretMode: _isSecretMode,
+              onToggleSecret: handleToggleSecret,
+            ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
-                  Text(
-                    'Artista',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (selected != null)
-                    FanClubComposeArtistCard(
-                      artist: selected,
-                      onChange: _lockedArtist ? null : handleClearArtist,
-                    )
-                  else if (_loadingArtists)
+                  if (_isSecretMode) ...[
+                    const NovoPostSecretBanner(),
+                    const SizedBox(height: 12),
+                  ],
+                  if (_loadingArtists && !_lockedArtist)
                     const ProfileState(loading: true)
-                  else if (_candidates.isEmpty)
+                  else if (!_lockedArtist &&
+                      _candidates.isEmpty &&
+                      _selected == null)
                     const ProfileState(
                       title: 'Nenhum clube',
                       message: 'Siga um artista para publicar no fã clube.',
                     )
-                  else
-                    for (final artist in _candidates)
-                      FanClubComposeArtistPickRow(
-                        artist: artist,
-                        onPressed: () => handleSelectArtist(artist),
-                      ),
-                  if (selected != null) ...[
-                    const SizedBox(height: 20),
-                    AppTextField(
-                      label: 'Conteúdo',
-                      hint: 'O que você quer compartilhar com o clube?',
-                      maxLines: 6,
-                      onChanged: handleTextChange,
+                  else ...[
+                    FanClubSelectorField(
+                      selected: _selected,
+                      expanded: _clubSelectorOpen,
+                      enabled: !_lockedArtist,
+                      onPressed: handleToggleClubSelector,
                     ),
-                    const SizedBox(height: 16),
-                    CreatePostImagePicker(
-                      hasImage: (_imageUri ?? '').isNotEmpty,
-                      onPressed: handlePickImage,
-                    ),
-                    if ((_imageBytes != null && _imageBytes!.isNotEmpty) ||
-                        (_imageUri ?? '').startsWith('http')) ...[
-                      const SizedBox(height: 12),
-                      FanClubComposeImagePreview(
-                        bytes: _imageBytes,
-                        remoteUrl: _imageUri,
+                    if (_clubSelectorOpen) ...[
+                      const SizedBox(height: 8),
+                      FanClubSelectorDropdown(
+                        artists: _candidates,
+                        selectedId: _selected?.id,
+                        onSelect: handleSelectArtist,
                       ),
                     ],
+                    const SizedBox(height: 24),
+                    NovoPostComposerBody(
+                      avatarUrl: avatarUrl,
+                      controller: _textController,
+                      focusNode: _focusNode,
+                      onChanged: handleTextChange,
+                      onFocus: handleComposerFocus,
+                      imageBytes: _imageBytes,
+                      imageUrl: _imageUri,
+                      isVideo: (_imageMime ?? '').startsWith('video/'),
+                      onRemoveImage: _hasMedia ? handleRemoveImage : null,
+                    ),
                   ],
                 ],
               ),
             ),
-            if (selected != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                child: AppButton(
-                  label: 'Publicar',
-                  loading: _publishing,
-                  disabled: _text.trim().isEmpty,
-                  onPressed: handlePublish,
-                ),
-              ),
+            NovoPostMediaToolbar(
+              remainingCharacters: remaining,
+              onPickGallery: handlePickFromGallery,
+              onTakePhoto: handleTakePhoto,
+              onPickVideo: handlePickVideo,
+            ),
           ],
         ),
       ),

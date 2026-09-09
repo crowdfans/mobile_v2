@@ -58,12 +58,13 @@ abstract final class MediaService {
   /// Infere Content-Type a partir do mime do picker ou da extensão.
   static String inferContentType(String uri, [String? mimeType]) {
     final explicit = mimeType?.trim().toLowerCase();
-    if (explicit == 'image/jpeg' ||
-        explicit == 'image/jpg' ||
-        explicit == 'image/png' ||
-        explicit == 'image/webp' ||
-        explicit == 'image/gif') {
-      return explicit == 'image/jpg' ? 'image/jpeg' : explicit!;
+    if (explicit != null && explicit.isNotEmpty) {
+      if (explicit == 'image/jpg') {
+        return 'image/jpeg';
+      }
+      if (explicit.startsWith('image/') || explicit.startsWith('video/')) {
+        return explicit;
+      }
     }
     final path = uri.trim().toLowerCase().split('?').first;
     if (path.endsWith('.png')) {
@@ -74,6 +75,9 @@ abstract final class MediaService {
     }
     if (path.endsWith('.gif')) {
       return 'image/gif';
+    }
+    if (path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.m4v')) {
+      return 'video/mp4';
     }
     return 'image/jpeg';
   }

@@ -72,6 +72,7 @@ class PostWriteRequest {
     this.membershipTitle,
     this.targetArtistId,
     this.isExclusive = false,
+    this.isSecret = false,
   });
 
   final PostType type;
@@ -83,6 +84,7 @@ class PostWriteRequest {
   final String? membershipTitle;
   final String? targetArtistId;
   final bool isExclusive;
+  final bool isSecret;
 
   Map<String, Object?> toJson() {
     return {
@@ -95,6 +97,7 @@ class PostWriteRequest {
       if (membershipTitle != null) 'membershipTitle': membershipTitle,
       if (targetArtistId != null) 'targetArtistId': targetArtistId,
       'isExclusive': isExclusive,
+      'isSecret': isSecret,
     };
   }
 }
