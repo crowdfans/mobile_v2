@@ -184,6 +184,16 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
                 style: TextStyle(fontSize: 12, color: colors.textTertiary),
               ),
             ),
+          // Sempre visível no web para validar o host da API.
+          if (kIsWeb)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'API: ${apiConfigDebug().baseUrl}',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11, color: colors.textTertiary),
+              ),
+            ),
         ],
       ),
     );
