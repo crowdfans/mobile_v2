@@ -14,6 +14,7 @@ class PostCard extends StatelessWidget {
     required this.post,
     this.contentOverride,
     this.topContent,
+    this.topContentAfterHeader = false,
     this.backgroundColor,
     this.borderColor,
     this.onPressOpenComments,
@@ -28,6 +29,9 @@ class PostCard extends StatelessWidget {
   final FeedPost post;
   final Widget? contentOverride;
   final Widget? topContent;
+
+  /// Quando true, o badge fica abaixo do header (print Artista exclusivo).
+  final bool topContentAfterHeader;
   final Color? backgroundColor;
   final Color? borderColor;
   final ValueChanged<String>? onPressOpenComments;
@@ -61,7 +65,7 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (topContent != null)
+          if (topContent != null && !topContentAfterHeader)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: topContent,
@@ -88,6 +92,11 @@ class PostCard extends StatelessWidget {
                       onPressOpenProfile: onPressOpenProfile,
                       onPressOpenPostOptions: onPressOptions,
                     ),
+                    if (topContent != null && topContentAfterHeader)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: topContent,
+                      ),
                     if (contentOverride != null)
                       contentOverride!
                     else ...[
