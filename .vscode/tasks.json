@@ -30,6 +30,19 @@
         "panel": "dedicated"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "App Distribution: Web",
+      "type": "shell",
+      "command": "./scripts/distribute.sh web",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
     }
   ]
 }

@@ -8,9 +8,11 @@
     "distribute": "bash scripts/distribute.sh android",
     "distribute:android": "bash scripts/distribute.sh android",
     "distribute:ios": "bash scripts/distribute.sh ios",
+    "distribute:web": "bash scripts/distribute.sh web",
     "distribute:all": "bash scripts/distribute.sh all",
     "distribute:android:upload": "bash scripts/distribute.sh android --skip-build",
-    "distribute:ios:upload": "bash scripts/distribute.sh ios --skip-build"
+    "distribute:ios:upload": "bash scripts/distribute.sh ios --skip-build",
+    "distribute:web:upload": "bash scripts/distribute.sh web --skip-build"
   },
   "devDependencies": {
     "firebase-tools": "^15.29.0"

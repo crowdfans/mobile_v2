@@ -1,1 +1,52 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"crowdfans-prod","appId":"1:658897248078:android:edd3c987eb54bcdc2c881f","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"crowdfans-prod","appId":"1:658897248078:ios:874725d168494cab2c881f","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"crowdfans-prod","configurations":{"android":"1:658897248078:android:edd3c987eb54bcdc2c881f","ios":"1:658897248078:ios:874725d168494cab2c881f","web":"1:658897248078:web:719078048f5878412c881f"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "crowdfans-prod",
+          "appId": "1:658897248078:android:edd3c987eb54bcdc2c881f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "crowdfans-prod",
+          "appId": "1:658897248078:ios:874725d168494cab2c881f",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "crowdfans-prod",
+          "configurations": {
+            "android": "1:658897248078:android:edd3c987eb54bcdc2c881f",
+            "ios": "1:658897248078:ios:874725d168494cab2c881f",
+            "web": "1:658897248078:web:719078048f5878412c881f"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}
