@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:flutter/material.dart';
 
-/// Cartão do ciclo atual no Fan Score público.
+/// Cartão do ciclo vigente no FanScore (mock Fanscore).
 class FanScoreCycleCard extends StatelessWidget {
   const FanScoreCycleCard({super.key, required this.details});
 
@@ -11,11 +11,19 @@ class FanScoreCycleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final period =
+        (details.periodLabel ?? details.cycleLabel ?? '').trim();
+    final title = period.isEmpty
+        ? 'Pontuação vigente'
+        : 'Pontuação vigente: $period';
+    final endLabel = (details.endLabel ?? '').trim();
+    final body = endLabel.isNotEmpty
+        ? 'O ciclo vigente encerra em $endLabel e reseta logo em seguida.'
+        : (details.helperText ?? '').trim();
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
+        color: colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -23,25 +31,22 @@ class FanScoreCycleCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Ciclo ${details.cycleLabel ?? ''}'.trim(),
+              title,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: colors.textPrimary,
               ),
             ),
-            if ((details.endLabel ?? '').isNotEmpty) ...[
-              const SizedBox(height: 4),
+            if (body.isNotEmpty) ...[
+              const SizedBox(height: 6),
               Text(
-                'Encerra em ${details.endLabel}',
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
-              ),
-            ],
-            if ((details.helperText ?? '').isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                details.helperText!,
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                body,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 18 / 13,
+                  color: colors.textSecondary,
+                ),
               ),
             ],
           ],
