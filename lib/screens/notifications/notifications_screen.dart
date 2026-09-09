@@ -134,14 +134,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  for (final tab in NotificationTab.values) ...[
-                    NotificationFilterChip(
-                      tab: tab,
-                      selected: _tab == tab,
-                      onPressed: () => setState(() => _tab = tab),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
+                  for (final tab in NotificationTab.values)
+                    if (tab != NotificationTab.system) ...[
+                      NotificationFilterChip(
+                        tab: tab,
+                        selected: _tab == tab,
+                        onPressed: () => setState(() => _tab = tab),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                 ],
               ),
             ),
