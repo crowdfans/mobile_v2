@@ -11,7 +11,7 @@
 | Lote | Tickets | Estado |
 |---|---|---|
 | Superfã resto | CF-67 ✅ PR [#23](https://github.com/crowdfans/mobile_v2/pull/23); CF-103 | CF-67 merged; **CF-103 skip** (sem mocks locais) |
-| Superfã polish | CF-106, CF-107 | Feito no Flutter — PRs #30 (cartas) / #32 (perfil, TBD) |
+| Superfã polish | CF-106, CF-107 | Feito no Flutter — PRs #30 (cartas) / #32 (perfil) |
 | Artista core | CF-110 ✅ [#24](https://github.com/crowdfans/mobile_v2/pull/24); CF-111 ✅ [#25](https://github.com/crowdfans/mobile_v2/pull/25); CF-113 ✅ [#27](https://github.com/crowdfans/mobile_v2/pull/27) | Merged |
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 [#31](https://github.com/crowdfans/mobile_v2/pull/31) | Merged (gaps API anotados) |
 | Superfã polish | CF-106, CF-107 | Feito no Flutter — #30 cartas; #32 perfil |
@@ -46,7 +46,7 @@ Tickets Mobile com impacto direto no app Flutter. Horus e Meet/Live ⛔ ficam na
 | CF-66 | [Épica] Superfã — alinhar app ao PDF Telas App | Backlog | Major | — | Épica UI Superfã | Épica Superfã. Mocks PDF+PNG anexos. Filhos Done na §2; restam CF-67/103/106/107 (+ bugs 82/83). |
 | CF-67 | [Superfã] Home — feed só artistas, tipos de post e exclusivo | Backlog | Major | — | Home feed Superfã | **Feito no Flutter** — PRs #2/#4/#23 em `main` (tipos/exclusivo/FAB/anéis). |
 | CF-106 | [Superfã] Cartas — compose e galeria iguais ao mock | Backlog | Normal | — | Cartas / Fan Letters | **Feito no Flutter** — PR #30 (`CF-106` commit em `main`): compose Stories-style + galeria + stickers/fundos. |
-| CF-107 | [Superfã] Perfil público do fã — header, Fan Score e artistas iguais ao mock | Backlog | Normal | — | Perfil público fã | **Feito no Flutter** — header/Cartas/artistas/FanScore vs mock Superfã (PR a mergear). |
+| CF-107 | [Superfã] Perfil público do fã — header, Fan Score e artistas iguais ao mock | Backlog | Normal | — | Perfil público fã | **Feito no Flutter** — header/Cartas/artistas/FanScore vs mock Superfã — PR #32. |
 | CF-109 | [Épica] Artista — alinhar app aos mocks do Drive | Backlog | Major | — | Épica UI Artista | Épica Artista. Fonte `Downloads/Screens/Artista`. Expo tem settings; Flutter base — falta paridade mock. |
 | CF-110 | [Artista] Menu + — Live, Meet & Greet, Post Home e Post Fã Clube | Backlog | Major | — | Menu + Artista | Menu + artista (4 itens). Gap: Live/Meet/Post Home/Post Fã Clube vs menu superfã. |
 | CF-111 | [Artista] Feed Home — posts do artista, exclusivo e stories | Backlog | Major | — | Feed Home Artista | Feed Home artista + stories. Gap posts do artista/exclusivo/stories vs mock. |
