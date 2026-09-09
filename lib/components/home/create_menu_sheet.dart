@@ -78,23 +78,27 @@ class CreateMenuSheet extends ConsumerWidget {
                 children: [
                   if (isArtist)
                     CreateMenuItemButton(
+                      key: const Key('create-menu-create-post'),
                       asset: 'assets/icons/General/edit-03.svg',
                       label: 'Criar post',
                       onPressed: () => handleCreatePost(context),
                     ),
                   CreateMenuItemButton(
+                    key: const Key('create-menu-fan-club-post'),
                     asset: 'assets/icons/Users/users-01.svg',
                     label: 'Post no Fã Clube',
                     onPressed: () => handleFanClubPost(context),
                     showDivider: isArtist,
                   ),
                   CreateMenuItemButton(
+                    key: const Key('create-menu-fan-letters'),
                     asset: 'assets/icons/General/home-line.svg',
                     label: 'Minhas Fan Letters',
                     onPressed: () => handleFanLetters(context),
                     showDivider: true,
                   ),
                   CreateMenuItemButton(
+                    key: const Key('create-menu-my-posts'),
                     asset: 'assets/icons/General/home-line.svg',
                     label: 'Meus posts',
                     onPressed: () => handleMyPosts(context),

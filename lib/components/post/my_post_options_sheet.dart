@@ -36,13 +36,22 @@ class MyPostOptionsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          PostSheetListItem(label: 'Editar', onPressed: onEdit),
           PostSheetListItem(
+            key: const Key('my-posts-edit'),
+            label: 'Editar',
+            onPressed: onEdit,
+          ),
+          PostSheetListItem(
+            key: const Key('my-posts-delete'),
             label: 'Deletar',
             danger: true,
             onPressed: onDelete,
           ),
-          PostSheetListItem(label: 'Cancelar', onPressed: onClose),
+          PostSheetListItem(
+            key: const Key('my-posts-menu-cancel'),
+            label: 'Cancelar',
+            onPressed: onClose,
+          ),
         ],
       ),
     );

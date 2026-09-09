@@ -75,6 +75,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
             children: [
               ImageToolbar(
                 trailing: ToolbarMenuButton(
+                  key: const Key('profile-settings'),
                   onPressed: () => context.push(Pages.profileSettings),
                 ),
               ),

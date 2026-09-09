@@ -15,6 +15,7 @@ class FeedItem extends StatelessWidget {
     required this.canAccessExclusive,
     this.onVoteApplied,
     this.onPressOptions,
+    this.onPressShare,
     this.onPressUnlock,
   });
 
@@ -22,6 +23,7 @@ class FeedItem extends StatelessWidget {
   final bool canAccessExclusive;
   final ValueChanged<VoteResult>? onVoteApplied;
   final VoidCallback? onPressOptions;
+  final VoidCallback? onPressShare;
   final VoidCallback? onPressUnlock;
 
   void handleOpenArtist(BuildContext context) {
@@ -50,6 +52,7 @@ class FeedItem extends StatelessWidget {
             : null,
         onVoteApplied: unlocked ? onVoteApplied : null,
         onPressOptions: onPressOptions,
+        onPressShare: onPressShare,
       );
     }
     return PostCard(
@@ -58,6 +61,7 @@ class FeedItem extends StatelessWidget {
       onPressOpenComments: (postId) => handleOpenComments(context, postId),
       onVoteApplied: onVoteApplied,
       onPressOptions: onPressOptions,
+      onPressShare: onPressShare,
     );
   }
 }

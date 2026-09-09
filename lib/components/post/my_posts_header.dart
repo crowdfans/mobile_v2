@@ -25,6 +25,7 @@ class MyPostsHeader extends StatelessWidget {
             ),
           ),
           FilledButton(
+            key: const Key('my-posts-create'),
             onPressed: onCreate,
             style: FilledButton.styleFrom(
               backgroundColor: colors.primary,
