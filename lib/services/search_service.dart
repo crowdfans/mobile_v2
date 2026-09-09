@@ -72,8 +72,15 @@ abstract final class SearchService {
   static Future<ArtistSearchResponse> rankArtists(
     String kind, {
     int limit = 100,
+    int offset = 0,
   }) {
-    final params = Uri(queryParameters: {'kind': kind, 'limit': '$limit'});
+    final params = Uri(
+      queryParameters: {
+        'kind': kind,
+        'limit': '$limit',
+        if (offset > 0) 'offset': '$offset',
+      },
+    );
     return HttpService.request(
       '${ApiUrls.searchArtistRankings}?${params.query}',
       parse: ArtistSearchResponse.fromJson,

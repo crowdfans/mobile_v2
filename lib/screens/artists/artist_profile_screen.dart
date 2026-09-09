@@ -3,7 +3,9 @@ import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/fan_letter/fan_letter_card.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/profile/artist_profile_about_card.dart';
-import 'package:crowdfans/components/profile/artist_profile_actions.dart';
+import 'package:crowdfans/components/profile/artist_profile_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_cta_pill.dart';
+import 'package:crowdfans/components/profile/artist_profile_feed_filter_chip.dart';
 import 'package:crowdfans/components/profile/artist_profile_hero.dart';
 import 'package:crowdfans/components/profile/artist_profile_tab_chip.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
@@ -16,6 +18,7 @@ import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
+import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
@@ -26,9 +29,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum _ArtistTab { posts, exclusive, cartas, sobre }
+enum _ArtistTab { feed, sobre, exclusive, fanclub, cartas }
 
-/// Perfil público do artista (`artists/:artistId`) — espelho Expo CF-74.
+enum _FeedFilter { all, posts, media }
+
+/// Perfil público do artista — espelho Expo `origin/prod` CF-74.
 class ArtistProfileScreen extends ConsumerStatefulWidget {
   const ArtistProfileScreen({
     super.key,
@@ -51,11 +56,12 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _posts = <FeedPost>[];
   var _letters = <FanLetter>[];
   var _loading = true;
-  var _following = false;
   var _subscribed = false;
-  var _togglingFollow = false;
-  var _tab = _ArtistTab.posts;
+  var _togglingMembership = false;
+  var _tab = _ArtistTab.feed;
+  var _feedFilter = _FeedFilter.all;
   int? _memberCount;
+  int? _fanClubRank;
   String? _error;
 
   @override
@@ -92,12 +98,12 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   }
 
   String metaLabel() {
-    final posts = _profile?.stats.postsCount ?? _posts.length;
     final members = _memberCount;
-    if (members == null) {
-      return '$posts posts';
+    if (members != null) {
+      return '$members membros';
     }
-    return '$posts posts · $members membros';
+    final posts = _profile?.stats.postsCount ?? _posts.length;
+    return '$posts posts';
   }
 
   Future<void> handleLoad() async {
@@ -109,8 +115,6 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       final profile = await ProfileService.getProfileByUserUid(widget.artistId)
           .then<Profile?>((value) => value, onError: (_) => null);
       final postItems = await ProfileService.getPostsByUserUid(widget.artistId);
-      final following = await FollowService.checkFollow(widget.artistId)
-          .then((value) => value, onError: (_) => false);
       final check = await SubscriptionService.checkSubscription(widget.artistId)
           .then(
             (value) => value,
@@ -121,6 +125,19 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       final letters = await FanLetterService.listArtistFanLetters(
         widget.artistId,
       ).then((value) => value, onError: (_) => <FanLetter>[]);
+      ArtistSearchResponse? rankings;
+      try {
+        rankings = await SearchService.rankArtists('fan-clubs', limit: 500);
+      } catch (_) {
+        rankings = null;
+      }
+      int? rank;
+      for (final item in rankings?.artists ?? const <ArtistSearchItem>[]) {
+        if (item.id == widget.artistId) {
+          rank = item.rank;
+          break;
+        }
+      }
       final fallbackOwner = Profile(
         userUid: widget.artistId,
         displayName: displayName(),
@@ -140,9 +157,9 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         _profile = profile;
         _posts = posts;
         _letters = letters;
-        _following = following;
         _subscribed = check.isSubscribed;
         _memberCount = club?.memberCount;
+        _fanClubRank = rank;
         _loading = false;
         _error = null;
       });
@@ -178,58 +195,28 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     );
   }
 
-  Future<void> handleToggleFollow() async {
-    if (_togglingFollow) {
+  /// Espelho Expo: o pill “+ Seguir” liga/desliga membership.
+  Future<void> handleToggleMembership() async {
+    if (_togglingMembership) {
       return;
     }
-    setState(() => _togglingFollow = true);
+    setState(() => _togglingMembership = true);
     try {
-      if (_following) {
-        await FollowService.unfollowArtist(widget.artistId);
-        setState(() => _following = false);
+      if (_subscribed) {
+        await SubscriptionService.cancelSubscription(widget.artistId);
+        setState(() => _subscribed = false);
       } else {
-        await FollowService.followArtist(widget.artistId);
-        setState(() => _following = true);
-      }
-    } catch (error) {
-      if (mounted) {
-        await AppAlert.show(
-          context,
-          title: 'Seguir',
-          message: error.toString(),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _togglingFollow = false);
-      }
-    }
-  }
-
-  Future<void> handleSubscribe() async {
-    try {
-      await SubscriptionService.createSubscription(widget.artistId);
-      setState(() => _subscribed = true);
-      if (!_following) {
+        await SubscriptionService.createSubscription(widget.artistId);
+        setState(() => _subscribed = true);
         try {
           await FollowService.followArtist(widget.artistId);
-          if (mounted) {
-            setState(() => _following = true);
-          }
         } catch (_) {}
-      }
-      if (mounted) {
-        await AppAlert.show(
-          context,
-          title: 'Membership',
-          message: 'Assinatura ativa. Posts exclusivos foram liberados.',
-        );
       }
     } on ApiError catch (error) {
       if (mounted) {
         await AppAlert.show(
           context,
-          title: 'Membership',
+          title: 'Assinatura',
           message: error.status == 402
               ? 'Saldo de Jam Coins insuficiente para a membership (100). Recarregue em Jam Coins.'
               : error.message,
@@ -239,9 +226,13 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       if (mounted) {
         await AppAlert.show(
           context,
-          title: 'Membership',
+          title: 'Assinatura',
           message: error.toString(),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _togglingMembership = false);
       }
     }
   }
@@ -250,16 +241,6 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     context.push(
       Pages.fanClubCommunityOf(
         widget.artistId,
-        name: displayName(),
-        avatarUrl: avatarUrl(),
-      ),
-    );
-  }
-
-  void handleFanLetter() {
-    context.push(
-      Pages.fanLetterComposeOf(
-        artistId: widget.artistId,
         name: displayName(),
         avatarUrl: avatarUrl(),
       ),
@@ -284,14 +265,31 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     });
   }
 
-  List<FeedPost> visiblePosts() {
-    if (_tab == _ArtistTab.exclusive) {
-      return [
-        for (final post in _posts)
-          if (isExclusivePost(post)) post,
-      ];
+  bool isTextPost(FeedPost post) {
+    return post.type == PostType.text;
+  }
+
+  bool isMediaPost(FeedPost post) {
+    return post.type == PostType.image ||
+        post.type == PostType.carousel ||
+        post.type == PostType.video;
+  }
+
+  List<FeedPost> feedPosts() {
+    final base = _tab == _ArtistTab.exclusive
+        ? [
+            for (final post in _posts)
+              if (isExclusivePost(post)) post,
+          ]
+        : _posts;
+    if (_tab != _ArtistTab.feed) {
+      return base;
     }
-    return _posts;
+    return switch (_feedFilter) {
+      _FeedFilter.all => base,
+      _FeedFilter.posts => [for (final post in base) if (isTextPost(post)) post],
+      _FeedFilter.media => [for (final post in base) if (isMediaPost(post)) post],
+    };
   }
 
   @override
@@ -299,6 +297,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     final colors = CrowdFansTheme.of(context);
     final access = exclusiveContext();
     final name = displayName();
+    final avatar = avatarUrl();
+    final posts = feedPosts();
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -354,7 +354,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                   : RefreshIndicator(
                       onRefresh: handleLoad,
                       child: ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
                         children: [
                           if (_error != null) ...[
                             Text(
@@ -369,57 +369,75 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                           ],
+                          ArtistProfileCover(imageUrl: avatar),
+                          const SizedBox(height: 16),
                           ArtistProfileHero(
                             displayName: name,
                             handle: handleLabel(),
-                            avatarUrl: avatarUrl(),
+                            avatarUrl: avatar,
                             meta: metaLabel(),
+                            rank: _fanClubRank,
                           ),
                           const SizedBox(height: 16),
-                          ArtistProfileActions(
-                            following: _following,
+                          ArtistProfileCtaPill(
                             subscribed: _subscribed,
-                            togglingFollow: _togglingFollow,
-                            onToggleFollow: handleToggleFollow,
-                            onOpenFanClub: handleOpenFanClub,
-                            onFanLetter: handleFanLetter,
-                            onSubscribe: handleSubscribe,
+                            busy: _togglingMembership,
+                            onPressed: handleToggleMembership,
                           ),
                           const SizedBox(height: 16),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              ArtistProfileTabChip(
-                                label: 'Posts',
-                                selected: _tab == _ArtistTab.posts,
-                                onPressed: () {
-                                  setState(() => _tab = _ArtistTab.posts);
-                                },
-                              ),
-                              ArtistProfileTabChip(
-                                label: 'Exclusivo',
-                                selected: _tab == _ArtistTab.exclusive,
-                                onPressed: () {
-                                  setState(() => _tab = _ArtistTab.exclusive);
-                                },
-                              ),
-                              ArtistProfileTabChip(
-                                label: 'Cartas',
-                                selected: _tab == _ArtistTab.cartas,
-                                onPressed: () {
-                                  setState(() => _tab = _ArtistTab.cartas);
-                                },
-                              ),
-                              ArtistProfileTabChip(
-                                label: 'Sobre',
-                                selected: _tab == _ArtistTab.sobre,
-                                onPressed: () {
-                                  setState(() => _tab = _ArtistTab.sobre);
-                                },
-                              ),
+                              for (final entry in const [
+                                (_ArtistTab.feed, 'Feed'),
+                                (_ArtistTab.sobre, 'Sobre'),
+                                (_ArtistTab.exclusive, 'Exclusivo'),
+                                (_ArtistTab.fanclub, 'Fã Clube'),
+                                (_ArtistTab.cartas, 'Cartas'),
+                              ])
+                                ArtistProfileTabChip(
+                                  label: entry.$2,
+                                  selected: _tab == entry.$1,
+                                  onPressed: () {
+                                    setState(() => _tab = entry.$1);
+                                  },
+                                ),
                             ],
                           ),
+                          if (_tab == _ArtistTab.feed) ...[
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                ArtistProfileFeedFilterChip(
+                                  label: 'Todos',
+                                  selected: _feedFilter == _FeedFilter.all,
+                                  onPressed: () {
+                                    setState(() => _feedFilter = _FeedFilter.all);
+                                  },
+                                ),
+                                ArtistProfileFeedFilterChip(
+                                  label: 'Posts',
+                                  selected: _feedFilter == _FeedFilter.posts,
+                                  onPressed: () {
+                                    setState(
+                                      () => _feedFilter = _FeedFilter.posts,
+                                    );
+                                  },
+                                ),
+                                ArtistProfileFeedFilterChip(
+                                  label: 'Mídia',
+                                  selected: _feedFilter == _FeedFilter.media,
+                                  onPressed: () {
+                                    setState(
+                                      () => _feedFilter = _FeedFilter.media,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
                           const SizedBox(height: 16),
                           if (_tab == _ArtistTab.cartas)
                             if (_letters.isEmpty)
@@ -442,38 +460,71 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                                   : 'Este artista ainda não escreveu uma bio.',
                             ),
                             const SizedBox(height: 12),
+                            const ArtistProfileAboutCard(
+                              label: 'Spotify',
+                              body:
+                                  'Preview do Spotify vem do cadastro do artista e não é editável aqui.',
+                            ),
+                            const SizedBox(height: 12),
                             ArtistProfileAboutCard(
                               label: 'Fã Clube',
                               body: _memberCount != null
                                   ? '$_memberCount membros'
-                                  : 'Sem dados de membros ainda.',
+                                  : 'Comunidade do artista',
                             ),
                             const SizedBox(height: 10),
                             AppButton(
-                              label: 'Abrir comunidade',
+                              label: 'Abrir fã clube',
                               variant: AppButtonVariant.outline,
                               onPressed: handleOpenFanClub,
                             ),
-                          ] else if (visiblePosts().isEmpty)
-                            ProfileState(
-                              title: 'Nenhum post',
-                              message: _tab == _ArtistTab.exclusive
-                                  ? 'Nenhum post exclusivo ainda.'
-                                  : 'Este artista ainda não publicou posts.',
-                            )
-                          else
-                            for (final post in visiblePosts())
-                              FeedItem(
-                                post: post,
-                                canAccessExclusive: canAccessExclusivePost(
-                                  post,
-                                  access,
-                                ),
-                                onPressUnlock: _subscribed
-                                    ? null
-                                    : handleSubscribe,
-                                onVoteApplied: handleVoteApplied,
+                          ] else if (_tab == _ArtistTab.fanclub) ...[
+                            ArtistProfileAboutCard(
+                              label: 'Fã Clube',
+                              body: _memberCount != null
+                                  ? '$_memberCount membros'
+                                  : 'Comunidade do artista',
+                            ),
+                            const SizedBox(height: 10),
+                            AppButton(
+                              label: 'Abrir fã clube',
+                              onPressed: handleOpenFanClub,
+                            ),
+                          ] else ...[
+                            if (_tab == _ArtistTab.exclusive && !_subscribed) ...[
+                              ArtistProfileAboutCard(
+                                label: 'Conteúdo exclusivo',
+                                body:
+                                    'Assine a membership para ver posts exclusivos deste artista.',
                               ),
+                              const SizedBox(height: 10),
+                              AppButton(
+                                label: 'Assinar membership',
+                                onPressed: handleToggleMembership,
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                            if (posts.isEmpty)
+                              ProfileState(
+                                title: 'Nenhum post',
+                                message: _tab == _ArtistTab.exclusive
+                                    ? 'Nenhum post exclusivo ainda.'
+                                    : 'Este artista ainda não publicou posts.',
+                              )
+                            else
+                              for (final post in posts)
+                                FeedItem(
+                                  post: post,
+                                  canAccessExclusive: canAccessExclusivePost(
+                                    post,
+                                    access,
+                                  ),
+                                  onPressUnlock: _subscribed
+                                      ? null
+                                      : handleToggleMembership,
+                                  onVoteApplied: handleVoteApplied,
+                                ),
+                          ],
                         ],
                       ),
                     ),
