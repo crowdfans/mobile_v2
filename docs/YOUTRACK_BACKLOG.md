@@ -16,7 +16,7 @@
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
 | QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
-| Bags | CF-82 / CF-83 | **Feito no Flutter** — código em [#38](https://github.com/crowdfans/mobile_v2/pull/38); docs desta branch. YT Done no lote final (parent). |
+| Bags | CF-82 / CF-83 | **Feito no Flutter** — código [#38](https://github.com/crowdfans/mobile_v2/pull/38); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39). YT Done no lote final (parent). |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
 ## Legenda — Status local
@@ -74,8 +74,9 @@ Checagem 2026-09-09 no `crowdfans-prod`:
 | CF-82 | Correção de Bugs | Backlog | Normal | gus | Bugs gerais | **Feito no Flutter** via [#38](https://github.com/crowdfans/mobile_v2/pull/38): inbox sem card bordado (só Meet destacado); header Notificações sem engrenagem. YT Done no lote final. |
 | CF-83 | Correção de Visual | Backlog | Normal | gus | Visual gerais | **Feito no Flutter** via [#38](https://github.com/crowdfans/mobile_v2/pull/38): perfil público cover overlay + tabs underline + Exclusivo/Sobre/Spotify/cartas; comunidade toolbar + sort/filtros; Clubes “Postagens dos Fã Clubes” + Popularidade/Novos. YT Done no lote final. |
 
-**IDs acionáveis Mobile/Flutter:** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130, CF-82, CF-83  
-**Contagem:** 8
+**IDs acionáveis Mobile/Flutter (código):** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130  
+**Bags Flutter prontos (só YT Done no lote final):** CF-82, CF-83  
+**Contagem código aberto:** 6
 
 ---
 
