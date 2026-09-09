@@ -1,6 +1,8 @@
-import 'package:crowdfans/components/profile/analytics_bar_chart.dart';
-import 'package:crowdfans/components/profile/analytics_filter_chip.dart';
+import 'package:crowdfans/components/profile/analytics_audience_charts.dart';
+import 'package:crowdfans/components/profile/analytics_line_chart_card.dart';
 import 'package:crowdfans/components/profile/analytics_metric_card.dart';
+import 'package:crowdfans/components/profile/analytics_period_chips.dart';
+import 'package:crowdfans/components/profile/artist_audience_presentation.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -11,12 +13,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 const _periods = [
-  ('7d', '7d'),
-  ('30d', '30d'),
-  ('90d', '90d'),
+  ('7d', '7 dias'),
+  ('30d', '30 dias'),
+  ('90d', '90 dias'),
 ];
 
-/// Público / audiência do artista autenticado.
+/// Público / audiência do artista autenticado (CF-116).
 class ArtistAudienceSettingsScreen extends ConsumerStatefulWidget {
   const ArtistAudienceSettingsScreen({super.key});
 
@@ -87,6 +89,10 @@ class _ArtistAudienceSettingsScreenState
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final data = _data;
+    final width = MediaQuery.sizeOf(context).width;
+    final cardWidth = (width - 42) / 2;
+    final pieWidth = (width - 42) / 2;
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -99,20 +105,13 @@ class _ArtistAudienceSettingsScreenState
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
                       children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final item in _periods)
-                              AnalyticsFilterChip(
-                                label: item.$2,
-                                active: _period == item.$1,
-                                onTap: () {
-                                  setState(() => _period = item.$1);
-                                  handleLoad();
-                                },
-                              ),
-                          ],
+                        AnalyticsPeriodChips(
+                          periods: _periods,
+                          selectedId: _period,
+                          onSelected: (id) {
+                            setState(() => _period = id);
+                            handleLoad();
+                          },
                         ),
                         if (_error != null) ...[
                           const SizedBox(height: 16),
@@ -136,9 +135,18 @@ class _ArtistAudienceSettingsScreenState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    data.lifetimeAudienceTotal
-                                        .round()
-                                        .toString(),
+                                    'Total de fãs',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formatCompactPtBr(
+                                      data.lifetimeAudienceTotal,
+                                    ),
                                     style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.w800,
@@ -163,26 +171,95 @@ class _ArtistAudienceSettingsScreenState
                             children: [
                               for (final card in data.summaryCards)
                                 SizedBox(
-                                  width:
-                                      (MediaQuery.sizeOf(context).width - 42) /
-                                      2,
+                                  width: cardWidth,
                                   child: AnalyticsMetricCard(card: card),
                                 ),
                             ],
                           ),
                           if (data.growthChart != null) ...[
-                            const SizedBox(height: 16),
-                            Text(
-                              data.growthChart!.title,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
+                            const SizedBox(height: 14),
+                            AnalyticsLineChartCard(chart: data.growthChart!),
+                          ],
+                          const SizedBox(height: 14),
+                          AnalyticsSectionCard(
+                            title: 'Distribuição por FanScore',
+                            subtitle:
+                                'Como a base está dividida entre ultimate fãs, engajados e audiência casual',
+                            child: AnalyticsDistributionBar(
+                              items: ArtistAudiencePresentation.orPresentation(
+                                data.fanscoreDistribution,
+                                ArtistAudiencePresentation.fanscore,
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            AnalyticsBarChart(chart: data.growthChart!),
-                          ],
+                          ),
+                          const SizedBox(height: 14),
+                          AnalyticsSectionCard(
+                            title: 'Cidades com mais atividade',
+                            subtitle:
+                                'Onde sua base responde com maior constância hoje',
+                            child: AnalyticsHorizontalBarList(
+                              items: ArtistAudiencePresentation.orProgress(
+                                data.cityActivityRows,
+                                ArtistAudiencePresentation.cityActivity,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: pieWidth,
+                                child: AnalyticsPieChartCard(
+                                  title: 'Faixa etária',
+                                  subtitle: 'Base ativa',
+                                  items:
+                                      ArtistAudiencePresentation.orPresentation(
+                                    data.ageDistribution,
+                                    ArtistAudiencePresentation.age,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                width: pieWidth,
+                                child: AnalyticsPieChartCard(
+                                  title: 'Gênero',
+                                  subtitle: 'Base ativa',
+                                  items:
+                                      ArtistAudiencePresentation.orPresentation(
+                                    data.genderDistribution,
+                                    ArtistAudiencePresentation.gender,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          AnalyticsSectionCard(
+                            title: 'Concentração regional',
+                            subtitle:
+                                'Visão territorial da base para decisões de campanha e agenda',
+                            child: Column(
+                              children: [
+                                AnalyticsDistributionBar(
+                                  items:
+                                      ArtistAudiencePresentation.orPresentation(
+                                    data.regionDistribution,
+                                    ArtistAudiencePresentation.regions,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                AnalyticsLocationChips(
+                                  items:
+                                      ArtistAudiencePresentation.orPresentation(
+                                    data.topCities,
+                                    ArtistAudiencePresentation.topCities,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ],
                     ),
