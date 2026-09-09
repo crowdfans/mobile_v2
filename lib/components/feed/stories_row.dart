@@ -16,10 +16,10 @@ class StoriesRow extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return SizedBox(
-      height: 92,
+      height: 124,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        padding: const EdgeInsets.fromLTRB(4, 8, 12, 0),
         itemCount: stories.length,
         itemBuilder: (context, index) {
           final story = stories[index];

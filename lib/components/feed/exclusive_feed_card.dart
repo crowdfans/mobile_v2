@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/feed/exclusive_feed_card_locked_content.dart';
 import 'package:crowdfans/components/feed/exclusive_post_meta_row.dart';
 import 'package:crowdfans/components/post/post_card.dart';
+import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +31,15 @@ class ExclusiveFeedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tint = isDark ? AppPalette.purple950 : AppPalette.purple50;
+    final border = isDark ? AppPalette.purple800 : AppPalette.purple200;
     final resolvedUsername = post.handle.replaceFirst(RegExp(r'^@'), '');
     if (!unlocked) {
       return PostCard(
         post: post,
+        backgroundColor: tint,
+        borderColor: border,
         onPressOpenProfile: onPressOpenProfile,
         onPressOptions: onPressOptions,
         onPressShare: onPressShare,
@@ -46,6 +52,8 @@ class ExclusiveFeedCard extends StatelessWidget {
     }
     return PostCard(
       post: post,
+      backgroundColor: tint,
+      borderColor: border,
       onPressOpenComments: onPressOpenComments,
       onPressOpenProfile: onPressOpenProfile,
       onPressOptions: onPressOptions,

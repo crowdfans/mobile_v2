@@ -13,6 +13,7 @@ import 'package:crowdfans/screens/login/artist_login_screen.dart';
 import 'package:crowdfans/screens/login/fan_login_screen.dart';
 import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
+import 'package:crowdfans/screens/notifications/notifications_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
@@ -339,10 +340,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.notifications,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Notificações',
-          message: 'Inbox de notificações entra no corte da CF-68.',
-        ),
+        builder: (context, state) => const NotificationsScreen(),
       ),
       GoRoute(
         path: Pages.demo,
