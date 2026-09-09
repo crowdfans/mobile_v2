@@ -163,7 +163,10 @@ class FanScoreArtistCard extends StatelessWidget {
               const SizedBox(height: 12),
               const Divider(color: Color(0x33111127), height: 1),
               const SizedBox(height: 10),
-              FanScoreBreakdownView(breakdown: entry.breakdown),
+              FanScoreBreakdownView(
+                breakdown: entry.breakdown,
+                deltaPercentage: entry.deltaPercentage,
+              ),
             ],
           ],
         ),

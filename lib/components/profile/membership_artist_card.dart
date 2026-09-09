@@ -18,19 +18,37 @@ class MembershipArtistCard extends StatelessWidget {
   final bool busy;
   final bool catalog;
 
+  String priceLabel() {
+    final price = item.price;
+    if (price == null) {
+      return catalog
+          ? (item.availabilityLabel ?? 'Disponível')
+          : (item.monthsLabel ?? 'Assinatura ativa');
+    }
+    final formatted = price.toString().replaceAll('.', ',');
+    return '$formatted Jam Coins/mês';
+  }
+
+  Color statusColor(AppColors colors) {
+    if (catalog) {
+      return colors.primaryStrong;
+    }
+    if (item.isLate) {
+      return colors.danger;
+    }
+    if (item.isCancelled) {
+      return colors.textTertiary;
+    }
+    return colors.success;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final price = item.price;
-    final detail = price != null
-        ? '${price.toString()} Jam Coins por mês'
-        : catalog
-        ? (item.availabilityLabel ?? 'Disponível')
-        : (item.monthsLabel ?? 'Assinatura ativa');
     final status = catalog
         ? 'Disponível'
         : (item.statusLabel ?? item.status ?? 'Ativa');
-    final statusColor = catalog ? colors.primaryStrong : AppPalette.green700;
+    final color = statusColor(colors);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -61,13 +79,37 @@ class MembershipArtistCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        detail,
+                        priceLabel(),
                         style: TextStyle(
                           fontSize: 12,
                           height: 1.4,
                           color: colors.textSecondary,
                         ),
                       ),
+                      if (!catalog &&
+                          item.monthsLabel != null &&
+                          item.monthsLabel!.trim().isNotEmpty &&
+                          item.price != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          item.monthsLabel!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.textTertiary,
+                          ),
+                        ),
+                      ],
+                      if (!catalog &&
+                          (item.renewalLabel ?? '').trim().isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          item.renewalLabel!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.textTertiary,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -86,7 +128,7 @@ class MembershipArtistCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: statusColor,
+                        color: color,
                       ),
                     ),
                   ),

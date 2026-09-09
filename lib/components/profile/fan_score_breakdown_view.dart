@@ -4,21 +4,32 @@ import 'package:flutter/material.dart';
 
 /// Linhas de breakdown do Fan Score.
 class FanScoreBreakdownView extends StatelessWidget {
-  const FanScoreBreakdownView({super.key, required this.breakdown});
+  const FanScoreBreakdownView({
+    super.key,
+    required this.breakdown,
+    this.deltaPercentage,
+  });
 
   final FanScoreBreakdown breakdown;
+  final int? deltaPercentage;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final delta = deltaPercentage;
     final rows = <(String, String)>[
-      ('Membership', breakdown.hasMembership ? 'Sim' : 'Não'),
+      ('Membership ativa', breakdown.hasMembership ? 'Sim' : 'Não'),
       ('Comentários', '${breakdown.commentsMade}'),
-      ('Upvotes', '${breakdown.upvotesMade}'),
-      ('Fan letters', '${breakdown.fanLettersPosted}'),
-      ('Doações em live', '${breakdown.liveDonations}'),
+      ('Votos', '${breakdown.upvotesMade}'),
+      ('Fan Letters', '${breakdown.fanLettersPosted}'),
       ('Participações em live', '${breakdown.liveParticipations}'),
-      ('Posts no fan club', '${breakdown.fanClubPosts}'),
+      ('Doações em live', '${breakdown.liveDonations}'),
+      ('Posts no Fã Clube', '${breakdown.fanClubPosts}'),
+      if (delta != null)
+        (
+          'Variação no ciclo',
+          '${delta >= 0 ? '+' : ''}$delta%',
+        ),
     ];
     return Column(
       children: [

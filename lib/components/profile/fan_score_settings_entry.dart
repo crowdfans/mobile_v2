@@ -17,9 +17,26 @@ class FanScoreSettingsEntry extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
 
+  Color accentColor(AppColors colors) {
+    final hex = entry.tier.accentColor.trim();
+    if (hex.isEmpty) {
+      return colors.primaryStrong;
+    }
+    final normalized = hex.replaceFirst('#', '');
+    if (normalized.length != 6) {
+      return colors.primaryStrong;
+    }
+    final value = int.tryParse(normalized, radix: 16);
+    if (value == null) {
+      return colors.primaryStrong;
+    }
+    return Color(0xFF000000 | value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final accent = accentColor(colors);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -53,7 +70,7 @@ class FanScoreSettingsEntry extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: colors.primaryStrong,
+                            color: accent,
                           ),
                         ),
                       ],
@@ -93,7 +110,10 @@ class FanScoreSettingsEntry extends StatelessWidget {
           if (expanded)
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-              child: FanScoreBreakdownView(breakdown: entry.breakdown),
+              child: FanScoreBreakdownView(
+                breakdown: entry.breakdown,
+                deltaPercentage: entry.deltaPercentage,
+              ),
             ),
         ],
       ),

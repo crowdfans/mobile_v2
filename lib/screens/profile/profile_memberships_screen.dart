@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/membership_artist_card.dart';
 import 'package:crowdfans/components/profile/membership_balance_banner.dart';
@@ -10,6 +12,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/membership.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
+import 'package:crowdfans/services/wallet_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
@@ -31,45 +34,59 @@ class _ProfileMembershipsScreenState
   var _loading = true;
   String? _error;
   String? _busyId;
+  VoidCallback? _unsubscribeWs;
 
   @override
   void initState() {
     super.initState();
     handleLoad();
+    unawaited(handleSubscribe());
   }
 
-  Future<void> handleLoad() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  @override
+  void dispose() {
+    _unsubscribeWs?.call();
+    super.dispose();
+  }
+
+  Future<void> handleSubscribe() async {
+    try {
+      final stop = await WalletService.subscribe((event) {
+        if (event.type == 'wallet.credited') {
+          unawaited(handleLoad(silent: true));
+        }
+      });
+      if (!mounted) {
+        stop();
+        return;
+      }
+      _unsubscribeWs = stop;
+    } catch (_) {}
+  }
+
+  Future<void> handleLoad({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final session = ref.read(authSessionProvider);
       var profile = session.profile ?? await ProfileService.getMyProfile();
       final handle = profile.name.trim().isNotEmpty
           ? profile.name
           : profile.displayName;
-      MembershipOverview overview;
+      final memberships = await ProfileService.getMemberships(handle);
+      WalletSnapshot? wallet;
       try {
-        overview = await ProfileService.getMemberships(handle);
+        wallet = await WalletService.getWallet();
       } catch (_) {
-        overview = const MembershipOverview();
+        wallet = null;
       }
-      if (overview.cards.isEmpty) {
-        final rows = await SubscriptionService.listSubscriptions();
-        overview = MembershipOverview(
-          jamCoinsBalance: overview.jamCoinsBalance,
-          cards: [
-            for (final row in rows.where((item) => item.isActive))
-              MembershipCard(
-                id: '${row.id}',
-                artistId: row.artistUid,
-                artistName: row.artistName,
-                statusLabel: 'Ativa',
-              ),
-          ],
-          catalog: overview.catalog,
-        );
+      var overview = memberships;
+      if (wallet != null && wallet.displayBalance.isNotEmpty) {
+        overview = overview.copyWith(jamCoinsBalance: wallet.displayBalance);
       }
       if (!mounted) {
         return;
@@ -77,6 +94,7 @@ class _ProfileMembershipsScreenState
       setState(() {
         _overview = overview;
         _loading = false;
+        _error = null;
       });
     } catch (error) {
       if (!mounted) {
@@ -84,18 +102,20 @@ class _ProfileMembershipsScreenState
       }
       setState(() {
         _loading = false;
-        _error = error.toString();
+        if (!silent) {
+          _error = error.toString();
+        }
       });
     }
   }
 
   Future<void> handleCancel(MembershipCard item) async {
     final artistId = item.artistId;
-    if (artistId == null || artistId.isEmpty) {
+    if (!item.canCancel || artistId == null) {
       await AppAlert.show(
         context,
         title: 'Memberships',
-        message: 'Esta assinatura não tem artistId para cancelar.',
+        message: 'Esta assinatura não pode ser cancelada.',
       );
       return;
     }
@@ -128,10 +148,48 @@ class _ProfileMembershipsScreenState
     }
   }
 
+  List<Widget> section(
+    BuildContext context, {
+    required String title,
+    required List<MembershipCard> items,
+    required bool allowCancel,
+  }) {
+    final colors = CrowdFansTheme.of(context);
+    if (items.isEmpty) {
+      return const [];
+    }
+    return [
+      const SizedBox(height: 12),
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: colors.textPrimary,
+        ),
+      ),
+      const SizedBox(height: 10),
+      for (final item in items) ...[
+        MembershipArtistCard(
+          item: item,
+          busy: _busyId == item.id,
+          onCancel: allowCancel && item.canCancel
+              ? () => handleCancel(item)
+              : null,
+        ),
+        const SizedBox(height: 12),
+      ],
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final overview = _overview;
+    final cards = overview?.cards ?? const <MembershipCard>[];
+    final active = [for (final item in cards) if (item.isActiveStatus) item];
+    final late = [for (final item in cards) if (item.isLate) item];
+    final cancelled = [for (final item in cards) if (item.isCancelled) item];
     final catalog =
         overview?.catalog.where((item) => !item.isCurrentMember).toList() ??
         const <MembershipCard>[];
@@ -141,7 +199,7 @@ class _ProfileMembershipsScreenState
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Memberships',
+              title: 'Meus memberships',
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -169,32 +227,35 @@ class _ProfileMembershipsScreenState
                         MembershipProTeaser(
                           onPressed: () => context.push(Pages.profilePro),
                         ),
-                        const SizedBox(height: 22),
-                        Text(
-                          'Minhas memberships',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        if (overview == null || overview.cards.isEmpty)
-                          const ProfileState(
-                            title: 'Nenhuma membership ativa',
-                            message: 'Suas assinaturas ativas aparecerão aqui.',
-                          )
-                        else
-                          for (final item in overview.cards) ...[
-                            MembershipArtistCard(
-                              item: item,
-                              busy: _busyId == item.id,
-                              onCancel: item.artistId == null
-                                  ? null
-                                  : () => handleCancel(item),
+                        if (active.isEmpty && late.isEmpty && cancelled.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 22),
+                            child: ProfileState(
+                              title: 'Nenhuma membership ativa',
+                              message:
+                                  'Suas assinaturas ativas aparecerão aqui.',
                             ),
-                            const SizedBox(height: 12),
-                          ],
+                          )
+                        else ...[
+                          ...section(
+                            context,
+                            title: 'Ativos',
+                            items: active,
+                            allowCancel: true,
+                          ),
+                          ...section(
+                            context,
+                            title: 'Em atraso',
+                            items: late,
+                            allowCancel: true,
+                          ),
+                          ...section(
+                            context,
+                            title: 'Cancelados',
+                            items: cancelled,
+                            allowCancel: false,
+                          ),
+                        ],
                         const SizedBox(height: 10),
                         Text(
                           'Disponíveis',
@@ -208,7 +269,8 @@ class _ProfileMembershipsScreenState
                         if (catalog.isEmpty)
                           const ProfileState(
                             title: 'Nenhuma nova membership',
-                            message: 'Não há outras assinaturas disponíveis neste momento.',
+                            message:
+                                'Não há outras assinaturas disponíveis neste momento.',
                           )
                         else
                           for (final item in catalog) ...[
@@ -216,7 +278,8 @@ class _ProfileMembershipsScreenState
                             const SizedBox(height: 12),
                           ],
                         const NotificationQuietModeNote(
-                          message: 'Assinar cobra 100 Jam Coins. Recarga e PIX sandbox ficam em Jam Coins. Cancelar não estorna.',
+                          message:
+                              'Assinar cobra 100 Jam Coins. Recarga fica em Jam Coins. Cancelar não estorna.',
                         ),
                       ],
                     ),

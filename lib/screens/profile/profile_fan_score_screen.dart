@@ -120,11 +120,16 @@ class _ProfileFanScoreScreenState extends ConsumerState<ProfileFanScoreScreen> {
                                     color: colors.textSecondary,
                                   ),
                                 ),
-                                if ((_data?.cycleDetails?.periodLabel ?? '')
-                                    .isNotEmpty) ...[
+                                if (((_data?.cycleDetails?.periodLabel ?? '')
+                                            .isNotEmpty) ||
+                                    ((_data?.cycleDetails?.cycleLabel ?? '')
+                                        .isNotEmpty)) ...[
                                   const SizedBox(height: 7),
                                   Text(
-                                    _data!.cycleDetails!.periodLabel!,
+                                    (_data!.cycleDetails!.periodLabel ?? '')
+                                            .isNotEmpty
+                                        ? _data!.cycleDetails!.periodLabel!
+                                        : _data!.cycleDetails!.cycleLabel!,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,

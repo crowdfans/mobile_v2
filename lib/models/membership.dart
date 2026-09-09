@@ -11,6 +11,7 @@ class MembershipCard {
     this.monthlyPrice,
     this.pricePerMonth,
     this.monthsLabel,
+    this.renewalLabel,
     this.availabilityLabel,
     this.isCurrentMember = false,
   });
@@ -25,6 +26,7 @@ class MembershipCard {
   final num? monthlyPrice;
   final num? pricePerMonth;
   final String? monthsLabel;
+  final String? renewalLabel;
   final String? availabilityLabel;
   final bool isCurrentMember;
 
@@ -41,6 +43,20 @@ class MembershipCard {
   }
 
   num? get price => monthlyPrice ?? pricePerMonth;
+
+  String get normalizedStatus => (status ?? '').trim().toLowerCase();
+
+  bool get isCancelled => normalizedStatus == 'cancelled';
+
+  bool get isLate =>
+      normalizedStatus == 'late' || normalizedStatus == 'past_due';
+
+  bool get isActiveStatus => !isCancelled && !isLate;
+
+  bool get canCancel {
+    final id = artistId?.trim() ?? '';
+    return id.isNotEmpty && !isCancelled;
+  }
 
   factory MembershipCard.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
@@ -60,6 +76,7 @@ class MembershipCard {
       monthlyPrice: map['monthlyPrice'] as num?,
       pricePerMonth: map['pricePerMonth'] as num?,
       monthsLabel: map['monthsLabel'] as String?,
+      renewalLabel: map['renewalLabel'] as String?,
       availabilityLabel: map['availabilityLabel'] as String?,
       isCurrentMember: map['isCurrentMember'] == true,
     );
@@ -77,6 +94,18 @@ class MembershipOverview {
   final String jamCoinsBalance;
   final List<MembershipCard> cards;
   final List<MembershipCard> catalog;
+
+  MembershipOverview copyWith({
+    String? jamCoinsBalance,
+    List<MembershipCard>? cards,
+    List<MembershipCard>? catalog,
+  }) {
+    return MembershipOverview(
+      jamCoinsBalance: jamCoinsBalance ?? this.jamCoinsBalance,
+      cards: cards ?? this.cards,
+      catalog: catalog ?? this.catalog,
+    );
+  }
 
   factory MembershipOverview.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
