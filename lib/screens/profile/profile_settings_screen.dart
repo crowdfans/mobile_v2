@@ -104,6 +104,16 @@ class ProfileSettingsScreen extends ConsumerWidget {
                   label: 'Indicações',
                   onTap: () => context.push(Pages.profileReferral),
                 ),
+                ProfileSettingItem(
+                  id: 'fan-score',
+                  label: 'Fan Score',
+                  onTap: () => context.push(Pages.profileFanScore),
+                ),
+                ProfileSettingItem(
+                  id: 'fan-letters',
+                  label: 'Fan Letters',
+                  onTap: () => context.push(Pages.fanLetterGallery),
+                ),
               ],
             ),
             if (isArtist)
@@ -119,6 +129,16 @@ class ProfileSettingsScreen extends ConsumerWidget {
                     id: 'insights',
                     label: 'Insights',
                     onTap: () => context.push(Pages.profileArtistInsights),
+                  ),
+                  ProfileSettingItem(
+                    id: 'audience',
+                    label: 'Público',
+                    onTap: () => context.push(Pages.profileArtistAudience),
+                  ),
+                  ProfileSettingItem(
+                    id: 'fan-club',
+                    label: 'Gerenciar Fã Clube',
+                    onTap: () => context.push(Pages.profileArtistFanClub),
                   ),
                 ],
               ),
@@ -139,6 +159,11 @@ class ProfileSettingsScreen extends ConsumerWidget {
                   id: 'blocked-users',
                   label: 'Bloqueados',
                   onTap: () => context.push(Pages.profileBlockedUsers),
+                ),
+                ProfileSettingItem(
+                  id: 'moderation',
+                  label: 'Moderação do Fã Clube',
+                  onTap: () => context.push(Pages.profileModeration),
                 ),
               ],
             ),

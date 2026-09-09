@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crowdfans/components/comments/comment_composer.dart';
 import 'package:crowdfans/components/comments/comment_gif_picker.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
+import 'package:crowdfans/components/comments/comment_sort_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/comment_gif_service.dart';
@@ -29,6 +30,7 @@ class CommentsScreen extends ConsumerStatefulWidget {
 
 class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   var _comments = <CommentItem>[];
+  var _sortPopular = true;
   var _draft = '';
   CommentItem? _replyTo;
   CommentItem? _editing;
@@ -299,6 +301,22 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     context.push(Pages.fanProfileOf(handle));
   }
 
+  List<CommentItem> visibleComments() {
+    final list = [..._comments];
+    if (_sortPopular) {
+      list.sort((a, b) {
+        final byVotes = b.votes.compareTo(a.votes);
+        if (byVotes != 0) {
+          return byVotes;
+        }
+        return a.minutesAgo.compareTo(b.minutesAgo);
+      });
+    } else {
+      list.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
+    }
+    return list;
+  }
+
   void handleVoteApplied(String commentId, VoteResult result) {
     setState(() {
       _comments = [
@@ -386,6 +404,24 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Row(
+                children: [
+                  CommentSortChip(
+                    label: 'Populares',
+                    selected: _sortPopular,
+                    onPressed: () => setState(() => _sortPopular = true),
+                  ),
+                  const SizedBox(width: 8),
+                  CommentSortChip(
+                    label: 'Novos',
+                    selected: !_sortPopular,
+                    onPressed: () => setState(() => _sortPopular = false),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
@@ -400,7 +436,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                         itemCount: _comments.isEmpty
                             ? 1
-                            : _comments.length + (_loadingMore ? 1 : 0),
+                            : visibleComments().length + (_loadingMore ? 1 : 0),
                         itemBuilder: (context, index) {
                           if (_comments.isEmpty) {
                             return Padding(
@@ -413,13 +449,14 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                               ),
                             );
                           }
-                          if (index >= _comments.length) {
+                          final sorted = visibleComments();
+                          if (index >= sorted.length) {
                             return const Padding(
                               padding: EdgeInsets.symmetric(vertical: 16),
                               child: Center(child: CircularProgressIndicator()),
                             );
                           }
-                          final item = _comments[index];
+                          final item = sorted[index];
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [

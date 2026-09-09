@@ -46,6 +46,10 @@ class HomeFollowedArtist {
       avatarUrl: map['avatarUrl'] as String? ?? '',
     );
   }
+
+  Map<String, String> toJson() {
+    return {'id': id, 'username': username, 'avatarUrl': avatarUrl};
+  }
 }
 
 class HomeFeedDto {

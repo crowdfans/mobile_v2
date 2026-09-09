@@ -73,7 +73,18 @@ abstract final class Pages {
   static String fanClubCommunityOf(String artistId) =>
       '/fan-clubs/community/${Uri.encodeComponent(artistId)}';
 
-  /// Compose de post no fã clube, com artista pré-selecionado quando houver.
+  static String fanLetterComposeOf({
+    String? artistId,
+    String? name,
+    String? avatarUrl,
+  }) {
+    return _withArtistQuery(
+      fanLetterCompose,
+      artistId: artistId,
+      name: name,
+      avatarUrl: avatarUrl,
+    );
+  }
   static String fanClubComposeOf({
     String? artistId,
     String? name,

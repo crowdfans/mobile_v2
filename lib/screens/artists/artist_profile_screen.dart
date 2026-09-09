@@ -1,5 +1,6 @@
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/fan_letter/fan_letter_card.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/components/profile/artist_profile_tab_chip.dart';
@@ -8,9 +9,12 @@ import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/models/profile.dart';
+import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
+import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
@@ -35,6 +39,7 @@ class ArtistProfileScreen extends ConsumerStatefulWidget {
 class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   Profile? _profile;
   var _posts = <FeedPost>[];
+  var _letters = <FanLetter>[];
   var _loading = true;
   var _following = false;
   var _subscribed = false;
@@ -64,12 +69,23 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             (value) => value,
             onError: (_) => const SubscriptionCheck(isSubscribed: false),
           );
+      final letters = await FanLetterService.listArtistFanLetters(
+        widget.artistId,
+      ).then((value) => value, onError: (_) => <FanLetter>[]);
       setState(() {
         _profile = profile;
         _posts = [for (final item in posts) item.toFeedPost(owner: profile)];
+        _letters = letters;
         _following = following;
         _subscribed = check.isSubscribed;
       });
+      await SidebarArtistsStore.recordVisit(
+        HomeFollowedArtist(
+          id: widget.artistId,
+          username: profile.name,
+          avatarUrl: profile.photoUrl,
+        ),
+      );
     } catch (_) {
       setState(() => _error = 'Não foi possível carregar o artista.');
     } finally {
@@ -241,6 +257,18 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 10),
+                            AppButton(
+                              label: 'Enviar Fan Letter',
+                              variant: AppButtonVariant.outline,
+                              onPressed: () => context.push(
+                                Pages.fanLetterComposeOf(
+                                  artistId: widget.artistId,
+                                  name: profile.displayName,
+                                  avatarUrl: profile.photoUrl,
+                                ),
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             Wrap(
                               spacing: 8,
@@ -279,11 +307,17 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                             const SizedBox(height: 16),
                           ],
                           if (_tab == _ArtistTab.cartas)
-                            const ProfileState(
-                              title: 'Fan letters',
-                              message:
-                                  'A galeria de cartas entra no próximo corte.',
-                            )
+                            if (_letters.isEmpty)
+                              const ProfileState(
+                                title: 'Fan letters',
+                                message:
+                                    'Nenhuma carta ainda. Envie a primeira pelo botão acima.',
+                              )
+                            else
+                              for (final letter in _letters) ...[
+                                FanLetterCard(letter: letter),
+                                const SizedBox(height: 12),
+                              ]
                           else if (_tab == _ArtistTab.sobre)
                             DecoratedBox(
                               decoration: BoxDecoration(
