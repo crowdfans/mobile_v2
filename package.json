@@ -18,7 +18,8 @@
     "test:patrol:e2e:128": "patrol test -t integration_test/e2e_artist_post_fan_comment_test.dart",
     "test:patrol:e2e:129": "patrol test -t integration_test/e2e_superfan_vote_club_logout_test.dart",
     "test:patrol:e2e:130": "patrol test -t integration_test/e2e_artist_edit_delete_post_test.dart",
-    "ftl:android:dry": "bash scripts/ftl_android.sh --dry-run"
+    "ftl:android:dry": "bash scripts/ftl_android.sh --dry-run",
+    "ftl:android": "bash scripts/ftl_android.sh"
   },
   "devDependencies": {
     "firebase-tools": "^15.29.0"
