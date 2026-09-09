@@ -1,5 +1,5 @@
+import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_settings_section.dart';
-import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Hub de configurações (espelho do `ProfileSettingsScreen`).
+/// Hub de configurações alinhado aos prints CF-108.
 class ProfileSettingsScreen extends ConsumerWidget {
   const ProfileSettingsScreen({super.key});
 
@@ -30,149 +30,189 @@ class ProfileSettingsScreen extends ConsumerWidget {
       await ref.read(authSessionProvider.notifier).logout();
     }
 
+    void openInformation({required String tab}) {
+      context.push('${Pages.profileInformation}?tab=$tab');
+    }
+
+    final howYouUse = ProfileSettingsSection(
+      title: 'Como você usa a Crowd Fans',
+      items: [
+        ProfileSettingItem(
+          id: 'memberships',
+          label: 'Meus Memberships',
+          asset: 'assets/icons/Shapes/star-01.svg',
+          onTap: () => context.push(Pages.profileMemberships),
+        ),
+        ProfileSettingItem(
+          id: 'fan-score',
+          label: 'FanScore',
+          asset: 'assets/icons/Charts/chart-breakout-circle.svg',
+          onTap: () => context.push(Pages.profileFanScore),
+        ),
+        ProfileSettingItem(
+          id: 'memories',
+          label: 'Memórias',
+          asset: 'assets/icons/General/bookmark.svg',
+          onTap: () => context.push(Pages.profileMemories),
+        ),
+        if (!isArtist)
+          ProfileSettingItem(
+            id: 'notifications',
+            label: 'Notificações',
+            asset: 'assets/icons/alerts_and_feedbacks/bell-01.svg',
+            onTap: () => context.push(Pages.profileNotifications),
+          ),
+        if (!isArtist)
+          ProfileSettingItem(
+            id: 'moderation',
+            label: 'Fã Clube',
+            asset: 'assets/icons/alerts_and_feedbacks/announcement-03.svg',
+            onTap: () => context.push(Pages.profileModeration),
+          ),
+      ],
+    );
+
+    final account = ProfileSettingsSection(
+      title: 'Sua Conta',
+      items: [
+        ProfileSettingItem(
+          id: 'profile',
+          label: 'Seu Perfil',
+          asset: 'assets/icons/Users/user-01.svg',
+          onTap: () => context.push(Pages.profileAccount),
+        ),
+        ProfileSettingItem(
+          id: 'security',
+          label: 'Segurança e Login',
+          asset: 'assets/icons/Security/passcode-lock.svg',
+          onTap: () => context.push(Pages.profileSecurity),
+        ),
+        ProfileSettingItem(
+          id: 'appearance',
+          label: 'Aparência',
+          asset: 'assets/icons/Media & devices/monitor-01.svg',
+          onTap: () => context.push(Pages.profileAppearance),
+        ),
+      ],
+    );
+
+    final content = ProfileSettingsSection(
+      title: 'Conteúdos',
+      items: [
+        ProfileSettingItem(
+          id: 'blocked-users',
+          label: 'Usuários Bloqueados',
+          asset: 'assets/icons/General/slash-octagon.svg',
+          onTap: () => context.push(Pages.profileBlockedUsers),
+        ),
+        ProfileSettingItem(
+          id: 'hidden-posts',
+          label: 'Posts Ocultados',
+          asset: 'assets/icons/General/eye-off.svg',
+          onTap: () => context.push(Pages.profileHiddenPosts),
+        ),
+      ],
+    );
+
+    final support = ProfileSettingsSection(
+      title: 'Mais informações e suporte',
+      items: [
+        ProfileSettingItem(
+          id: 'help',
+          label: 'Ajuda',
+          asset: 'assets/icons/General/info-square.svg',
+          onTap: () => openInformation(tab: 'help'),
+        ),
+        ProfileSettingItem(
+          id: 'terms',
+          label: 'Termos de Uso',
+          asset: 'assets/icons/Files/file-06.svg',
+          onTap: () => openInformation(tab: 'terms'),
+        ),
+        ProfileSettingItem(
+          id: 'privacy',
+          label: 'Política de Privacidade',
+          asset: 'assets/icons/Security/file-lock-02.svg',
+          onTap: () => openInformation(tab: 'privacy'),
+        ),
+      ],
+    );
+
+    final session = ProfileSettingsSection(
+      title: 'Sessão',
+      showDivider: false,
+      items: [
+        ProfileSettingItem(
+          id: 'logout',
+          label: 'Sair da conta',
+          asset: 'assets/icons/General/log-out-01.svg',
+          showChevron: false,
+          danger: true,
+          onTap: handleLogout,
+        ),
+      ],
+    );
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
-        child: ListView(
+        child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
+            ProfileScreenHeader(
+              title: 'Configurações',
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                  return;
+                }
+                context.go(Pages.me);
+              },
+            ),
+            Expanded(
+              child: ListView(
                 children: [
-                  ToolbarBackButton(onPressed: () => context.pop()),
-                  Text(
-                    'Ajustes',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
+                  if (isArtist)
+                    ProfileSettingsSection(
+                      title: 'Ferramentas do artista',
+                      items: [
+                        ProfileSettingItem(
+                          id: 'insights',
+                          label: 'Insights',
+                          asset: 'assets/icons/Charts/bar-chart-square-02.svg',
+                          onTap: () =>
+                              context.push(Pages.profileArtistInsights),
+                        ),
+                        ProfileSettingItem(
+                          id: 'audience',
+                          label: 'Público',
+                          asset: 'assets/icons/Users/users-01.svg',
+                          onTap: () =>
+                              context.push(Pages.profileArtistAudience),
+                        ),
+                        ProfileSettingItem(
+                          id: 'artist-fan-club',
+                          label: 'Fã Clube',
+                          asset: 'assets/icons/Users/users-plus.svg',
+                          onTap: () =>
+                              context.push(Pages.profileArtistFanClub),
+                        ),
+                        ProfileSettingItem(
+                          id: 'artist-notifications',
+                          label: 'Notificações',
+                          asset:
+                              'assets/icons/alerts_and_feedbacks/bell-01.svg',
+                          onTap: () =>
+                              context.push(Pages.profileNotifications),
+                        ),
+                      ],
                     ),
-                  ),
+                  howYouUse,
+                  account,
+                  content,
+                  support,
+                  session,
+                  const SizedBox(height: 24),
                 ],
-              ),
-            ),
-            ProfileSettingsSection(
-              title: 'Conta',
-              items: [
-                ProfileSettingItem(
-                  id: 'profile',
-                  label: 'Conta',
-                  onTap: () => context.push(Pages.profileAccount),
-                ),
-                ProfileSettingItem(
-                  id: 'security',
-                  label: 'Segurança',
-                  onTap: () => context.push(Pages.profileSecurity),
-                ),
-                ProfileSettingItem(
-                  id: 'appearance',
-                  label: 'Aparência',
-                  onTap: () => context.push(Pages.profileAppearance),
-                ),
-                ProfileSettingItem(
-                  id: 'notifications',
-                  label: 'Notificações',
-                  onTap: () => context.push(Pages.profileNotifications),
-                ),
-                ProfileSettingItem(
-                  id: 'information',
-                  label: 'Ajuda e documentos',
-                  onTap: () => context.push(Pages.profileInformation),
-                ),
-              ],
-            ),
-            ProfileSettingsSection(
-              title: 'Superfã',
-              items: [
-                ProfileSettingItem(
-                  id: 'wallet',
-                  label: 'Carteira',
-                  onTap: () => context.push(Pages.profileWallet),
-                ),
-                ProfileSettingItem(
-                  id: 'crowdfans-pro',
-                  label: 'CrowdFans Pro',
-                  onTap: () => context.push(Pages.profilePro),
-                ),
-                ProfileSettingItem(
-                  id: 'memberships',
-                  label: 'Memberships',
-                  onTap: () => context.push(Pages.profileMemberships),
-                ),
-                ProfileSettingItem(
-                  id: 'referral',
-                  label: 'Indicações',
-                  onTap: () => context.push(Pages.profileReferral),
-                ),
-                ProfileSettingItem(
-                  id: 'fan-score',
-                  label: 'Fan Score',
-                  onTap: () => context.push(Pages.profileFanScore),
-                ),
-                ProfileSettingItem(
-                  id: 'fan-letters',
-                  label: 'Fan Letters',
-                  onTap: () => context.push(Pages.fanLetterGallery),
-                ),
-              ],
-            ),
-            if (isArtist)
-              ProfileSettingsSection(
-                title: 'Artista',
-                items: [
-                  ProfileSettingItem(
-                    id: 'earnings',
-                    label: 'Ganhos',
-                    onTap: () => context.push(Pages.profileEarnings),
-                  ),
-                  ProfileSettingItem(
-                    id: 'insights',
-                    label: 'Insights',
-                    onTap: () => context.push(Pages.profileArtistInsights),
-                  ),
-                  ProfileSettingItem(
-                    id: 'audience',
-                    label: 'Público',
-                    onTap: () => context.push(Pages.profileArtistAudience),
-                  ),
-                  ProfileSettingItem(
-                    id: 'fan-club',
-                    label: 'Gerenciar Fã Clube',
-                    onTap: () => context.push(Pages.profileArtistFanClub),
-                  ),
-                ],
-              ),
-            ProfileSettingsSection(
-              title: 'Privacidade e conteúdo',
-              items: [
-                ProfileSettingItem(
-                  id: 'hidden-posts',
-                  label: 'Posts ocultos',
-                  onTap: () => context.push(Pages.profileHiddenPosts),
-                ),
-                ProfileSettingItem(
-                  id: 'memories',
-                  label: 'Memórias',
-                  onTap: () => context.push(Pages.profileMemories),
-                ),
-                ProfileSettingItem(
-                  id: 'blocked-users',
-                  label: 'Bloqueados',
-                  onTap: () => context.push(Pages.profileBlockedUsers),
-                ),
-                ProfileSettingItem(
-                  id: 'moderation',
-                  label: 'Moderação do Fã Clube',
-                  onTap: () => context.push(Pages.profileModeration),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: OutlinedButton(
-                key: const Key('settings-item-logout'),
-                onPressed: handleLogout,
-                child: const Text('Sair'),
               ),
             ),
           ],

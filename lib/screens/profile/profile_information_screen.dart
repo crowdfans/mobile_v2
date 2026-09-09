@@ -13,7 +13,10 @@ enum _InformationTab { help, terms, privacy }
 
 /// Ajuda, Termos de Uso e Política de Privacidade.
 class ProfileInformationScreen extends StatefulWidget {
-  const ProfileInformationScreen({super.key});
+  const ProfileInformationScreen({super.key, this.initialTab});
+
+  /// `help`, `terms` ou `privacy`.
+  final String? initialTab;
 
   @override
   State<ProfileInformationScreen> createState() =>
@@ -21,7 +24,17 @@ class ProfileInformationScreen extends StatefulWidget {
 }
 
 class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
-  var _tab = _InformationTab.help;
+  late _InformationTab _tab;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = switch ((widget.initialTab ?? '').toLowerCase()) {
+      'terms' => _InformationTab.terms,
+      'privacy' => _InformationTab.privacy,
+      _ => _InformationTab.help,
+    };
+  }
 
   Future<void> handleContactSupport() async {
     final uri = Uri.parse('mailto:support@crowdfans.app');
