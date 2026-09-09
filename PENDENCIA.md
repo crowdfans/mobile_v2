@@ -82,7 +82,7 @@ Ordem quando o IPA estiver no ar (ou em paralelo, se você preferir):
 4. Fan letters
 5. ~~Push (FCM/APNs)~~ (token sync + entitlements + deep link ao tocar)
 6. RevenueCat (`purchases_flutter`) + Jam Coins IAP (WS da carteira já no app)
-7. Remover `DemoScreen`
+7. ~~Remover `DemoScreen`~~
 
 **Push iOS (humano / console):** chave APNs do Apple Developer precisa estar no Firebase `crowdfans-prod` (Project settings → Cloud Messaging) para FCM entregar no iPhone.
 

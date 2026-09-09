@@ -19,7 +19,6 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/notifications/notifications_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
-import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
 import 'package:crowdfans/screens/profile/artist_audience_settings_screen.dart';
@@ -185,6 +184,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Pages.artistProfile,
         builder: (context, state) => ArtistProfileScreen(
           artistId: state.pathParameters['artistId'] ?? '',
+          seedName: state.uri.queryParameters['name'],
+          seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
         ),
       ),
       GoRoute(
@@ -373,13 +374,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.notifications,
         builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
-        path: Pages.demo,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Demo',
-          message: 'Só existe se o Expo ainda usar esta rota.',
-        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
