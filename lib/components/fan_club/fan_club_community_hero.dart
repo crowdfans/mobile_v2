@@ -14,6 +14,7 @@ class FanClubCommunityHero extends StatelessWidget {
     required this.onCompose,
     required this.onAbout,
     required this.onRules,
+    this.onOpenArtist,
     this.avatarUrl = '',
   });
 
@@ -23,6 +24,7 @@ class FanClubCommunityHero extends StatelessWidget {
   final VoidCallback onCompose;
   final VoidCallback onAbout;
   final VoidCallback onRules;
+  final VoidCallback? onOpenArtist;
   final String avatarUrl;
 
   @override
@@ -50,7 +52,7 @@ class FanClubCommunityHero extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${club.memberCount} membros',
+                      '${club.memberCount} membros${club.isMember ? ' · Você é membro' : ''}',
                       style: TextStyle(
                         fontSize: 13,
                         color: colors.textSecondary,
@@ -76,6 +78,14 @@ class FanClubCommunityHero extends StatelessWidget {
                 : AppButtonVariant.primary,
             onPressed: onToggleFollow,
           ),
+          if (onOpenArtist != null) ...[
+            const SizedBox(height: 8),
+            AppButton(
+              label: 'Ver perfil do artista',
+              variant: AppButtonVariant.outline,
+              onPressed: onOpenArtist!,
+            ),
+          ],
           const SizedBox(height: 8),
           AppButton(
             label: 'Publicar no clube',

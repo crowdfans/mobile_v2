@@ -76,7 +76,13 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
     if (_artistId.isEmpty) {
       return;
     }
-    context.push(Pages.fanClubCommunityOf(_artistId));
+    context.push(
+      Pages.fanClubCommunityOf(
+        _artistId,
+        name: widget.post?.author,
+        avatarUrl: widget.post?.avatarUri,
+      ),
+    );
   }
 
   Future<void> handleOpenArtist(BuildContext context) async {
