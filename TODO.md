@@ -178,8 +178,8 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `ProfileSettingsScreen` (hub; telas filhas ainda placeholder)
 - [x] `ProfileAccountScreen` (nome/username/bio/foto; upload via `MediaService`)
 - [x] `ProfileAppearanceScreen` + `appearanceSettingsProvider` (persiste em SharedPreferences)
-- [ ] `ProfileInformationScreen` (termos / ajuda)
-- [ ] `ProfileSecurityScreen` (e-mail, senha, telefone)
+- [x] `ProfileInformationScreen` (ajuda / termos / privacidade)
+- [x] `ProfileSecurityScreen` (e-mail, senha; telefone ainda aguarda backend)
 - [ ] `ProfileNotificationsScreen` + `notification-preferences-service`
 - [ ] `ProfileFanScoreScreen`
 - [ ] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
@@ -199,7 +199,6 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ArtistInsightsSettingsScreen`
 - [ ] `ArtistAudienceSettingsScreen`
 - [ ] `ArtistFanClubSettingsScreen`
-- [ ] `ProfileScreenHeaderComponent`
 - [x] `ProfileScreenHeaderComponent`
 - [x] `ProfileSettingsSectionComponent`
 - [x] `ProfileStateComponent`
@@ -316,7 +315,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 23. Firebase
 
 - [x] Instalar Firebase CLI local (`firebase-tools` neste repo; usar `node_modules/.bin`)
-- [ ] Configurar App Distribution (apps nativos ok; falta grupo de testers + IPA/APK)
+- [x] Configurar App Distribution (grupo `flutter-testers`; falta e-mails e IPA/APK)
 
 ---
 

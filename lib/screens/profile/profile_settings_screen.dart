@@ -70,6 +70,10 @@ class ProfileSettingsScreen extends ConsumerWidget {
                   label: 'Notificações',
                   onTap: () => context.push(Pages.profileNotifications),
                 ),
+                ProfileSettingItem(
+                  label: 'Ajuda e documentos',
+                  onTap: () => context.push(Pages.profileInformation),
+                ),
               ],
             ),
             ProfileSettingsSection(

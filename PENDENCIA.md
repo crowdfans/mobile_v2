@@ -8,7 +8,7 @@ Feito: apps nativos `com.crowdfans.crowdfans` (iOS/Android) + web existente, `li
 
 O CLI precisa do binário `firebase` no PATH (`node_modules/.bin` deste repo, via `firebase-tools`). Conta atual: `crowdfans@gmail.com`.
 
-App Distribution: o console aceita upload, mas ainda falta grupo de testers e um IPA/APK para distribuir. Script: `npm run firebase -- appdistribution:distribute`.
+App Distribution: grupo `flutter-testers` criado. Falta adicionar e-mails e um IPA/APK. Scripts: `npm run distribute:android` / `npm run distribute:ios`.
 
 Bundle Flutter: `com.crowdfans.crowdfans`. Expo permanece `com.crowdfans.crowdfansmobile`.
 
