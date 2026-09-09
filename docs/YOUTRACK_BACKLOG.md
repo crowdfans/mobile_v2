@@ -15,7 +15,7 @@
 | Artista core | CF-110 ✅ [#24](https://github.com/crowdfans/mobile_v2/pull/24); CF-111 ✅ [#25](https://github.com/crowdfans/mobile_v2/pull/25); CF-113 ✅ [#27](https://github.com/crowdfans/mobile_v2/pull/27) | **YT Done** (gus) |
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
-| QA Patrol/FTL | CF-123/124 ✅; CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
+| QA Patrol/FTL | CF-123/124 ✅ [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
 | Bags | CF-82, CF-83 | Backlog + assignee gus (triagem; sem Done) |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
@@ -49,9 +49,9 @@ UI Superfã/Artista dos PRs #23–#32 está em §2 (**YT Done**, assignee `gus`)
 
 | ID | Summary | Stage | Priority | Assignee | Escopo Flutter | Notas / mocks |
 |---|---|---|---|---|---|---|
-| CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Backlog | Major | — | QA E2E (épica) | **Close-ready parcial (2026-09-09):** CF-123/124 landed (Patrol nativo + smoke Superfã). Filhos FTL (125–127) **adiados**; E2E auth (128–130) scaffold `skip` sem fixtures. Fechar épica no YT só quando FTL+fixtures entrarem **ou** aceitar Done parcial documentado. |
-| CF-123 | [Mobile] Patrol — setup nativo Android/iOS e smoke local | Backlog | Major | — | QA setup Patrol | **Feito no Flutter** — `patrol` + Android `MainActivityTest` + iOS `RunnerUITests` (SPM) + `integration_test/smoke_test.dart`. |
-| CF-124 | [Mobile] Patrol — suíte smoke Superfã (onboarding e login) | Backlog | Normal | — | QA smoke Superfã | **Feito no Flutter** — `integration_test/superfan_onboarding_login_test.dart` (deslogado). |
+| CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Backlog | Major | — | QA E2E (épica) | **Close-ready parcial (2026-09-09):** CF-123/124 em [#35](https://github.com/crowdfans/mobile_v2/pull/35). Filhos FTL (125–127) **adiados**; E2E auth (128–130) scaffold `skip` sem fixtures. Fechar épica no YT só quando FTL+fixtures entrarem **ou** aceitar Done parcial documentado. |
+| CF-123 | [Mobile] Patrol — setup nativo Android/iOS e smoke local | Backlog | Major | — | QA setup Patrol | **Feito no Flutter** — PR [#35](https://github.com/crowdfans/mobile_v2/pull/35): `patrol` + Android `MainActivityTest` + iOS `RunnerUITests` (SPM) + `integration_test/smoke_test.dart`. |
+| CF-124 | [Mobile] Patrol — suíte smoke Superfã (onboarding e login) | Backlog | Normal | — | QA smoke Superfã | **Feito no Flutter** — PR [#35](https://github.com/crowdfans/mobile_v2/pull/35): `integration_test/superfan_onboarding_login_test.dart` (deslogado). |
 | CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Backlog | Major | — | QA FTL Android | **Adiado (2026-09-09):** bloqueado em CF-125. Não Done. |
 | CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | Normal | — | QA FTL iOS | **Adiado (2026-09-09):** bloqueado em CF-125 + signing iOS (`PENDENCIA.md`). Não Done. |
 | CF-128 | [Mobile] Patrol — fluxo ponta a ponta: artista posta e superfã comenta | Backlog | Major | — | QA E2E post/comentário | Scaffold `integration_test/e2e_artist_post_fan_comment_test.dart` com `skip: true` + TODO — sem `E2E_*` fixtures. |
@@ -189,7 +189,7 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 1. ~~**[Major] CF-67 / CF-106 / CF-107 / CF-66**~~ — YT Done (gus); CF-103 Backlog bloqueado sem mocks.
 2. ~~**[Major] CF-109 + filhos Artista CF-110–119**~~ — YT Done (gus); PRs #24–#31.
 3. **Triagem** CF-82 / CF-83 (assignee gus; sem Done).
-4. ~~**QA** CF-123 → CF-124~~ — Feito no Flutter (Patrol smoke). Restam CF-128/129/130 (fixtures) e CF-125→126/127 (FTL adiado).
+4. ~~**QA** CF-123 → CF-124~~ — Feito no Flutter ([#35](https://github.com/crowdfans/mobile_v2/pull/35)). Restam CF-128/129/130 (fixtures) e CF-125→126/127 (FTL adiado).
 5. **Não puxar agora:** CF-120/121 Live/Meet ⛔, CF-30/97/99/10 Meet, Horus CF-100–102, backend CF-9/31/96/98/21/4/1/14.
 
 ### Expo vs Flutter (resumo rápido)
