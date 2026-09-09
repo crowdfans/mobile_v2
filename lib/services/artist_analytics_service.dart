@@ -19,9 +19,12 @@ class ArtistAnalyticsMetricCard {
 
   String get formattedValue {
     if (format == 'percent') {
-      return '$value%';
+      final text = value % 1 == 0
+          ? value.toInt().toString()
+          : value.toStringAsFixed(1).replaceAll('.', ',');
+      return '$text%';
     }
-    return value.round().toString();
+    return formatCompactPtBr(value);
   }
 
   factory ArtistAnalyticsMetricCard.fromJson(Object? json) {
@@ -36,7 +39,39 @@ class ArtistAnalyticsMetricCard {
   }
 }
 
-/// Série de barras dos gráficos de analytics.
+/// Destaque numérico no rodapé do gráfico.
+class ArtistAnalyticsChartStat {
+  const ArtistAnalyticsChartStat({
+    required this.value,
+    required this.label,
+    this.format = '',
+  });
+
+  final num value;
+  final String label;
+  final String format;
+
+  String get formattedValue {
+    if (format == 'percent' || label.toLowerCase().contains('engajamento')) {
+      final text = value % 1 == 0
+          ? value.toInt().toString()
+          : value.toStringAsFixed(1).replaceAll('.', ',');
+      return '$text%';
+    }
+    return formatCompactPtBr(value);
+  }
+
+  factory ArtistAnalyticsChartStat.fromJson(Object? json) {
+    final map = (json as Map?)?.cast<String, dynamic>() ?? {};
+    return ArtistAnalyticsChartStat(
+      value: map['value'] as num? ?? 0,
+      label: map['label']?.toString() ?? '',
+      format: map['format']?.toString() ?? '',
+    );
+  }
+}
+
+/// Série de barras/linha dos gráficos de analytics.
 class ArtistAnalyticsChart {
   const ArtistAnalyticsChart({
     required this.title,
@@ -44,6 +79,8 @@ class ArtistAnalyticsChart {
     required this.labels,
     required this.series,
     required this.trendPercent,
+    this.primaryStat,
+    this.secondaryStat,
   });
 
   final String title;
@@ -51,6 +88,16 @@ class ArtistAnalyticsChart {
   final List<String> labels;
   final List<num> series;
   final num trendPercent;
+  final ArtistAnalyticsChartStat? primaryStat;
+  final ArtistAnalyticsChartStat? secondaryStat;
+
+  String get trendBadge {
+    final sign = trendPercent >= 0 ? '+' : '';
+    final text = trendPercent % 1 == 0
+        ? trendPercent.toInt().toString()
+        : trendPercent.toStringAsFixed(0);
+    return '$sign$text%';
+  }
 
   factory ArtistAnalyticsChart.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
@@ -65,6 +112,12 @@ class ArtistAnalyticsChart {
           item is num ? item : num.tryParse(item.toString()) ?? 0,
       ],
       trendPercent: map['trendPercent'] as num? ?? 0,
+      primaryStat: map['primaryStat'] == null
+          ? null
+          : ArtistAnalyticsChartStat.fromJson(map['primaryStat']),
+      secondaryStat: map['secondaryStat'] == null
+          ? null
+          : ArtistAnalyticsChartStat.fromJson(map['secondaryStat']),
     );
   }
 }
@@ -127,6 +180,38 @@ class ArtistInsights {
   }
 }
 
+/// Item de distribuição (FanScore, gênero, região…).
+class ArtistAnalyticsDistributionItem {
+  const ArtistAnalyticsDistributionItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final num value;
+  final ColorValue color;
+}
+
+/// Cor embutida sem depender de Flutter no serviço.
+class ColorValue {
+  const ColorValue(this.value);
+  final int value;
+}
+
+/// Linha de progresso (cidades).
+class ArtistAnalyticsProgressRow {
+  const ArtistAnalyticsProgressRow({
+    required this.label,
+    required this.value,
+    this.maxValue = 100,
+  });
+
+  final String label;
+  final num value;
+  final num maxValue;
+}
+
 /// Audiência lifetime e crescimento.
 class ArtistAudience {
   const ArtistAudience({
@@ -134,12 +219,24 @@ class ArtistAudience {
     this.lifetimeAudienceTotal = 0,
     this.summaryCards = const [],
     this.growthChart,
+    this.fanscoreDistribution = const [],
+    this.genderDistribution = const [],
+    this.ageDistribution = const [],
+    this.regionDistribution = const [],
+    this.cityActivityRows = const [],
+    this.topCities = const [],
   });
 
   final String period;
   final num lifetimeAudienceTotal;
   final List<ArtistAnalyticsMetricCard> summaryCards;
   final ArtistAnalyticsChart? growthChart;
+  final List<ArtistAnalyticsDistributionItem> fanscoreDistribution;
+  final List<ArtistAnalyticsDistributionItem> genderDistribution;
+  final List<ArtistAnalyticsDistributionItem> ageDistribution;
+  final List<ArtistAnalyticsDistributionItem> regionDistribution;
+  final List<ArtistAnalyticsProgressRow> cityActivityRows;
+  final List<ArtistAnalyticsDistributionItem> topCities;
 
   factory ArtistAudience.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
@@ -153,12 +250,81 @@ class ArtistAudience {
       growthChart: map['growthChart'] == null
           ? null
           : ArtistAnalyticsChart.fromJson(map['growthChart']),
+      fanscoreDistribution: _parseDistribution(map['fanscoreDistribution']),
+      genderDistribution: _parseDistribution(map['genderDistribution']),
+      ageDistribution: _parseDistribution(map['ageDistribution']),
+      regionDistribution: _parseDistribution(map['regionDistribution']),
+      cityActivityRows: _parseProgressRows(map['cityActivityRows']),
+      topCities: _parseDistribution(map['topCities'] ?? map['topStates']),
     );
   }
 }
 
+List<ArtistAnalyticsProgressRow> _parseProgressRows(Object? raw) {
+  final list = raw as List? ?? const [];
+  return [
+    for (final item in list)
+      ArtistAnalyticsProgressRow(
+        label: _asMap(item)['label']?.toString() ?? '',
+        value: _asMap(item)['value'] as num? ?? 0,
+        maxValue: _asMap(item)['maxValue'] as num? ?? 100,
+      ),
+  ];
+}
+
+List<ArtistAnalyticsDistributionItem> _parseDistribution(Object? raw) {
+  final list = raw as List? ?? const [];
+  return [
+    for (final item in list)
+      ArtistAnalyticsDistributionItem(
+        label: _asMap(item)['label']?.toString() ?? '',
+        value: _asMap(item)['value'] as num? ?? 0,
+        color: ColorValue(
+          int.tryParse(
+                _asMap(item)['color']?.toString().replaceFirst('#', '0xFF') ??
+                    '',
+              ) ??
+              0xFF7E49FF,
+        ),
+      ),
+  ];
+}
+
+Map<String, dynamic> _asMap(Object? value) {
+  return (value as Map?)?.cast<String, dynamic>() ?? const {};
+}
+
+/// Formata números grandes no padrão dos prints (ex.: 18,4 mil).
+String formatCompactPtBr(num value) {
+  final absolute = value.abs();
+  if (absolute >= 1000000) {
+    final millions = absolute / 1000000;
+    final text = millions >= 10
+        ? millions.toStringAsFixed(0)
+        : millions.toStringAsFixed(1).replaceAll('.', ',');
+    return '${value < 0 ? '-' : ''}$text mi';
+  }
+  if (absolute >= 1000) {
+    final thousands = absolute / 1000;
+    final text = thousands >= 10
+        ? thousands.toStringAsFixed(0)
+        : thousands.toStringAsFixed(1).replaceAll('.', ',');
+    return '${value < 0 ? '-' : ''}$text mil';
+  }
+  if (value % 1 == 0) {
+    return value.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]}.',
+    );
+  }
+  return value.toStringAsFixed(1).replaceAll('.', ',');
+}
+
 /// Analytics do artista (`/api/v1/artist/:artistUid/analytics/*`).
 abstract final class ArtistAnalyticsService {
+  /// Tipos de conteúdo suportados de verdade pela API.
+  static const apiContentTypes = {'all', 'posts', 'fanClub'};
+
   static Future<ArtistInsights> getArtistInsights(
     String artistUid, {
     String period = '30d',

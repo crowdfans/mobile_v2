@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Hub de configurações alinhado aos prints CF-108.
+/// Hub de configurações (CF-108 Superfã / CF-114 Artista).
 class ProfileSettingsScreen extends ConsumerWidget {
   const ProfileSettingsScreen({super.key});
 
@@ -37,6 +37,12 @@ class ProfileSettingsScreen extends ConsumerWidget {
     final howYouUse = ProfileSettingsSection(
       title: 'Como você usa a Crowd Fans',
       items: [
+        ProfileSettingItem(
+          id: 'wallet',
+          label: 'Jam Coins',
+          asset: 'assets/icons/Finance & eCommerce/coins-stacked-01.svg',
+          onTap: () => context.push(Pages.profileWallet),
+        ),
         ProfileSettingItem(
           id: 'memberships',
           label: 'Meus Memberships',

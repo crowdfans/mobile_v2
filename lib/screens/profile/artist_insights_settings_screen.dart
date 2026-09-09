@@ -1,6 +1,8 @@
-import 'package:crowdfans/components/profile/analytics_bar_chart.dart';
-import 'package:crowdfans/components/profile/analytics_filter_chip.dart';
+import 'package:crowdfans/components/profile/analytics_breakdown_section.dart';
+import 'package:crowdfans/components/profile/analytics_content_tabs.dart';
+import 'package:crowdfans/components/profile/analytics_line_chart_card.dart';
 import 'package:crowdfans/components/profile/analytics_metric_card.dart';
+import 'package:crowdfans/components/profile/analytics_period_chips.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -11,18 +13,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 const _periods = [
-  ('7d', '7d'),
-  ('30d', '30d'),
-  ('90d', '90d'),
+  ('7d', '7 dias'),
+  ('30d', '30 dias'),
+  ('90d', '90 dias'),
 ];
 
 const _contentTypes = [
   ('all', 'Tudo'),
   ('posts', 'Posts'),
   ('fanClub', 'Fã clube'),
+  ('meetGreet', 'M&G'),
+  ('lives', 'Lives'),
+  ('fanLetters', 'Cartas de fã'),
 ];
 
-/// Insights do artista autenticado.
+/// Insights do artista autenticado (CF-115).
 class ArtistInsightsSettingsScreen extends ConsumerStatefulWidget {
   const ArtistInsightsSettingsScreen({super.key});
 
@@ -38,6 +43,9 @@ class _ArtistInsightsSettingsScreenState
   ArtistInsights? _data;
   var _loading = true;
   String? _error;
+
+  bool get _apiSupported =>
+      ArtistAnalyticsService.apiContentTypes.contains(_contentType);
 
   @override
   void initState() {
@@ -59,6 +67,15 @@ class _ArtistInsightsSettingsScreenState
       setState(() {
         _loading = false;
         _error = 'Perfil de artista não encontrado.';
+        _data = null;
+      });
+      return;
+    }
+    if (!_apiSupported) {
+      setState(() {
+        _loading = false;
+        _error = null;
+        _data = null;
       });
       return;
     }
@@ -91,10 +108,23 @@ class _ArtistInsightsSettingsScreenState
     }
   }
 
+  String get _unsupportedMessage {
+    final label = _contentTypes
+        .firstWhere(
+          (item) => item.$1 == _contentType,
+          orElse: () => (_contentType, _contentType),
+        )
+        .$2;
+    return 'Métricas detalhadas de $label ainda não estão disponíveis na API. Use Tudo, Posts ou Fã clube.';
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final data = _data;
+    final width = MediaQuery.sizeOf(context).width;
+    final cardWidth = (width - 42) / 2;
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -102,100 +132,77 @@ class _ArtistInsightsSettingsScreenState
           children: [
             ProfileScreenHeader(title: 'Insights', onBack: handleBack),
             Expanded(
-              child: _loading && data == null
+              child: _loading && data == null && _apiSupported
                   ? const Center(child: CircularProgressIndicator())
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
                       children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final item in _periods)
-                              AnalyticsFilterChip(
-                                label: item.$2,
-                                active: _period == item.$1,
-                                onTap: () {
-                                  setState(() => _period = item.$1);
-                                  handleLoad();
-                                },
-                              ),
-                          ],
+                        AnalyticsPeriodChips(
+                          periods: _periods,
+                          selectedId: _period,
+                          onSelected: (id) {
+                            setState(() => _period = id);
+                            handleLoad();
+                          },
                         ),
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final item in _contentTypes)
-                              AnalyticsFilterChip(
-                                label: item.$2,
-                                active: _contentType == item.$1,
-                                onTap: () {
-                                  setState(() => _contentType = item.$1);
-                                  handleLoad();
-                                },
-                              ),
-                          ],
+                        const SizedBox(height: 14),
+                        AnalyticsContentTabs(
+                          tabs: _contentTypes,
+                          selectedId: _contentType,
+                          onSelected: (id) {
+                            setState(() => _contentType = id);
+                            handleLoad();
+                          },
                         ),
-                        if (_error != null) ...[
-                          const SizedBox(height: 16),
+                        const SizedBox(height: 16),
+                        if (!_apiSupported)
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: colors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                _unsupportedMessage,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          )
+                        else if (_error != null)
                           Text(
                             _error!,
                             textAlign: TextAlign.center,
                             style: TextStyle(color: colors.textSecondary),
-                          ),
-                        ],
-                        if (data != null) ...[
-                          const SizedBox(height: 14),
+                          )
+                        else if (data != null) ...[
                           Wrap(
                             spacing: 10,
                             runSpacing: 10,
                             children: [
                               for (final card in data.summaryCards)
                                 SizedBox(
-                                  width:
-                                      (MediaQuery.sizeOf(context).width - 42) /
-                                      2,
+                                  width: cardWidth,
                                   child: AnalyticsMetricCard(card: card),
                                 ),
                             ],
                           ),
                           if (data.chart != null) ...[
-                            const SizedBox(height: 16),
-                            Text(
-                              data.chart!.title,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            AnalyticsBarChart(chart: data.chart!),
+                            const SizedBox(height: 14),
+                            AnalyticsLineChartCard(chart: data.chart!),
                           ],
-                          const SizedBox(height: 16),
-                          Text(
-                            'Origem das interações',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
+                          if (_contentType == 'all' &&
+                              data.breakdown.isNotEmpty) ...[
+                            const SizedBox(height: 14),
+                            AnalyticsBreakdownSection(
+                              title: 'Que tipo de ação puxou resultado',
+                              subtitle:
+                                  'Visão consolidada da performance dos produtos da Crowd Fans no período.',
+                              rows: data.breakdown,
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          for (final row in data.breakdown) ...[
-                            AnalyticsMetricCard(
-                              fullWidth: true,
-                              card: ArtistAnalyticsMetricCard(
-                                id: row.label,
-                                label: row.label,
-                                value: row.value,
-                                format: '',
-                                helper: row.helper,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
                           ],
                         ],
                       ],
