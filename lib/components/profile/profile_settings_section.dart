@@ -39,14 +39,20 @@ class ProfileSettingsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: colors.textTertiary,
+        ColoredBox(
+          color: colors.surfaceAlt,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textTertiary,
+                ),
+              ),
             ),
           ),
         ),
@@ -97,11 +103,7 @@ class ProfileSettingsSection extends StatelessWidget {
               ),
             ),
           ),
-        if (showDivider)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Divider(height: 1, thickness: 1, color: colors.border),
-          ),
+        if (showDivider) const SizedBox(height: 4),
       ],
     );
   }

@@ -381,70 +381,82 @@ class _FanLetterComposeScreenState extends State<FanLetterComposeScreen> {
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 88),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      FanLetterToolButton(
-                        icon: Icons.close,
-                        onPressed: handleBack,
-                      ),
-                      const Spacer(),
-                      FanLetterToolButton(
-                        icon: Icons.brush_rounded,
-                        active: _tool == _ComposeTool.draw,
-                        onPressed: handleToggleDraw,
-                      ),
-                      const SizedBox(width: 8),
-                      FanLetterToolButton(
-                        icon: Icons.title_rounded,
-                        active: _tool == _ComposeTool.text,
-                        onPressed: handleToggleText,
-                      ),
-                      const SizedBox(width: 8),
-                      FanLetterToolButton(
-                        icon: Icons.sticky_note_2_outlined,
-                        onPressed: handleOpenStickers,
-                      ),
-                      const SizedBox(width: 8),
-                      FanLetterToolButton(
-                        icon: Icons.wallpaper_rounded,
-                        onPressed: handleOpenBackgrounds,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
                   Expanded(
-                    child: RepaintBoundary(
-                      key: _canvasKey,
-                      child: GestureDetector(
-                        onPanStart: _tool == _ComposeTool.draw
-                            ? handleDrawStart
-                            : null,
-                        onPanUpdate: _tool == _ComposeTool.draw
-                            ? handleDrawUpdate
-                            : null,
-                        onPanEnd: _tool == _ComposeTool.draw
-                            ? handleDrawEnd
-                            : null,
-                        child: FanLetterCanvasPreview(
-                          preset: _preset,
-                          bodyText: _bodyText,
-                          stickers: _stickers,
-                          strokes: strokes,
-                          onStickerMoved: (id, offset) {
-                            setState(() {
-                              final index = _stickers.indexWhere(
-                                (item) => item.id == id,
-                              );
-                              if (index < 0) {
-                                return;
-                              }
-                              _stickers[index] = _stickers[index].copyWith(
-                                offset: offset,
-                              );
-                            });
-                          },
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: RepaintBoundary(
+                            key: _canvasKey,
+                            child: GestureDetector(
+                              onPanStart: _tool == _ComposeTool.draw
+                                  ? handleDrawStart
+                                  : null,
+                              onPanUpdate: _tool == _ComposeTool.draw
+                                  ? handleDrawUpdate
+                                  : null,
+                              onPanEnd: _tool == _ComposeTool.draw
+                                  ? handleDrawEnd
+                                  : null,
+                              child: FanLetterCanvasPreview(
+                                preset: _preset,
+                                bodyText: _bodyText,
+                                stickers: _stickers,
+                                strokes: strokes,
+                                onStickerMoved: (id, offset) {
+                                  setState(() {
+                                    final index = _stickers.indexWhere(
+                                      (item) => item.id == id,
+                                    );
+                                    if (index < 0) {
+                                      return;
+                                    }
+                                    _stickers[index] = _stickers[index].copyWith(
+                                      offset: offset,
+                                    );
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: FanLetterToolButton(
+                            icon: Icons.close,
+                            onPressed: handleBack,
+                          ),
+                        ),
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Row(
+                            children: [
+                              FanLetterToolButton(
+                                icon: Icons.brush_rounded,
+                                active: _tool == _ComposeTool.draw,
+                                onPressed: handleToggleDraw,
+                              ),
+                              const SizedBox(width: 8),
+                              FanLetterToolButton(
+                                icon: Icons.title_rounded,
+                                active: _tool == _ComposeTool.text,
+                                onPressed: handleToggleText,
+                              ),
+                              const SizedBox(width: 8),
+                              FanLetterToolButton(
+                                icon: Icons.sticky_note_2_outlined,
+                                onPressed: handleOpenStickers,
+                              ),
+                              const SizedBox(width: 8),
+                              FanLetterToolButton(
+                                icon: Icons.wallpaper_rounded,
+                                onPressed: handleOpenBackgrounds,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

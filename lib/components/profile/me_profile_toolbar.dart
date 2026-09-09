@@ -1,39 +1,58 @@
+import 'package:crowdfans/components/profile/me_jams_pill.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Título "Meu Perfil" com atalhos de posts e settings.
+/// Título "Meu Perfil · fan/handle" com Jams e settings (print Superfã).
 class MeProfileToolbar extends StatelessWidget {
   const MeProfileToolbar({
     super.key,
-    required this.onMyPosts,
+    required this.handle,
+    required this.onJams,
     required this.onSettings,
   });
 
-  final VoidCallback onMyPosts;
+  final String handle;
+  final VoidCallback onJams;
   final VoidCallback onSettings;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final clean = handle.trim().replaceAll(RegExp(r'^@'), '');
+    final fanHandle = clean.isEmpty ? '' : 'fan/$clean';
     return SizedBox(
       height: 56,
       child: Row(
         children: [
-          Text(
-            'Meu Perfil',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
+          Expanded(
+            child: RichText(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Meu Perfil',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  if (fanHandle.isNotEmpty)
+                    TextSpan(
+                      text: ' · $fanHandle',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-          const Spacer(),
-          IconButton(
-            key: const Key('profile-my-posts-icon'),
-            tooltip: 'Meus posts',
-            onPressed: onMyPosts,
-            icon: Icon(Icons.grid_view, color: colors.textPrimary),
-          ),
+          MeJamsPill(onPressed: onJams),
+          const SizedBox(width: 4),
           IconButton(
             key: const Key('profile-settings'),
             tooltip: 'Configurações',

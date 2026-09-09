@@ -37,12 +37,13 @@ class ProfileSettingsScreen extends ConsumerWidget {
     final howYouUse = ProfileSettingsSection(
       title: 'Como você usa a Crowd Fans',
       items: [
-        ProfileSettingItem(
-          id: 'wallet',
-          label: 'Jam Coins',
-          asset: 'assets/icons/Finance & eCommerce/coins-stacked-01.svg',
-          onTap: () => context.push(Pages.profileWallet),
-        ),
+        if (isArtist)
+          ProfileSettingItem(
+            id: 'wallet',
+            label: 'Jam Coins',
+            asset: 'assets/icons/Finance & eCommerce/coins-stacked-01.svg',
+            onTap: () => context.push(Pages.profileWallet),
+          ),
         ProfileSettingItem(
           id: 'memberships',
           label: 'Meus Memberships',
