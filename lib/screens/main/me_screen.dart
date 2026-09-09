@@ -85,7 +85,18 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   message: 'Perfil ainda não carregou.',
                 )
               else
-                ProfileIdentityBlock(profile: profile),
+                ProfileIdentityBlock(
+                  profile: profile,
+                  onArtistsTap: () {
+                    context.push(
+                      Pages.profileArtistsOf(
+                        handle: profile.name.isNotEmpty
+                            ? profile.name
+                            : profile.displayName,
+                      ),
+                    );
+                  },
+                ),
               const SizedBox(height: 28),
               Text(
                 'Posts',

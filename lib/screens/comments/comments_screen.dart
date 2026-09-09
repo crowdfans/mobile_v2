@@ -296,9 +296,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     if (handle.isEmpty) {
       return;
     }
-    context.push(
-      Pages.fanProfile.replaceAll(':fanHandle', Uri.encodeComponent(handle)),
-    );
+    context.push(Pages.fanProfileOf(handle));
   }
 
   void handleVoteApplied(String commentId, VoteResult result) {

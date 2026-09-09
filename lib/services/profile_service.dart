@@ -1,4 +1,6 @@
 import 'package:crowdfans/api/api_urls.dart';
+import 'package:crowdfans/models/fan_profile.dart';
+import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/membership.dart';
 import 'package:crowdfans/models/profile.dart';
@@ -138,6 +140,39 @@ abstract final class ProfileService {
     return HttpService.request(
       ApiUrls.withParams(ApiUrls.profileMemberships, {'handle': profileHandle}),
       parse: MembershipOverview.fromJson,
+    );
+  }
+
+  /// Visão pública (`GET /api/v1/profiles/:handle/overview`).
+  static Future<ProfileOverview> getProfileOverview(String handle) {
+    final normalized = normalizeFanHandle(handle);
+    return HttpService.request(
+      ApiUrls.withParams(ApiUrls.profileView, {
+        'handle': normalized.isEmpty ? handle : normalized,
+      }),
+      parse: ProfileOverview.fromJson,
+    );
+  }
+
+  /// Artistas seguidos (`GET /api/v1/profiles/:handle/social`).
+  static Future<FollowedArtistsResponse> getFollowedArtists(String handle) {
+    final normalized = normalizeFanHandle(handle);
+    return HttpService.request(
+      ApiUrls.withParams(ApiUrls.profileSocial, {
+        'handle': normalized.isEmpty ? handle : normalized,
+      }),
+      parse: FollowedArtistsResponse.fromJson,
+    );
+  }
+
+  /// Fan Score (`GET /api/v1/profiles/:handle/fan-score`).
+  static Future<FanScoreData> getFanScore(String handle) {
+    final normalized = normalizeFanHandle(handle);
+    return HttpService.request(
+      ApiUrls.withParams(ApiUrls.profileFanScore, {
+        'handle': normalized.isEmpty ? handle : normalized,
+      }),
+      parse: FanScoreData.fromJson,
     );
   }
 }

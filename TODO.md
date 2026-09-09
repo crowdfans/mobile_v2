@@ -163,12 +163,12 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 9. Perfil (aba Eu + públicos)
 
-- [x] `ProfileScreen` (aba Eu: identidade, stats, posts; públicos ainda faltam)
-- [ ] Perfil público `profile/[fanHandle].tsx`
-- [ ] Fan score público `profile/fan-score/[fanHandle].tsx`
-- [ ] `ProfileArtistsScreen` (artistas seguidos)
+- [x] `ProfileScreen` (aba Eu: identidade, stats, posts; tap em Artistas abre a lista)
+- [x] Perfil público `profile/[fanHandle].tsx`
+- [x] Fan score público `profile/fan-score/[fanHandle].tsx`
+- [x] `ProfileArtistsScreen` (artistas seguidos)
 - [x] Perfil de artista `artists/[artistId].tsx` (follow, membership, posts; fan letters ainda placeholder)
-- [x] `ProfileService` completo (`overview`/`social` ainda nas telas públicas; posts por UID + update já entram)
+- [x] `ProfileService` completo (`overview` / `social` / `fan-score` + posts por UID + update)
 - [x] Store `current-viewer-profile-store` — no Flutter o viewer fica no `authSessionProvider` (`applyProfile`)
 
 ---

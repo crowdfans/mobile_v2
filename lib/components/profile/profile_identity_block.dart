@@ -6,9 +6,14 @@ import 'package:flutter/material.dart';
 
 /// Identidade + stats do perfil na aba Eu.
 class ProfileIdentityBlock extends StatelessWidget {
-  const ProfileIdentityBlock({super.key, required this.profile});
+  const ProfileIdentityBlock({
+    super.key,
+    required this.profile,
+    this.onArtistsTap,
+  });
 
   final Profile profile;
+  final VoidCallback? onArtistsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +99,7 @@ class ProfileIdentityBlock extends StatelessWidget {
                 value: '${profile.stats.artistasCount}',
                 label: 'Artistas',
                 divider: true,
+                onTap: onArtistsTap,
               ),
             ],
           ),

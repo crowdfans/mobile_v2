@@ -77,7 +77,7 @@ Horus / `horus-admin` continua fora.
 Ordem quando o IPA estiver no ar (ou em paralelo, se você preferir):
 
 1. ~~Fan club about / rules / moderação + `FanClubViewerService`~~
-2. Perfil público do fã + fan score + artistas seguidos
+2. ~~Perfil público do fã + fan score + artistas seguidos~~
 3. Settings que faltam: fan score, wallet, Pro, ganhos, referral, insights
 4. Fan letters
 5. Push (FCM/APNs) + deep link

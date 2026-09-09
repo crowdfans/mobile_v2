@@ -47,6 +47,28 @@ abstract final class Pages {
   static String createPostEdit(String postId) =>
       '$createPost?postId=${Uri.encodeQueryComponent(postId)}';
 
+  /// Perfil público de fã. O handle `fan/username` vai em um único segmento.
+  static String fanProfileOf(String handle) =>
+      fanProfile.replaceAll(':fanHandle', Uri.encodeComponent(handle.trim()));
+
+  /// Fan Score público do handle informado.
+  static String fanScorePublicOf(String handle) => fanScorePublic.replaceAll(
+    ':fanHandle',
+    Uri.encodeComponent(handle.trim()),
+  );
+
+  /// Artistas seguidos; `handle` opcional para outro perfil.
+  static String profileArtistsOf({String? handle}) {
+    final value = handle?.trim() ?? '';
+    if (value.isEmpty) {
+      return profileArtists;
+    }
+    return Uri(
+      path: profileArtists,
+      queryParameters: {'handle': value},
+    ).toString();
+  }
+
   /// Comunidade do artista (`FanClubCommunityScreen`).
   static String fanClubCommunityOf(String artistId) =>
       '/fan-clubs/community/${Uri.encodeComponent(artistId)}';

@@ -18,9 +18,12 @@ import 'package:crowdfans/screens/placeholder_screen.dart';
 import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:crowdfans/screens/post/my_posts_screen.dart';
 import 'package:crowdfans/screens/profile/blocked_users_settings_screen.dart';
+import 'package:crowdfans/screens/profile/fan_profile_screen.dart';
+import 'package:crowdfans/screens/profile/fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/hidden_posts_settings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
+import 'package:crowdfans/screens/profile/profile_artists_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
@@ -197,12 +200,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.fanScorePublic,
+        builder: (context, state) =>
+            FanScoreScreen(fanHandle: state.pathParameters['fanHandle'] ?? ''),
+      ),
+      GoRoute(
         path: Pages.fanProfile,
-        builder: (context, state) => PlaceholderScreen(
-          title: 'Perfil',
-          message:
-              'Perfil público do superfã (@${state.pathParameters['fanHandle'] ?? ''}) entra no próximo corte.',
+        builder: (context, state) => FanProfileScreen(
+          fanHandle: state.pathParameters['fanHandle'] ?? '',
         ),
+      ),
+      GoRoute(
+        path: Pages.profileArtists,
+        builder: (context, state) =>
+            ProfileArtistsScreen(handle: state.uri.queryParameters['handle']),
       ),
       GoRoute(
         path: Pages.profileSettings,
