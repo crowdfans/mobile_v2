@@ -41,7 +41,7 @@ dependencies:
   http: ^1.6.0
   flutter_dotenv: ^6.0.1
   flutter_svg: ^2.3.0
-  sentry_flutter: ^8.14.2
+  sentry_flutter: ^9.29.0
   video_player: ^2.14.0
   share_plus: ^13.3.0
   image_picker: ^1.2.3
