@@ -1,0 +1,20 @@
+---
+description: Nunca usar a API DigitalOcean de desenvolvimento (crowdfans-app-dev)
+alwaysApply: true
+---
+
+# API = só produção
+
+**Proibido** apontar o app (Flutter, Expo, web, scripts, `.env`, defaults de código, EAS, Firebase Hosting) para:
+
+- `https://crowdfans-app-dev-3zqbt.ondigitalocean.app`
+- qualquer host `crowdfans-app-dev*`
+
+**Usar sempre** a API de produção:
+
+- `https://crowdfans-app-prod.ondigitalocean.app`
+- ou `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` (mesmo backend prod)
+
+Não inventar fallback “dev” quando `FIREBASE_PROJECT_ID` / `.env` falhar — o default é **prod**.
+
+`API_MODE=local` (localhost) continua ok para desenvolvimento local. DigitalOcean = prod.
