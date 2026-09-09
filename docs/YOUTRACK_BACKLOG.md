@@ -15,7 +15,7 @@
 | Artista core | CF-110 ✅ [#24](https://github.com/crowdfans/mobile_v2/pull/24); CF-111 ✅ [#25](https://github.com/crowdfans/mobile_v2/pull/25); CF-113 ✅ [#27](https://github.com/crowdfans/mobile_v2/pull/27) | **YT Done** (gus) |
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
-| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-125/126 **YT Done** (gus) FTL Android job verde; CF-127 iOS signing; CF-128–130 env-gated (sem Done até run verde) | Ver §1.2 |
+| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-125/126 **YT Done** (gus) [#49](https://github.com/crowdfans/mobile_v2/pull/49) FTL Android job verde; CF-127 iOS signing; CF-128–130 env-gated (sem Done até run verde) | Ver §1.2 |
 | Bags | CF-82 / CF-83 ✅ [#41](https://github.com/crowdfans/mobile_v2/pull/41) | **YT Done** (gus); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community chrome [#44](https://github.com/crowdfans/mobile_v2/pull/44); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40)/[#42](https://github.com/crowdfans/mobile_v2/pull/42)/[#43](https://github.com/crowdfans/mobile_v2/pull/43) |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
@@ -90,8 +90,8 @@ Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração E
 | CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Done | Major | Done parcial (gus): setup+smoke [#35](https://github.com/crowdfans/mobile_v2/pull/35); FTL Android CF-125/126 Done; CF-127 iOS aberto; E2E 128–130 abertos |
 | CF-123 | [Mobile] Patrol — setup nativo Android/iOS e smoke local | Done | Major | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
 | CF-124 | [Mobile] Patrol — suíte smoke Superfã (onboarding e login) | Done | Normal | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
-| CF-125 | [Infra] Firebase Test Lab — API, billing e service account em crowdfans-prod | Done | Major | Done (gus): APIs + models list + SA guidance; job FTL verde |
-| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Done | Major | Done (gus): `scripts/ftl_android.sh`; smoke Passed no MediumPhone.arm-34 |
+| CF-125 | [Infra] Firebase Test Lab — API, billing e service account em crowdfans-prod | Done | Major | Done (gus): APIs + models list + SA guidance; job FTL verde [#49](https://github.com/crowdfans/mobile_v2/pull/49) |
+| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Done | Major | Done (gus): `scripts/ftl_android.sh`; smoke Passed no MediumPhone.arm-34 [#49](https://github.com/crowdfans/mobile_v2/pull/49) |
 | CF-66 | [Épica] Superfã — alinhar app ao PDF Telas App | Done | Major | Done (gus); CF-103 permanece Backlog sem mocks Drive |
 | CF-67 | [Superfã] Home — feed só artistas, tipos de post e exclusivo | Done | Major | PRs #2/#4/#23 |
 | CF-106 | [Superfã] Cartas — compose e galeria iguais ao mock | Done | Normal | PR [#30](https://github.com/crowdfans/mobile_v2/pull/30) |
