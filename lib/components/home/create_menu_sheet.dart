@@ -45,6 +45,16 @@ class CreateMenuSheet extends ConsumerWidget {
     context.push(Pages.fanLetterGallery);
   }
 
+  void handleLive(BuildContext context) {
+    onClose();
+    context.push(Pages.liveUnavailable);
+  }
+
+  void handleMeet(BuildContext context) {
+    onClose();
+    context.push(Pages.meetUnavailable);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = CrowdFansTheme.of(context);
@@ -61,30 +71,53 @@ class CreateMenuSheet extends ConsumerWidget {
             child: ColoredBox(
               color: colors.surface,
               child: Column(
-                children: [
-                  CreateMenuItemButton(
-                    key: const Key('create-menu-fan-letters'),
-                    asset: 'assets/icons/Communication/mail-01.svg',
-                    label: 'Fan Letter',
-                    onPressed: () => handleFanLetters(context),
-                  ),
-                  CreateMenuItemButton(
-                    key: const Key('create-menu-fan-club-post'),
-                    asset:
-                        'assets/icons/Communication/message-heart-circle.svg',
-                    label: 'Post Fã Clube',
-                    onPressed: () => handleFanClubPost(context),
-                    showDivider: true,
-                  ),
-                  if (isArtist)
-                    CreateMenuItemButton(
-                      key: const Key('create-menu-create-post'),
-                      asset: 'assets/icons/General/edit-03.svg',
-                      label: 'Post Home',
-                      onPressed: () => handleCreatePost(context),
-                      showDivider: true,
-                    ),
-                ],
+                children: isArtist
+                    ? [
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-live'),
+                          asset: 'assets/icons/Media & devices/signal-01.svg',
+                          label: 'Live',
+                          onPressed: () => handleLive(context),
+                        ),
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-meet'),
+                          asset: 'assets/icons/Communication/phone.svg',
+                          label: 'Meet & Greet',
+                          onPressed: () => handleMeet(context),
+                          showDivider: true,
+                        ),
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-create-post'),
+                          asset: 'assets/icons/General/edit-03.svg',
+                          label: 'Post para Home',
+                          onPressed: () => handleCreatePost(context),
+                          showDivider: true,
+                        ),
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-fan-club-post'),
+                          asset:
+                              'assets/icons/Communication/message-heart-circle.svg',
+                          label: 'Post Fã Clube',
+                          onPressed: () => handleFanClubPost(context),
+                          showDivider: true,
+                        ),
+                      ]
+                    : [
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-fan-letters'),
+                          asset: 'assets/icons/Communication/mail-01.svg',
+                          label: 'Fan Letter',
+                          onPressed: () => handleFanLetters(context),
+                        ),
+                        CreateMenuItemButton(
+                          key: const Key('create-menu-fan-club-post'),
+                          asset:
+                              'assets/icons/Communication/message-heart-circle.svg',
+                          label: 'Post Fã Clube',
+                          onPressed: () => handleFanClubPost(context),
+                          showDivider: true,
+                        ),
+                      ],
               ),
             ),
           ),
