@@ -1,19 +1,18 @@
+import 'package:crowdfans/firebase_options.dart';
 import 'package:crowdfans/services/api_config.dart';
-import 'package:crowdfans/services/env_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-/// Firebase Auth no projeto `crowdfans-prod`.
-///
-/// Hoje: opções do `.env` (as mesmas `EXPO_PUBLIC_FIREBASE_*` do Expo).
-/// Depois do `flutterfire configure`: trocar para `DefaultFirebaseOptions.currentPlatform`.
+/// Firebase Auth no projeto `crowdfans-prod` (`DefaultFirebaseOptions`).
 abstract final class FirebaseService {
   static FirebaseAuth get auth => FirebaseAuth.instance;
 
   static Future<void> initialize() async {
     if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(options: _fromEnv());
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
     }
     await auth.setLanguageCode('pt-BR');
   }
@@ -24,25 +23,6 @@ abstract final class FirebaseService {
       return null;
     }
     return user.getIdToken(forceRefresh);
-  }
-
-  static FirebaseOptions _fromEnv() {
-    final appId = EnvService.require('FIREBASE_APP_ID');
-    final senderFromAppId = RegExp(r'^1:(\d+):').firstMatch(appId)?.group(1);
-    final sender = EnvService.maybe('FIREBASE_MESSAGING_SENDER_ID');
-    final messagingSenderId =
-        senderFromAppId ??
-        sender ??
-        EnvService.require('FIREBASE_MESSAGING_SENDER_ID');
-
-    return FirebaseOptions(
-      apiKey: EnvService.require('FIREBASE_API_KEY'),
-      authDomain: EnvService.require('FIREBASE_AUTH_DOMAIN'),
-      projectId: EnvService.require('FIREBASE_PROJECT_ID'),
-      storageBucket: EnvService.require('FIREBASE_STORAGE_BUCKET'),
-      messagingSenderId: messagingSenderId,
-      appId: appId,
-    );
   }
 }
 

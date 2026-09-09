@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "658897248078",
+    "project_id": "crowdfans-prod",
+    "storage_bucket": "crowdfans-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658897248078:android:edd3c987eb54bcdc2c881f",
+        "android_client_info": {
+          "package_name": "com.crowdfans.crowdfans"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVb1P74NVjXfxAY4aIpE1WkMeYdxiWm9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

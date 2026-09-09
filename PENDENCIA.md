@@ -4,30 +4,13 @@ Itens do `TODO.md` que não dá para fechar agora. Revisar e destravar.
 
 ## flutterfire configure (`crowdfans-prod`)
 
-**TODO:** `google-services.json` / `GoogleService-Info.plist` / `lib/firebase_options.dart`
+Feito: apps nativos `com.crowdfans.crowdfans` (iOS/Android) + web existente, `lib/firebase_options.dart`, `google-services.json`, `GoogleService-Info.plist`. `FirebaseService` usa `DefaultFirebaseOptions.currentPlatform`.
 
-O `admin@crowdfans.app` aparece logado no CLI, mas o access token está expirado (refresh 400 → API 401). Sem reauth o `flutterfire configure` e o `firebase apps:list` não rodam.
+O CLI precisa do binário `firebase` no PATH (`node_modules/.bin` deste repo, via `firebase-tools`). Conta atual: `crowdfans@gmail.com`.
 
-O que já está no repo:
+App Distribution: o console aceita upload, mas ainda falta grupo de testers e um IPA/APK para distribuir. Script: `npm run firebase -- appdistribution:distribute`.
 
-- `.firebaserc` aponta para `crowdfans-prod`
-- `package.json` com `firebase-tools`
-- Auth no Dart usa as chaves web do `.env` (`EXPO_PUBLIC_FIREBASE_*`)
-
-O que falta depois do login:
-
-```bash
-npx firebase-tools@latest login --reauth
-dart pub global activate flutterfire_cli
-dart pub global run flutterfire_cli:flutterfire configure \
-  --project=crowdfans-prod --platforms=ios,android,web --yes
-```
-
-Trocar `FirebaseService` para `DefaultFirebaseOptions.currentPlatform`.
-
-App Distribution só depois disso.
-
-Bundle Flutter atual: `com.crowdfans.crowdfans`. Expo: `com.crowdfans.crowdfansmobile`. Decidir se reusa o app nativo do Expo ou cria um novo no console.
+Bundle Flutter: `com.crowdfans.crowdfans`. Expo permanece `com.crowdfans.crowdfansmobile`.
 
 ## Social login
 
@@ -35,7 +18,7 @@ Comentado no Expo. **Não implementar** até o `mobile` ligar.
 
 ## Cadastro: reCAPTCHA nativo / web
 
-OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — bloqueado até o `flutterfire configure` e um slot web equivalente ao `FirebaseRecaptchaVerifierModal`.
+OTP SMS no Flutter nativo usa `verifyPhoneNumber` (Play/APNs). Na **web** o Firebase exige reCAPTCHA — o app web já existe no console; falta o slot equivalente ao `FirebaseRecaptchaVerifierModal`.
 
 ## AppRootLayout — RevenueCat
 
@@ -47,6 +30,4 @@ O Expo também não tem tela de verificação Spotify, contestação de nome nem
 
 ## Ainda no `TODO.md` (não bloqueado)
 
-Comunidade do fan club, telas filhas de settings, create post, comentários, fan letters, notificações, denúncia, RevenueCat/IAP, wallet WS, push/FCM.
-
-Feed: `PostOptionsSheet`, share nativo, chips Live/Meet, `SubscriptionService` para unlock de membership.
+Fan club compose/about, settings filhas, fan letters, notificações/FCM, RevenueCat/IAP, wallet WS.
