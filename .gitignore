@@ -53,3 +53,8 @@ app.*.map.json
 firebase-debug.log
 .firebase/
 node_modules/
+
+# Patrol
+**/test_bundle.dart
+.patrol.env
+ios/RunnerUITests/PatrolGeneratedTests.inc

@@ -12,7 +12,9 @@
     "distribute:all": "bash scripts/distribute.sh all",
     "distribute:android:upload": "bash scripts/distribute.sh android --skip-build",
     "distribute:ios:upload": "bash scripts/distribute.sh ios --skip-build",
-    "distribute:web:upload": "bash scripts/distribute.sh web --skip-build"
+    "distribute:web:upload": "bash scripts/distribute.sh web --skip-build",
+    "test:patrol:smoke": "patrol test -t integration_test/smoke_test.dart",
+    "test:patrol:superfan": "patrol test -t integration_test/superfan_onboarding_login_test.dart"
   },
   "devDependencies": {
     "firebase-tools": "^15.29.0"

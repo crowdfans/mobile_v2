@@ -11,7 +11,7 @@ flutter pub get
 flutter run
 ```
 
-API padrão: DigitalOcean **dev**. Para o Go local:
+API padrão: `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Para o Go local:
 
 ```
 API_MODE=local
@@ -19,6 +19,27 @@ API_LOCAL_BASE_URL=http://localhost:8080
 ```
 
 Login nativo usa o Firebase **`crowdfans-prod`**.
+
+## Patrol (QA E2E)
+
+Setup nativo Android/iOS (CF-123). CLI:
+
+```bash
+dart pub global activate patrol_cli
+export PATH="$HOME/sdk/flutter/bin:$HOME/.pub-cache/bin:$PATH"
+patrol doctor
+```
+
+Smoke local (emulador/simulador ligado):
+
+```bash
+patrol test -t integration_test/smoke_test.dart
+patrol test -t integration_test/superfan_onboarding_login_test.dart
+```
+
+E2E autenticados (CF-128/129/130) estão **skip** até existirem `E2E_ARTIST_*` / `E2E_FAN_*`.
+
+Firebase Test Lab (CF-125/126/127) está **adiado** — ver `docs/YOUTRACK_BACKLOG.md` (API/`gcloud` + SA no `crowdfans-prod` ainda não prontos).
 
 ## App Distribution
 
