@@ -277,14 +277,27 @@ abstract final class Pages {
     if (artist != null) {
       return artistProfile.replaceAll(':artistId', artist.group(1)!);
     }
+    final artistShort = RegExp(r'^/artists/([^/]+)').firstMatch(path);
+    if (artistShort != null) {
+      return artistProfile.replaceAll(':artistId', artistShort.group(1)!);
+    }
     final commentsMatch = RegExp(r'^/pages/comments/([^/]+)$').firstMatch(path);
     if (commentsMatch != null) {
       return comments.replaceAll(':postId', commentsMatch.group(1)!);
+    }
+    final commentsShort = RegExp(r'^/comments/([^/]+)').firstMatch(path);
+    if (commentsShort != null) {
+      return comments.replaceAll(':postId', commentsShort.group(1)!);
     }
     final community = RegExp(r'^/pages/fan-clubs/community/([^/]+)$')
         .firstMatch(path);
     if (community != null) {
       return fanClubCommunity.replaceAll(':artistId', community.group(1)!);
+    }
+    final communityShort =
+        RegExp(r'^/fan-clubs/community/([^/]+)').firstMatch(path);
+    if (communityShort != null) {
+      return fanClubCommunity.replaceAll(':artistId', communityShort.group(1)!);
     }
     return null;
   }

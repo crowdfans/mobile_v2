@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crowdfans/components/profile/membership_balance_banner.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
@@ -25,11 +27,36 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
   var _loading = true;
   String? _error;
   String? _busyId;
+  VoidCallback? _unsubscribeWs;
 
   @override
   void initState() {
     super.initState();
     handleLoad();
+    unawaited(handleSubscribe());
+  }
+
+  @override
+  void dispose() {
+    _unsubscribeWs?.call();
+    super.dispose();
+  }
+
+  Future<void> handleSubscribe() async {
+    try {
+      final stop = await WalletService.subscribe((event) {
+        if (event.type == 'wallet.credited') {
+          unawaited(handleLoad(silent: true));
+        }
+      });
+      if (!mounted) {
+        stop();
+        return;
+      }
+      _unsubscribeWs = stop;
+    } catch (_) {
+      // WS é best-effort; saldo ainda atualiza no pull/checkout.
+    }
   }
 
   void handleBack() {
@@ -40,11 +67,13 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
     context.go(Pages.profileSettings);
   }
 
-  Future<void> handleLoad() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> handleLoad({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final wallet = await WalletService.getWallet();
       if (!mounted) {
@@ -53,6 +82,7 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
       setState(() {
         _wallet = wallet;
         _loading = false;
+        _error = null;
       });
     } catch (_) {
       if (!mounted) {
@@ -60,7 +90,9 @@ class _ProfileWalletScreenState extends State<ProfileWalletScreen> {
       }
       setState(() {
         _loading = false;
-        _error = 'Não foi possível carregar a carteira.';
+        if (!silent) {
+          _error = 'Não foi possível carregar a carteira.';
+        }
       });
     }
   }

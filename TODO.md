@@ -184,10 +184,10 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [ ] `ProfileFanScoreScreen`
 - [x] `ProfileMembershipsScreen` + `SubscriptionService` (check / cancel)
 - [ ] `ProfileProScreen` (CrowdFans Pro / RevenueCat)
-- [ ] `ProfileWalletScreen` (saldo Jam Coins + packs)
+- [x] `ProfileWalletScreen` (saldo Jam Coins + packs)
 - [ ] Recarga Jam Coins via **RevenueCat IAP** (`jam_starter` / `jam_plus` / `jam_pro`, offering `jam_coins`) — produto atual; Expo local ainda pode mostrar PIX sandbox
-- [ ] Checkout sandbox `__DEV__` (`POST /api/v1/me/wallet/checkout`) só para QA
-- [ ] WS `GET /api/v1/me/ws` → evento `wallet.credited`
+- [x] Checkout sandbox `__DEV__` (`POST /api/v1/me/wallet/checkout`) só para QA
+- [x] WS `GET /api/v1/me/ws` → evento `wallet.credited`
 - [ ] `ProfileEarningsScreen` (saque PIX artista)
 - [ ] `ProfileReferralScreen` + `ReferralService`
 - [x] `BlockedUsersSettingsScreen` + `BlockService`
@@ -236,7 +236,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `NotificationsScreen` (abas Posts / Clubes / Meet / Fan Letter / Sistema)
 - [x] `NotificationsService`
 - [x] `PushTokenService` + FCM / APNs
-- [ ] Deep link ao tocar na notificação
+- [x] Deep link ao tocar na notificação
 
 ---
 
@@ -294,7 +294,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 
 ## 21. Infra que o Expo tem e o Flutter ainda não
 
-- [ ] WebSocket carteira (`WalletService.subscribe`)
+- [x] WebSocket carteira (`WalletService.subscribe`)
 - [x] Expo Notifications → `firebase_messaging`
 - [ ] RevenueCat Flutter SDK (`purchases_flutter`)
 - [ ] `expo-image` / cache de imagem

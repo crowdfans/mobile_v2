@@ -70,13 +70,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void handleOpen(NotificationItem item) {
-    final route = item.targetRoute ?? '';
-    if (route.startsWith('/artists/')) {
-      final artistId = route.replaceFirst('/artists/', '').split('/').first;
-      if (artistId.isNotEmpty) {
-        context.push(Pages.artistProfile.replaceAll(':artistId', artistId));
-      }
+    final route = (item.targetRoute ?? '').trim();
+    if (route.isEmpty) {
+      return;
     }
+    final mapped = Pages.fromIncomingLocation(route);
+    context.push(mapped);
   }
 
   @override
