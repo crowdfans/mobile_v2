@@ -29,7 +29,10 @@ class FanLetterRecipientBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final name = artistName.trim().isEmpty ? 'Artista' : artistName.trim();
-    final showCoins = !isMember && jamCoinsBalance != null;
+    final amount = isMember
+        ? jamCoinsBalance
+        : (jamCoinsCost ?? jamCoinsBalance);
+    final showCoins = amount != null;
     return Row(
       children: [
         Expanded(
@@ -68,7 +71,7 @@ class FanLetterRecipientBar extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        '${jamCoinsCost ?? jamCoinsBalance}',
+                        '$amount',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

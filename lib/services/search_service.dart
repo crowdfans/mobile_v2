@@ -11,6 +11,7 @@ class ArtistSearchItem {
     required this.membersLabel,
     this.rank,
     this.rankingValueLabel,
+    this.rankDelta,
   });
 
   final String id;
@@ -21,6 +22,7 @@ class ArtistSearchItem {
   final String membersLabel;
   final int? rank;
   final String? rankingValueLabel;
+  final int? rankDelta;
 
   factory ArtistSearchItem.fromJson(Map<String, dynamic> json) {
     return ArtistSearchItem(
@@ -32,6 +34,8 @@ class ArtistSearchItem {
       membersLabel: json['membersLabel'] as String? ?? '',
       rank: (json['rank'] as num?)?.toInt(),
       rankingValueLabel: json['rankingValueLabel'] as String?,
+      rankDelta: (json['rankDelta'] as num?)?.toInt() ??
+          (json['delta'] as num?)?.toInt(),
     );
   }
 }

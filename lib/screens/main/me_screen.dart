@@ -26,7 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum _MePostsFilter { all, media }
+enum _MePostsFilter { all, posts, media }
 
 enum _ArtistFeedFilter { all, posts, media }
 
@@ -81,6 +81,12 @@ class _MeScreenState extends ConsumerState<MeScreen> {
   }
 
   List<FeedPost> visibleFanPosts() {
+    if (_filter == _MePostsFilter.posts) {
+      return [
+        for (final post in _posts)
+          if (post.type == PostType.text) post,
+      ];
+    }
     if (_filter == _MePostsFilter.media) {
       return [for (final post in _posts) if (isMediaPost(post)) post];
     }
@@ -402,7 +408,8 @@ class _MeScreenState extends ConsumerState<MeScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             children: [
               MeProfileToolbar(
-                onMyPosts: () => context.push(Pages.myPosts),
+                handle: profile?.name ?? '',
+                onJams: () => context.push(Pages.profileWallet),
                 onSettings: () => context.push(Pages.profileSettings),
               ),
               const SizedBox(height: 4),
@@ -419,7 +426,6 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                 const SizedBox(height: 18),
                 MeProfileActionsRow(
                   onEditProfile: () => context.push(Pages.profileAccount),
-                  onMyPosts: () => context.push(Pages.myPosts),
                 ),
                 if (_artists.isNotEmpty) ...[
                   const SizedBox(height: 20),
@@ -430,16 +436,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   ),
                 ],
               ],
-              const SizedBox(height: 28),
-              Text(
-                'Publicações',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   MePostsFilterChip(
@@ -451,7 +448,15 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   ),
                   const SizedBox(width: 8),
                   MePostsFilterChip(
-                    label: 'Mídia',
+                    label: 'Posts',
+                    selected: _filter == _MePostsFilter.posts,
+                    onPressed: () {
+                      setState(() => _filter = _MePostsFilter.posts);
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  MePostsFilterChip(
+                    label: 'Media',
                     selected: _filter == _MePostsFilter.media,
                     onPressed: () {
                       setState(() => _filter = _MePostsFilter.media);
