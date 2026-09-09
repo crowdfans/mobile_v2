@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/artist_analytics_service.dart';
 import 'package:flutter/material.dart';
 
-/// Cartão de métrica 2 colunas.
+/// Cartão de métrica no layout dos prints (label → valor → helper).
 class AnalyticsMetricCard extends StatelessWidget {
   const AnalyticsMetricCard({
     super.key,
@@ -21,29 +21,35 @@ class AnalyticsMetricCard extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.border),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
+                card.label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
                 card.formattedValue,
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
                   color: colors.textPrimary,
                 ),
               ),
-              Text(
-                card.label,
-                style: TextStyle(fontSize: 12, color: colors.textPrimary),
-              ),
+              const SizedBox(height: 4),
               Text(
                 card.helper,
-                style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                style: TextStyle(fontSize: 11, color: colors.textTertiary),
               ),
             ],
           ),
