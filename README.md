@@ -84,13 +84,15 @@ Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
 
 Helpers: `integration_test/helpers/e2e_env.dart`, `e2e_auth.dart`.
 
-### Firebase Test Lab (CF-125 / CF-126 / CF-127)
+### Firebase Test Lab (CF-125 / CF-126)
 
-Ainda **adiado** até API/`gcloud` + SA no `crowdfans-prod` (ver
-`docs/YOUTRACK_BACKLOG.md`). Placeholder do fluxo Android:
+Android **pronto**: APIs FTL no `crowdfans-prod` + `scripts/ftl_android.sh` (job smoke Passed).
+Guia: [`docs/FIREBASE_TEST_LAB.md`](docs/FIREBASE_TEST_LAB.md). iOS (CF-127) ainda bloqueado em signing (`PENDENCIA.md`).
 
 ```bash
-./scripts/ftl_android.sh --dry-run
+./scripts/ftl_android.sh --dry-run   # valida models list + imprime plano
+./scripts/ftl_android.sh             # patrol build + submit FTL (smoke)
+npm run ftl:android
 ```
 ## App Distribution
 

@@ -15,7 +15,7 @@
 | Artista core | CF-110 ✅ [#24](https://github.com/crowdfans/mobile_v2/pull/24); CF-111 ✅ [#25](https://github.com/crowdfans/mobile_v2/pull/25); CF-113 ✅ [#27](https://github.com/crowdfans/mobile_v2/pull/27) | **YT Done** (gus) |
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
-| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 env-gated real flows (sem Done até run verde com creds); CF-125/126/127 FTL **adiado** + `scripts/ftl_android.sh` | Ver §1.2 |
+| QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-125/126 **YT Done** (gus) FTL Android job verde; CF-127 iOS signing; CF-128–130 env-gated (sem Done até run verde) | Ver §1.2 |
 | Bags | CF-82 / CF-83 ✅ [#41](https://github.com/crowdfans/mobile_v2/pull/41) | **YT Done** (gus); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community chrome [#44](https://github.com/crowdfans/mobile_v2/pull/44); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40)/[#42](https://github.com/crowdfans/mobile_v2/pull/42)/[#43](https://github.com/crowdfans/mobile_v2/pull/43) |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
@@ -29,16 +29,16 @@
 | Fora de escopo | Horus / produto adiado / não somos donos |
 | Backend/Meet | Backend-only, Live, Meet/CometChat — fora da paridade Flutter por enquanto |
 
-**Totais (consulta 2026-09-09 ~17:45, refresh API `$top=200` `project: CF`):** 26 unresolved · 23 non-Horus · 3 Horus (CF-100–102).
+**Totais (consulta 2026-09-09 ~18:15):** 24 unresolved · 21 non-Horus · 3 Horus (CF-100–102) — CF-125/126 fechados após job FTL verde.
 
 ### Snapshot aberto (5 buckets)
 
 | # | Bucket | IDs | Contagem |
 |---|---|---|---|
 | 1 | Mobile/Flutter **acionável agora** | — | **0** |
-| 2 | Mobile **bloqueado** (mocks / infra / fixtures) | CF-103, CF-126, CF-127, CF-128, CF-129, CF-130 | 6 |
+| 2 | Mobile **bloqueado** (mocks / infra / fixtures) | CF-103, CF-127, CF-128, CF-129, CF-130 | 5 |
 | 3 | Meet / Live ⛔ | CF-10, CF-30, CF-97, CF-99, CF-120, CF-121 | 6 |
-| 4 | Backend / Financial / Infra | CF-1, CF-4, CF-9, CF-14, CF-21, CF-31, CF-51, CF-52, CF-96, CF-98, CF-125 | 11 |
+| 4 | Backend / Financial / Infra | CF-1, CF-4, CF-9, CF-14, CF-21, CF-31, CF-51, CF-52, CF-96, CF-98 | 10 |
 | 5 | Horus (ignorar) | CF-100, CF-101, CF-102 | 3 |
 
 **CF-103 check (2026-09-09):** anexos YouTrack = **0** (ainda vazio). `Downloads/Screens` sem pasta/arquivo de onboarding/slides; Superfã só tem Feed/Perfil/Clubes/etc. (Live/M&G vazios). Nenhum ticket Mobile aberto está com Stage Done incorreto.
@@ -56,27 +56,26 @@
 | ID | Summary | Stage | Assignee | Done incorreto? | Próxima ação |
 |---|---|---|---|---|---|
 | CF-103 | [Superfã] Onboarding — slides Superfã/Artista iguais ao mock | Backlog | gus | Não (Backlog) | Aguardar prints Drive / anexos YT; não inventar layout. |
-| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Backlog | — | Não | Esperar CF-125 (FTL API/SA); depois `patrol build` + `gcloud firebase test`. |
-| CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | — | Não | Esperar CF-125 + signing iOS (`PENDENCIA.md`). |
+| CF-127 | [Mobile] Firebase Test Lab — iOS (Patrol XCTest) | Backlog | — | Não | Bloqueado em signing iOS (`PENDENCIA.md`); Android FTL já OK (CF-125/126). |
 | CF-128 | [Mobile] Patrol — E2E artista posta / superfã comenta | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_ARTIST_*`+`E2E_FAN_*` (ver README Patrol). |
 | CF-129 | [Mobile] Patrol — E2E Superfã voto / clube / logout | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_FAN_*` (+ `E2E_ARTIST_UID` recomendado). |
 | CF-130 | [Mobile] Patrol — E2E Artista editar/apagar post | Backlog | — | Não | Código env-gated pronto; **não Done** até run verde com `E2E_ARTIST_*`. |
 
-#### Firebase Test Lab — deferral (CF-125 / CF-126 / CF-127)
+#### Firebase Test Lab — CF-125 / CF-126 Done; CF-127 ainda bloqueado
 
-Checagem 2026-09-09 no `crowdfans-prod`:
+Checagem + job 2026-09-09 no `crowdfans-prod`:
 
-- Billing Firebase ligado; apps Android/iOS/Web existem.
-- `gcloud firebase test android models list --project crowdfans-prod` **falhou** (`invalid_grant` / auth gcloud expirado) — sem prova de API `testing.googleapis.com`, service account Test Lab Admin nem bucket de resultados.
-- Signing iOS App Distribution ainda pendente (`PENDENCIA.md`) → CF-127 bloqueado mesmo com FTL.
-
-**Não** marcar CF-125/126/127 como Done. Quando a infra estiver pronta: `gcloud auth login` + habilitar Testing API + SA → scripts `patrol build` + `gcloud firebase test` (ver descrição YT).
+- `gcloud auth` OK (`crowdfans@gmail.com`); APIs `testing.googleapis.com` + `toolresults.googleapis.com` habilitadas.
+- `gcloud firebase test android models list --project crowdfans-prod` OK.
+- Script `scripts/ftl_android.sh` + docs `docs/FIREBASE_TEST_LAB.md` (orientação SA opcional; user creds bastam).
+- Job FTL smoke **Passed**: `MediumPhone.arm-34-pt_BR-portrait` — 1 test case ([matrix](https://console.firebase.google.com/project/crowdfans-prod/testlab/histories/bh.a2f5d65cf7c8b570/matrices/8325692657276862944)).
+- Signing iOS App Distribution ainda pendente (`PENDENCIA.md`) → **CF-127** permanece aberto.
 
 ### 1.2 Bags genéricos (triagem)
 
 CF-82 / CF-83 estão em §2 (**YT Done**, gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41); follow-up polish comunidade/clubes [#44](https://github.com/crowdfans/mobile_v2/pull/44) (comentado em CF-83).
 
-**Mobile aberto (código, todos bloqueados):** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130 — **0 acionáveis agora**.
+**Mobile aberto (código, todos bloqueados):** CF-103, CF-127, CF-128, CF-129, CF-130 — **0 acionáveis agora**.
 
 ---
 
@@ -88,9 +87,11 @@ Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração E
 |---|---|---|---|---|
 | CF-82 | Correção de Bugs | Done | Normal | Done (gus): Me/Settings/Share/Search/Cartas [#41](https://github.com/crowdfans/mobile_v2/pull/41); notifs [#38](https://github.com/crowdfans/mobile_v2/pull/38) |
 | CF-83 | Correção de Visual | Done | Normal | Done (gus): Meu Perfil chrome, Settings hub, share grid, Top 500, Fan Letter tools [#41](https://github.com/crowdfans/mobile_v2/pull/41); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community Ver mais/Regras + Clubs Todos/Posts/Media [#44](https://github.com/crowdfans/mobile_v2/pull/44) |
-| CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Done | Major | Done parcial (gus): setup+smoke [#35](https://github.com/crowdfans/mobile_v2/pull/35); FTL 125–127 adiados; E2E 128–130 abertos |
+| CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Done | Major | Done parcial (gus): setup+smoke [#35](https://github.com/crowdfans/mobile_v2/pull/35); FTL Android CF-125/126 Done; CF-127 iOS aberto; E2E 128–130 abertos |
 | CF-123 | [Mobile] Patrol — setup nativo Android/iOS e smoke local | Done | Major | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
 | CF-124 | [Mobile] Patrol — suíte smoke Superfã (onboarding e login) | Done | Normal | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
+| CF-125 | [Infra] Firebase Test Lab — API, billing e service account em crowdfans-prod | Done | Major | Done (gus): APIs + models list + SA guidance; job FTL verde |
+| CF-126 | [Mobile] Firebase Test Lab — Android (Patrol instrumentation) | Done | Major | Done (gus): `scripts/ftl_android.sh`; smoke Passed no MediumPhone.arm-34 |
 | CF-66 | [Épica] Superfã — alinhar app ao PDF Telas App | Done | Major | Done (gus); CF-103 permanece Backlog sem mocks Drive |
 | CF-67 | [Superfã] Home — feed só artistas, tipos de post e exclusivo | Done | Major | PRs #2/#4/#23 |
 | CF-106 | [Superfã] Cartas — compose e galeria iguais ao mock | Done | Normal | PR [#30](https://github.com/crowdfans/mobile_v2/pull/30) |
@@ -168,7 +169,6 @@ Relacionados no backend (também §4): CF-9, CF-21, CF-31, CF-96, CF-98.
 | CF-96 | [Backend] Meet 1:1 — limite rígido de 1 minuto | Backlog | Major | Backend | Backend/Meet |
 | CF-98 | [Backend] Meet 1:1 — backup da chamada para fins judiciais | Backlog | Major | Backend | Backend/Meet |
 | CF-1 | [Arquitetura ALVO] Monetização, mensageria e vídeo 1:1 | Backlog | Major | Infra | Backend/Meet |
-| CF-125 | [Infra] Firebase Test Lab — API, billing e service account em crowdfans-prod | Backlog | Major | Infra | **Adiado** — FTL API/SA não confirmados no `crowdfans-prod` (2026-09-09); ver §1.2 |
 | CF-4 | [Financial] Integração Pagar.me PIX (criar cobrança + webhook pago) | Backlog | Major | Financial | Backend/Meet |
 
 ---
@@ -194,16 +194,16 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 1. ~~**[Major] CF-67 / CF-106 / CF-107 / CF-66**~~ — YT Done (gus); CF-103 Backlog bloqueado sem mocks.
 2. ~~**[Major] CF-109 + filhos Artista CF-110–119**~~ — YT Done (gus); PRs #24–#31.
 3. ~~**Triagem** CF-82 / CF-83~~ — **YT Done** (gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38)/[#44](https://github.com/crowdfans/mobile_v2/pull/44).
-4. ~~**QA** CF-122/123/124~~ — **YT Done** (gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). Restam CF-128/129/130 (fixtures) e CF-125→126/127 (FTL adiado).
+4. ~~**QA** CF-122/123/124~~ — **YT Done** (gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). ~~CF-125/126 FTL Android~~ Done (job verde). Restam CF-127 (signing iOS) e CF-128/129/130 (creds/run verde).
 5. **Não puxar agora:** CF-120/121 Live/Meet ⛔, CF-30/97/99/10 Meet, Horus CF-100–102, backend CF-9/31/96/98/21/4/1/14.
 
 ### Expo vs Flutter (resumo rápido)
 
 - Expo (`../mobile`) cobre o fluxo Superfã principal e settings de artista (insights/audience/fan-club/wallet).
-- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). **0 Mobile acionável agora**; bloqueados = CF-103 (mocks) + CF-126–130 (FTL/fixtures).
+- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). **0 Mobile acionável agora**; bloqueados = CF-103 (mocks) + CF-127–130 (FTL iOS/fixtures).
 - Live/Meet: buraco nos dois — não inventar UI.
-- **Verdict 2026-09-09 ~17:45:** 26 unresolved; CF-103 ainda sem anexos; sem mocks onboarding novos em Downloads; no more UI without mocks/infra.
+- **Verdict 2026-09-09 ~18:15:** FTL Android unblocked (CF-125/126 Done); CF-127 ainda signing; CF-103 sem anexos.
 
 ---
 
-*Gerado localmente em 2026-09-09 (~17:45). Token YouTrack não é armazenado neste arquivo.*
+*Gerado localmente em 2026-09-09 (~18:15). Token YouTrack não é armazenado neste arquivo.*
