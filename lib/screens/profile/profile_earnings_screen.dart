@@ -113,7 +113,7 @@ class _ProfileEarningsScreenState extends State<ProfileEarningsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Ganhos', onBack: handleBack),
+            ProfileScreenHeader(title: 'Solicitar resgate', onBack: handleBack),
             Expanded(
               child: _loading
                   ? const ProfileState(
