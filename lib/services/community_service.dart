@@ -20,6 +20,9 @@ class CommunityPost {
     this.targetArtistId,
     this.isExclusive = false,
     this.exclusiveLocked = false,
+    this.isSecret = false,
+    this.fanAvatarUri = '',
+    this.membershipBadges = const [],
   });
 
   final String id;
@@ -37,6 +40,9 @@ class CommunityPost {
   final String? targetArtistId;
   final bool isExclusive;
   final bool exclusiveLocked;
+  final bool isSecret;
+  final String fanAvatarUri;
+  final List<MembershipBadgeInfo> membershipBadges;
 
   factory CommunityPost.fromJson(Map<String, dynamic> json) {
     return CommunityPost(
@@ -55,10 +61,17 @@ class CommunityPost {
       targetArtistId: json['targetArtistId'] as String?,
       isExclusive: json['isExclusive'] == true,
       exclusiveLocked: json['exclusiveLocked'] == true,
+      isSecret: json['isSecret'] == true,
+      fanAvatarUri: json['fanAvatarUri'] as String? ?? '',
+      membershipBadges: [
+        for (final item in json['membershipBadges'] as List? ?? const [])
+          MembershipBadgeInfo.fromJson(item),
+      ],
     );
   }
 
   FeedPost toFeedPost() {
+    final fan = fanAvatarUri.trim();
     return FeedPost(
       id: id,
       type: postTypeFrom(type),
@@ -75,6 +88,11 @@ class CommunityPost {
       shares: shares,
       isExclusive: isExclusive,
       exclusiveLocked: exclusiveLocked,
+      isSecret: isSecret,
+      membershipBadges: membershipBadges,
+      clubArtistName: fan.isEmpty ? null : author,
+      clubArtistAvatarUri: fan.isEmpty ? null : avatarUri,
+      posterAvatarUri: fan.isEmpty ? null : fan,
     );
   }
 }

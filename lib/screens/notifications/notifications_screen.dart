@@ -4,9 +4,10 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-/// Inbox de notificações (espelho do `NotificationsScreen`).
+/// Inbox de notificações (espelho do `NotificationsScreen` / mock PDF).
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -88,17 +89,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 children: [
-                  TextButton(
+                  IconButton(
                     onPressed: handleBack,
-                    child: Text(
-                      'Voltar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
+                    tooltip: 'Voltar',
+                    icon: Icon(
+                      Icons.chevron_left,
+                      size: 28,
+                      color: colors.textPrimary,
                     ),
                   ),
                   Expanded(
@@ -112,34 +112,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ),
                     ),
                   ),
-                  TextButton(
+                  IconButton(
                     onPressed: () => context.push(Pages.profileNotifications),
-                    child: Text(
-                      'Prefs',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
+                    tooltip: 'Preferências',
+                    icon: SvgPicture.asset(
+                      'assets/icons/General/settings-02.svg',
+                      width: 22,
+                      height: 22,
+                      colorFilter: ColorFilter.mode(
+                        colors.textPrimary,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  for (final tab in NotificationTab.values)
+                  for (final tab in NotificationTab.values) ...[
                     NotificationFilterChip(
                       tab: tab,
                       selected: _tab == tab,
                       onPressed: () => setState(() => _tab = tab),
                     ),
+                    const SizedBox(width: 8),
+                  ],
                 ],
               ),
             ),
+            const SizedBox(height: 12),
             Expanded(
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
