@@ -1,14 +1,13 @@
-import 'package:crowdfans/components/home/vote_control.dart';
-import 'package:crowdfans/components/post/post_avatar.dart';
+import 'package:crowdfans/components/post/post_card_avatar_column.dart';
+import 'package:crowdfans/components/post/post_card_footer.dart';
+import 'package:crowdfans/components/post/post_card_header.dart';
 import 'package:crowdfans/components/post/post_media.dart';
-import 'package:crowdfans/components/post/post_rank_badge.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/vote_service.dart';
-import 'package:crowdfans/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 
-/// Card padrão de post do feed.
+/// Card padrão de post do feed (layout PDF: avatar + coluna principal).
 class PostCard extends StatelessWidget {
   const PostCard({
     super.key,
@@ -22,6 +21,8 @@ class PostCard extends StatelessWidget {
     this.onPressOptions,
     this.onPressShare,
     this.onVoteApplied,
+    this.membershipBadges,
+    this.isSecretMode = false,
   });
 
   final FeedPost post;
@@ -34,19 +35,28 @@ class PostCard extends StatelessWidget {
   final VoidCallback? onPressOptions;
   final VoidCallback? onPressShare;
   final ValueChanged<VoteResult>? onVoteApplied;
+  final List<MembershipBadgeInfo>? membershipBadges;
+  final bool isSecretMode;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final rank = post.rank?.trim() ?? '';
+    final displayAuthorName =
+        (post.clubArtistName ?? '').trim().isNotEmpty
+        ? post.clubArtistName!.trim()
+        : post.author;
+    final badges = membershipBadges ?? post.membershipBadges;
+    final showSecret = isSecretMode || post.isSecret;
+    final isMembershipLocked =
+        post.membershipLocked || post.exclusiveLocked;
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor ?? colors.border),
-        color: backgroundColor ?? colors.surface,
+        border: borderColor == null ? null : Border.all(color: borderColor!),
+        color: backgroundColor ?? colors.background,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,121 +66,69 @@ class PostCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: topContent,
             ),
-          GestureDetector(
-            onTap: onPressOpenProfile,
-            child: Row(
-              children: [
-                PostAvatar(url: post.avatarUri),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              post.author,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              post.handle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colors.textTertiary,
-                              ),
-                            ),
-                          ),
-                          if (rank.isNotEmpty) ...[
-                            const SizedBox(width: 6),
-                            PostRankBadge(rank: rank),
-                          ],
-                        ],
-                      ),
-                      Text(
-                        formatMinutesAgo(post.minutesAgo),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textTertiary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (onPressOptions != null)
-                  IconButton(
-                    key: const Key('post-more'),
-                    onPressed: onPressOptions,
-                    icon: Icon(Icons.more_horiz, color: colors.icon),
-                    tooltip: 'Opções do post',
-                  ),
-              ],
-            ),
-          ),
-          if (contentOverride != null)
-            contentOverride!
-          else ...[
-            if (post.text.trim().isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
-                  post.text,
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 20 / 14,
-                    color: colors.textPrimary,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 10),
-            PostMedia(post: post),
-          ],
-          const SizedBox(height: 10),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              VoteControl(post: post, onVoteApplied: onVoteApplied),
-              const Spacer(),
-              GestureDetector(
-                key: const Key('post-comments'),
-                onTap: onPressOpenComments == null
-                    ? null
-                    : () => onPressOpenComments!(post.id),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.mode_comment_outlined,
-                      size: 18,
-                      color: colors.icon,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${post.comments}',
-                      style: TextStyle(color: colors.textSecondary),
-                    ),
-                  ],
-                ),
+              PostCardAvatarColumn(
+                post: post,
+                onPressOpenProfile: onPressOpenProfile,
               ),
-              const SizedBox(width: 16),
-              GestureDetector(
-                key: const Key('post-share'),
-                onTap: onPressShare,
-                child: Row(
+              const SizedBox(width: 9),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.send_outlined, size: 18, color: colors.icon),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${post.shares}',
-                      style: TextStyle(color: colors.textSecondary),
+                    PostCardHeader(
+                      displayAuthorName: displayAuthorName,
+                      displayAuthorHandle: post.handle,
+                      rank: post.rank,
+                      minutesAgo: post.minutesAgo,
+                      membershipBadges: badges,
+                      showSecretBadge: showSecret,
+                      onPressOpenProfile: onPressOpenProfile,
+                      onPressOpenPostOptions: onPressOptions,
+                    ),
+                    if (contentOverride != null)
+                      contentOverride!
+                    else ...[
+                      if (post.text.trim().isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4, right: 4),
+                          child: GestureDetector(
+                            onTap: onPressOpenComments == null
+                                ? null
+                                : () => onPressOpenComments!(post.id),
+                            child: Text(
+                              post.text,
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 24 / 16,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      PostMedia(post: post),
+                      if (post.type == PostType.membership &&
+                          isMembershipLocked)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Disponível para membros deste perfil.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textTertiary,
+                            ),
+                          ),
+                        ),
+                    ],
+                    PostCardFooter(
+                      post: post,
+                      onOpenComments: onPressOpenComments == null
+                          ? null
+                          : () => onPressOpenComments!(post.id),
+                      onOpenShare: onPressShare,
+                      onVoteApplied: onVoteApplied,
                     ),
                   ],
                 ),

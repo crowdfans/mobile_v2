@@ -18,8 +18,8 @@ class NotificationFilterChip extends StatelessWidget {
   static const labels = {
     NotificationTab.all: 'Todos',
     NotificationTab.posts: 'Posts',
-    NotificationTab.clubs: 'Clubes',
-    NotificationTab.meet: 'Meet',
+    NotificationTab.clubs: 'Fã Clubes',
+    NotificationTab.meet: 'Meet & Greet',
     NotificationTab.fanletter: 'Cartas',
     NotificationTab.system: 'Sistema',
   };

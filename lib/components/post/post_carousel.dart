@@ -1,7 +1,7 @@
 import 'package:crowdfans/components/post/post_media_lightbox.dart';
 import 'package:flutter/material.dart';
 
-/// Carrossel do feed: o slide mostra um pedaço da próxima imagem.
+/// Carrossel do feed com slides quadrados (PDF).
 class PostCarousel extends StatefulWidget {
   const PostCarousel({super.key, required this.uris});
 
@@ -40,26 +40,24 @@ class _PostCarouselState extends State<PostCarousel> {
     if (slides.length == 1) {
       return GestureDetector(
         onTap: () => PostMediaLightbox.open(context, uris: slides),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            slides.first,
-            height: 240,
-            width: double.infinity,
-            fit: BoxFit.cover,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(slides.first, fit: BoxFit.cover),
           ),
         ),
       );
     }
-    return SizedBox(
-      height: 240,
+    return AspectRatio(
+      aspectRatio: 1,
       child: PageView.builder(
         controller: _controller,
         padEnds: false,
         itemCount: slides.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.only(right: index == slides.length - 1 ? 0 : 8),
+            padding: EdgeInsets.only(right: index == slides.length - 1 ? 0 : 4),
             child: GestureDetector(
               onTap: () => PostMediaLightbox.open(
                 context,
@@ -67,12 +65,12 @@ class _PostCarouselState extends State<PostCarousel> {
                 initialIndex: index,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   slides[index],
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  height: 240,
+                  height: double.infinity,
                 ),
               ),
             ),

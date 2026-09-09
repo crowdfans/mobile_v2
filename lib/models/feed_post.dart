@@ -45,6 +45,22 @@ String postTypeLabel(PostType type) {
   };
 }
 
+/// Selo de membership do autor no header do post.
+class MembershipBadgeInfo {
+  const MembershipBadgeInfo({required this.label, this.tier});
+
+  final String label;
+  final String? tier;
+
+  factory MembershipBadgeInfo.fromJson(Object? json) {
+    final map = json as Map<String, dynamic>? ?? {};
+    return MembershipBadgeInfo(
+      label: map['label'] as String? ?? '',
+      tier: map['tier'] as String?,
+    );
+  }
+}
+
 /// Post do `GET /api/v1/home`.
 class FeedPost {
   const FeedPost({
@@ -66,9 +82,15 @@ class FeedPost {
     this.rank,
     this.videoUri,
     this.videoDuration,
+    this.membershipTitle,
     this.exclusiveLocked = false,
     this.membershipLocked = false,
     this.myVote = 0,
+    this.clubArtistName,
+    this.clubArtistAvatarUri,
+    this.posterAvatarUri,
+    this.isSecret = false,
+    this.membershipBadges = const [],
   });
 
   final String id;
@@ -85,6 +107,7 @@ class FeedPost {
   final String? videoThumbnailUri;
   final String? videoUri;
   final String? videoDuration;
+  final String? membershipTitle;
   final bool isExclusive;
   final bool exclusiveLocked;
   final bool membershipLocked;
@@ -92,6 +115,11 @@ class FeedPost {
   final int myVote;
   final int comments;
   final int shares;
+  final String? clubArtistName;
+  final String? clubArtistAvatarUri;
+  final String? posterAvatarUri;
+  final bool isSecret;
+  final List<MembershipBadgeInfo> membershipBadges;
 
   FeedPost copyWith({int? votes, int? myVote, bool? exclusiveLocked}) {
     return FeedPost(
@@ -109,6 +137,7 @@ class FeedPost {
       videoThumbnailUri: videoThumbnailUri,
       videoUri: videoUri,
       videoDuration: videoDuration,
+      membershipTitle: membershipTitle,
       isExclusive: isExclusive,
       exclusiveLocked: exclusiveLocked ?? this.exclusiveLocked,
       membershipLocked: membershipLocked,
@@ -116,6 +145,11 @@ class FeedPost {
       myVote: myVote ?? this.myVote,
       comments: comments,
       shares: shares,
+      clubArtistName: clubArtistName,
+      clubArtistAvatarUri: clubArtistAvatarUri,
+      posterAvatarUri: posterAvatarUri,
+      isSecret: isSecret,
+      membershipBadges: membershipBadges,
     );
   }
 
@@ -138,6 +172,7 @@ class FeedPost {
       videoThumbnailUri: json['videoThumbnailUri'] as String?,
       videoUri: json['videoUri'] as String?,
       videoDuration: json['videoDuration'] as String?,
+      membershipTitle: json['membershipTitle'] as String?,
       isExclusive: json['isExclusive'] == true,
       exclusiveLocked: json['exclusiveLocked'] == true,
       membershipLocked: json['membershipLocked'] == true,
@@ -145,6 +180,14 @@ class FeedPost {
       myVote: (json['myVote'] as num?)?.toInt() ?? 0,
       comments: (json['comments'] as num?)?.toInt() ?? 0,
       shares: (json['shares'] as num?)?.toInt() ?? 0,
+      clubArtistName: json['clubArtistName'] as String?,
+      clubArtistAvatarUri: json['clubArtistAvatarUri'] as String?,
+      posterAvatarUri: json['posterAvatarUri'] as String?,
+      isSecret: json['isSecret'] == true || json['isSecretMode'] == true,
+      membershipBadges: [
+        for (final item in json['membershipBadges'] as List? ?? const [])
+          MembershipBadgeInfo.fromJson(item),
+      ],
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter/material.dart';
 
-/// Card de uma notificação (um ou vários avatares empilhados).
+/// Card de uma notificação (avatares, texto com accent, thumbnail, Meet).
 class NotificationItemCard extends StatelessWidget {
   const NotificationItemCard({
     super.key,
@@ -17,17 +17,21 @@ class NotificationItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final isMeet = item.category.toLowerCase() == 'meet';
     final avatars = [
       for (final uri in item.avatarUris)
         if (uri.trim().isNotEmpty) uri,
     ];
+    final thumb = item.thumbnailUri?.trim() ?? '';
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: colors.surface,
+        color: isMeet ? AppPalette.green50 : colors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: colors.border),
+          side: BorderSide(
+            color: isMeet ? AppPalette.green200 : colors.border,
+          ),
         ),
         child: InkWell(
           onTap: onPressed,
@@ -37,7 +41,7 @@ class NotificationItemCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _avatars(avatars, colors),
+                buildAvatars(avatars, colors),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -55,7 +59,9 @@ class NotificationItemCard extends StatelessWidget {
                                   fontWeight: segment.accent
                                       ? FontWeight.w700
                                       : FontWeight.w400,
-                                  color: colors.textPrimary,
+                                  color: segment.accent
+                                      ? colors.primary
+                                      : colors.textPrimary,
                                 ),
                               ),
                           ],
@@ -72,6 +78,22 @@ class NotificationItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (thumb.isNotEmpty) ...[
+                  const SizedBox(width: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      thumb,
+                      width: 44,
+                      height: 44,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stack) => ColoredBox(
+                        color: colors.surfaceAlt,
+                        child: const SizedBox(width: 44, height: 44),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -80,7 +102,7 @@ class NotificationItemCard extends StatelessWidget {
     );
   }
 
-  Widget _avatars(List<String> uris, AppColors colors) {
+  Widget buildAvatars(List<String> uris, AppColors colors) {
     if (uris.length <= 1) {
       return PostAvatar(url: uris.isEmpty ? '' : uris.first, size: 40);
     }
@@ -94,7 +116,7 @@ class NotificationItemCard extends StatelessWidget {
         children: [
           for (var i = 0; i < shown.length; i++)
             Positioned(
-              left: i * 14,
+              left: i * 14.0,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
