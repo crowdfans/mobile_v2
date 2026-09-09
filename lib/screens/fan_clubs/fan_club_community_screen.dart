@@ -125,6 +125,21 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     );
   }
 
+  void handleAbout() {
+    final club = _club;
+    context.push(
+      Pages.fanClubAboutOf(
+        artistId: widget.artistId,
+        name: club?.artistName,
+        avatarUrl: _avatarUrl,
+      ),
+    );
+  }
+
+  void handleRules() {
+    context.push(Pages.fanClubRules);
+  }
+
   Future<void> handleToggleFollow() async {
     try {
       if (_following) {
@@ -186,6 +201,8 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                               following: _following,
                               onToggleFollow: handleToggleFollow,
                               onCompose: handleCompose,
+                              onAbout: handleAbout,
+                              onRules: handleRules,
                             );
                           }
                           return Padding(

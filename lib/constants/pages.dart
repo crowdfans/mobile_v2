@@ -57,12 +57,47 @@ abstract final class Pages {
     String? name,
     String? avatarUrl,
   }) {
+    return _withArtistQuery(
+      fanClubCompose,
+      artistId: artistId,
+      name: name,
+      avatarUrl: avatarUrl,
+    );
+  }
+
+  static String fanClubAboutOf({
+    required String artistId,
+    String? name,
+    String? avatarUrl,
+  }) {
+    return _withArtistQuery(
+      fanClubAbout,
+      artistId: artistId,
+      name: name,
+      avatarUrl: avatarUrl,
+    );
+  }
+
+  static String fanClubModeratorsOf({required String artistId, String? name}) {
+    return _withArtistQuery(fanClubModerators, artistId: artistId, name: name);
+  }
+
+  static String fanClubModerationOf({required String artistId, String? name}) {
+    return _withArtistQuery(fanClubModeration, artistId: artistId, name: name);
+  }
+
+  static String _withArtistQuery(
+    String path, {
+    String? artistId,
+    String? name,
+    String? avatarUrl,
+  }) {
     final id = artistId?.trim() ?? '';
     if (id.isEmpty) {
-      return fanClubCompose;
+      return path;
     }
     return Uri(
-      path: fanClubCompose,
+      path: path,
       queryParameters: {
         'artistId': id,
         if ((name ?? '').trim().isNotEmpty) 'name': name!.trim(),

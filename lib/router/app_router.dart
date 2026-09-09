@@ -1,8 +1,12 @@
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/screens/artists/artist_profile_screen.dart';
 import 'package:crowdfans/screens/comments/comments_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_about_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_compose_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_moderation_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_moderators_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_rules_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_clubs_screen.dart';
 import 'package:crowdfans/screens/home/home_screen.dart';
 import 'package:crowdfans/screens/login/artist_login_screen.dart';
@@ -167,6 +171,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Pages.fanClubCommunity,
         builder: (context, state) => FanClubCommunityScreen(
           artistId: state.pathParameters['artistId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanClubAbout,
+        builder: (context, state) => FanClubAboutScreen(
+          artistId: state.uri.queryParameters['artistId'] ?? '',
+          artistName: state.uri.queryParameters['name'],
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanClubRules,
+        builder: (context, state) => const FanClubRulesScreen(),
+      ),
+      GoRoute(
+        path: Pages.fanClubModerators,
+        builder: (context, state) => FanClubModeratorsScreen(
+          artistId: state.uri.queryParameters['artistId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Pages.fanClubModeration,
+        builder: (context, state) => FanClubModerationScreen(
+          artistId: state.uri.queryParameters['artistId'] ?? '',
         ),
       ),
       GoRoute(
