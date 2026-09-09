@@ -78,7 +78,7 @@ App Distribution, `google-services.json` e o plist **só** saem desse configure 
 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 
-**API:** nunca `crowdfans-app-dev*`. Default DigitalOcean = `https://crowdfans-app-prod.ondigitalocean.app`. Localhost só com `API_MODE=local`.
+**API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS). Default DigitalOcean = `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Localhost só com `API_MODE=local`.
 
 ---
 

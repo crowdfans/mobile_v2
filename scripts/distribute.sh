@@ -161,7 +161,7 @@ build_ios() {
 build_web() {
   echo "→ Web $build_name ($build_number)"
   flutter build web --release \
-    --dart-define=API_BASE_URL=https://crowdfans-app-prod.ondigitalocean.app \
+    --dart-define=API_BASE_URL=https://crowdfans-server-prod-h9qb6.ondigitalocean.app \
     --build-name="$build_name" \
     --build-number="$build_number"
 }

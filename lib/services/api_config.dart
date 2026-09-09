@@ -1,30 +1,33 @@
 import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 
-/// Única base DigitalOcean permitida por padrão (produção).
-const _defaultProdApi = 'https://crowdfans-app-prod.ondigitalocean.app';
+/// API DigitalOcean de produção (única base remota válida).
+/// `crowdfans-app-prod` / `crowdfans-app-dev*` não resolvem DNS — não usar.
+const _defaultProdApi =
+    'https://crowdfans-server-prod-h9qb6.ondigitalocean.app';
 
 String _cleanUrl(String value) => value.replaceAll(RegExp(r'/$'), '');
 
-bool _isForbiddenDevApi(String url) {
+bool _isForbiddenApiHost(String url) {
   final lower = url.toLowerCase();
   return lower.contains('crowdfans-app-dev') ||
-      lower.contains('crowdfans-dev-3zqbt');
+      lower.contains('crowdfans-dev-3zqbt') ||
+      lower.contains('crowdfans-app-prod');
 }
 
-/// Resolve a base da API. DigitalOcean = sempre prod (nunca app-dev).
+/// Resolve a base da API. DigitalOcean = sempre server-prod.
 String apiBaseUrl() {
   const fromDefine = String.fromEnvironment('API_BASE_URL');
   final forced = _cleanUrl(
     fromDefine.isNotEmpty ? fromDefine : EnvService.get('API_BASE_URL'),
   );
   if (forced.isNotEmpty) {
-    return _ensureNotDev(_rewriteLocalhost(forced));
+    return _ensureProd(_rewriteLocalhost(forced));
   }
 
   final mode = EnvService.get('API_MODE', 'digitalocean').toLowerCase();
 
-  final digitalOcean = _ensureNotDev(
+  final digitalOcean = _ensureProd(
     _cleanUrl(
       EnvService.get(
         'API_DIGITALOCEAN_BASE_URL',
@@ -56,8 +59,8 @@ String apiBaseUrl() {
   );
 }
 
-String _ensureNotDev(String baseUrl) {
-  if (baseUrl.isEmpty || _isForbiddenDevApi(baseUrl)) {
+String _ensureProd(String baseUrl) {
+  if (baseUrl.isEmpty || _isForbiddenApiHost(baseUrl)) {
     return _defaultProdApi;
   }
   return baseUrl;
