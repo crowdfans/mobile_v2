@@ -63,6 +63,9 @@ class FeedPost {
     this.carouselUris = const [],
     this.videoThumbnailUri,
     this.isExclusive = false,
+    this.rank,
+    this.videoUri,
+    this.videoDuration,
     this.exclusiveLocked = false,
     this.membershipLocked = false,
     this.myVote = 0,
@@ -73,12 +76,15 @@ class FeedPost {
   final String author;
   final String? artistId;
   final String handle;
+  final String? rank;
   final int minutesAgo;
   final String avatarUri;
   final String text;
   final String? imageUri;
   final List<String> carouselUris;
   final String? videoThumbnailUri;
+  final String? videoUri;
+  final String? videoDuration;
   final bool isExclusive;
   final bool exclusiveLocked;
   final bool membershipLocked;
@@ -94,12 +100,15 @@ class FeedPost {
       author: author,
       artistId: artistId,
       handle: handle,
+      rank: rank,
       minutesAgo: minutesAgo,
       avatarUri: avatarUri,
       text: text,
       imageUri: imageUri,
       carouselUris: carouselUris,
       videoThumbnailUri: videoThumbnailUri,
+      videoUri: videoUri,
+      videoDuration: videoDuration,
       isExclusive: isExclusive,
       exclusiveLocked: exclusiveLocked ?? this.exclusiveLocked,
       membershipLocked: membershipLocked,
@@ -117,6 +126,7 @@ class FeedPost {
       author: json['author'] as String? ?? '',
       artistId: json['artistId'] as String?,
       handle: json['handle'] as String? ?? '',
+      rank: json['rank'] as String?,
       minutesAgo: (json['minutesAgo'] as num?)?.toInt() ?? 0,
       avatarUri: json['avatarUri'] as String? ?? '',
       text: json['text'] as String? ?? '',
@@ -126,6 +136,8 @@ class FeedPost {
           item.toString(),
       ],
       videoThumbnailUri: json['videoThumbnailUri'] as String?,
+      videoUri: json['videoUri'] as String?,
+      videoDuration: json['videoDuration'] as String?,
       isExclusive: json['isExclusive'] == true,
       exclusiveLocked: json['exclusiveLocked'] == true,
       membershipLocked: json['membershipLocked'] == true,
@@ -135,4 +147,21 @@ class FeedPost {
       shares: (json['shares'] as num?)?.toInt() ?? 0,
     );
   }
+}
+
+/// Home Superfã: só post de artista. Se a API não mandar `artistId`, não esvazia o feed.
+bool isArtistFeedPost(FeedPost post) {
+  if ((post.artistId ?? '').trim().isNotEmpty) {
+    return true;
+  }
+  final handle = post.handle.toLowerCase().replaceFirst(RegExp(r'^@'), '');
+  return handle.startsWith('artist/');
+}
+
+List<FeedPost> artistHomePosts(List<FeedPost> posts) {
+  final filtered = [
+    for (final post in posts)
+      if (isArtistFeedPost(post)) post,
+  ];
+  return filtered.isEmpty ? posts : filtered;
 }

@@ -79,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _error = null;
         if (append) {
           final seen = _posts.map((post) => post.id).toSet();
-          for (final post in data.feedPosts) {
+          for (final post in artistHomePosts(data.feedPosts)) {
             if (!seen.contains(post.id)) {
               _posts.add(post);
             }
@@ -87,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         } else {
           _posts
             ..clear()
-            ..addAll(data.feedPosts);
+            ..addAll(artistHomePosts(data.feedPosts));
           _stories = data.stories;
           _followedArtists = data.followedArtists;
         }

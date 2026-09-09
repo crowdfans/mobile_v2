@@ -1,8 +1,11 @@
 import 'package:crowdfans/components/home/vote_control.dart';
 import 'package:crowdfans/components/post/post_avatar.dart';
+import 'package:crowdfans/components/post/post_media.dart';
+import 'package:crowdfans/components/post/post_rank_badge.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/vote_service.dart';
+import 'package:crowdfans/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 
 /// Card padrão de post do feed.
@@ -12,6 +15,8 @@ class PostCard extends StatelessWidget {
     required this.post,
     this.contentOverride,
     this.topContent,
+    this.backgroundColor,
+    this.borderColor,
     this.onPressOpenComments,
     this.onPressOpenProfile,
     this.onPressOptions,
@@ -22,6 +27,8 @@ class PostCard extends StatelessWidget {
   final FeedPost post;
   final Widget? contentOverride;
   final Widget? topContent;
+  final Color? backgroundColor;
+  final Color? borderColor;
   final ValueChanged<String>? onPressOpenComments;
   final VoidCallback? onPressOpenProfile;
   final VoidCallback? onPressOptions;
@@ -31,18 +38,15 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final media =
-        post.imageUri ??
-        (post.carouselUris.isNotEmpty ? post.carouselUris.first : null) ??
-        post.videoThumbnailUri;
+    final rank = post.rank?.trim() ?? '';
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
-        color: colors.surface,
+        border: Border.all(color: borderColor ?? colors.border),
+        color: backgroundColor ?? colors.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,15 +66,39 @@ class PostCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        post.author,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: colors.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              post.author,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              post.handle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colors.textTertiary,
+                              ),
+                            ),
+                          ),
+                          if (rank.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            PostRankBadge(rank: rank),
+                          ],
+                        ],
                       ),
                       Text(
-                        '${post.handle} · ${post.minutesAgo} min',
+                        formatMinutesAgo(post.minutesAgo),
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textTertiary,
@@ -97,65 +125,58 @@ class PostCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(
                   post.text,
-                  style: TextStyle(fontSize: 14, color: colors.textPrimary),
-                ),
-              ),
-            if (media != null && media.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    media,
-                    height: 240,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 20 / 14,
+                    color: colors.textPrimary,
                   ),
                 ),
               ),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                VoteControl(post: post, onVoteApplied: onVoteApplied),
-                const Spacer(),
-                GestureDetector(
-                  key: const Key('post-comments'),
-                  onTap: onPressOpenComments == null
-                      ? null
-                      : () => onPressOpenComments!(post.id),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.mode_comment_outlined,
-                        size: 18,
-                        color: colors.icon,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${post.comments}',
-                        style: TextStyle(color: colors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                GestureDetector(
-                  key: const Key('post-share'),
-                  onTap: onPressShare,
-                  child: Row(
-                    children: [
-                      Icon(Icons.send_outlined, size: 18, color: colors.icon),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${post.shares}',
-                        style: TextStyle(color: colors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            PostMedia(post: post),
           ],
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              VoteControl(post: post, onVoteApplied: onVoteApplied),
+              const Spacer(),
+              GestureDetector(
+                key: const Key('post-comments'),
+                onTap: onPressOpenComments == null
+                    ? null
+                    : () => onPressOpenComments!(post.id),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.mode_comment_outlined,
+                      size: 18,
+                      color: colors.icon,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${post.comments}',
+                      style: TextStyle(color: colors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              GestureDetector(
+                key: const Key('post-share'),
+                onTap: onPressShare,
+                child: Row(
+                  children: [
+                    Icon(Icons.send_outlined, size: 18, color: colors.icon),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${post.shares}',
+                      style: TextStyle(color: colors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

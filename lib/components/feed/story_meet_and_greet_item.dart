@@ -20,10 +20,12 @@ class StoryMeetAndGreetItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: SizedBox(
-        width: 72,
+        width: 98,
         child: Column(
           children: [
             Container(
+              width: 90,
+              height: 90,
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -33,14 +35,14 @@ class StoryMeetAndGreetItem extends StatelessWidget {
                       : [AppPalette.green100, AppPalette.green500],
                 ),
               ),
-              child: PostAvatar(url: imageUri, size: 56),
+              child: PostAvatar(url: imageUri, size: 84),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11, color: colors.textTertiary),
+              style: TextStyle(fontSize: 12, color: colors.textTertiary),
             ),
           ],
         ),
