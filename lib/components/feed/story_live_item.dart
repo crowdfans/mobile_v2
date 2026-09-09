@@ -12,7 +12,6 @@ class StoryLiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: SizedBox(
@@ -22,16 +21,12 @@ class StoryLiveItem extends StatelessWidget {
             Container(
               width: 90,
               height: 90,
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: isDark
-                      ? [AppPalette.red500, AppPalette.platinum950]
-                      : [AppPalette.red100, AppPalette.red500],
-                ),
+                border: Border.all(color: AppPalette.red500, width: 3),
               ),
-              child: PostAvatar(url: imageUri, size: 84),
+              child: PostAvatar(url: imageUri, size: 78),
             ),
             const SizedBox(height: 8),
             Text(

@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/feed/stories_row.dart';
+import 'package:crowdfans/components/home/scroll_to_top_fab.dart';
 import 'package:crowdfans/components/post/post_options_sheet.dart';
 import 'package:crowdfans/components/post/post_share_sheet.dart';
 import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
@@ -26,12 +27,16 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  static const _scrollToTopThreshold = 420.0;
+
   final _posts = <FeedPost>[];
+  final _scrollController = ScrollController();
   var _stories = <StoryItem>[];
   var _page = 1;
   var _hasMore = true;
   var _loading = true;
   var _loadingMore = false;
+  var _showScrollToTop = false;
   String? _error;
   FeedPost? _optionsPost;
   FeedPost? _sharePost;
@@ -43,7 +48,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(handleScroll);
     handleLoad(page: 1);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(handleScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void handleScroll() {
+    final shouldShow = _scrollController.hasClients &&
+        _scrollController.offset >= _scrollToTopThreshold;
+    if (shouldShow != _showScrollToTop) {
+      setState(() => _showScrollToTop = shouldShow);
+    }
+  }
+
+  void handleScrollToTop() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   Future<void> handleLoad({required int page, bool append = false}) async {
@@ -169,6 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       : RefreshIndicator(
                           onRefresh: handleRefresh,
                           child: ListView.builder(
+                            controller: _scrollController,
                             padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
                             itemCount: _posts.length + 2,
                             itemBuilder: (context, index) {
@@ -235,6 +268,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ],
             ),
+          ),
+          ScrollToTopFab(
+            visible: _showScrollToTop && !_loading,
+            onPressed: handleScrollToTop,
           ),
           PostOptionsSheet(
             visible: _optionsPost != null,

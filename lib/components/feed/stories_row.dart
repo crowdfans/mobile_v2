@@ -1,6 +1,5 @@
 import 'package:crowdfans/components/feed/story_live_item.dart';
 import 'package:crowdfans/components/feed/story_meet_and_greet_item.dart';
-import 'package:crowdfans/components/feed/story_row_item.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:flutter/material.dart';
 
@@ -24,16 +23,14 @@ class StoriesRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final story = stories[index];
           final type = story.featureType?.toLowerCase();
+          // Meet = anel verde; demais (live / sem tipo) = anel vermelho, como no Expo e nos prints.
           if (type == 'meetandgreet') {
             return StoryMeetAndGreetItem(
               name: story.name,
               imageUri: story.imageUri,
             );
           }
-          if (type == 'live') {
-            return StoryLiveItem(name: story.name, imageUri: story.imageUri);
-          }
-          return StoryRowItem(story: story);
+          return StoryLiveItem(name: story.name, imageUri: story.imageUri);
         },
       ),
     );
