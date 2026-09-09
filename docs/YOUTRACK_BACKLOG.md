@@ -16,7 +16,7 @@
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
 | QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
-| Bags | CF-82 / CF-83 | **Feito no Flutter** — cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40); pass Me/Search/Settings/Share/Cartas (esta branch). YT Done no lote final. |
+| Bags | CF-82 / CF-83 | **Feito no Flutter** — cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40); Me/Search/Settings/Share/Cartas [#41](https://github.com/crowdfans/mobile_v2/pull/41). YT Done no lote final. |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
 ## Legenda — Status local
@@ -191,7 +191,7 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 
 1. ~~**[Major] CF-67 / CF-106 / CF-107 / CF-66**~~ — YT Done (gus); CF-103 Backlog bloqueado sem mocks.
 2. ~~**[Major] CF-109 + filhos Artista CF-110–119**~~ — YT Done (gus); PRs #24–#31.
-3. ~~**Triagem** CF-82 / CF-83~~ — polish Flutter em [#38](https://github.com/crowdfans/mobile_v2/pull/38) (cover, notificações, clubes); YT Done no lote final.
+3. ~~**Triagem** CF-82 / CF-83~~ — polish Flutter [#38](https://github.com/crowdfans/mobile_v2/pull/38) + [#41](https://github.com/crowdfans/mobile_v2/pull/41); YT Done no lote final.
 4. ~~**QA** CF-122/123/124~~ — **YT Done** (gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). Restam CF-128/129/130 (fixtures) e CF-125→126/127 (FTL adiado).
 5. **Não puxar agora:** CF-120/121 Live/Meet ⛔, CF-30/97/99/10 Meet, Horus CF-100–102, backend CF-9/31/96/98/21/4/1/14.
 
