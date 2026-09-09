@@ -14,12 +14,12 @@ class RegisterFanSuccessScreen extends StatelessWidget {
       backgroundColor: colors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           child: Column(
             children: [
               const Spacer(),
               Text(
-                'Você é Superfã.',
+                'Parabéns! 🥳',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 32,
@@ -29,13 +29,13 @@ class RegisterFanSuccessScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Conta criada. Bora acompanhar seus artistas.',
+                'Agora você faz parte da Crowd Fans.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: colors.textSecondary),
               ),
               const Spacer(),
               AppButton(
-                label: 'Começar',
+                label: 'Concluir',
                 onPressed: () => context.go(Pages.home),
               ),
             ],

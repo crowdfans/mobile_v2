@@ -1,7 +1,8 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/register/register_birthdate_picker.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_step_header.dart';
 import 'package:crowdfans/constants/pages.dart';
-import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/fan_register_store.dart';
 import 'package:crowdfans/utils/birthday_utils.dart';
 import 'package:flutter/material.dart';
@@ -13,29 +14,20 @@ class RegisterFanBirthdateScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = CrowdFansTheme.of(context);
     final form = ref.watch(fanRegisterProvider);
-    final date = form.birthdate;
+    final maxDate = maxAllowedBirthDate();
+    final date = form.birthdate.isAfter(maxDate) ? maxDate : form.birthdate;
+    final canProceed = !date.isAfter(maxDate);
 
-    Future<void> handlePick() async {
-      final picked = await showDatePicker(
-        context: context,
-        initialDate: date.isAfter(maxAllowedBirthDate())
-            ? maxAllowedBirthDate()
-            : date,
-        firstDate: DateTime(1920),
-        lastDate: maxAllowedBirthDate(),
-      );
-      if (picked == null) {
-        return;
-      }
+    void handleChanged(DateTime picked) {
+      final next = picked.isAfter(maxDate) ? maxDate : picked;
       ref
           .read(fanRegisterProvider.notifier)
           .setFields(
             (current) => current.copyWith(
-              birthDay: picked.day,
-              birthMonth: picked.month,
-              birthYear: picked.year,
+              birthDay: next.day,
+              birthMonth: next.month,
+              birthYear: next.year,
             ),
           );
     }
@@ -43,28 +35,21 @@ class RegisterFanBirthdateScreen extends ConsumerWidget {
     return RegisterFanScaffold(
       onBack: () => context.pop(),
       footer: AppButton(
-        label: 'Continuar',
-        onPressed: () => context.push(Pages.registerFanUsername),
+        label: 'Próximo',
+        disabled: !canProceed,
+        onPressed: () => context.push(Pages.registerFanProfile),
       ),
       child: ListView(
         children: [
-          const SizedBox(height: 32),
-          Text(
-            'Quando você nasceu?',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
-            ),
+          const RegisterStepHeader(
+            title: 'Data de nascimento',
+            subtitle: 'Sem mentir ein? hehe 🎂',
           ),
           const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: handlePick,
-            child: Text(
-              '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}',
-              style: TextStyle(fontSize: 18, color: colors.textPrimary),
-            ),
+          RegisterBirthdatePicker(
+            value: date,
+            maxDate: maxDate,
+            onChanged: handleChanged,
           ),
         ],
       ),

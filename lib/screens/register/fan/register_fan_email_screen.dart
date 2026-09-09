@@ -1,8 +1,8 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_step_header.dart';
 import 'package:crowdfans/constants/pages.dart';
-import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/fan_register_store.dart';
 import 'package:crowdfans/utils/email_utils.dart';
 import 'package:flutter/material.dart';
@@ -14,29 +14,25 @@ class RegisterFanEmailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = CrowdFansTheme.of(context);
     final email = ref.watch(fanRegisterProvider).email;
     return RegisterFanScaffold(
       onBack: () => context.pop(),
       footer: AppButton(
-        label: 'Continuar',
+        label: 'Próximo',
         disabled: !isEmailValid(email),
         onPressed: () => context.push(Pages.registerFanPassword),
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
-          const SizedBox(height: 32),
-          Text(
-            'Qual o seu e-mail?',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
-            ),
+          const RegisterStepHeader(
+            title: 'Crie seu acesso',
+            subtitle:
+                'Insira seu e-mail abaixo ou conecte-se com uma conta social.',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           AppTextField(
+            key: const Key('register-email-input'),
             initialValue: email,
             hint: 'E-mail',
             keyboardType: TextInputType.emailAddress,

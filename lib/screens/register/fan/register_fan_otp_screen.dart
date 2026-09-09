@@ -1,5 +1,7 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/register/otp_code_field.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_step_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/otp_service.dart';
@@ -21,13 +23,26 @@ class RegisterFanOtpScreen extends ConsumerStatefulWidget {
 class _RegisterFanOtpScreenState extends ConsumerState<RegisterFanOtpScreen> {
   String _code = '';
   String _error = '';
+  String _resent = '';
   bool _verifying = false;
   bool _resending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final form = ref.read(fanRegisterProvider);
+      if (!isPhonePartsValid(form.phoneCountryCode, form.phone) && mounted) {
+        context.go(Pages.registerFan);
+      }
+    });
+  }
 
   Future<void> handleVerify() async {
     setState(() {
       _verifying = true;
       _error = '';
+      _resent = '';
     });
     try {
       final uid = await OtpService.verifyOTP(_code);
@@ -51,14 +66,23 @@ class _RegisterFanOtpScreenState extends ConsumerState<RegisterFanOtpScreen> {
 
   Future<void> handleResend() async {
     final form = ref.read(fanRegisterProvider);
-    setState(() => _resending = true);
+    setState(() {
+      _resending = true;
+      _code = '';
+      _error = '';
+      _resent = 'Enviando novo código...';
+    });
     try {
       await OtpService.resendOTP(
         countryCode: form.phoneCountryCode,
         phoneNumber: form.phone,
       );
+      setState(() => _resent = 'Enviamos um novo código para o seu telefone.');
     } catch (error) {
-      setState(() => _error = error.toString());
+      setState(() {
+        _resent = '';
+        _error = error.toString();
+      });
     } finally {
       if (mounted) {
         setState(() => _resending = false);
@@ -73,64 +97,60 @@ class _RegisterFanOtpScreenState extends ConsumerState<RegisterFanOtpScreen> {
     final phone = formatPhoneDisplay(form.phoneCountryCode, form.phone);
 
     return RegisterFanScaffold(
+      toolbarTitle: 'Verificação',
       onBack: () => context.pop(),
       footer: AppButton(
-        label: 'Validar codigo',
+        key: const Key('register-otp-submit'),
+        label: 'Validar código',
         onPressed: handleVerify,
         disabled: _code.length != 6,
         loading: _verifying,
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
-          const SizedBox(height: 32),
-          Text(
-            'Confirme o seu telefone',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Digite o codigo de 6 numeros enviado para $phone.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: colors.textSecondary),
+          RegisterStepHeader(
+            title: 'Confirme o seu telefone',
+            subtitle: 'Digite o código de 6 números enviado para $phone.',
           ),
           const SizedBox(height: 36),
-          TextField(
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            onChanged: (value) => setState(() => _code = value.trim()),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 12,
-              color: colors.textPrimary,
-            ),
-            decoration: InputDecoration(
-              counterText: '',
-              filled: true,
-              fillColor: colors.inputBackground,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+          OtpCodeField(
+            code: _code,
+            onChanged: (value) => setState(() {
+              _code = value;
+              _error = '';
+              _resent = '';
+            }),
           ),
           if (_error.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
+                key: const Key('register-otp-error'),
                 _error,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: colors.danger),
+                style: TextStyle(fontSize: 12, color: colors.danger),
+              ),
+            ),
+          if (_resent.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                _resent,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: colors.success),
               ),
             ),
           TextButton(
             onPressed: _resending ? null : handleResend,
-            child: Text(_resending ? 'Reenviando...' : 'Reenviar codigo'),
+            child: Text(
+              _resending ? 'Reenviando...' : 'Reenviar código',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: colors.primary,
+              ),
+            ),
           ),
         ],
       ),

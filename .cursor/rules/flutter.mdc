@@ -7,6 +7,7 @@ alwaysApply: true
 
 Leia `AGENTS.md` neste repo. Migração a partir do Expo `../mobile`; não copiar `frontendapp/`.
 
+- Layout: prints das tasks (CF-66 / CF-109) e `Downloads/Screens`. Código atual não é o mock.
 - Telas em `lib/screens/`. Estado da tela fica no arquivo da tela.
 - Widgets visuais em `lib/components/<domínio>/`, **um arquivo por widget**. Proibido `class _Foo extends StatelessWidget` dentro de tela (vale o `State` da tela).
 - Rotas: `Pages` em `lib/constants/pages.dart`. HTTP: `ApiUrls` + `HttpService`.

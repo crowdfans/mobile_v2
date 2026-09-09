@@ -80,9 +80,14 @@ O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC
 
 ---
 
+## Layout
+
+Fonte: prints nas tasks YouTrack (CF-66 Superfã, CF-109 Artista) e `Downloads/Screens/{Superfã,Artista}`. O Flutter atual **não** é a referência — se divergir, o app muda, o mock não. Sem print, não inventar tela.
+
 ## Checklist
 
 - [ ] Widget visual não está privado na tela
 - [ ] Arquivo em `lib/components/<domínio>/`
 - [ ] `Pages.*` / `ApiUrls.*`
 - [ ] Sem `print` de debug na entrega
+- [ ] Layout igual ao print da task (não ao código legado)

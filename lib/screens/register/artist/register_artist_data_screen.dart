@@ -100,6 +100,7 @@ class _RegisterArtistDataScreenState
         loading: _loading,
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           const SizedBox(height: 40),
           Text(

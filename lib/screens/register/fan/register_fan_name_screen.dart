@@ -1,8 +1,8 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_step_header.dart';
 import 'package:crowdfans/constants/pages.dart';
-import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/fan_register_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,31 +13,27 @@ class RegisterFanNameScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = CrowdFansTheme.of(context);
     final name = ref.watch(fanRegisterProvider).name;
     return RegisterFanScaffold(
       onBack: () => context.pop(),
       footer: AppButton(
-        label: 'Continuar',
-        disabled: name.trim().length < 2,
-        onPressed: () => context.push(Pages.registerFanBirthdate),
+        label: 'Próximo',
+        disabled: name.trim().isEmpty,
+        onPressed: () => context.push(Pages.registerFanUsername),
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
-          const SizedBox(height: 32),
-          Text(
-            'Como você se chama?',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
-            ),
+          const RegisterStepHeader(
+            title: 'Como a gente te chama?',
+            subtitle: 'Pode ser nome ou apelido mesmo.',
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           AppTextField(
             initialValue: name,
+            label: 'Nome',
             hint: 'Nome',
+            textCapitalization: TextCapitalization.words,
             onChanged: (value) {
               ref
                   .read(fanRegisterProvider.notifier)

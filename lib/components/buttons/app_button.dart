@@ -36,6 +36,17 @@ class AppButton extends StatelessWidget {
       );
     }
 
+    if (variant == AppButtonVariant.ghost) {
+      return SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: TextButton(
+          onPressed: enabled ? onPressed : null,
+          child: Text(text, style: const TextStyle(fontSize: 18)),
+        ),
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -52,4 +63,4 @@ class AppButton extends StatelessWidget {
   }
 }
 
-enum AppButtonVariant { primary, outline }
+enum AppButtonVariant { primary, outline, ghost }

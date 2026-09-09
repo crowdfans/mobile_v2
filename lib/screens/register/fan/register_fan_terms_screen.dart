@@ -1,5 +1,7 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_step_header.dart';
+import 'package:crowdfans/components/register/register_terms_checkbox.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/auth_service.dart';
@@ -27,6 +29,25 @@ class _RegisterFanTermsScreenState
   bool _accepted = false;
   bool _submitting = false;
 
+  String resolveDisplayName() {
+    final form = ref.read(fanRegisterProvider);
+    for (final value in [form.name, form.username, form.email]) {
+      final trimmed = value.trim();
+      if (trimmed.isNotEmpty) {
+        return trimmed;
+      }
+    }
+    return 'CrowdFans User';
+  }
+
+  void handleOpenTerms() {
+    // Documentos legais ainda não têm URL no app (igual ao Expo).
+  }
+
+  void handleOpenPrivacy() {
+    // Documentos legais ainda não têm URL no app (igual ao Expo).
+  }
+
   Future<void> handleSubmit() async {
     final form = ref.read(fanRegisterProvider);
     if (!_accepted || _submitting) {
@@ -41,11 +62,19 @@ class _RegisterFanTermsScreenState
       return;
     }
     final email = form.email.trim();
-    if (!isEmailValid(email) || !isStrongPassword(form.password)) {
+    if (!isEmailValid(email)) {
       await AppAlert.show(
         context,
         title: 'Cadastro',
-        message: 'Revise e-mail e senha antes de continuar.',
+        message: 'Informe um e-mail válido antes de continuar.',
+      );
+      return;
+    }
+    if (!isStrongPassword(form.password)) {
+      await AppAlert.show(
+        context,
+        title: 'Cadastro',
+        message: 'Defina uma senha forte antes de continuar.',
       );
       return;
     }
@@ -54,14 +83,12 @@ class _RegisterFanTermsScreenState
       if (FirebaseService.auth.currentUser != null) {
         await FirebaseService.auth.signOut();
       }
+      final displayName = resolveDisplayName();
       final credential = await FirebaseService.auth
           .createUserWithEmailAndPassword(
             email: email,
             password: form.password,
           );
-      final displayName = form.name.trim().isNotEmpty
-          ? form.name.trim()
-          : form.username;
       await credential.user?.updateDisplayName(displayName);
       final token = await credential.user?.getIdToken(true);
       if (token == null) {
@@ -77,7 +104,16 @@ class _RegisterFanTermsScreenState
         ),
         phoneVerified: form.phoneVerified,
       );
-      await ref.read(authSessionProvider.notifier).refreshSession();
+      var sessionOk = await ref
+          .read(authSessionProvider.notifier)
+          .refreshSession();
+      if (!sessionOk) {
+        await AuthService.loginBackendWithFirebaseToken(token);
+        await AuthService.verifyBackendFirebaseToken(token);
+        sessionOk = await ref
+            .read(authSessionProvider.notifier)
+            .refreshSession();
+      }
       if (mounted) {
         context.go(Pages.registerFanSuccess);
       }
@@ -102,6 +138,7 @@ class _RegisterFanTermsScreenState
     return RegisterFanScaffold(
       onBack: () => context.pop(),
       footer: AppButton(
+        key: const Key('register-terms-submit'),
         label: _submitting ? 'Criando conta...' : 'Aceitar e Criar Conta',
         disabled: !_accepted,
         loading: _submitting,
@@ -109,30 +146,36 @@ class _RegisterFanTermsScreenState
       ),
       child: ListView(
         children: [
-          const SizedBox(height: 32),
+          const RegisterStepHeader(
+            title: 'Antes de começar',
+            subtitle: 'Para criar sua conta e garantir uma experiência segura e transparente para todos na Crowd Fans, precisamos que você leia e aceite nossos documentos legais.',
+          ),
+          const SizedBox(height: 12),
           Text(
-            'Antes de começar',
+            'Eles explicam como nossa plataforma funciona, seus direitos e suas responsabilidades como usuário, tá bom?',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
+              fontSize: 15,
+              height: 22 / 15,
+              color: colors.textSecondary,
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Para criar sua conta e garantir uma experiência segura e transparente para todos na Crowd Fans, precisamos que você leia e aceite nossos documentos legais.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: colors.textSecondary),
+          const SizedBox(height: 32),
+          AppButton(
+            label: 'Termos de Uso',
+            onPressed: handleOpenTerms,
+            variant: AppButtonVariant.outline,
           ),
-          CheckboxListTile(
-            value: _accepted,
-            onChanged: (value) => setState(() => _accepted = value ?? false),
-            title: Text(
-              'Ao prosseguir, você está de acordo com os Termos de Uso e a Política de Privacidade da Crowd Fans.',
-              style: TextStyle(color: colors.textPrimary, fontSize: 14),
-            ),
-            controlAffinity: ListTileControlAffinity.leading,
+          const SizedBox(height: 14),
+          AppButton(
+            label: 'Política de Privacidade',
+            onPressed: handleOpenPrivacy,
+            variant: AppButtonVariant.outline,
+          ),
+          const SizedBox(height: 14),
+          RegisterTermsCheckbox(
+            accepted: _accepted,
+            onToggle: () => setState(() => _accepted = !_accepted),
           ),
         ],
       ),

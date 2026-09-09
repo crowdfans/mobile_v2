@@ -1,0 +1,14 @@
+---
+description: Layout das telas segue os prints das tasks YouTrack / pasta Screens — o código atual não é a referência
+alwaysApply: true
+---
+
+# Layout = print da task
+
+Fonte visual: anexos YouTrack (CF-66 Superfã, CF-109 Artista) e `/Users/guschinaglia/Downloads/Screens/{Superfã,Artista}`.
+
+- Antes de criar ou alterar tela, **abrir o print** da issue. Hierarquia, espaçamento, tipografia, cores, bottom sheets e estados têm que bater com o mock.
+- Tela já no Flutter **não é o desenho**. Se divergir, arrumar o app — não o print.
+- Sem print na task/pasta: não inventar layout; copiar o buraco (Live/Meet ⛔).
+- Login/cadastro/onboarding **não** estão na dump do Drive; sem mock, não “melhorar” visual por conta.
+---

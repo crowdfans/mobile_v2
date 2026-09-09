@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_phone_field.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/otp_service.dart';
@@ -76,6 +77,7 @@ class _RegisterArtistScreenState extends ConsumerState<RegisterArtistScreen> {
         loading: _loading,
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           const SizedBox(height: 40),
           Text(
@@ -92,23 +94,15 @@ class _RegisterArtistScreenState extends ConsumerState<RegisterArtistScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 44,
+              height: 50 / 44,
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 40),
-          TextField(
+          RegisterPhoneField(
             controller: _phone,
-            keyboardType: TextInputType.phone,
-            onChanged: (value) {
-              final digits = sanitizePhoneNumber(value);
-              final formatted = formatPhoneNumber(digits);
-              if (formatted != _phone.text) {
-                _phone.value = TextEditingValue(
-                  text: formatted,
-                  selection: TextSelection.collapsed(offset: formatted.length),
-                );
-              }
+            onDigitsChanged: (digits) {
               ref
                   .read(artistRegisterProvider.notifier)
                   .setFields(
@@ -119,17 +113,6 @@ class _RegisterArtistScreenState extends ConsumerState<RegisterArtistScreen> {
                     ),
                   );
             },
-            decoration: InputDecoration(
-              hintText: '(11) 91234-5678',
-              hintStyle: TextStyle(color: colors.textTertiary),
-              filled: true,
-              fillColor: colors.inputBackground,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: colors.inputBorder),
-              ),
-            ),
-            style: TextStyle(color: colors.textPrimary, fontSize: 16),
           ),
           if (_error.isNotEmpty)
             Padding(

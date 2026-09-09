@@ -12,6 +12,7 @@ class CredentialsForm extends StatelessWidget {
     required this.onPasswordChanged,
     required this.onSubmit,
     required this.onForgotPassword,
+    this.loading = false,
   });
 
   final String email;
@@ -20,32 +21,38 @@ class CredentialsForm extends StatelessWidget {
   final ValueChanged<String> onPasswordChanged;
   final VoidCallback onSubmit;
   final VoidCallback onForgotPassword;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Column(
       children: [
-        TextField(
-          key: const Key('login-username'),
-          keyboardType: TextInputType.emailAddress,
-          autocorrect: false,
-          onChanged: onEmailChanged,
-          decoration: InputDecoration(
-            hintText: 'E-mail',
-            hintStyle: TextStyle(color: colors.textTertiary),
-            filled: true,
-            fillColor: colors.inputBackground,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: colors.inputBorder),
+        SizedBox(
+          height: 45,
+          child: TextField(
+            key: const Key('login-username'),
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
+            textInputAction: TextInputAction.next,
+            onChanged: onEmailChanged,
+            decoration: InputDecoration(
+              hintText: 'E-mail',
+              hintStyle: TextStyle(color: colors.textTertiary),
+              filled: true,
+              fillColor: colors.inputBackground,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: colors.inputBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: colors.primary),
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: colors.primary),
-            ),
+            style: TextStyle(color: colors.textPrimary, fontSize: 18),
           ),
-          style: TextStyle(color: colors.textPrimary, fontSize: 18),
         ),
         const SizedBox(height: 16),
         PasswordField(onChanged: onPasswordChanged),
@@ -55,13 +62,16 @@ class CredentialsForm extends StatelessWidget {
           height: 56,
           child: FilledButton(
             key: const Key('login-submit'),
-            onPressed: onSubmit,
+            onPressed: loading ? null : onSubmit,
             style: FilledButton.styleFrom(
               backgroundColor: colors.buttonPrimary,
               foregroundColor: colors.buttonPrimaryText,
               shape: const StadiumBorder(),
             ),
-            child: const Text('Entrar', style: TextStyle(fontSize: 18)),
+            child: Text(
+              loading ? 'Carregando...' : 'Entrar',
+              style: const TextStyle(fontSize: 18),
+            ),
           ),
         ),
         const SizedBox(height: 8),

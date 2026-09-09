@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/register/register_fan_scaffold.dart';
+import 'package:crowdfans/components/register/register_phone_field.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/otp_service.dart';
@@ -69,12 +70,14 @@ class _RegisterFanScreenState extends ConsumerState<RegisterFanScreen> {
     return RegisterFanScaffold(
       onBack: () => context.go(Pages.loginFan),
       footer: AppButton(
+        key: const Key('register-phone-submit'),
         label: 'Cadastrar Telefone',
         onPressed: handleNext,
         disabled: !valid,
         loading: _loading,
       ),
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           const SizedBox(height: 40),
           Text(
@@ -91,23 +94,15 @@ class _RegisterFanScreenState extends ConsumerState<RegisterFanScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 44,
+              height: 50 / 44,
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
           ),
           const SizedBox(height: 40),
-          TextField(
+          RegisterPhoneField(
             controller: _phone,
-            keyboardType: TextInputType.phone,
-            onChanged: (value) {
-              final digits = sanitizePhoneNumber(value);
-              final formatted = formatPhoneNumber(digits);
-              if (formatted != _phone.text) {
-                _phone.value = TextEditingValue(
-                  text: formatted,
-                  selection: TextSelection.collapsed(offset: formatted.length),
-                );
-              }
+            onDigitsChanged: (digits) {
               ref
                   .read(fanRegisterProvider.notifier)
                   .setFields(
@@ -118,22 +113,15 @@ class _RegisterFanScreenState extends ConsumerState<RegisterFanScreen> {
                     ),
                   );
             },
-            decoration: InputDecoration(
-              hintText: '(11) 91234-5678',
-              hintStyle: TextStyle(color: colors.textTertiary),
-              filled: true,
-              fillColor: colors.inputBackground,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: colors.inputBorder),
-              ),
-            ),
-            style: TextStyle(color: colors.textPrimary, fontSize: 16),
           ),
           if (_error.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Text(_error, style: TextStyle(color: colors.danger)),
+              child: Text(
+                key: const Key('register-phone-error'),
+                _error,
+                style: TextStyle(color: colors.danger),
+              ),
             ),
         ],
       ),
