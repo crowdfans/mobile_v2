@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/screens/artists/artist_profile_screen.dart';
 import 'package:crowdfans/screens/comments/comments_screen.dart';
@@ -61,6 +63,7 @@ import 'package:crowdfans/screens/register/fan/register_fan_username_screen.dart
 import 'package:crowdfans/screens/report/report_screen.dart';
 import 'package:crowdfans/screens/search/search_ranking_screen.dart';
 import 'package:crowdfans/screens/search/search_screen.dart';
+import 'package:crowdfans/services/push_navigation_service.dart';
 import 'package:crowdfans/services/report_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:flutter/foundation.dart';
@@ -78,7 +81,7 @@ final _routerRefreshProvider = Provider<ValueNotifier<int>>((ref) {
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final refresh = ref.watch(_routerRefreshProvider);
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: Pages.presentation,
     refreshListenable: refresh,
     redirect: (context, state) {
@@ -419,4 +422,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+  ref.onDispose(PushNavigationService.detach);
+  unawaited(PushNavigationService.attach(router));
+  return router;
 });

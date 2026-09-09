@@ -1,5 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:crowdfans/api/api_urls.dart';
+import 'package:crowdfans/services/api_config.dart';
+import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/http_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Pacote de Jam Coins.
 class JamCoinPack {
@@ -96,6 +103,22 @@ class WalletCheckoutResult {
   }
 }
 
+/// Evento em tempo real da carteira (`GET /api/v1/me/ws`).
+class WalletRealtimeEvent {
+  const WalletRealtimeEvent({required this.type, this.data});
+
+  final String type;
+  final Object? data;
+
+  factory WalletRealtimeEvent.fromJson(Object? json) {
+    final map = (json as Map?)?.cast<String, dynamic>() ?? {};
+    return WalletRealtimeEvent(
+      type: map['type']?.toString() ?? '',
+      data: map['data'],
+    );
+  }
+}
+
 /// Carteira Jam Coins (`GET /api/v1/me/wallet`).
 abstract final class WalletService {
   static Future<WalletSnapshot> getWallet() {
@@ -126,5 +149,40 @@ abstract final class WalletService {
       body: {'packId': packId},
       parse: WalletCheckoutResult.fromJson,
     );
+  }
+
+  /// Assina o WS da carteira; retorna cleanup (espelho Expo).
+  static Future<VoidCallback> subscribe(
+    void Function(WalletRealtimeEvent event) onEvent,
+  ) async {
+    final token = await FirebaseService.currentIdToken();
+    if (token == null || token.isEmpty) {
+      return () {};
+    }
+    final httpBase = apiBaseUrl().replaceAll(RegExp(r'/$'), '');
+    final wsBase = httpBase.replaceFirst(
+      RegExp(r'^http', caseSensitive: false),
+      'ws',
+    );
+    final uri = Uri.parse(
+      '$wsBase${ApiUrls.meWs}?token=${Uri.encodeComponent(token)}',
+    );
+    final channel = WebSocketChannel.connect(uri);
+    final sub = channel.stream.listen(
+      (message) {
+        try {
+          final decoded = jsonDecode(message.toString());
+          onEvent(WalletRealtimeEvent.fromJson(decoded));
+        } catch (_) {
+          // Ignora frames inválidos.
+        }
+      },
+      onError: (_) {},
+      cancelOnError: false,
+    );
+    return () {
+      unawaited(sub.cancel());
+      unawaited(channel.sink.close());
+    };
   }
 }
