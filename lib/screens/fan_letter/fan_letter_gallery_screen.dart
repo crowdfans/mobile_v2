@@ -66,7 +66,7 @@ class _FanLetterGalleryScreenState extends State<FanLetterGalleryScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Minhas Fan Letters', onBack: handleBack),
+            ProfileScreenHeader(title: 'Minhas cartas', onBack: handleBack),
             Expanded(
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
@@ -75,6 +75,14 @@ class _FanLetterGalleryScreenState extends State<FanLetterGalleryScreen> {
                       child: ListView(
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
                         children: [
+                          Text(
+                            'Cartas enviadas aos artistas, com o visual da Fan Letter.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
                           if (_error != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
