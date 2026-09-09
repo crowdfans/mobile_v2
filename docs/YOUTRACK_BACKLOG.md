@@ -16,7 +16,7 @@
 | Artista tools | CF-114/115 ✅ [#26](https://github.com/crowdfans/mobile_v2/pull/26); CF-116 ✅ [#28](https://github.com/crowdfans/mobile_v2/pull/28); CF-117 ✅ [#29](https://github.com/crowdfans/mobile_v2/pull/29); CF-118 ✅ [#30](https://github.com/crowdfans/mobile_v2/pull/30); CF-119 ✅ [#31](https://github.com/crowdfans/mobile_v2/pull/31) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38) | **YT Done** (gus) |
 | Épicas | CF-66, CF-109 | **YT Done** (gus); Live/Meet CF-120/121 e CF-103 ficam abertos |
 | QA Patrol/FTL | CF-122/123/124 **YT Done** (gus) [#35](https://github.com/crowdfans/mobile_v2/pull/35); CF-128–130 scaffold skip; CF-125/126/127 FTL **adiado** | Ver §1.2 |
-| Bags | CF-82 / CF-83 ✅ [#41](https://github.com/crowdfans/mobile_v2/pull/41) | **YT Done** (gus); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40)/[#42](https://github.com/crowdfans/mobile_v2/pull/42) |
+| Bags | CF-82 / CF-83 ✅ [#41](https://github.com/crowdfans/mobile_v2/pull/41) | **YT Done** (gus); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community chrome [#44](https://github.com/crowdfans/mobile_v2/pull/44); docs [#39](https://github.com/crowdfans/mobile_v2/pull/39)/[#40](https://github.com/crowdfans/mobile_v2/pull/40)/[#42](https://github.com/crowdfans/mobile_v2/pull/42)/[#43](https://github.com/crowdfans/mobile_v2/pull/43) |
 | Meet/Live/Backend/Horus | §3–§5 | **Não implementar / não Done falso** |
 
 ## Legenda — Status local
@@ -29,7 +29,7 @@
 | Fora de escopo | Horus / produto adiado / não somos donos |
 | Backend/Meet | Backend-only, Live, Meet/CometChat — fora da paridade Flutter por enquanto |
 
-**Totais (consulta 2026-09-09):** 28 unresolved · 100 resolved (amostra `$top=200`) · 128 issues `project: CF`.
+**Totais (consulta 2026-09-09, refresh pós-#44):** 26 unresolved · 23 non-Horus · 3 Horus (CF-100–102) · amostra `$top=200` `project: CF`.
 
 ---
 
@@ -69,10 +69,11 @@ Checagem 2026-09-09 no `crowdfans-prod`:
 
 ### 1.3 Bags genéricos (triagem)
 
-CF-82 / CF-83 estão em §2 (**YT Done**, gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41).
+CF-82 / CF-83 estão em §2 (**YT Done**, gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41); follow-up polish comunidade/clubes [#44](https://github.com/crowdfans/mobile_v2/pull/44) (comentado em CF-83).
 
 **IDs acionáveis Mobile/Flutter (código):** CF-103, CF-126, CF-127, CF-128, CF-129, CF-130  
-**Contagem código aberto:** 6
+**Contagem código aberto:** 6  
+**Sem mais UI sem mocks/infra:** CF-103 (sem prints onboarding); CF-125→126/127 FTL adiado; CF-128–130 E2E `skip: true` sem `E2E_*`; Meet/Live ⛔.
 
 ---
 
@@ -83,7 +84,7 @@ Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração E
 | ID | Summary | Stage | Priority | Notas |
 |---|---|---|---|---|
 | CF-82 | Correção de Bugs | Done | Normal | Done (gus): Me/Settings/Share/Search/Cartas [#41](https://github.com/crowdfans/mobile_v2/pull/41); notifs [#38](https://github.com/crowdfans/mobile_v2/pull/38) |
-| CF-83 | Correção de Visual | Done | Normal | Done (gus): Meu Perfil chrome, Settings hub, share grid, Top 500, Fan Letter tools [#41](https://github.com/crowdfans/mobile_v2/pull/41); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38) |
+| CF-83 | Correção de Visual | Done | Normal | Done (gus): Meu Perfil chrome, Settings hub, share grid, Top 500, Fan Letter tools [#41](https://github.com/crowdfans/mobile_v2/pull/41); cover [#38](https://github.com/crowdfans/mobile_v2/pull/38); community Ver mais/Regras + Clubs Todos/Posts/Media [#44](https://github.com/crowdfans/mobile_v2/pull/44) |
 | CF-122 | [Épica] Mobile — Patrol + Firebase Test Lab | Done | Major | Done parcial (gus): setup+smoke [#35](https://github.com/crowdfans/mobile_v2/pull/35); FTL 125–127 adiados; E2E 128–130 abertos |
 | CF-123 | [Mobile] Patrol — setup nativo Android/iOS e smoke local | Done | Major | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
 | CF-124 | [Mobile] Patrol — suíte smoke Superfã (onboarding e login) | Done | Normal | PR [#35](https://github.com/crowdfans/mobile_v2/pull/35) (gus) |
@@ -189,15 +190,16 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 
 1. ~~**[Major] CF-67 / CF-106 / CF-107 / CF-66**~~ — YT Done (gus); CF-103 Backlog bloqueado sem mocks.
 2. ~~**[Major] CF-109 + filhos Artista CF-110–119**~~ — YT Done (gus); PRs #24–#31.
-3. ~~**Triagem** CF-82 / CF-83~~ — **YT Done** (gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38).
+3. ~~**Triagem** CF-82 / CF-83~~ — **YT Done** (gus) via [#41](https://github.com/crowdfans/mobile_v2/pull/41) + polish [#38](https://github.com/crowdfans/mobile_v2/pull/38)/[#44](https://github.com/crowdfans/mobile_v2/pull/44).
 4. ~~**QA** CF-122/123/124~~ — **YT Done** (gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). Restam CF-128/129/130 (fixtures) e CF-125→126/127 (FTL adiado).
 5. **Não puxar agora:** CF-120/121 Live/Meet ⛔, CF-30/97/99/10 Meet, Horus CF-100–102, backend CF-9/31/96/98/21/4/1/14.
 
 ### Expo vs Flutter (resumo rápido)
 
 - Expo (`../mobile`) cobre o fluxo Superfã principal e settings de artista (insights/audience/fan-club/wallet).
-- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2). Abertos acionáveis = **CF-103** (mocks), E2E/FTL CF-125–130.
+- Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). Abertos acionáveis = **CF-103** (mocks), E2E/FTL CF-125–130.
 - Live/Meet: buraco nos dois — não inventar UI.
+- **Verdict 2026-09-09:** no more UI without mocks/infra.
 
 ---
 
