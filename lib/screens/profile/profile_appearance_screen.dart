@@ -6,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Seleção do tema visual (sistema / claro / escuro).
+/// Aparência: CrowdFans é somente tema claro.
 class ProfileAppearanceScreen extends ConsumerWidget {
   const ProfileAppearanceScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = CrowdFansTheme.of(context);
-    final selected = ref.watch(appearanceSettingsProvider);
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -27,7 +26,7 @@ class ProfileAppearanceScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
               child: Text(
-                'Escolha como a CrowdFans deve aparecer neste dispositivo.',
+                'A CrowdFans usa apenas o tema claro neste dispositivo.',
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.5,
@@ -45,22 +44,14 @@ class ProfileAppearanceScreen extends ConsumerWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Column(
-                    children: [
-                      for (final (index, preference)
-                          in AppearanceThemePreference.values.indexed) ...[
-                        if (index > 0) Divider(height: 1, color: colors.border),
-                        AppearanceThemeOptionRow(
-                          preference: preference,
-                          selected: selected == preference,
-                          onPressed: () {
-                            ref
-                                .read(appearanceSettingsProvider.notifier)
-                                .setThemePreference(preference);
-                          },
-                        ),
-                      ],
-                    ],
+                  child: AppearanceThemeOptionRow(
+                    preference: AppearanceThemePreference.light,
+                    selected: true,
+                    onPressed: () {
+                      ref
+                          .read(appearanceSettingsProvider.notifier)
+                          .setThemePreference(AppearanceThemePreference.light);
+                    },
                   ),
                 ),
               ),
