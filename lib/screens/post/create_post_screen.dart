@@ -6,7 +6,6 @@ import 'package:crowdfans/components/post/create_post_exclusive_toggle.dart';
 import 'package:crowdfans/components/post/create_post_feedback_banner.dart';
 import 'package:crowdfans/components/post/create_post_image_picker.dart';
 import 'package:crowdfans/components/post/create_post_preview.dart';
-import 'package:crowdfans/components/post/create_post_type_chip.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -17,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// Criação e edição de post (texto, imagem, carrossel, vídeo, membership).
+/// Criação e edição de post (texto + mídia opcional).
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key, this.postId, this.targetArtistId});
 
@@ -28,8 +27,12 @@ class CreatePostScreen extends StatefulWidget {
   State<CreatePostScreen> createState() => _CreatePostScreenState();
 }
 
+/// Tipo do post a partir do conteúdo (CF-141 — sem menu texto/imagem).
+PostType resolveCreatePostType({required bool hasMedia}) {
+  return hasMedia ? PostType.image : PostType.text;
+}
+
 class _CreatePostScreenState extends State<CreatePostScreen> {
-  PostType? _selectedType;
   var _text = '';
   String? _selectedImageUri;
   Uint8List? _selectedImageBytes;
@@ -48,9 +51,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       _selectedImageUri != null && _selectedImageUri!.isNotEmpty;
 
   bool get _canPublish =>
-      _selectedType != null &&
-      (_text.trim().isNotEmpty || _hasMedia) &&
-      _text.length <= 280;
+      (_text.trim().isNotEmpty || _hasMedia) && _text.length <= 280;
 
   @override
   void initState() {
@@ -78,9 +79,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         return;
       }
       setState(() {
-        _selectedType = post.type == PostType.unknown
-            ? PostType.text
-            : post.type;
         _text = post.text;
         _selectedImageUri = post.imageUri;
         _selectedImageBytes = null;
@@ -96,13 +94,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _error = error.toString();
       });
     }
-  }
-
-  void handleSelectType(PostType type) {
-    setState(() {
-      _selectedType = type;
-      _error = null;
-    });
   }
 
   void handleTextChange(String value) {
@@ -140,23 +131,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
+  void handleClearImage() {
+    setState(() {
+      _selectedImageUri = null;
+      _selectedImageBytes = null;
+      _selectedImageMime = null;
+      _error = null;
+    });
+  }
+
   bool validatePost() {
-    if (_selectedType == null) {
-      setState(() => _error = 'Por favor, selecione um tipo de post');
-      return false;
-    }
     if (_text.length > 280) {
       setState(() => _error = 'O post pode ter no máximo 280 caracteres');
       return false;
     }
     if (_text.trim().isEmpty && !_hasMedia) {
-      setState(() => _error = 'Escreva um texto ou adicione uma mídia');
-      return false;
-    }
-    if ((_selectedType == PostType.image ||
-            _selectedType == PostType.carousel) &&
-        !_hasMedia) {
-      setState(() => _error = 'Por favor, selecione pelo menos uma imagem');
+      setState(() => _error = 'Escreva um texto ou adicione uma imagem');
       return false;
     }
     return true;
@@ -181,12 +171,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           bytes: _selectedImageBytes,
         );
       }
+      final type = resolveCreatePostType(hasMedia: imageUri != null && imageUri.isNotEmpty);
       final payload = PostWriteRequest(
-        type: _selectedType!,
+        type: type,
         text: _text.trim(),
         imageUri: imageUri,
         targetArtistId: widget.targetArtistId,
-        isExclusive: _isExclusive || _selectedType == PostType.membership,
+        isExclusive: _isExclusive,
       );
       if (_isEdit) {
         await PostService.updatePost(widget.postId!, payload);
@@ -227,8 +218,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    final needsImage =
-        _selectedType == PostType.image || _selectedType == PostType.carousel;
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -263,7 +252,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         ? 'Atualize o conteúdo e publique novamente'
                         : _isFanClubPost
                         ? 'Post no Fã Clube'
-                        : 'Post na Home',
+                        : 'Escreva a descrição e, se quiser, adicione uma imagem.',
                     style: TextStyle(fontSize: 16, color: colors.textSecondary),
                   ),
                   const SizedBox(height: 24),
@@ -271,35 +260,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     CreatePostFeedbackBanner(message: _error!, success: false),
                   if (_success != null)
                     CreatePostFeedbackBanner(message: _success!, success: true),
-                  Text(
-                    'Tipo de Post',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      for (final type in createPostTypes)
-                        CreatePostTypeChip(
-                          key: Key('create-post-type-${postTypeToApi(type)}'),
-                          type: type,
-                          selected: _selectedType == type,
-                          onPressed: () => handleSelectType(type),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
                   KeyedSubtree(
                     key: const Key('create-post-content'),
                     child: AppTextField(
                       key: ValueKey(widget.postId ?? 'new-post'),
-                      label: 'Conteúdo',
-                      hint: 'Digite o conteúdo do seu post...',
+                      label: 'Descrição',
+                      hint: 'O que você quer compartilhar?',
                       maxLines: 6,
                       maxLength: 280,
                       initialValue: _text,
@@ -327,32 +293,40 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       },
                     ),
                   ],
-                  if (needsImage) ...[
-                    const SizedBox(height: 24),
-                    Text(
-                      'Imagem',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
+                  const SizedBox(height: 24),
+                  Text(
+                    'Mídia (opcional)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  CreatePostImagePicker(
+                    key: const Key('create-post-add-image'),
+                    hasImage: _hasMedia,
+                    onPressed: handlePickImage,
+                  ),
+                  if (_hasMedia) ...[
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        key: const Key('create-post-clear-image'),
+                        onPressed: handleClearImage,
+                        child: Text(
+                          'Remover imagem',
+                          style: TextStyle(color: colors.danger),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    CreatePostImagePicker(
-                      hasImage:
-                          _selectedImageUri != null &&
-                          _selectedImageUri!.isNotEmpty,
-                      onPressed: handlePickImage,
-                    ),
                   ],
-                  if (_selectedType != null &&
-                      (_text.trim().isNotEmpty || _hasMedia)) ...[
+                  if (_text.trim().isNotEmpty || _hasMedia) ...[
                     const SizedBox(height: 24),
                     CreatePostPreview(
                       text: _text,
-                      hasImage:
-                          _selectedImageUri != null &&
-                          _selectedImageUri!.isNotEmpty,
+                      hasImage: _hasMedia,
                     ),
                   ],
                 ],
