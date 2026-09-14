@@ -18,6 +18,9 @@ class MyPostsScreen extends StatefulWidget {
   State<MyPostsScreen> createState() => _MyPostsScreenState();
 }
 
+/// Destino quando não há stack para `pop` (ex.: após `go` pós-publicar).
+const myPostsBackFallbackRoute = Pages.home;
+
 class _MyPostsScreenState extends State<MyPostsScreen> {
   var _posts = <UserPost>[];
   var _loading = true;
@@ -132,9 +135,16 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: context.canPop()
-                        ? ToolbarBackButton(onPressed: () => context.pop())
-                        : const SizedBox(height: 44),
+                    child: ToolbarBackButton(
+                      key: const Key('my-posts-back'),
+                      onPressed: () {
+                        if (context.canPop()) {
+                          context.pop();
+                          return;
+                        }
+                        context.go(myPostsBackFallbackRoute);
+                      },
+                    ),
                   ),
                 ),
                 MyPostsHeader(onCreate: handleCreate),
