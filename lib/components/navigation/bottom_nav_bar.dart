@@ -23,54 +23,57 @@ class BottomNavBar extends ConsumerWidget {
     final photoUrl = ref.watch(authSessionProvider).profile?.photoUrl;
     final index = navigationShell.currentIndex;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.border)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 68,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BottomNavSvgTab(
-                key: const Key('nav-home'),
-                asset: 'assets/special-icons/home-menu-01.svg',
-                selected: index == 0,
-                semanticLabel: 'Ir para o início',
-                onTap: () => navigationShell.goBranch(0),
-              ),
-              BottomNavSvgTab(
-                key: const Key('nav-clubs'),
-                asset: 'assets/special-icons/community-01.svg',
-                selected: index == 1,
-                semanticLabel: 'Fan clubs',
-                onTap: () => navigationShell.goBranch(1),
-              ),
-              BottomNavSvgTab(
-                key: const Key('nav-create'),
-                asset: 'assets/icons/General/plus-square.svg',
-                selected: false,
-                showIndicator: false,
-                semanticLabel: 'Criar conteúdo',
-                onTap: onPressPlus ?? () {},
-              ),
-              BottomNavSvgTab(
-                key: const Key('nav-search'),
-                asset: 'assets/special-icons/search-menu-01.svg',
-                selected: index == 2,
-                semanticLabel: 'Buscar',
-                onTap: () => navigationShell.goBranch(2),
-              ),
-              BottomNavProfileTab(
-                key: const Key('nav-profile'),
-                selected: index == 3,
-                photoUrl: photoUrl,
-                onTap: () => navigationShell.goBranch(3),
-              ),
-            ],
+    return Material(
+      color: colors.surface,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          border: Border(top: BorderSide(color: colors.border)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 68,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BottomNavSvgTab(
+                  key: const Key('nav-home'),
+                  asset: 'assets/special-icons/home-menu-01.svg',
+                  selected: index == 0,
+                  semanticLabel: 'Ir para o início',
+                  onTap: () => navigationShell.goBranch(0),
+                ),
+                BottomNavSvgTab(
+                  key: const Key('nav-clubs'),
+                  asset: 'assets/special-icons/community-01.svg',
+                  selected: index == 1,
+                  semanticLabel: 'Fan clubs',
+                  onTap: () => navigationShell.goBranch(1),
+                ),
+                BottomNavSvgTab(
+                  key: const Key('nav-create'),
+                  asset: 'assets/icons/General/plus-square.svg',
+                  selected: false,
+                  showIndicator: false,
+                  semanticLabel: 'Criar conteúdo',
+                  onTap: onPressPlus ?? () {},
+                ),
+                BottomNavSvgTab(
+                  key: const Key('nav-search'),
+                  asset: 'assets/special-icons/search-menu-01.svg',
+                  selected: index == 2,
+                  semanticLabel: 'Buscar',
+                  onTap: () => navigationShell.goBranch(2),
+                ),
+                BottomNavProfileTab(
+                  key: const Key('nav-profile'),
+                  selected: index == 3,
+                  photoUrl: photoUrl,
+                  onTap: () => navigationShell.goBranch(3),
+                ),
+              ],
+            ),
           ),
         ),
       ),
