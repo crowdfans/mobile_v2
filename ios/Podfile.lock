@@ -1,0 +1,33 @@
+PODS:
+  - cometchat_calls_sdk (5.0.7):
+    - CometChatCallsSDK (= 5.0.4)
+    - Flutter
+  - CometChatCallsSDK (5.0.4):
+    - CometChatWebRTC (~> 124.0.4)
+  - CometChatWebRTC (124.0.4)
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - cometchat_calls_sdk (from `.symlinks/plugins/cometchat_calls_sdk/ios`)
+  - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - CometChatCallsSDK
+    - CometChatWebRTC
+
+EXTERNAL SOURCES:
+  cometchat_calls_sdk:
+    :path: ".symlinks/plugins/cometchat_calls_sdk/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  cometchat_calls_sdk: 75249fee752f32070947e1f05f4ecfe771316195
+  CometChatCallsSDK: 8052f014b7ce6f75d334ed0cd44a344da5e3d1ea
+  CometChatWebRTC: 45d400d7f0135ab3923d6b4291715b61582e8c46
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+
+PODFILE CHECKSUM: 642019dc70f0bca9d24b7780ee0d5c20e4f03dd2
+
+COCOAPODS: 1.17.0
