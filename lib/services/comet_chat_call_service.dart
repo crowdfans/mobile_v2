@@ -86,7 +86,7 @@ abstract final class CometChatCallService {
     CometChatCalls.generateCallToken(
       sessionId,
       onSuccess: (CallToken token) {
-        final value = token.token ?? token.callToken;
+        final value = token.callToken;
         if (value == null || value.isEmpty) {
           if (!completer.isCompleted) {
             completer.complete(
@@ -100,7 +100,7 @@ abstract final class CometChatCallService {
         }
         unawaited(
           CometChatCalls.joinSession(
-            callToken: CallToken(token: value, sessionId: sessionId),
+            callToken: token,
             sessionSettings: settings,
             onSuccess: (widget) {
               if (!completer.isCompleted) {
