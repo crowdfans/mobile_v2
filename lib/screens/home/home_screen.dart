@@ -26,6 +26,9 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
+/// Permite pull-to-refresh mesmo com lista vazia / curta (CF-139).
+const homeFeedScrollPhysics = AlwaysScrollableScrollPhysics();
+
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   static const _scrollToTopThreshold = 420.0;
 
@@ -203,6 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           onRefresh: handleRefresh,
                           child: ListView.builder(
                             controller: _scrollController,
+                            physics: homeFeedScrollPhysics,
                             padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
                             itemCount: _posts.length + 2,
                             itemBuilder: (context, index) {
