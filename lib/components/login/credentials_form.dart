@@ -55,7 +55,10 @@ class CredentialsForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        PasswordField(onChanged: onPasswordChanged),
+        PasswordField(
+          onChanged: onPasswordChanged,
+          onSubmitted: loading ? null : onSubmit,
+        ),
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
