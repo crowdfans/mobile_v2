@@ -166,7 +166,7 @@ class _MeetHostScreenState extends State<MeetHostScreen> {
               Expanded(
                 child: ListView.separated(
                   itemCount: _calls.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final call = _calls[index];
                     return ListTile(

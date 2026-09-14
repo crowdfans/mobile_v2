@@ -32,7 +32,7 @@ class MeetScreenFrame extends StatelessWidget {
             Image.network(
               url,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const ColoredBox(
+              errorBuilder: (_, _, _) => const ColoredBox(
                 color: AppPalette.platinum950,
               ),
             )

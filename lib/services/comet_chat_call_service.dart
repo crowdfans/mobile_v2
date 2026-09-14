@@ -63,7 +63,7 @@ abstract final class CometChatCallService {
           if (kDebugMode) {
             debugPrint('[cometchat] joinSession: ${error.message}');
           }
-          _joinViaToken(call, settings, completer);
+          _joinViaCallToken(call.roomId, settings, completer);
         },
       ),
     );
@@ -77,17 +77,17 @@ abstract final class CometChatCallService {
     );
   }
 
-  static void _joinViaToken(
-    VideoCall call,
+  /// Fallback: gera CallToken após login e entra na sessão.
+  static void _joinViaCallToken(
+    String sessionId,
     SessionSettings settings,
     Completer<CometChatJoinResult> completer,
   ) {
-    CometChatCalls.generateToken(
-      call.roomId,
-      call.authToken,
-      onSuccess: (GenerateToken token) {
-        final callToken = token.token;
-        if (callToken == null || callToken.isEmpty) {
+    CometChatCalls.generateCallToken(
+      sessionId,
+      onSuccess: (CallToken token) {
+        final value = token.token ?? token.callToken;
+        if (value == null || value.isEmpty) {
           if (!completer.isCompleted) {
             completer.complete(
               const CometChatJoinResult(
@@ -100,7 +100,7 @@ abstract final class CometChatCallService {
         }
         unawaited(
           CometChatCalls.joinSession(
-            callToken: CallToken(token: callToken),
+            callToken: CallToken(token: value, sessionId: sessionId),
             sessionSettings: settings,
             onSuccess: (widget) {
               if (!completer.isCompleted) {
@@ -136,23 +136,13 @@ abstract final class CometChatCallService {
   }
 
   static Future<void> leave() async {
-    final end = Completer<void>();
-    CometChatCalls.endSession(
-      onSuccess: (_) {
-        if (!end.isCompleted) {
-          end.complete();
-        }
-      },
-      onError: (_) {
-        if (!end.isCompleted) {
-          end.complete();
-        }
-      },
-    );
-    await end.future.timeout(
-      const Duration(seconds: 5),
-      onTimeout: () {},
-    );
+    try {
+      await CallSession.getInstance()?.leaveSession().timeout(
+        const Duration(seconds: 5),
+      );
+    } catch (_) {
+      // Sessão já encerrada ou inexistente.
+    }
 
     final logout = Completer<void>();
     CometChatCalls.logout(
