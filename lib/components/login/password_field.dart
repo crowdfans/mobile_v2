@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 
 /// Campo de senha com mostrar/ocultar.
 class PasswordField extends StatefulWidget {
-  const PasswordField({super.key, required this.onChanged});
+  const PasswordField({
+    super.key,
+    required this.onChanged,
+    this.onSubmitted,
+  });
 
   final ValueChanged<String> onChanged;
+  final VoidCallback? onSubmitted;
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -22,7 +27,9 @@ class _PasswordFieldState extends State<PasswordField> {
       child: TextField(
         key: const Key('login-password'),
         obscureText: !_visible,
+        textInputAction: TextInputAction.done,
         onChanged: widget.onChanged,
+        onSubmitted: (_) => widget.onSubmitted?.call(),
         decoration: InputDecoration(
           hintText: 'Senha',
           hintStyle: TextStyle(color: colors.textTertiary),
