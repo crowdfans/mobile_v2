@@ -12,6 +12,10 @@ class CreateMenuNotifier extends Notifier<bool> {
   void closeMenu() {
     state = false;
   }
+
+  void toggleMenu() {
+    state = !state;
+  }
 }
 
 final createMenuProvider = NotifierProvider<CreateMenuNotifier, bool>(
