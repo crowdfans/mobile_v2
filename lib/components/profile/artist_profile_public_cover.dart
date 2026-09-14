@@ -8,7 +8,7 @@ class ArtistProfilePublicCover extends StatelessWidget {
     required this.imageUrl,
     required this.displayName,
     required this.membersLabel,
-    required this.subscribed,
+    required this.following,
     required this.busy,
     required this.onBack,
     required this.onMore,
@@ -20,7 +20,7 @@ class ArtistProfilePublicCover extends StatelessWidget {
   final String displayName;
   final String membersLabel;
   final int? rank;
-  final bool subscribed;
+  final bool following;
   final bool busy;
   final VoidCallback onBack;
   final VoidCallback onMore;
@@ -28,13 +28,22 @@ class ArtistProfilePublicCover extends StatelessWidget {
 
   static String formatMembers(int? count) => ArtistMeCover.formatMembers(count);
 
+  /// Rótulo do CTA de follow gratuito (CF-140) — membership fica na aba Exclusivo.
+  static String followCtaLabel({
+    required bool following,
+    required bool busy,
+  }) {
+    if (busy) {
+      return 'Aguarde...';
+    }
+    return following ? 'Seguindo' : '+ Seguir';
+  }
+
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.paddingOf(context).top;
     final url = imageUrl.trim();
-    final ctaLabel = busy
-        ? 'Aguarde...'
-        : (subscribed ? 'Membership' : '+ Seguir');
+    final ctaLabel = followCtaLabel(following: following, busy: busy);
     return SizedBox(
       height: 320 + topInset,
       width: double.infinity,
@@ -140,15 +149,15 @@ class ArtistProfilePublicCover extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Material(
-                    color: subscribed
+                    color: following
                         ? const Color(0xCC3A2418)
                         : Colors.white,
                     shape: StadiumBorder(
                       side: BorderSide(
-                        color: subscribed
+                        color: following
                             ? const Color(0xFFE8A05C)
                             : Colors.transparent,
-                        width: subscribed ? 1.5 : 0,
+                        width: following ? 1.5 : 0,
                       ),
                     ),
                     child: InkWell(
@@ -158,28 +167,15 @@ class ArtistProfilePublicCover extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                ctaLabel,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: subscribed
-                                      ? const Color(0xFFE8A05C)
-                                      : const Color(0xFF1C1C1E),
-                                ),
-                              ),
-                              if (subscribed && !busy) ...[
-                                const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.music_note,
-                                  size: 16,
-                                  color: Color(0xFFE8A05C),
-                                ),
-                              ],
-                            ],
+                          child: Text(
+                            ctaLabel,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: following
+                                  ? const Color(0xFFE8A05C)
+                                  : const Color(0xFF1C1C1E),
+                            ),
                           ),
                         ),
                       ),
