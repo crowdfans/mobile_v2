@@ -7,6 +7,8 @@ alwaysApply: true
 
 Este repo (`mobile_v2`) é o **app mobile de produto**. Expo `../mobile` e `crowdfans-mobile-rn` são só referência de comportamento — não copiar `frontendapp/`.
 
+Git: só `main` + `prod` (iguais). Feature branch curta `CF-<id>` → PR/`prod` → espelhar `main` → **apagar a branch**.
+
 Leia `AGENTS.md` neste repo.
 
 - Layout: prints das tasks (CF-66 / CF-109) e `Downloads/Screens`. Código atual não é o mock.
