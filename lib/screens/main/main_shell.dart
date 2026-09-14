@@ -14,22 +14,27 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isCreateMenuOpen = ref.watch(createMenuProvider);
+    // Sheet acima do body; bottom nav por cima do sheet para o (+) poder
+    // fechar (toggle) mesmo com o menu aberto.
     return Stack(
       children: [
-        Scaffold(
-          body: navigationShell,
-          bottomNavigationBar: BottomNavBar(
-            navigationShell: navigationShell,
-            onPressPlus: () {
-              ref.read(createMenuProvider.notifier).openMenu();
-            },
-          ),
-        ),
+        Scaffold(body: navigationShell),
         CreateMenuSheet(
           visible: isCreateMenuOpen,
           onClose: () {
             ref.read(createMenuProvider.notifier).closeMenu();
           },
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: BottomNavBar(
+            navigationShell: navigationShell,
+            onPressPlus: () {
+              ref.read(createMenuProvider.notifier).toggleMenu();
+            },
+          ),
         ),
       ],
     );

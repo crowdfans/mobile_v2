@@ -16,6 +16,7 @@ class CreateMenuSheet extends ConsumerWidget {
     this.fanClubArtistId,
     this.fanClubArtistName,
     this.fanClubArtistAvatarUrl,
+    this.bottomOffset = 68,
   });
 
   final bool visible;
@@ -23,6 +24,9 @@ class CreateMenuSheet extends ConsumerWidget {
   final String? fanClubArtistId;
   final String? fanClubArtistName;
   final String? fanClubArtistAvatarUrl;
+
+  /// Altura da bottom nav quando ela fica acima do sheet (toggle do +).
+  final double bottomOffset;
 
   void handleCreatePost(BuildContext context) {
     onClose();
@@ -63,6 +67,7 @@ class CreateMenuSheet extends ConsumerWidget {
     return BottomSheetShell(
       visible: visible,
       onClose: onClose,
+      bottomOffset: bottomOffset,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
