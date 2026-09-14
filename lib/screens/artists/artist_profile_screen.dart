@@ -55,7 +55,9 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _letters = <FanLetter>[];
   var _loading = true;
   var _subscribed = false;
+  var _following = false;
   var _togglingMembership = false;
+  var _togglingFollow = false;
   var _tab = 'feed';
   var _feedFilter = _FeedFilter.all;
   int? _memberCount;
@@ -108,6 +110,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             (value) => value,
             onError: (_) => const SubscriptionCheck(isSubscribed: false),
           );
+      final isFollowing = await FollowService.checkFollow(widget.artistId)
+          .then((value) => value, onError: (_) => false);
       final club = await FanClubService.getArtistFanClub(widget.artistId)
           .then((value) => value, onError: (_) => null);
       final letters = await FanLetterService.listArtistFanLetters(
@@ -146,6 +150,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         _posts = posts;
         _letters = letters;
         _subscribed = check.isSubscribed;
+        _following = isFollowing;
         _memberCount = club?.memberCount;
         _fanClubRank = rank;
         _loading = false;
@@ -182,6 +187,42 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       viewerUserUid: viewer?.userUid,
       viewerIsArtist: viewer?.isArtist ?? false,
     );
+  }
+
+  Future<void> handleToggleFollow() async {
+    if (_togglingFollow) {
+      return;
+    }
+    setState(() => _togglingFollow = true);
+    try {
+      if (_following) {
+        await FollowService.unfollowArtist(widget.artistId);
+        setState(() => _following = false);
+      } else {
+        await FollowService.followArtist(widget.artistId);
+        setState(() => _following = true);
+      }
+    } on ApiError catch (error) {
+      if (mounted) {
+        await AppAlert.show(
+          context,
+          title: 'Seguir',
+          message: error.message,
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        await AppAlert.show(
+          context,
+          title: 'Seguir',
+          message: error.toString(),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _togglingFollow = false);
+      }
+    }
   }
 
   Future<void> handleToggleMembership() async {
@@ -495,11 +536,11 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                     displayName: name,
                     membersLabel: membersLabel(),
                     rank: _fanClubRank,
-                    subscribed: _subscribed,
-                    busy: _togglingMembership,
+                    following: _following,
+                    busy: _togglingFollow,
                     onBack: handleBack,
                     onMore: handleMore,
-                    onToggleFollow: handleToggleMembership,
+                    onToggleFollow: handleToggleFollow,
                   ),
                   if (_error != null)
                     Padding(
