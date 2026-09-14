@@ -52,7 +52,7 @@ class CreateMenuSheet extends ConsumerWidget {
 
   void handleMeet(BuildContext context) {
     onClose();
-    context.push(Pages.meetUnavailable);
+    context.push(Pages.meetHost);
   }
 
   @override

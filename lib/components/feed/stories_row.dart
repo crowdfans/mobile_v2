@@ -26,6 +26,7 @@ class StoriesRow extends StatelessWidget {
           // Meet = anel verde; demais (live / sem tipo) = anel vermelho, como no Expo e nos prints.
           if (type == 'meetandgreet') {
             return StoryMeetAndGreetItem(
+              artistId: story.id,
               name: story.name,
               imageUri: story.imageUri,
             );

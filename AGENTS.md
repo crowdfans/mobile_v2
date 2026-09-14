@@ -1,8 +1,8 @@
 # Flutter — CrowdFans (`mobile_v2`)
 
-Reescrita do Expo em `../mobile`. Comportamento: o app Expo. Código: padrões deste arquivo e `.cursor/rules/`.
+**App mobile de produto.** Expo em `../mobile` e `crowdfans-mobile-rn` são só referência de comportamento. Código: padrões deste arquivo e `.cursor/rules/`.
 
-Não copiar `frontendapp/` (Flutter legado / Supabase).
+Não copiar `frontendapp/` (Flutter legado / Supabase). Não implementar feature nova no Expo.
 
 ---
 
