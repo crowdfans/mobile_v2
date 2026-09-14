@@ -139,17 +139,15 @@ API/prod: sempre `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` (nunca
 
 ---
 
-## 3. Meet / CometChat / Live (adiados)
-
-Paridade Flutter **não** inclui Live/Meet por enquanto — copiar o buraco do Expo (`⛔`). Status local: **Backend/Meet**.
+## 3. Meet / CometChat / Live
 
 | ID | Summary | Stage | Priority | Serviço | Notas |
 |---|---|---|---|---|---|
-| CF-10 | [Mobile] UI checkout Jam Coins + chamada de vídeo 1:1 | Backlog | Major | Mobile | Checkout Jam Coins + Meet UI. Wallet parcial (CF-76 Done); Meet ⛔. |
+| CF-10 | [Mobile] UI checkout Jam Coins + chamada de vídeo 1:1 | Backlog | Major | Mobile | Checkout Jam Coins OK; Meet via CF-30. |
 | CF-120 | [Artista] ⛔ Live — criar acesso e estúdio (chat, destacadas, doações) | Backlog | Minor | Mobile | ⛔ Live — adiado (buraco Expo). |
-| CF-121 | [Artista] ⛔ Meet & Greet — criar, fila, atender e encerrar chamada | Backlog | Minor | Mobile | ⛔ Meet & Greet — adiado (buraco Expo). |
-| CF-30 | [Mobile/Backend] Meet 1:1 — SDK CometChat + telas fila/chamada | Develop | Major | Mobile | CometChat SDK + fila/chamada — deferred. |
-| CF-97 | [Mobile] Meet 1:1 — timer de 1 minuto na UI | Backlog | Major | Mobile | Timer 1 min Meet UI — deferred. |
+| CF-121 | [Artista] Meet & Greet — criar, fila, atender e encerrar chamada | Backlog | Minor | Mobile | Hub artista em CF-30 (`/meet`). |
+| CF-30 | [Mobile/Backend] Meet 1:1 — SDK CometChat + telas fila/chamada | Done | Major | Mobile | Flutter: API + WS + telas + `cometchat_calls_sdk` (sandbox sem WebRTC). |
+| CF-97 | [Mobile] Meet 1:1 — timer de 1 minuto na UI | Done | Major | Mobile | Timer via WS `video-call.tick` na `MeetCallScreen`. |
 | CF-99 | [Mobile] Meet 1:1 — consentimento e aviso de gravação judicial | Backlog | Major | Mobile | Consentimento gravação Meet — deferred. |
 
 Relacionados no backend (também §4): CF-9, CF-21, CF-31, CF-96, CF-98.

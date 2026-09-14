@@ -17,6 +17,12 @@ import 'package:crowdfans/screens/login/artist_login_screen.dart';
 import 'package:crowdfans/screens/login/fan_login_screen.dart';
 import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
+import 'package:crowdfans/screens/meet/meet_call_screen.dart';
+import 'package:crowdfans/screens/meet/meet_host_screen.dart';
+import 'package:crowdfans/screens/meet/meet_request_screen.dart';
+import 'package:crowdfans/screens/meet/meet_result_screen.dart';
+import 'package:crowdfans/screens/meet/meet_ringing_screen.dart';
+import 'package:crowdfans/screens/meet/meet_waiting_screen.dart';
 import 'package:crowdfans/screens/notifications/notifications_screen.dart';
 import 'package:crowdfans/screens/onboarding/presentation_screen.dart';
 import 'package:crowdfans/screens/placeholder_screen.dart';
@@ -360,11 +366,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: Pages.meetUnavailable,
-        builder: (context, state) => const PlaceholderScreen(
-          title: 'Meet & Greet',
-          message:
-              'Meet & Greet ainda não está disponível no app. Em breve você poderá criar e atender chamadas por aqui.',
+        path: Pages.meetHost,
+        builder: (context, state) => const MeetHostScreen(),
+      ),
+      GoRoute(
+        path: Pages.meetRequest,
+        builder: (context, state) {
+          final artistId = state.uri.queryParameters['artistId'] ?? '';
+          return MeetRequestScreen(
+            artistUid: artistId,
+            artistName: state.uri.queryParameters['name'],
+            avatarUrl: state.uri.queryParameters['avatarUrl'],
+          );
+        },
+      ),
+      GoRoute(
+        path: Pages.meetWaiting,
+        builder: (context, state) => MeetWaitingScreen(
+          callId: state.pathParameters['callId'] ?? '',
+          artistName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetRinging,
+        builder: (context, state) => MeetRingingScreen(
+          callId: state.pathParameters['callId'] ?? '',
+          fanName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetCall,
+        builder: (context, state) => MeetCallScreen(
+          callId: state.pathParameters['callId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetResult,
+        builder: (context, state) => MeetResultScreen(
+          status: state.uri.queryParameters['status'] ?? 'ended',
+          reason: state.uri.queryParameters['reason'] ?? '',
+          peerName: state.uri.queryParameters['name'] ?? '',
         ),
       ),
       GoRoute(

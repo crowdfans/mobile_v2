@@ -54,6 +54,11 @@ abstract final class PushNavigationService {
   /// Extrai e mapeia a rota do payload FCM.
   static String? resolveLocation(RemoteMessage message) {
     final data = message.data;
+    final type = (data['type'] ?? '').toString().trim();
+    final callId = (data['callId'] ?? '').toString().trim();
+    if (type == 'video-call.incoming' && callId.isNotEmpty) {
+      return Pages.meetRingingOf(callId);
+    }
     final raw = (data['targetRoute'] ?? data['route'] ?? data['path'] ?? '')
         .toString()
         .trim();

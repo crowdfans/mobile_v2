@@ -130,7 +130,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 - [x] `StoriesRowComponent`
 - [x] `StoryItemComponent`
 - [x] `StoryLiveItemComponent` (chip visual; tap sem tela — ⛔ no Expo)
-- [x] `StoryMeetAndGreetItemComponent` (chip visual; tap sem tela — ⛔ no Expo)
+- [x] `StoryMeetAndGreetItemComponent` (tap → Meet request CF-30)
 - [x] Unlock de post exclusivo (`SubscriptionService.list` + `canAccessExclusivePost`; assinar no perfil do artista)
 - [x] Model `FeedPost` / `HomeFeedDto` / `StoryItem`
 
@@ -308,7 +308,7 @@ Marcar `[x]` no arquivo ao terminar cada item (com um comentário curto do que e
 ## 22. Fora do Expo (não migrar até existir no `mobile`)
 
 - [ ] ⛔ Live: diretório, viewer, estúdio
-- [ ] ⛔ Meet & Greet: agenda, lobby, chamada, estúdio, feedback
+- [x] Meet & Greet 1:1 (CF-30): request, waiting, ringing, call+timer, result, CometChat sandbox/live
 - [ ] ⛔ Create post de fã (se continuar ⛔ no Expo)
 
 ---
