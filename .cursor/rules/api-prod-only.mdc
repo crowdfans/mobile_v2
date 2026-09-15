@@ -1,20 +1,12 @@
 ---
-description: Nunca usar a API DigitalOcean de desenvolvimento (crowdfans-app-dev)
+description: Nunca usar hosts DigitalOcean mortos (app-dev / app-prod)
 alwaysApply: true
 ---
 
-# API = só produção
+# API CrowdFans = server-prod
 
-**Proibido** apontar o app (Flutter, Expo, web, scripts, `.env`, defaults de código, EAS, Firebase Hosting) para:
+**Proibido:** `crowdfans-app-dev*` e `crowdfans-app-prod.ondigitalocean.app` (não resolvem DNS).
 
-- `https://crowdfans-app-dev-3zqbt.ondigitalocean.app` (não resolve / morto)
-- qualquer host `crowdfans-app-dev*`
-- `https://crowdfans-app-prod.ondigitalocean.app` (também **não resolve DNS** — não usar)
+**Usar:** `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`
 
-**Usar sempre** a API de produção que responde:
-
-- `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`
-
-Default de código, `.env`, `--dart-define` e build web = esse host. Sem fallback “dev” nem `crowdfans-app-prod`.
-
-`API_MODE=local` (localhost) continua ok para desenvolvimento local.
+`API_MODE=local` (localhost) ok.
