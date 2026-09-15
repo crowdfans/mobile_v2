@@ -1,19 +1,17 @@
 ---
-description: Padrões Flutter CrowdFans — telas, rotas, API, serviços, português
+description: Padrões Flutter neste repo — telas, componentes, layout, git
 alwaysApply: true
 ---
 
-# Flutter CrowdFans
+# Flutter CrowdFans (`mobile_v2`)
 
-Este repo (`mobile_v2`) é o **app mobile de produto**. Expo `../mobile` e `crowdfans-mobile-rn` são só referência de comportamento — não copiar `frontendapp/`.
+App mobile de produto. Expo `../mobile` / `crowdfans-mobile-rn` = referência. Não copiar `frontendapp/`.
 
-Git: só `main` + `prod` (iguais). Feature branch curta `CF-<id>` → PR/`prod` → espelhar `main` → **apagar a branch**.
+Git: `main`+`prod` iguais. Branch `CF-<id>` → PR `prod` → espelhar `main` → apagar branch. Leia `AGENTS.md`.
 
-Leia `AGENTS.md` neste repo.
-
-- Layout: prints das tasks (CF-66 / CF-109) e `Downloads/Screens`. Código atual não é o mock.
-- Telas em `lib/screens/`. Estado da tela fica no arquivo da tela.
-- Widgets visuais em `lib/components/<domínio>/`, **um arquivo por widget**. Proibido `class _Foo extends StatelessWidget` dentro de tela (vale o `State` da tela).
-- Rotas: `Pages` em `lib/constants/pages.dart`. HTTP: `ApiUrls` + `HttpService`.
-- Serviço = facade (`AuthService.metodo`), não funções soltas.
-- Comentários, dartdoc e strings de UI em português.
+- Telas: `lib/screens/` (estado na tela). Componentes: `lib/components/<domínio>/`, um widget público por arquivo.
+- Proibido `_Foo extends StatelessWidget` dentro de tela (vale o `State` da tela). Sem `lib/widgets/` na raiz.
+- Rotas: `Pages`. HTTP: `ApiUrls` + `HttpService`. Serviço = facade estática.
+- UI/comentários em português.
+- Layout = print YouTrack / `Downloads/Screens/{Superfã,Artista}` — não o código legado. Sem print: não inventar.
+- API: `api-prod-only.mdc`.
