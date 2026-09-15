@@ -3,6 +3,8 @@ import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
 
 /// Setas de upvote/downvote reutilizáveis (post ou comentário).
+///
+/// CF-131: pill compacta — neutro cinza, upvote verde, downvote vermelho.
 class VoteControlBar extends StatefulWidget {
   const VoteControlBar({
     super.key,
@@ -29,6 +31,26 @@ class _VoteControlBarState extends State<VoteControlBar> {
   int get _voteState =>
       _optimisticMyVote ?? VoteService.normalizeVoteState(widget.myVote);
   int get _voteCount => _optimisticVotes ?? widget.votes;
+
+  Color _accentFor(int voteState) {
+    if (voteState == 1) {
+      return AppPalette.green500;
+    }
+    if (voteState == -1) {
+      return AppPalette.red500;
+    }
+    return AppPalette.platinum300;
+  }
+
+  Color _labelFor(int voteState) {
+    if (voteState == 1) {
+      return AppPalette.green500;
+    }
+    if (voteState == -1) {
+      return AppPalette.red500;
+    }
+    return AppPalette.platinum500;
+  }
 
   Future<void> handleVote(VoteDirection direction) async {
     if (_submitting) {
@@ -69,44 +91,71 @@ class _VoteControlBarState extends State<VoteControlBar> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = CrowdFansTheme.of(context);
-    final up = _voteState == 1;
-    final down = _voteState == -1;
+    final accent = _accentFor(_voteState);
+    final label = _labelFor(_voteState);
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: Border.all(color: colors.border),
+        border: Border.all(color: accent, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            key: const Key('vote-up'),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => handleVote(1),
-            icon: Icon(
-              Icons.keyboard_arrow_up,
-              color: up ? colors.primary : colors.icon,
+      child: SizedBox(
+        height: 28,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _VoteChevron(
+              key: const Key('vote-up'),
+              icon: Icons.keyboard_arrow_up,
+              color: label,
+              onTap: () => handleVote(1),
             ),
-          ),
-          Text(
-            key: const Key('vote-count'),
-            '$_voteCount',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(
+                key: const Key('vote-count'),
+                '$_voteCount',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
+                  color: label,
+                ),
+              ),
             ),
-          ),
-          IconButton(
-            key: const Key('vote-down'),
-            visualDensity: VisualDensity.compact,
-            onPressed: () => handleVote(-1),
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: down ? colors.danger : colors.icon,
+            _VoteChevron(
+              key: const Key('vote-down'),
+              icon: Icons.keyboard_arrow_down,
+              color: label,
+              onTap: () => handleVote(-1),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VoteChevron extends StatelessWidget {
+  const _VoteChevron({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: SizedBox(
+        width: 28,
+        height: 28,
+        child: Icon(icon, size: 18, color: color),
       ),
     );
   }

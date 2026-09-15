@@ -64,7 +64,7 @@ class PostCardHeader extends StatelessWidget {
                     Text(
                       displayAuthorName,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: colors.textPrimary,
                       ),
@@ -73,7 +73,7 @@ class PostCardHeader extends StatelessWidget {
                       Text(
                         handleLabel,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: colors.textTertiary,
                         ),
                       ),
@@ -90,7 +90,7 @@ class PostCardHeader extends StatelessWidget {
                 Text(
                   formatMinutesAgo(minutesAgo),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: colors.textTertiary,
                   ),
                 ),

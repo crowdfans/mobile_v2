@@ -21,12 +21,13 @@ class StoryLiveItem extends StatelessWidget {
             Container(
               width: 90,
               height: 90,
-              padding: const EdgeInsets.all(3),
+              padding: EdgeInsets.zero,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: AppPalette.red500, width: 3),
               ),
-              child: PostAvatar(url: imageUri, size: 78),
+              child: PostAvatar(url: imageUri, size: 90),
             ),
             const SizedBox(height: 8),
             Text(

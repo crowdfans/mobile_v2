@@ -36,7 +36,7 @@ class ImageToolbar extends StatelessWidget {
             ? const SizedBox(width: 40)
             : AppIconButton(
                 key: const Key('home-notifications'),
-                asset: 'assets/icons/alerts_and_feedbacks/bell-01.svg',
+                asset: 'assets/icons/alerts_and_feedbacks/bell-03.svg',
                 onPressed: onNotifications!,
                 color: colors.icon,
                 size: 32,
@@ -52,8 +52,8 @@ class ImageToolbar extends StatelessWidget {
             child: Center(
               child: SvgPicture.asset(
                 'assets/logo/crowdfans-logo.svg',
-                width: 112,
-                height: 24,
+                width: 88,
+                height: 18,
                 colorFilter: ColorFilter.mode(
                   colors.textPrimary,
                   BlendMode.srcIn,

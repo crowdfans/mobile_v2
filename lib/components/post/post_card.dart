@@ -60,7 +60,7 @@ class PostCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: borderColor == null ? null : Border.all(color: borderColor!),
-        color: backgroundColor ?? colors.background,
+        color: backgroundColor ?? Colors.white,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,8 +110,8 @@ class PostCard extends StatelessWidget {
                             child: Text(
                               post.text,
                               style: TextStyle(
-                                fontSize: 16,
-                                height: 24 / 16,
+                                fontSize: 14,
+                                height: 20 / 14,
                                 color: colors.textSecondary,
                               ),
                             ),
