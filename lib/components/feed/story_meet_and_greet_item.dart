@@ -4,33 +4,26 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Chip de story com anel verde (Meet).
+/// Chip de story com anel verde (Meet & Greet Virtual).
 class StoryMeetAndGreetItem extends StatelessWidget {
   const StoryMeetAndGreetItem({
     super.key,
-    required this.artistId,
+    required this.eventId,
     required this.name,
     required this.imageUri,
   });
 
-  final String artistId;
+  final String eventId;
   final String name;
   final String imageUri;
 
   void handleTap(BuildContext context) {
-    var id = artistId.trim();
-    if (id.startsWith('story-')) {
-      id = id.substring('story-'.length);
-    }
+    final id = eventId.trim();
     if (id.isEmpty) {
       return;
     }
     context.push(
-      Pages.meetRequestOf(
-        artistId: id,
-        name: name,
-        avatarUrl: imageUri,
-      ),
+      Pages.meetLobbyOf(id, name: name, avatarUrl: imageUri),
     );
   }
 
