@@ -178,7 +178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
 
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SafeArea(

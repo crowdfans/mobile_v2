@@ -15,7 +15,7 @@ class ToolbarMenuButton extends StatelessWidget {
       onPressed: onPressed,
       tooltip: 'Menu',
       icon: SvgPicture.asset(
-        'assets/icons/General/menu-02.svg',
+        'assets/icons/General/menu-01.svg',
         width: 22,
         height: 22,
         colorFilter: ColorFilter.mode(colors.textPrimary, BlendMode.srcIn),

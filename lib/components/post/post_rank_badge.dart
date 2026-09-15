@@ -13,16 +13,17 @@ class PostRankBadge extends StatelessWidget {
     final label = rank.startsWith('#') ? rank : '#$rank';
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceAlt,
+        color: AppPalette.purple100,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
+            height: 1.2,
             color: colors.primaryStrong,
           ),
         ),
