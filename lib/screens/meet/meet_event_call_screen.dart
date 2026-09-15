@@ -14,15 +14,17 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-/// Call ativa 90s do fã — sem Hang Up; beeps aos 60s/80s (CF-150).
+/// Call ativa 90s — fã sem Hang Up; artista com Encerrar (CF-150 / CF-151).
 class MeetEventCallScreen extends StatefulWidget {
   const MeetEventCallScreen({
     super.key,
     required this.callId,
+    this.isArtist = false,
     this.warningPlayer,
   });
 
   final String callId;
+  final bool isArtist;
 
   /// Injeta player de beep (testes). Default: [SystemSound].
   final void Function(MeetCallWarning warning)? warningPlayer;
@@ -37,6 +39,7 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
   String? _statusMessage;
   String? _error;
   var _joining = true;
+  var _ending = false;
   VoidCallback? _unsubscribe;
   Timer? _localTick;
   final _warnings = MeetCallWarningTracker();
@@ -68,13 +71,7 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
       }
       setState(() => _call = call);
       if (call.isTerminal) {
-        context.pushReplacement(
-          Pages.meetResultOf(
-            status: call.status,
-            reason: call.endedReason,
-            peerName: call.artistName,
-          ),
-        );
+        handleLeaveCall(call);
         return;
       }
 
@@ -119,7 +116,6 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
       setState(() => _call = call.copyWithRemaining(remaining));
       handleWarnings(call.durationSeconds, remaining);
       if (remaining == 0) {
-        // Servidor encerra; se o WS atrasar, atualiza.
         unawaited(handleRefreshTerminal());
       }
     });
@@ -148,13 +144,7 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
         return;
       }
       if (call.isTerminal) {
-        context.pushReplacement(
-          Pages.meetResultOf(
-            status: call.status,
-            reason: call.endedReason,
-            peerName: call.artistName,
-          ),
-        );
+        handleLeaveCall(call);
       }
     } catch (_) {}
   }
@@ -169,12 +159,15 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
       if (!mounted) {
         return;
       }
-      context.pushReplacement(
-        Pages.meetResultOf(
+      final call = _call;
+      if (call != null) {
+        handleLeaveCall(
+          call.copyWithRemaining(0),
           status: event.status ?? 'ended',
-          peerName: _call?.artistName ?? '',
-        ),
-      );
+        );
+      } else {
+        handleLeaveCallFallback(event.status ?? 'ended');
+      }
       return;
     }
     final call = event.call;
@@ -193,21 +186,80 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
     setState(() => _call = call);
     handleWarnings(call.durationSeconds, call.remainingSeconds);
     if (call.isTerminal) {
-      context.pushReplacement(
-        Pages.meetResultOf(
-          status: call.status,
-          reason: call.endedReason,
-          peerName: call.artistName,
-        ),
-      );
+      handleLeaveCall(call);
     }
+  }
+
+  Future<void> handleHangUp() async {
+    if (!widget.isArtist || _ending) {
+      return;
+    }
+    setState(() => _ending = true);
+    try {
+      final call = await MeetEventService.end(widget.callId);
+      await CometChatCallService.leave();
+      if (!mounted) {
+        return;
+      }
+      handleLeaveCall(call);
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('[meet-event] end: $error');
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _ending = false;
+        _error = 'Não foi possível encerrar.';
+      });
+    }
+  }
+
+  void handleLeaveCall(MeetCall call, {String? status}) {
+    final resolvedStatus = status ?? call.status;
+    if (widget.isArtist) {
+      // Host decide report vs volta ao hub após pop da call.
+      if (context.canPop()) {
+        context.pop(call);
+        return;
+      }
+      context.go(Pages.meetEventHostOf(call.eventId));
+      return;
+    }
+    context.pushReplacement(
+      Pages.meetResultOf(
+        status: resolvedStatus,
+        reason: call.endedReason,
+        peerName: call.artistName,
+      ),
+    );
+  }
+
+  void handleLeaveCallFallback(String status) {
+    if (widget.isArtist) {
+      if (context.canPop()) {
+        context.pop();
+        return;
+      }
+      context.go(Pages.meetHost);
+      return;
+    }
+    context.pushReplacement(
+      Pages.meetResultOf(
+        status: status,
+        peerName: _call?.artistName ?? '',
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final call = _call;
     final remaining = call?.remainingSeconds ?? 90;
-    final peer = call?.artistName ?? 'Meet';
+    final peer = widget.isArtist
+        ? (call?.fanName ?? 'Superfã')
+        : (call?.artistName ?? 'Meet');
 
     return Scaffold(
       backgroundColor: AppPalette.platinum950,
@@ -234,6 +286,9 @@ class _MeetEventCallScreenState extends State<MeetEventCallScreen> {
             joining: false,
             statusMessage: _cometWidget == null ? _statusMessage : null,
             error: _error,
+            showHangUp: widget.isArtist,
+            onHangUp: handleHangUp,
+            hangUpBusy: _ending,
           ),
         ],
       ),

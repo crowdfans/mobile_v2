@@ -19,6 +19,9 @@ import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/meet/meet_call_screen.dart';
 import 'package:crowdfans/screens/meet/meet_event_call_screen.dart';
+import 'package:crowdfans/screens/meet/meet_event_early_end_report_screen.dart';
+import 'package:crowdfans/screens/meet/meet_event_host_ringing_screen.dart';
+import 'package:crowdfans/screens/meet/meet_event_host_screen.dart';
 import 'package:crowdfans/screens/meet/meet_event_ringing_screen.dart';
 import 'package:crowdfans/screens/meet/meet_host_screen.dart';
 import 'package:crowdfans/screens/meet/meet_lobby_screen.dart';
@@ -381,6 +384,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.meetEventHost,
+        builder: (context, state) => MeetEventHostScreen(
+          eventId: state.pathParameters['eventId'] ?? '',
+        ),
+      ),
+      GoRoute(
         path: Pages.meetEventRinging,
         builder: (context, state) => MeetEventRingingScreen(
           callId: state.pathParameters['callId'] ?? '',
@@ -389,9 +398,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Pages.meetEventHostRinging,
+        builder: (context, state) => MeetEventHostRingingScreen(
+          callId: state.pathParameters['callId'] ?? '',
+          fanName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
+        ),
+      ),
+      GoRoute(
         path: Pages.meetEventCall,
         builder: (context, state) => MeetEventCallScreen(
           callId: state.pathParameters['callId'] ?? '',
+          isArtist: state.uri.queryParameters['role'] == 'artist',
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetEventEarlyEndReport,
+        builder: (context, state) => MeetEventEarlyEndReportScreen(
+          callId: state.pathParameters['callId'] ?? '',
+          eventId: state.uri.queryParameters['eventId'] ?? '',
         ),
       ),
       GoRoute(
