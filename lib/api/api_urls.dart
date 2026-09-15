@@ -87,14 +87,6 @@ abstract final class ApiUrls {
       '/api/v1/artist/:artistUid/analytics/insights';
   static const artistAnalyticsAudience =
       '/api/v1/artist/:artistUid/analytics/audience';
-  static const videoCalls = '/api/v1/video-calls';
-  static const videoCallsIncoming = '/api/v1/video-calls/incoming';
-  static const videoCall = '/api/v1/video-calls/:callId';
-  static const videoCallAccept = '/api/v1/video-calls/:callId/accept';
-  static const videoCallDecline = '/api/v1/video-calls/:callId/decline';
-  static const videoCallCancel = '/api/v1/video-calls/:callId/cancel';
-  static const videoCallEnd = '/api/v1/video-calls/:callId/end';
-
   /// Meet & Greet Virtual (CF-149 / CF-151).
   static const meetEvents = '/api/v1/meet-events';
   static const meetEvent = '/api/v1/meet-events/:eventId';
