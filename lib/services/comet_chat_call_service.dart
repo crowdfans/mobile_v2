@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cometchat_calls_sdk/cometchat_calls_sdk.dart';
+import 'package:crowdfans/models/meet_event.dart';
 import 'package:crowdfans/models/video_call.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -26,19 +27,46 @@ abstract final class CometChatCallService {
   static String? _initializedAppId;
 
   /// Entra na sessão de vídeo. Em sandbox não chama o SDK nativo.
-  static Future<CometChatJoinResult> join(VideoCall call) async {
-    if (call.sandbox ||
-        call.cometAppId.isEmpty ||
-        call.cometAppId == 'sandbox' ||
-        call.authToken.startsWith('sandbox-')) {
+  static Future<CometChatJoinResult> join(VideoCall call) {
+    return joinCredentials(
+      roomId: call.roomId,
+      authToken: call.authToken,
+      cometAppId: call.cometAppId,
+      cometRegion: call.cometRegion,
+      sandbox: call.sandbox,
+    );
+  }
+
+  /// Meet & Greet Virtual (CF-150) — mesmas credenciais CometChat.
+  static Future<CometChatJoinResult> joinMeet(MeetCall call) {
+    return joinCredentials(
+      roomId: call.roomId,
+      authToken: call.authToken,
+      cometAppId: call.cometAppId,
+      cometRegion: call.cometRegion,
+      sandbox: call.sandbox,
+    );
+  }
+
+  static Future<CometChatJoinResult> joinCredentials({
+    required String roomId,
+    required String authToken,
+    required String cometAppId,
+    required String cometRegion,
+    required bool sandbox,
+  }) async {
+    if (sandbox ||
+        cometAppId.isEmpty ||
+        cometAppId == 'sandbox' ||
+        authToken.startsWith('sandbox-')) {
       return const CometChatJoinResult(
         sandbox: true,
         message: 'Modo sandbox — timer sincronizado pelo servidor.',
       );
     }
 
-    await _ensureInitialized(call.cometAppId, call.cometRegion);
-    await _login(call.authToken);
+    await _ensureInitialized(cometAppId, cometRegion);
+    await _login(authToken);
 
     final settings = SessionSettingsBuilder()
         .setType(SessionType.video)
@@ -50,7 +78,7 @@ abstract final class CometChatCallService {
 
     unawaited(
       CometChatCalls.joinSession(
-        sessionId: call.roomId,
+        sessionId: roomId,
         sessionSettings: settings,
         onSuccess: (widget) {
           if (!completer.isCompleted) {
@@ -63,7 +91,7 @@ abstract final class CometChatCallService {
           if (kDebugMode) {
             debugPrint('[cometchat] joinSession: ${error.message}');
           }
-          _joinViaCallToken(call.roomId, settings, completer);
+          _joinViaCallToken(roomId, settings, completer);
         },
       ),
     );
