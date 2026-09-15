@@ -62,6 +62,8 @@ abstract final class Pages {
   static const meetHost = '/meet';
   static const meetRequest = '/meet/request';
   static const meetLobby = '/meet/events/:eventId';
+  static const meetEventRinging = '/meet/events/calls/:callId/ringing';
+  static const meetEventCall = '/meet/events/calls/:callId';
   static const meetWaiting = '/meet/waiting/:callId';
   static const meetRinging = '/meet/ringing/:callId';
   static const meetCall = '/meet/call/:callId';
@@ -155,6 +157,30 @@ abstract final class Pages {
       },
     ).toString();
   }
+
+  /// Ringing inbound do fã (meet-events).
+  static String meetEventRingingOf(
+    String callId, {
+    String? artistName,
+    String? avatarUrl,
+  }) {
+    return Uri(
+      path: meetEventRinging.replaceAll(
+        ':callId',
+        Uri.encodeComponent(callId.trim()),
+      ),
+      queryParameters: {
+        if ((artistName ?? '').trim().isNotEmpty) 'name': artistName!.trim(),
+        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
+      },
+    ).toString();
+  }
+
+  /// Call ativa 90s do Meet & Greet Virtual (fã).
+  static String meetEventCallOf(String callId) => meetEventCall.replaceAll(
+        ':callId',
+        Uri.encodeComponent(callId.trim()),
+      );
 
   static String meetWaitingOf(
     String callId, {

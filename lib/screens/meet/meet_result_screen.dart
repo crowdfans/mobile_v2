@@ -37,7 +37,7 @@ class MeetResultScreen extends StatelessWidget {
     switch (status) {
       case 'ended':
         return peer.isEmpty
-            ? 'Obrigado pelo Meet & Greet de 60 segundos.'
+            ? 'Obrigado pelo Meet & Greet.'
             : 'Meet com $peer concluído.';
       case 'declined':
         return peer.isEmpty

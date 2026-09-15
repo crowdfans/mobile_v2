@@ -18,6 +18,8 @@ import 'package:crowdfans/screens/login/fan_login_screen.dart';
 import 'package:crowdfans/screens/main/main_shell.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/screens/meet/meet_call_screen.dart';
+import 'package:crowdfans/screens/meet/meet_event_call_screen.dart';
+import 'package:crowdfans/screens/meet/meet_event_ringing_screen.dart';
 import 'package:crowdfans/screens/meet/meet_host_screen.dart';
 import 'package:crowdfans/screens/meet/meet_lobby_screen.dart';
 import 'package:crowdfans/screens/meet/meet_request_screen.dart';
@@ -376,6 +378,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           eventId: state.pathParameters['eventId'] ?? '',
           artistName: state.uri.queryParameters['name'],
           avatarUrl: state.uri.queryParameters['avatarUrl'],
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetEventRinging,
+        builder: (context, state) => MeetEventRingingScreen(
+          callId: state.pathParameters['callId'] ?? '',
+          artistName: state.uri.queryParameters['name'],
+          avatarUrl: state.uri.queryParameters['avatarUrl'],
+        ),
+      ),
+      GoRoute(
+        path: Pages.meetEventCall,
+        builder: (context, state) => MeetEventCallScreen(
+          callId: state.pathParameters['callId'] ?? '',
         ),
       ),
       GoRoute(
