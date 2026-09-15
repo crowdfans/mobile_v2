@@ -61,6 +61,7 @@ abstract final class Pages {
   static const liveUnavailable = '/live';
   static const meetHost = '/meet';
   static const meetRequest = '/meet/request';
+  static const meetLobby = '/meet/events/:eventId';
   static const meetWaiting = '/meet/waiting/:callId';
   static const meetRinging = '/meet/ringing/:callId';
   static const meetCall = '/meet/call/:callId';
@@ -134,6 +135,25 @@ abstract final class Pages {
       name: name,
       avatarUrl: avatarUrl,
     );
+  }
+
+  /// Lobby do Meet & Greet Virtual (evento `lobby|serving`).
+  static String meetLobbyOf(
+    String eventId, {
+    String? name,
+    String? avatarUrl,
+  }) {
+    final path = meetLobby.replaceAll(
+      ':eventId',
+      Uri.encodeComponent(eventId.trim()),
+    );
+    return Uri(
+      path: path,
+      queryParameters: {
+        if ((name ?? '').trim().isNotEmpty) 'name': name!.trim(),
+        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
+      },
+    ).toString();
   }
 
   static String meetWaitingOf(

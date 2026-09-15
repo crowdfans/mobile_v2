@@ -7,6 +7,7 @@ class StoryItem {
     required this.handle,
     required this.imageUri,
     this.featureType,
+    this.eventId,
   });
 
   final String id;
@@ -15,6 +16,9 @@ class StoryItem {
   final String imageUri;
   final String? featureType;
 
+  /// ID do MeetEvent ativo (`lobby|serving`); ausente em stories legados.
+  final String? eventId;
+
   factory StoryItem.fromJson(Map<String, dynamic> json) {
     return StoryItem(
       id: json['id'] as String? ?? '',
@@ -22,6 +26,7 @@ class StoryItem {
       handle: json['handle'] as String? ?? '',
       imageUri: json['imageUri'] as String? ?? '',
       featureType: json['featureType'] as String?,
+      eventId: json['eventId'] as String?,
     );
   }
 }
