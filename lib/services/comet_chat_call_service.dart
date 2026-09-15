@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cometchat_calls_sdk/cometchat_calls_sdk.dart';
 import 'package:crowdfans/models/meet_event.dart';
-import 'package:crowdfans/models/video_call.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -26,18 +25,7 @@ class CometChatJoinResult {
 abstract final class CometChatCallService {
   static String? _initializedAppId;
 
-  /// Entra na sessão de vídeo. Em sandbox não chama o SDK nativo.
-  static Future<CometChatJoinResult> join(VideoCall call) {
-    return joinCredentials(
-      roomId: call.roomId,
-      authToken: call.authToken,
-      cometAppId: call.cometAppId,
-      cometRegion: call.cometRegion,
-      sandbox: call.sandbox,
-    );
-  }
-
-  /// Meet & Greet Virtual (CF-150) — mesmas credenciais CometChat.
+  /// Meet & Greet Virtual (CF-150) — credenciais CometChat.
   static Future<CometChatJoinResult> joinMeet(MeetCall call) {
     return joinCredentials(
       roomId: call.roomId,

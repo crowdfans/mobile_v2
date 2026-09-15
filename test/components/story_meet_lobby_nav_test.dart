@@ -58,7 +58,7 @@ void main() {
           },
         ),
         GoRoute(
-          path: Pages.meetRequest,
+          path: '/meet/request',
           builder: (context, state) {
             opened = state.uri.toString();
             return const Scaffold(body: Text('request'));

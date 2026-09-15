@@ -57,10 +57,9 @@ abstract final class Pages {
   static const createPost = '/post/create';
   static const myPosts = '/post/mine';
 
-  /// ⛔ Live ainda não disponível. Meet = CF-30.
+  /// ⛔ Live ainda não disponível. Meet = Meet & Greet Virtual (CF-148).
   static const liveUnavailable = '/live';
   static const meetHost = '/meet';
-  static const meetRequest = '/meet/request';
   static const meetLobby = '/meet/events/:eventId';
   static const meetEventHost = '/meet/events/:eventId/host';
   static const meetEventRinging = '/meet/events/calls/:callId/ringing';
@@ -69,9 +68,6 @@ abstract final class Pages {
   static const meetEventCall = '/meet/events/calls/:callId';
   static const meetEventEarlyEndReport =
       '/meet/events/calls/:callId/early-end-report';
-  static const meetWaiting = '/meet/waiting/:callId';
-  static const meetRinging = '/meet/ringing/:callId';
-  static const meetCall = '/meet/call/:callId';
   static const meetResult = '/meet/result';
 
   /// Alias legado do placeholder Meet.
@@ -124,20 +120,6 @@ abstract final class Pages {
   }) {
     return _withArtistQuery(
       fanLetterCompose,
-      artistId: artistId,
-      name: name,
-      avatarUrl: avatarUrl,
-    );
-  }
-
-  /// Fã solicita Meet com o artista.
-  static String meetRequestOf({
-    required String artistId,
-    String? name,
-    String? avatarUrl,
-  }) {
-    return _withArtistQuery(
-      meetRequest,
       artistId: artistId,
       name: name,
       avatarUrl: avatarUrl,
@@ -232,37 +214,6 @@ abstract final class Pages {
       queryParameters: {'eventId': eventId.trim()},
     ).toString();
   }
-
-  static String meetWaitingOf(
-    String callId, {
-    String? artistName,
-    String? avatarUrl,
-  }) {
-    return Uri(
-      path: meetWaiting.replaceAll(':callId', Uri.encodeComponent(callId)),
-      queryParameters: {
-        if ((artistName ?? '').trim().isNotEmpty) 'name': artistName!.trim(),
-        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
-      },
-    ).toString();
-  }
-
-  static String meetRingingOf(
-    String callId, {
-    String? fanName,
-    String? avatarUrl,
-  }) {
-    return Uri(
-      path: meetRinging.replaceAll(':callId', Uri.encodeComponent(callId)),
-      queryParameters: {
-        if ((fanName ?? '').trim().isNotEmpty) 'name': fanName!.trim(),
-        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
-      },
-    ).toString();
-  }
-
-  static String meetCallOf(String callId) =>
-      meetCall.replaceAll(':callId', Uri.encodeComponent(callId));
 
   static String meetResultOf({
     required String status,
