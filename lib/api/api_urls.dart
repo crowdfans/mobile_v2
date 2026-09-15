@@ -95,14 +95,21 @@ abstract final class ApiUrls {
   static const videoCallCancel = '/api/v1/video-calls/:callId/cancel';
   static const videoCallEnd = '/api/v1/video-calls/:callId/end';
 
-  /// Meet & Greet Virtual (CF-149).
+  /// Meet & Greet Virtual (CF-149 / CF-151).
   static const meetEvents = '/api/v1/meet-events';
   static const meetEvent = '/api/v1/meet-events/:eventId';
   static const meetEventJoinQueue = '/api/v1/meet-events/:eventId/join-queue';
   static const meetEventLeaveQueue = '/api/v1/meet-events/:eventId/leave-queue';
+  static const meetEventStartServing =
+      '/api/v1/meet-events/:eventId/start-serving';
+  static const meetEventCallNext = '/api/v1/meet-events/:eventId/call-next';
+  static const meetEventFinish = '/api/v1/meet-events/:eventId/finish';
   static const meetEventCall = '/api/v1/meet-events/calls/:callId';
   static const meetEventCallAnswer = '/api/v1/meet-events/calls/:callId/answer';
   static const meetEventCallMiss = '/api/v1/meet-events/calls/:callId/miss';
+  static const meetEventCallEnd = '/api/v1/meet-events/calls/:callId/end';
+  static const meetEventCallEarlyEndReport =
+      '/api/v1/meet-events/calls/:callId/early-end-report';
 
   /// Alias legado do Expo (`FOLLOWS`).
   static const fanClubs = follows;

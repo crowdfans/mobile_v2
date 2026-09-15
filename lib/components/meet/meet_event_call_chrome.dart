@@ -2,7 +2,7 @@ import 'package:crowdfans/components/meet/meet_shared.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Overlay da call do fã: timer + status, **sem** Hang Up.
+/// Overlay da call Meet & Greet: timer + status; Hang Up só para artista.
 class MeetEventCallChrome extends StatelessWidget {
   const MeetEventCallChrome({
     super.key,
@@ -11,6 +11,9 @@ class MeetEventCallChrome extends StatelessWidget {
     required this.joining,
     this.statusMessage,
     this.error,
+    this.showHangUp = false,
+    this.onHangUp,
+    this.hangUpBusy = false,
   });
 
   final String peerName;
@@ -18,6 +21,9 @@ class MeetEventCallChrome extends StatelessWidget {
   final bool joining;
   final String? statusMessage;
   final String? error;
+  final bool showHangUp;
+  final VoidCallback? onHangUp;
+  final bool hangUpBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -72,14 +78,25 @@ class MeetEventCallChrome extends StatelessWidget {
             ),
           ],
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 28),
-            child: Text(
-              'A chamada encerra automaticamente em 90 segundos.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white54, fontSize: 12),
+          if (showHangUp)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 28),
+              child: MeetRoundActionButton(
+                icon: Icons.call_end,
+                color: AppPalette.red500,
+                label: hangUpBusy ? 'Encerrando…' : 'Encerrar',
+                onPressed: hangUpBusy ? null : onHangUp,
+              ),
+            )
+          else
+            const Padding(
+              padding: EdgeInsets.only(bottom: 28),
+              child: Text(
+                'A chamada encerra automaticamente em 90 segundos.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white54, fontSize: 12),
+              ),
             ),
-          ),
         ],
       ),
     );

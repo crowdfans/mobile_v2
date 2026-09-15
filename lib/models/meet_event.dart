@@ -55,18 +55,19 @@ class MeetEventSnapshot {
   }
 
   MeetEventSnapshot copyWithCountdown(int remaining) {
+    final safe = remaining < 0 ? 0 : remaining;
     return MeetEventSnapshot(
       eventId: eventId,
       artistUid: artistUid,
       artistName: artistName,
       status: status,
       lobbyEndsAt: lobbyEndsAt,
-      lobbyRemainingSeconds: remaining < 0 ? 0 : remaining,
+      lobbyRemainingSeconds: safe,
       queueCount: queueCount,
       queuePosition: queuePosition,
       inQueue: inQueue,
       hasMembership: hasMembership,
-      canStartServing: canStartServing,
+      canStartServing: canStartServing || safe == 0 || queueCount >= 10,
       pendingEarlyEndReport: pendingEarlyEndReport,
       opensWithoutMembership: opensWithoutMembership,
     );

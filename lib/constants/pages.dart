@@ -62,8 +62,13 @@ abstract final class Pages {
   static const meetHost = '/meet';
   static const meetRequest = '/meet/request';
   static const meetLobby = '/meet/events/:eventId';
+  static const meetEventHost = '/meet/events/:eventId/host';
   static const meetEventRinging = '/meet/events/calls/:callId/ringing';
+  static const meetEventHostRinging =
+      '/meet/events/calls/:callId/host-ringing';
   static const meetEventCall = '/meet/events/calls/:callId';
+  static const meetEventEarlyEndReport =
+      '/meet/events/calls/:callId/early-end-report';
   static const meetWaiting = '/meet/waiting/:callId';
   static const meetRinging = '/meet/ringing/:callId';
   static const meetCall = '/meet/call/:callId';
@@ -176,11 +181,57 @@ abstract final class Pages {
     ).toString();
   }
 
-  /// Call ativa 90s do Meet & Greet Virtual (fã).
-  static String meetEventCallOf(String callId) => meetEventCall.replaceAll(
+  /// Hub do artista para um evento Meet & Greet.
+  static String meetEventHostOf(String eventId) => meetEventHost.replaceAll(
+        ':eventId',
+        Uri.encodeComponent(eventId.trim()),
+      );
+
+  /// Ringing outbound do artista (aguardando fã atender).
+  static String meetEventHostRingingOf(
+    String callId, {
+    String? fanName,
+    String? avatarUrl,
+  }) {
+    return Uri(
+      path: meetEventHostRinging.replaceAll(
         ':callId',
         Uri.encodeComponent(callId.trim()),
-      );
+      ),
+      queryParameters: {
+        if ((fanName ?? '').trim().isNotEmpty) 'name': fanName!.trim(),
+        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
+      },
+    ).toString();
+  }
+
+  /// Call ativa 90s do Meet & Greet Virtual.
+  ///
+  /// [isArtist] adiciona `role=artist` (Hang Up / Encerrar liberado).
+  static String meetEventCallOf(String callId, {bool isArtist = false}) {
+    final path = meetEventCall.replaceAll(
+      ':callId',
+      Uri.encodeComponent(callId.trim()),
+    );
+    if (!isArtist) {
+      return path;
+    }
+    return Uri(path: path, queryParameters: {'role': 'artist'}).toString();
+  }
+
+  /// Modal/tela de early-end report obrigatório (artista).
+  static String meetEventEarlyEndReportOf(
+    String callId, {
+    required String eventId,
+  }) {
+    return Uri(
+      path: meetEventEarlyEndReport.replaceAll(
+        ':callId',
+        Uri.encodeComponent(callId.trim()),
+      ),
+      queryParameters: {'eventId': eventId.trim()},
+    ).toString();
+  }
 
   static String meetWaitingOf(
     String callId, {
