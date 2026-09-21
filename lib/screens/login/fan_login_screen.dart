@@ -3,13 +3,11 @@ import 'package:crowdfans/components/login/login_label.dart';
 import 'package:crowdfans/components/login/login_layout.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/services/api_config.dart';
 import 'package:crowdfans/services/auth_service.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_security_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -128,7 +126,6 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final debug = kDebugMode ? apiConfigDebug() : null;
     final heroHeight = MediaQuery.sizeOf(context).height * 0.15;
     return LoginLayout(
       onBack: () => context.go(Pages.presentation),
@@ -175,25 +172,6 @@ class _FanLoginScreenState extends ConsumerState<FanLoginScreen> {
               ),
             ),
           ),
-          if (debug != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Text(
-                'API ${debug.mode}: ${debug.baseUrl}',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: colors.textTertiary),
-              ),
-            ),
-          // Sempre visível no web para validar o host da API.
-          if (kIsWeb)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                'API: ${apiConfigDebug().baseUrl}',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: colors.textTertiary),
-              ),
-            ),
         ],
       ),
     );
