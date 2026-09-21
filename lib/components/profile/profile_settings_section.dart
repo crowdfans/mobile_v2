@@ -40,7 +40,7 @@ class ProfileSettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ColoredBox(
-          color: colors.surfaceAlt,
+          color: Colors.transparent,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Align(
@@ -56,39 +56,44 @@ class ProfileSettingsSection extends StatelessWidget {
             ),
           ),
         ),
-        for (final item in items)
+        for (var index = 0; index < items.length; index++) ...[
           InkWell(
-            key: item.id == null ? null : Key('settings-item-${item.id}'),
-            onTap: item.onTap,
+            key: items[index].id == null
+                ? null
+                : Key('settings-item-${items[index].id}'),
+            onTap: items[index].onTap,
             child: SizedBox(
-              height: 52,
+              height: 60,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                ),
                 child: Row(
                   children: [
                     SvgPicture.asset(
-                      item.asset,
+                      items[index].asset,
                       width: 22,
                       height: 22,
                       colorFilter: ColorFilter.mode(
-                        item.danger ? colors.danger : colors.icon,
+                        items[index].danger ? colors.danger : colors.icon,
                         BlendMode.srcIn,
                       ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
-                        item.label,
+                        items[index].label,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: item.danger
+                          color: items[index].danger
                               ? colors.danger
                               : colors.textPrimary,
                         ),
                       ),
                     ),
-                    if (item.showChevron)
+                    if (items[index].showChevron) const SizedBox(width: 25),
+                    if (items[index].showChevron)
                       SvgPicture.asset(
                         'assets/icons/arrows/chevron-right.svg',
                         width: 18,
@@ -103,7 +108,16 @@ class ProfileSettingsSection extends StatelessWidget {
               ),
             ),
           ),
-        if (showDivider) const SizedBox(height: 4),
+          if (index < items.length - 1) const SizedBox(height: 8),
+        ],
+        if (showDivider)
+          ColoredBox(
+            color: colors.surfaceAlt,
+            child: const SizedBox(
+              width: double.infinity,
+              height: 8,
+            ),
+          ),
       ],
     );
   }
