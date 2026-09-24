@@ -22,32 +22,37 @@ class BottomNavProfileTab extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              height: 3,
-              color: selected ? colors.primary : Colors.transparent,
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: colors.surfaceAlt,
-                shape: BoxShape.circle,
-                border: selected
-                    ? Border.all(color: colors.primary, width: 2)
-                    : null,
+        child: Semantics(
+          button: true,
+          selected: selected,
+          label: selected ? 'Meu Perfil, selecionado' : 'Meu Perfil',
+          child: Column(
+            children: [
+              Container(
+                height: 3,
+                color: selected ? colors.primary : Colors.transparent,
               ),
-              clipBehavior: Clip.antiAlias,
-              child: url != null && url.isNotEmpty
-                  ? Image.network(url, fit: BoxFit.cover)
-                  : SvgPicture.asset(
-                      'assets/images/user-01.svg',
-                      fit: BoxFit.cover,
-                    ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: colors.surfaceAlt,
+                  shape: BoxShape.circle,
+                  border: selected
+                      ? Border.all(color: colors.primary, width: 2)
+                      : null,
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: url != null && url.isNotEmpty
+                    ? Image.network(url, fit: BoxFit.cover)
+                    : SvgPicture.asset(
+                        'assets/images/user-01.svg',
+                        fit: BoxFit.cover,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

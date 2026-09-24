@@ -5,6 +5,9 @@ import 'package:crowdfans/components/profile/artist_me_cover.dart';
 import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
 import 'package:crowdfans/components/profile/artist_me_tab_bar.dart';
 import 'package:crowdfans/components/profile/artist_profile_about_card.dart';
+import 'package:crowdfans/components/profile/me_fan_club_filter.dart';
+import 'package:crowdfans/components/profile/me_fan_club_filter_field.dart';
+import 'package:crowdfans/components/profile/me_fan_club_filter_menu.dart';
 import 'package:crowdfans/components/profile/me_followed_artists_section.dart';
 import 'package:crowdfans/components/profile/me_posts_filter_chip.dart';
 import 'package:crowdfans/components/profile/me_profile_actions_row.dart';
@@ -48,6 +51,8 @@ class _MeScreenState extends ConsumerState<MeScreen> {
   var _loading = true;
   int? _memberCount;
   int? _fanClubRank;
+  String? _fanClubFilterId;
+  var _fanClubFilterOpen = false;
 
   @override
   void initState() {
@@ -81,16 +86,20 @@ class _MeScreenState extends ConsumerState<MeScreen> {
   }
 
   List<FeedPost> visibleFanPosts() {
+    final byClub = mePostsForFanClub(
+      posts: _posts,
+      artistId: _fanClubFilterId,
+    );
     if (_filter == _MePostsFilter.posts) {
       return [
-        for (final post in _posts)
+        for (final post in byClub)
           if (post.type == PostType.text) post,
       ];
     }
     if (_filter == _MePostsFilter.media) {
-      return [for (final post in _posts) if (isMediaPost(post)) post];
+      return [for (final post in byClub) if (isMediaPost(post)) post];
     }
-    return _posts;
+    return byClub;
   }
 
   List<FeedPost> visibleArtistPosts() {
@@ -464,6 +473,44 @@ class _MeScreenState extends ConsumerState<MeScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              MeFanClubFilterField(
+                selected: () {
+                  final id = _fanClubFilterId;
+                  if (id == null) {
+                    return null;
+                  }
+                  for (final artist in _artists) {
+                    if (artist.id == id) {
+                      return artist;
+                    }
+                  }
+                  return null;
+                }(),
+                expanded: _fanClubFilterOpen,
+                onPressed: () {
+                  setState(() => _fanClubFilterOpen = !_fanClubFilterOpen);
+                },
+              ),
+              if (_fanClubFilterOpen) ...[
+                const SizedBox(height: 8),
+                MeFanClubFilterMenu(
+                  artists: _artists,
+                  selectedId: _fanClubFilterId,
+                  onSelect: (artist) {
+                    setState(() {
+                      _fanClubFilterId = artist.id;
+                      _fanClubFilterOpen = false;
+                    });
+                  },
+                  onClear: () {
+                    setState(() {
+                      _fanClubFilterId = null;
+                      _fanClubFilterOpen = false;
+                    });
+                  },
+                ),
+              ],
               const SizedBox(height: 8),
               if (_loading)
                 const ProfileState(loading: true)
