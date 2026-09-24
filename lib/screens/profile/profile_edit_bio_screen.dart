@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
+import 'package:crowdfans/components/profile/profile_bio_field_meta.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -13,7 +14,7 @@ import 'package:go_router/go_router.dart';
 
 const _maxBioLength = 180;
 
-/// Página própria para editar a bio (CF-162 / CF-219).
+/// Página própria para editar a bio (CF-219).
 class ProfileEditBioScreen extends ConsumerStatefulWidget {
   const ProfileEditBioScreen({super.key});
 
@@ -155,19 +156,29 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
                       onAction: handleLoad,
                     )
                   : ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 34),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
+                        Text(
+                          'Sua bio',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         AppTextField(
                           key: const ValueKey('edit-bio-field'),
-                          label: 'Bio',
                           hint: 'Conte um pouco sobre você',
-                          maxLines: 5,
+                          maxLines: 6,
+                          maxLength: _maxBioLength,
                           initialValue: _bio,
                           onChanged: handleChangeBio,
-                          helper: '${_bio.length}/$_maxBioLength caracteres',
                         ),
+                        const SizedBox(height: 8),
+                        ProfileBioFieldMeta(count: _bio.length),
                         if (_error != null) ...[
                           const SizedBox(height: 16),
                           AccountFeedbackBanner(
@@ -182,15 +193,18 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
                             success: true,
                           ),
                         ],
-                        const SizedBox(height: 16),
-                        AppButton(
-                          label: _saving ? 'Salvando...' : 'Salvar bio',
-                          disabled: !canSave,
-                          onPressed: handleSave,
-                        ),
                       ],
                     ),
             ),
+            if (_profile != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: AppButton(
+                  label: _saving ? 'Salvando...' : 'Salvar bio',
+                  disabled: !canSave,
+                  onPressed: handleSave,
+                ),
+              ),
           ],
         ),
       ),
