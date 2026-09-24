@@ -2,20 +2,15 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Pill "Modo secreto ativo" abaixo do header.
+/// Indicador compacto “Modo secreto ativo” (CF-177).
 class NovoPostSecretBanner extends StatelessWidget {
   const NovoPostSecretBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppPalette.blue50,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppPalette.blue200),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: IntrinsicWidth(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
