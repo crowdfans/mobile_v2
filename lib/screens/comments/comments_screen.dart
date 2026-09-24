@@ -52,6 +52,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   var _gifQuery = '';
   var _gifItems = <CommentGifItem>[];
   var _loadingGifs = false;
+  String? _gifError;
+  String? _gifAnnouncement;
   var _loading = true;
   var _loadingMore = false;
   var _page = 1;
@@ -143,26 +145,37 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   }
 
   Future<void> handleLoadGifs([String query = '']) async {
-    setState(() => _loadingGifs = true);
+    setState(() {
+      _loadingGifs = true;
+      _gifError = null;
+      _gifAnnouncement = null;
+    });
     try {
       final items = await CommentGifService.fetchCommentGifs(query);
       if (!mounted) {
         return;
       }
+      final trimmed = query.trim();
       setState(() {
         _gifItems = items;
         _loadingGifs = false;
+        _gifError = null;
+        _gifAnnouncement = trimmed.isEmpty
+            ? '${items.length} GIFs em destaque'
+            : '${items.length} resultados para “$trimmed”';
       });
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _loadingGifs = false);
-      await AppAlert.show(
-        context,
-        title: 'GIF',
-        message: 'Não foi possível carregar GIFs.',
-      );
+      // Mensagem recuperável — nunca expor API key ou detalhes internos.
+      setState(() {
+        _loadingGifs = false;
+        _gifItems = const [];
+        _gifAnnouncement = null;
+        _gifError =
+            'Não foi possível carregar os GIFs. Verifique sua conexão e tente novamente.';
+      });
     }
   }
 
@@ -370,12 +383,21 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         query: _gifQuery,
         items: _gifItems,
         loading: _loadingGifs,
+        errorMessage: _gifError,
+        resultAnnouncement: _gifAnnouncement,
         onQueryChanged: handleGifQueryChanged,
-        onClose: () => setState(() => _gifPickerOpen = false),
+        onClose: () => setState(() {
+          _gifPickerOpen = false;
+          _gifError = null;
+          _gifAnnouncement = null;
+        }),
         onSelect: (item) {
+          // Selecionar só volta ao rascunho — não publica sozinho.
           setState(() {
             _selectedGifUrl = item.originalUrl;
             _gifPickerOpen = false;
+            _gifError = null;
+            _gifAnnouncement = null;
           });
         },
       );

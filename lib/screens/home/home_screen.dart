@@ -177,105 +177,148 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       viewerIsArtist: viewer?.isArtist ?? false,
     );
 
+    final sidebarWidth = MediaQuery.sizeOf(context).width * 0.78;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: ImageToolbar(
-                    onMenu: handleOpenMenu,
-                    onNotifications: handleOpenNotifications,
-                  ),
-                ),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      _error!,
-                      style: TextStyle(color: colors.danger),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+            transform: Matrix4.translationValues(
+              _sidebarVisible ? sidebarWidth : 0,
+              0,
+              0,
+            ),
+            child: AbsorbPointer(
+              absorbing: _sidebarVisible,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: ImageToolbar(
+                        onMenu: handleOpenMenu,
+                        onNotifications: handleOpenNotifications,
+                      ),
                     ),
-                  ),
-                Expanded(
-                  child: _loading
-                      ? const Center(child: CircularProgressIndicator())
-                      : RefreshIndicator(
-                          onRefresh: handleRefresh,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            physics: homeFeedScrollPhysics,
-                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
-                            itemCount: _posts.length + 2,
-                            itemBuilder: (context, index) {
-                              if (index == 0) {
-                                return StoriesRow(stories: _stories);
-                              }
-                              if (index == _posts.length + 1) {
-                                if (_hasMore && !_loadingMore) {
-                                  handleLoad(page: _page + 1, append: true);
-                                }
-                                if (_loadingMore) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }
-                                if (_posts.isEmpty) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 48),
-                                    child: Text(
-                                      'Nada por aqui ainda. Siga artistas para ver o feed.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: colors.textSecondary,
-                                      ),
-                                    ),
-                                  );
-                                }
-                                return const SizedBox(height: 24);
-                              }
-                              final post = _posts[index - 1];
-                              return FeedItem(
-                                post: post,
-                                canAccessExclusive: canAccessExclusivePost(
-                                  post,
-                                  exclusiveContext,
-                                ),
-                                onVoteApplied: (result) {
-                                  setState(() {
-                                    final voteIndex = _posts.indexWhere(
-                                      (item) => item.id == result.id,
-                                    );
-                                    if (voteIndex >= 0) {
-                                      _posts[voteIndex] = _posts[voteIndex]
-                                          .copyWith(
-                                            votes: result.votes,
-                                            myVote: result.myVote,
-                                          );
-                                    }
-                                  });
-                                },
-                                onPressOptions: () {
-                                  setState(() => _optionsPost = post);
-                                },
-                                onPressShare: () {
-                                  setState(() => _sharePost = post);
-                                },
-                              );
-                            },
-                          ),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(color: colors.danger),
                         ),
+                      ),
+                    Expanded(
+                      child: _loading
+                          ? const Center(child: CircularProgressIndicator())
+                          : RefreshIndicator(
+                              onRefresh: handleRefresh,
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                physics: homeFeedScrollPhysics,
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  0,
+                                  12,
+                                  24,
+                                ),
+                                itemCount: _posts.length + 2,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return StoriesRow(stories: _stories);
+                                  }
+                                  if (index == _posts.length + 1) {
+                                    if (_hasMore && !_loadingMore) {
+                                      handleLoad(page: _page + 1, append: true);
+                                    }
+                                    if (_loadingMore) {
+                                      return const Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    }
+                                    if (_posts.isEmpty) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 48),
+                                        child: Text(
+                                          'Nada por aqui ainda. Siga artistas para ver o feed.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: colors.textSecondary,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox(height: 24);
+                                  }
+                                  final post = _posts[index - 1];
+                                  return FeedItem(
+                                    post: post,
+                                    canAccessExclusive: canAccessExclusivePost(
+                                      post,
+                                      exclusiveContext,
+                                    ),
+                                    onVoteApplied: (result) {
+                                      setState(() {
+                                        final voteIndex = _posts.indexWhere(
+                                          (item) => item.id == result.id,
+                                        );
+                                        if (voteIndex >= 0) {
+                                          _posts[voteIndex] = _posts[voteIndex]
+                                              .copyWith(
+                                                votes: result.votes,
+                                                myVote: result.myVote,
+                                              );
+                                        }
+                                      });
+                                    },
+                                    onPressOptions: () {
+                                      setState(() => _optionsPost = post);
+                                    },
+                                    onPressShare: () {
+                                      setState(() => _sharePost = post);
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
+          if (_sidebarVisible)
+            Positioned.fill(
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: sidebarWidth,
+                    child: SidebarMenu(
+                      visible: true,
+                      asDrawerPanel: true,
+                      artists: _followedArtists,
+                      onClose: handleCloseSidebar,
+                      onPressArtist: handlePressSidebarArtist,
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: handleCloseSidebar,
+                      child: const ColoredBox(color: Color(0x33000000)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ScrollToTopFab(
-            visible: _showScrollToTop && !_loading,
+            visible: _showScrollToTop && !_loading && !_sidebarVisible,
             onPressed: handleScrollToTop,
           ),
           PostOptionsSheet(
@@ -292,12 +335,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             visible: _sharePost != null,
             post: _sharePost,
             onClose: () => setState(() => _sharePost = null),
-          ),
-          SidebarMenu(
-            visible: _sidebarVisible,
-            artists: _followedArtists,
-            onClose: handleCloseSidebar,
-            onPressArtist: handlePressSidebarArtist,
           ),
         ],
       ),

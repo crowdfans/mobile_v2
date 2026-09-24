@@ -38,10 +38,11 @@ abstract final class CommentGifService {
     try {
       response = await http.get(uri).timeout(const Duration(seconds: 15));
     } catch (_) {
-      throw ApiError('Falha ao carregar GIFs.', 0);
+      // Sem detalhes de rede/chave — mensagem genérica para a UI.
+      throw ApiError('Não foi possível carregar os GIFs.', 0);
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Falha ao carregar GIFs.', response.statusCode);
+      throw ApiError('Não foi possível carregar os GIFs.', response.statusCode);
     }
     final payload = jsonDecode(response.body);
     final results = payload is Map
