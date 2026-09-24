@@ -1,19 +1,22 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Ação compacta de share no sheet dos 3 pontinhos.
+/// Ação compacta de share no sheet dos 3 pontinhos (CF-176).
 class PostOptionsShareAction extends StatelessWidget {
   const PostOptionsShareAction({
     super.key,
     required this.label,
-    required this.icon,
     required this.onPressed,
+    this.icon,
+    this.asset,
     this.iconColor,
   });
 
   final String label;
-  final IconData icon;
   final VoidCallback onPressed;
+  final IconData? icon;
+  final String? asset;
   final Color? iconColor;
 
   @override
@@ -27,7 +30,23 @@ class PostOptionsShareAction extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Column(
             children: [
-              Icon(icon, color: iconColor ?? colors.primary, size: 26),
+              if (asset != null)
+                asset!.endsWith('.svg')
+                    ? SvgPicture.asset(
+                        asset!,
+                        width: 26,
+                        height: 26,
+                        colorFilter: iconColor == null
+                            ? null
+                            : ColorFilter.mode(iconColor!, BlendMode.srcIn),
+                      )
+                    : Image.asset(asset!, width: 26, height: 26)
+              else
+                Icon(
+                  icon ?? Icons.link,
+                  color: iconColor ?? colors.primary,
+                  size: 26,
+                ),
               const SizedBox(height: 6),
               Text(
                 label,

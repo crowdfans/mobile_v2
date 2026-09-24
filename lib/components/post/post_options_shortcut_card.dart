@@ -1,13 +1,14 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Atalho do sheet de opções (fã clube / memórias).
+/// Atalho do sheet de opções (fã clube / memórias) — CF-176.
 class PostOptionsShortcutCard extends StatelessWidget {
   const PostOptionsShortcutCard({
     super.key,
     required this.label,
     required this.onPressed,
     this.backgroundColor,
+    this.asset,
     this.icon,
     this.iconColor,
   });
@@ -15,6 +16,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final Color? backgroundColor;
+  final String? asset;
   final IconData? icon;
   final Color? iconColor;
 
@@ -36,10 +38,19 @@ class PostOptionsShortcutCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (icon != null) ...[
+                  if (asset != null)
+                    Image.asset(
+                      asset!,
+                      width: 28,
+                      height: 28,
+                      errorBuilder: (_, _, _) => Icon(
+                        icon ?? Icons.image,
+                        color: iconColor ?? colors.primaryStrong,
+                      ),
+                    )
+                  else if (icon != null)
                     Icon(icon, color: iconColor ?? colors.primaryStrong),
-                    const SizedBox(height: 8),
-                  ],
+                  if (asset != null || icon != null) const SizedBox(height: 8),
                   Text(
                     label,
                     style: TextStyle(
