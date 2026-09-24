@@ -567,24 +567,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         );
       }
       if (!_subscribed) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ArtistProfileExclusiveTeaser(
-              artistName: name,
-              onSubscribe: handleToggleMembership,
-            ),
-            if (posts.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              for (final post in posts)
-                FeedItem(
-                  post: post,
-                  canAccessExclusive: false,
-                  onPressUnlock: handleToggleMembership,
-                  onVoteApplied: handleVoteApplied,
-                ),
-            ],
-          ],
+        // Um único card de membership — sem posts bloqueados redundantes (CF-184).
+        return ArtistProfileExclusiveTeaser(
+          artistName: name,
+          onSubscribe: handleToggleMembership,
         );
       }
       // Assinante: posts exclusivos sem CTA de compra.
