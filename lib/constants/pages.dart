@@ -67,6 +67,7 @@ abstract final class Pages {
   static const fanClubModeration = '/fan-clubs/moderation';
   static const fanClubRequestModeration = '/fan-clubs/request-moderation';
   static const fanClubRules = '/fan-clubs/rules';
+  static const fanClubDefendReturn = '/fan-clubs/defend-return';
   static const searchRanking = '/explore/ranking';
   static const report = '/report';
   static const fanLetterCompose = '/fan-letter/compose';
@@ -415,6 +416,22 @@ abstract final class Pages {
     );
   }
 
+  static String fanClubDefendReturnOf({
+    required String artistId,
+    String? name,
+    String? expulsionReason,
+  }) {
+    return Uri(
+      path: fanClubDefendReturn,
+      queryParameters: {
+        'artistId': artistId,
+        if ((name ?? '').trim().isNotEmpty) 'name': name!.trim(),
+        if ((expulsionReason ?? '').trim().isNotEmpty)
+          'reason': expulsionReason!.trim(),
+      },
+    ).toString();
+  }
+
   static String _withArtistQuery(
     String path, {
     String? artistId,
@@ -502,6 +519,7 @@ abstract final class Pages {
     '/pages/fan-clubs/FanClubModerationScreen': fanClubModeration,
     '/pages/fan-clubs/FanClubRequestModerationScreen': fanClubRequestModeration,
     '/pages/fan-clubs/FanClubRulesScreen': fanClubRules,
+    '/pages/fan-clubs/FanClubDefendReturnScreen': fanClubDefendReturn,
     '/pages/profile/settings/ProfileAccountScreen': profileAccount,
     '/pages/profile/settings/ProfileEditBioScreen': profileEditBio,
     '/pages/profile/settings/ProfilePhotoScreen': profilePhoto,

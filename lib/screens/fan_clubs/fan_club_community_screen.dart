@@ -531,7 +531,12 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                           reason: club.viewerExpulsionReason,
                                           onDefend: () {
                                             context.push(
-                                              Pages.profileContestations,
+                                              Pages.fanClubDefendReturnOf(
+                                                artistId: widget.artistId,
+                                                name: club.artistName,
+                                                expulsionReason:
+                                                    club.viewerExpulsionReason,
+                                              ),
                                             );
                                           },
                                         ),
