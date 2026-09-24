@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:flutter/material.dart';
 
-/// Tile selecionável de pacote na tela de recarga.
+/// Tile selecionável de pacote na tela de recarga (CF-169).
 class WalletRechargePackTile extends StatelessWidget {
   const WalletRechargePackTile({
     super.key,
@@ -18,7 +18,8 @@ class WalletRechargePackTile extends StatelessWidget {
   final VoidCallback onPressed;
 
   String priceLabel() {
-    final reais = (pack.priceCents / 100).toStringAsFixed(2).replaceAll('.', ',');
+    final reais =
+        (pack.priceCents / 100).toStringAsFixed(2).replaceAll('.', ',');
     return 'R\$ $reais';
   }
 
@@ -38,10 +39,19 @@ class WalletRechargePackTile extends StatelessWidget {
         onTap: onPressed,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(Icons.toll, size: 28, color: colors.primary),
+              Image.asset(
+                'assets/images/jam-coin.png',
+                width: 36,
+                height: 36,
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.monetization_on,
+                  size: 36,
+                  color: Color(0xFFF5C451),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -62,49 +72,35 @@ class WalletRechargePackTile extends StatelessWidget {
                         color: colors.textSecondary,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (featured)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
+                    if (featured) ...[
+                      const SizedBox(height: 4),
+                      Text(
                         'Mais pedido',
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: colors.primary,
                         ),
                       ),
-                    ),
-                  Text(
-                    priceLabel(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Icon(
-                    selected
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_off,
-                    color: selected ? colors.primary : colors.textTertiary,
-                    size: 22,
-                  ),
-                ],
+                    ],
+                  ],
+                ),
+              ),
+              Text(
+                priceLabel(),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Icon(
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+                color: selected ? colors.primary : colors.textTertiary,
+                size: 22,
               ),
             ],
           ),
