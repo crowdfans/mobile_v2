@@ -19,11 +19,13 @@ class InformationDocumentView extends StatelessWidget {
     required this.title,
     required this.intro,
     required this.sections,
+    this.lastUpdated,
   });
 
   final String title;
   final String intro;
   final List<InformationDocumentSection> sections;
+  final String? lastUpdated;
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +36,19 @@ class InformationDocumentView extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 23,
-            fontWeight: FontWeight.w900,
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            height: 1.25,
             color: colors.textPrimary,
           ),
         ),
+        if (lastUpdated != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            lastUpdated!,
+            style: TextStyle(fontSize: 13, color: colors.textTertiary),
+          ),
+        ],
         const SizedBox(height: 12),
         Text(
           intro,
@@ -49,32 +59,31 @@ class InformationDocumentView extends StatelessWidget {
           ),
         ),
         for (final section in sections) ...[
-          const SizedBox(height: 20),
-          Text(
-            section.title,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
+          const SizedBox(height: 22),
+          Semantics(
+            header: true,
+            child: Text(
+              section.title,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                height: 1.35,
+                color: colors.textPrimary,
+              ),
             ),
           ),
           for (final paragraph in section.paragraphs) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               paragraph,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 14,
                 height: 1.55,
                 color: colors.textSecondary,
               ),
             ),
           ],
         ],
-        const SizedBox(height: 16),
-        Text(
-          'Última atualização: 3 de agosto de 2026.',
-          style: TextStyle(fontSize: 13, color: colors.textTertiary),
-        ),
       ],
     );
   }
