@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
+import 'package:crowdfans/components/search/search_artist_result_row.dart';
 import 'package:crowdfans/components/search/search_discovery_tile.dart';
 import 'package:crowdfans/components/search/search_query_field.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -19,10 +20,12 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final _queryController = TextEditingController();
   var _topArtists = <ArtistSearchItem>[];
   var _results = <ArtistSearchItem>[];
   var _query = '';
   var _loading = true;
+  var _searchingBusy = false;
   String? _error;
   ArtistSearchItem? _selected;
   Timer? _debounce;
@@ -36,6 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _queryController.dispose();
     super.dispose();
   }
 
@@ -65,26 +69,45 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void handleQueryChanged(String query) {
-    _query = query;
+    setState(() => _query = query);
     _debounce?.cancel();
     if (query.trim().isEmpty) {
       setState(() {
         _results = [];
         _error = null;
+        _searchingBusy = false;
       });
       return;
     }
+    setState(() => _searchingBusy = true);
     _debounce = Timer(const Duration(milliseconds: 350), () {
       handleSearch(query);
     });
   }
 
+  void handleClearQuery() {
+    _debounce?.cancel();
+    _queryController.clear();
+    setState(() {
+      _query = '';
+      _results = [];
+      _error = null;
+      _searchingBusy = false;
+    });
+  }
+
   Future<void> handleSearch(String query) async {
     if (query.trim().isEmpty) {
-      setState(() => _results = []);
+      setState(() {
+        _results = [];
+        _searchingBusy = false;
+      });
       return;
     }
-    setState(() => _loading = true);
+    setState(() {
+      _searchingBusy = true;
+      _error = null;
+    });
     try {
       final data = await SearchService.searchArtists(query, limit: 30);
       if (!mounted || _query.trim() != query.trim()) {
@@ -93,14 +116,14 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         _results = data.artists;
         _error = null;
-        _loading = false;
+        _searchingBusy = false;
       });
     } catch (_) {
       if (!mounted || _query.trim() != query.trim()) {
         return;
       }
       setState(() {
-        _loading = false;
+        _searchingBusy = false;
         _error = 'Não foi possível buscar artistas.';
       });
     }
@@ -122,9 +145,13 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final searching = _query.trim().isNotEmpty;
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final list = searching ? _results : _topArtists;
+    final listBusy = searching ? _searchingBusy : _loading;
+
     return Scaffold(
       backgroundColor: colors.background,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           SafeArea(
@@ -134,8 +161,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: SearchQueryField(
+                    controller: _queryController,
                     hint: 'Buscar artista',
                     onChanged: handleQueryChanged,
+                    showClear: searching,
+                    onClear: handleClearQuery,
                   ),
                 ),
                 if (!searching)
@@ -166,38 +196,45 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
+                if (searching && !_searchingBusy && _error == null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      list.isEmpty
+                          ? 'Nenhum resultado'
+                          : '${list.length} resultado${list.length == 1 ? '' : 's'}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ),
                 if (_error != null)
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                     child: Text(
                       _error!,
                       style: TextStyle(color: colors.danger),
                     ),
                   ),
-                if (searching)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: Text(
-                      'Resultados',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
                 Expanded(
-                  child: _loading
+                  child: listBusy
                       ? const Center(child: CircularProgressIndicator())
                       : RefreshIndicator(
                           onRefresh: handleRefresh,
                           child: list.isEmpty
                               ? ListView(
+                                  padding: EdgeInsets.only(
+                                    bottom: 24 + keyboard,
+                                  ),
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(top: 40),
                                       child: Text(
-                                        searching
+                                        _error != null
+                                            ? 'Tente novamente em instantes.'
+                                            : searching
                                             ? 'Nenhum artista encontrado.'
                                             : 'Nada no ranking ainda.',
                                         textAlign: TextAlign.center,
@@ -210,11 +247,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ],
                                 )
                               : ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(
+                                  padding: EdgeInsets.fromLTRB(
                                     16,
                                     0,
                                     16,
-                                    24,
+                                    24 + keyboard,
                                   ),
                                   itemCount: list.length + (searching ? 0 : 1),
                                   itemBuilder: (context, index) {
@@ -225,20 +262,28 @@ class _SearchScreenState extends State<SearchScreen> {
                                       );
                                     }
                                     final artist = list[index];
+                                    final openProfile = () => context.push(
+                                      Pages.artistProfile.replaceAll(
+                                        ':artistId',
+                                        artist.id,
+                                      ),
+                                    );
+                                    final openMore = () {
+                                      setState(() => _selected = artist);
+                                    };
+                                    if (searching) {
+                                      return SearchArtistResultRow(
+                                        artist: artist,
+                                        position: artist.rank ?? index + 1,
+                                        onPressed: openProfile,
+                                        onPressMore: openMore,
+                                      );
+                                    }
                                     return SearchArtistRankRow(
                                       artist: artist,
-                                      position: searching
-                                          ? null
-                                          : (artist.rank ?? index + 1),
-                                      onPressed: () => context.push(
-                                        Pages.artistProfile.replaceAll(
-                                          ':artistId',
-                                          artist.id,
-                                        ),
-                                      ),
-                                      onPressMore: () {
-                                        setState(() => _selected = artist);
-                                      },
+                                      position: artist.rank ?? index + 1,
+                                      onPressed: openProfile,
+                                      onPressMore: openMore,
                                     );
                                   },
                                 ),
