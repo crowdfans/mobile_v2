@@ -352,6 +352,7 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
 
     return Scaffold(
       backgroundColor: colors.background,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
           children: [

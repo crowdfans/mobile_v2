@@ -23,7 +23,14 @@ class FanClubSelectorDropdown extends StatefulWidget {
 }
 
 class _FanClubSelectorDropdownState extends State<FanClubSelectorDropdown> {
+  final _queryController = TextEditingController();
   var _query = '';
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    super.dispose();
+  }
 
   List<FanClubComposeArtist> get _filtered {
     final q = _query.trim().toLowerCase();
@@ -40,10 +47,22 @@ class _FanClubSelectorDropdownState extends State<FanClubSelectorDropdown> {
     setState(() => _query = value);
   }
 
+  void handleClear() {
+    _queryController.clear();
+    setState(() => _query = '');
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final items = _filtered;
+    final media = MediaQuery.of(context);
+    final keyboard = media.viewInsets.bottom;
+    // Altura útil: cabem resultados acima do teclado / toolbar.
+    final maxListHeight = (media.size.height * 0.36 - keyboard * 0.25)
+        .clamp(120.0, 320.0)
+        .toDouble();
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -61,7 +80,7 @@ class _FanClubSelectorDropdownState extends State<FanClubSelectorDropdown> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+            padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
             child: Row(
               children: [
                 SvgPicture.asset(
@@ -75,35 +94,54 @@ class _FanClubSelectorDropdownState extends State<FanClubSelectorDropdown> {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: TextField(
-                    key: const Key('novo-post-club-search'),
-                    autofocus: true,
-                    onChanged: handleQueryChange,
-                    style: TextStyle(fontSize: 15, color: colors.textPrimary),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      border: InputBorder.none,
-                      hintText: 'Procurar Fã Clube',
-                      hintStyle: TextStyle(color: colors.textTertiary),
+                  child: Semantics(
+                    label: 'Procurar fã clube',
+                    textField: true,
+                    child: TextField(
+                      key: const Key('novo-post-club-search'),
+                      controller: _queryController,
+                      autofocus: true,
+                      onChanged: handleQueryChange,
+                      style: TextStyle(fontSize: 15, color: colors.textPrimary),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        border: InputBorder.none,
+                        hintText: 'Procurar Fã Clube',
+                        hintStyle: TextStyle(color: colors.textTertiary),
+                      ),
                     ),
                   ),
                 ),
+                if (_query.trim().isNotEmpty)
+                  IconButton(
+                    onPressed: handleClear,
+                    tooltip: 'Limpar busca',
+                    icon: Icon(
+                      Icons.close,
+                      size: 18,
+                      color: colors.textSecondary,
+                    ),
+                  ),
               ],
             ),
           ),
           Divider(height: 1, thickness: 1, color: colors.border),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 260),
+            constraints: BoxConstraints(maxHeight: maxListHeight),
             child: items.isEmpty
                 ? Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      'Nenhum fã clube encontrado.',
+                      _query.trim().isEmpty
+                          ? 'Nenhum fã clube disponível.'
+                          : 'Nenhum fã clube encontrado.',
                       style: TextStyle(color: colors.textSecondary),
                     ),
                   )
                 : ListView.builder(
                     shrinkWrap: true,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final artist = items[index];
