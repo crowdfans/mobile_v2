@@ -1,7 +1,6 @@
-import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Banner promocional de recarga com countdown.
+/// Banner promocional de recarga com arte oficial (CF-168).
 class WalletPromoBanner extends StatelessWidget {
   const WalletPromoBanner({
     super.key,
@@ -14,58 +13,48 @@ class WalletPromoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = CrowdFansTheme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.primaryStrong,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onRecharge,
         borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Oferta termina em $countdown',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: colors.buttonPrimaryText,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '15% OFF na recarga',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: colors.buttonPrimaryText,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Material(
-              color: colors.background,
-              borderRadius: BorderRadius.circular(999),
-              child: InkWell(
-                onTap: onRecharge,
-                borderRadius: BorderRadius.circular(999),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
-                  child: Text(
-                    'Recarregar agora',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: colors.primaryStrong,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 7,
+                child: Image.asset(
+                  'assets/images/Banner Jam Coins.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    color: const Color(0xFF7E49FF),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      '15% OFF na recarga',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                left: 16,
+                bottom: 12,
+                child: Text(
+                  'Oferta termina em $countdown',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
