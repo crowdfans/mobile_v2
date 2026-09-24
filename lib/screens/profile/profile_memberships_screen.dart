@@ -11,7 +11,6 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/membership.dart';
 import 'package:crowdfans/services/profile_service.dart';
-import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
@@ -109,43 +108,27 @@ class _ProfileMembershipsScreenState
     }
   }
 
-  Future<void> handleCancel(MembershipCard item) async {
-    final artistId = item.artistId;
-    if (!item.canCancel || artistId == null) {
+  Future<void> handleManage(MembershipCard item) async {
+    final artistId = item.artistId?.trim() ?? '';
+    if (artistId.isEmpty) {
       await AppAlert.show(
         context,
         title: 'Memberships',
-        message: 'Esta assinatura não pode ser cancelada.',
+        message: 'Esta assinatura não pode ser gerenciada.',
       );
       return;
     }
-    final ok = await AppAlert.confirm(
-      context,
-      title: 'Cancelar membership',
-      message: 'Deixar de seguir ${item.displayName}?',
-      confirmLabel: 'Cancelar',
-      cancelLabel: 'Manter',
+    final price = item.price?.toInt() ?? 100;
+    context.push(
+      Pages.profileMembershipManageOf(
+        artistId: artistId,
+        artistName: item.displayName,
+        artistHandle: item.label,
+        artistAvatarUrl: item.artistAvatarUri,
+        pricePerMonth: price > 0 ? price : 100,
+        monthsLabel: item.monthsLabel,
+      ),
     );
-    if (!ok) {
-      return;
-    }
-    setState(() => _busyId = item.id);
-    try {
-      await SubscriptionService.cancelSubscription(artistId);
-      await handleLoad();
-    } catch (error) {
-      if (mounted) {
-        await AppAlert.show(
-          context,
-          title: 'Memberships',
-          message: error.toString(),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _busyId = null);
-      }
-    }
   }
 
   List<Widget> section(
@@ -174,7 +157,7 @@ class _ProfileMembershipsScreenState
           item: item,
           busy: _busyId == item.id,
           onCancel: allowCancel && item.canCancel
-              ? () => handleCancel(item)
+              ? () => handleManage(item)
               : null,
         ),
         const SizedBox(height: 12),

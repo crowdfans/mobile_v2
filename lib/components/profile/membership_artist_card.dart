@@ -144,7 +144,7 @@ class MembershipArtistCard extends StatelessWidget {
                   foregroundColor: colors.danger,
                 ),
                 child: Text(
-                  busy ? 'Cancelando...' : 'Cancelar assinatura',
+                  busy ? 'Abrindo...' : 'Gerenciar',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),

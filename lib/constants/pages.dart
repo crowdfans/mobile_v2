@@ -333,6 +333,32 @@ abstract final class Pages {
       },
     ).toString();
   }
+
+  /// Gerenciar membership (pausar / cancelar).
+  static String profileMembershipManageOf({
+    required String artistId,
+    required String artistName,
+    String? artistHandle,
+    String? artistAvatarUrl,
+    int pricePerMonth = 100,
+    String? monthsLabel,
+  }) {
+    return Uri(
+      path: profileMembershipManage,
+      queryParameters: {
+        'artistId': artistId,
+        'artistName': artistName,
+        if ((artistHandle ?? '').trim().isNotEmpty)
+          'artistHandle': artistHandle!.trim(),
+        if ((artistAvatarUrl ?? '').trim().isNotEmpty)
+          'artistAvatarUrl': artistAvatarUrl!.trim(),
+        'pricePerMonth': '$pricePerMonth',
+        if ((monthsLabel ?? '').trim().isNotEmpty)
+          'monthsLabel': monthsLabel!.trim(),
+      },
+    ).toString();
+  }
+
   static String fanClubComposeOf({
     String? artistId,
     String? name,
@@ -409,6 +435,7 @@ abstract final class Pages {
   static const profileMembershipActivationConfirmed =
       '/me/settings/memberships/activation-confirmed';
   static const profileMembershipSubscribe = '/me/settings/memberships/subscribe';
+  static const profileMembershipManage = '/me/settings/memberships/manage';
   static const profilePro = '/me/settings/pro';
   static const profileWallet = '/me/settings/wallet';
   static const profileWalletRecharge = '/me/settings/wallet/recharge';
@@ -475,6 +502,8 @@ abstract final class Pages {
         profileMembershipActivationConfirmed,
     '/pages/profile/settings/ProfileMembershipSubscribeScreen':
         profileMembershipSubscribe,
+    '/pages/profile/settings/ProfileMembershipManageScreen':
+        profileMembershipManage,
     '/pages/profile/settings/ProfileProScreen': profilePro,
     '/pages/profile/settings/ProfileWalletScreen': profileWallet,
     '/pages/profile/settings/ProfileWalletRechargeScreen':
