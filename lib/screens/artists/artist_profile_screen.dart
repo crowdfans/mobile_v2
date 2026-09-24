@@ -10,8 +10,10 @@ import 'package:crowdfans/components/profile/artist_profile_fan_club_header.dart
 import 'package:crowdfans/components/profile/artist_profile_fan_club_toolbar.dart';
 import 'package:crowdfans/components/profile/artist_profile_letter_tile.dart';
 import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_social_links_card.dart';
 import 'package:crowdfans/components/profile/artist_profile_spotify_card.dart';
 import 'package:crowdfans/components/profile/artist_profile_stat_tile.dart';
+import 'package:crowdfans/components/profile/artist_sobre_base.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -485,10 +487,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           const SizedBox(height: 16),
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: ArtistProfileStatTile(
                   label: 'Base',
-                  value: 'Brasil',
+                  value: artistSobreBaseLabel(null),
                 ),
               ),
               const SizedBox(width: 10),
@@ -501,13 +503,9 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          const ArtistProfileSpotifyCard(),
+          ArtistProfileSpotifyCard(artistName: name),
           const SizedBox(height: 14),
-          AppButton(
-            label: 'Abrir fã clube',
-            variant: AppButtonVariant.outline,
-            onPressed: handleOpenFanClub,
-          ),
+          const ArtistProfileSocialLinksCard(),
         ],
       );
     }
