@@ -351,7 +351,9 @@ abstract final class Pages {
   static const profileNotificationsArtists =
       '/me/settings/notifications/artists';
   static const profileSecurity = '/me/settings/security';
+  static const profileSecurityCredentials = '/me/settings/security/credentials';
   static const profileChangePhone = '/me/settings/security/phone';
+  static const profileConnectedDevices = '/me/settings/security/devices';
   static const profileReferral = '/me/settings/referral';
   static const profileSettings = '/me/settings';
   static const profileBlockedUsers = '/me/settings/blocked';
@@ -408,7 +410,11 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileNotificationCategoryScreen':
         '/me/settings/notifications/:categoryId',
     '/pages/profile/settings/ProfileSecurityScreen': profileSecurity,
+    '/pages/profile/settings/ProfileSecurityCredentialsScreen':
+        profileSecurityCredentials,
     '/pages/profile/settings/ProfileChangePhoneScreen': profileChangePhone,
+    '/pages/profile/settings/ProfileConnectedDevicesScreen':
+        profileConnectedDevices,
     '/pages/profile/settings/ProfileReferralScreen': profileReferral,
     '/pages/profile/settings/ProfileSettingsScreen': profileSettings,
     '/pages/profile/settings/BlockedUsersSettingsScreen': profileBlockedUsers,
