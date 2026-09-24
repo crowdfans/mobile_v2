@@ -121,19 +121,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
             ),
             SizedBox(
-              height: 40,
+              height: 32,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
                   for (final tab in NotificationTab.values)
                     if (tab != NotificationTab.system) ...[
-                      NotificationFilterChip(
-                        tab: tab,
-                        selected: _tab == tab,
-                        onPressed: () => setState(() => _tab = tab),
+                      Center(
+                        child: NotificationFilterChip(
+                          tab: tab,
+                          selected: _tab == tab,
+                          onPressed: () => setState(() => _tab = tab),
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                     ],
                 ],
               ),

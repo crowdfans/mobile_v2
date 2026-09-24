@@ -33,12 +33,12 @@ class NotificationFilterChip extends StatelessWidget {
           onTap: onPressed,
           customBorder: const StadiumBorder(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
                 color: selected ? colors.buttonPrimaryText : colors.textPrimary,
               ),
             ),
