@@ -36,7 +36,13 @@ class ProfileScreenHeader extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 44, child: action),
+          if (action != null)
+            ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 44),
+              child: Align(alignment: Alignment.centerRight, child: action),
+            )
+          else
+            const SizedBox(width: 44),
         ],
       ),
     );
