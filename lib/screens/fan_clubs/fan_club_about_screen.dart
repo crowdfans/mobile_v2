@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
-import 'package:crowdfans/components/fan_club/fan_club_moderator_row.dart';
+import 'package:crowdfans/components/fan_club/fan_club_moderation_candidacy_section.dart';
+import 'package:crowdfans/components/fan_club/fan_club_moderator_preview_row.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
@@ -10,7 +11,7 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Sobre o fã clube: descrição, moderadores, pedido e apelação.
+/// “Ver mais” do fã-clube: prévia de moderadores + candidatura (CF-223).
 class FanClubAboutScreen extends StatefulWidget {
   const FanClubAboutScreen({
     super.key,
@@ -29,9 +30,7 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
   ArtistFanClub? _club;
   var _loading = true;
   String? _error;
-  var _requestReason = '';
   var _appealDefense = '';
-  var _requesting = false;
   var _appealing = false;
   var _formNonce = 0;
 
@@ -84,44 +83,13 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
     context.go(Pages.clubs);
   }
 
-  Future<void> handleRequestModeration() async {
-    final trimmed = _requestReason.trim();
-    if (trimmed.length < 24 || trimmed.length > 420) {
-      await AppAlert.show(
-        context,
-        title: 'Moderação',
-        message: 'Explique em 24 a 420 caracteres por que você quer moderar.',
-      );
-      return;
-    }
-    setState(() => _requesting = true);
-    try {
-      await FanClubService.requestFanClubModeration(widget.artistId, trimmed);
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _requestReason = '';
-        _formNonce++;
-      });
-      await AppAlert.show(
-        context,
-        title: 'Moderação',
-        message: 'Pedido enviado ao artista.',
-      );
-    } catch (error) {
-      if (mounted) {
-        await AppAlert.show(
-          context,
-          title: 'Moderação',
-          message: error.toString(),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _requesting = false);
-      }
-    }
+  void handleOpenRequestModeration() {
+    context.push(
+      Pages.fanClubRequestModerationOf(
+        artistId: widget.artistId,
+        name: _club?.artistName ?? widget.artistName,
+      ),
+    );
   }
 
   Future<void> handleAppeal() async {
@@ -169,11 +137,12 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
     final colors = CrowdFansTheme.of(context);
     final club = _club;
     final preview = (club?.moderators ?? const []).take(3).toList();
-    final canRequest =
-        club != null &&
+    final canRequest = club != null &&
         club.isMember &&
         !club.viewerIsOwner &&
-        !club.viewerIsModerator;
+        !club.viewerIsModerator &&
+        !club.viewerIsExpelled;
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -193,25 +162,15 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             style: TextStyle(color: colors.textSecondary),
                           )
                         else if (club != null) ...[
-                          if (club.description.trim().isNotEmpty) ...[
-                            Text(
-                              club.description,
-                              style: TextStyle(
-                                fontSize: 15,
-                                height: 1.45,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 22),
-                          ],
                           Text(
                             'Moderadores do fã-clube',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.w700,
                               color: colors.textPrimary,
                             ),
                           ),
+                          const SizedBox(height: 4),
                           if (preview.isEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
@@ -225,7 +184,7 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             )
                           else
                             for (final mod in preview)
-                              FanClubModeratorRow(moderator: mod),
+                              FanClubModeratorPreviewRow(moderator: mod),
                           const SizedBox(height: 12),
                           AppButton(
                             label: 'Ver todos os moderadores',
@@ -255,40 +214,13 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             ),
                           ],
                           if (canRequest) ...[
-                            const SizedBox(height: 28),
-                            Text(
-                              'Quero ajudar como moderador(a)',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Se você quiser participar da moderação desse fã-clube, envie uma solicitação para o artista contando por que faria sentido assumir esse papel.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                height: 1.45,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            AppTextField(
-                              key: ValueKey('request-$_formNonce'),
-                              hint: 'Explique por que você quer ser moderador(a) e como ajudaria esse fã-clube.',
-                              maxLines: 4,
-                              onChanged: (value) => _requestReason = value,
-                            ),
-                            const SizedBox(height: 12),
-                            AppButton(
-                              label: 'Solicitar moderação',
-                              loading: _requesting,
-                              onPressed: handleRequestModeration,
+                            const SizedBox(height: 32),
+                            FanClubModerationCandidacySection(
+                              onRequestPressed: handleOpenRequestModeration,
                             ),
                           ],
                           if (club.viewerIsExpelled) ...[
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 28),
                             Text(
                               'Você foi expulso — apelar',
                               style: TextStyle(
@@ -300,7 +232,8 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             const SizedBox(height: 8),
                             AppTextField(
                               key: ValueKey('appeal-$_formNonce'),
-                              hint: 'Explique por que merece retornar (mín. 24 caracteres)',
+                              hint:
+                                  'Explique por que merece retornar (mín. 24 caracteres)',
                               maxLines: 4,
                               onChanged: (value) => _appealDefense = value,
                             ),
