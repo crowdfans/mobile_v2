@@ -503,7 +503,15 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                         ),
                                       ),
                                     FanClubCommunityHero(
-                                      artistName: artistName,
+                                      artistName: club.name.trim().isNotEmpty
+                                          ? club.name
+                                              .replaceFirst(
+                                                RegExp(r'\s*Fã\s*Clube\s*$',
+                                                    caseSensitive: false),
+                                                '',
+                                              )
+                                              .trim()
+                                          : artistName,
                                       memberCount: club.memberCount,
                                       isFavorite: _favorite,
                                       onToggleFavorite: handleToggleFavorite,

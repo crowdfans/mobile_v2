@@ -114,12 +114,18 @@ class FanClubCommunityHero extends StatelessWidget {
                 key: const Key('fan-club-favorite'),
                 onPressed: onToggleFavorite,
                 tooltip: isFavorite ? 'Remover dos favoritos' : 'Favoritar',
-                icon: Icon(
-                  isFavorite ? Icons.star : Icons.star_border,
-                  size: 28,
-                  color: isFavorite
-                      ? AppPalette.yellow500
-                      : colors.textTertiary,
+                icon: Semantics(
+                  label: isFavorite
+                      ? 'Fã-clube favoritado'
+                      : 'Favoritar fã-clube',
+                  checked: isFavorite,
+                  child: Icon(
+                    isFavorite ? Icons.star : Icons.star_border,
+                    size: 28,
+                    color: isFavorite
+                        ? AppPalette.yellow500
+                        : colors.textTertiary,
+                  ),
                 ),
               ),
             ],
