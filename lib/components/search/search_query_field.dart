@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Campo “Buscar …” com lupa à esquerda (prints Search).
+/// Campo de busca com lupa e limpar (prints Search / resultados).
 class SearchQueryField extends StatelessWidget {
   const SearchQueryField({
     super.key,
@@ -11,6 +11,8 @@ class SearchQueryField extends StatelessWidget {
     this.controller,
     this.autofocus = false,
     this.onSubmitted,
+    this.onClear,
+    this.showClear = false,
   });
 
   final String hint;
@@ -18,6 +20,8 @@ class SearchQueryField extends StatelessWidget {
   final TextEditingController? controller;
   final bool autofocus;
   final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+  final bool showClear;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,13 @@ class SearchQueryField extends StatelessWidget {
           minWidth: 40,
           minHeight: 20,
         ),
+        suffixIcon: showClear
+            ? IconButton(
+                onPressed: onClear,
+                tooltip: 'Limpar busca',
+                icon: Icon(Icons.close, size: 18, color: colors.textSecondary),
+              )
+            : null,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: colors.inputBorder),
