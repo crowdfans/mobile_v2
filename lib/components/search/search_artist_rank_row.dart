@@ -3,7 +3,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 
-/// Linha de artista no ranking Top 500 (badge + tendência + avatar quadrado).
+/// Linha de artista no ranking Top 500 (foto à esquerda; posição/tendência acima do nome).
 class SearchArtistRankRow extends StatelessWidget {
   const SearchArtistRankRow({
     super.key,
@@ -18,7 +18,7 @@ class SearchArtistRankRow extends StatelessWidget {
   final VoidCallback? onPressMore;
   final int? position;
 
-  SearchRankTrend trendFor(int pos) {
+  SearchRankTrend trendFor() {
     final delta = artist.rankDelta;
     if (delta == null) {
       return SearchRankTrend.flat;
@@ -38,47 +38,31 @@ class SearchArtistRankRow extends StatelessWidget {
     final meta = artist.rankingValueLabel?.isNotEmpty == true
         ? artist.rankingValueLabel!
         : (artist.membersLabel.isEmpty ? artist.handle : artist.membersLabel);
-    final pos = position ?? artist.rank ?? 0;
+    final pos = position ?? artist.rank;
+    final showRank = pos != null && pos > 0;
     final url = artist.avatarUri.trim();
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onPressed,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: colors.surfaceAlt,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '#$pos',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            SearchRankTrendDot(trend: trendFor(pos)),
-            const SizedBox(width: 10),
             ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               child: url.isEmpty
                   ? ColoredBox(
                       color: colors.surfaceAlt,
-                      child: const SizedBox(width: 48, height: 48),
+                      child: const SizedBox(width: 56, height: 56),
                     )
                   : Image.network(
                       url,
-                      width: 48,
-                      height: 48,
+                      width: 56,
+                      height: 56,
                       fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => ColoredBox(
                         color: colors.surfaceAlt,
-                        child: const SizedBox(width: 48, height: 48),
+                        child: const SizedBox(width: 56, height: 56),
                       ),
                     ),
             ),
@@ -87,6 +71,34 @@ class SearchArtistRankRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (showRank)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '#$pos',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          SearchRankTrendDot(trend: trendFor()),
+                        ],
+                      ),
+                    ),
                   Text(
                     artist.name,
                     style: TextStyle(

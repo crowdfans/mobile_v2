@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
 import 'package:crowdfans/components/search/search_discovery_tile.dart';
+import 'package:crowdfans/components/search/search_query_field.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/search_service.dart';
@@ -133,12 +133,12 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: AppTextField(
+                  child: SearchQueryField(
                     hint: 'Buscar artista',
                     onChanged: handleQueryChanged,
                   ),
                 ),
-                if (!searching) ...[
+                if (!searching)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                     child: Row(
@@ -162,26 +162,6 @@ class _SearchScreenState extends State<SearchScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                if (!searching)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        SearchDiscoveryTile(
-                          title: 'Top 100\nEngajados',
-                          accent: AppPalette.purple100,
-                          onPressed: () => handleOpenRanking('engaged'),
-                        ),
-                        const SizedBox(width: 10),
-                        SearchDiscoveryTile(
-                          title: 'Top 500\nAtivos',
-                          accent: AppPalette.blue50,
-                          onPressed: () => handleOpenRanking('active'),
                         ),
                       ],
                     ),
@@ -226,6 +206,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         ),
                                       ),
                                     ),
+                                    if (!searching) _discoveryRow(),
                                   ],
                                 )
                               : ListView.builder(
@@ -235,8 +216,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                     16,
                                     24,
                                   ),
-                                  itemCount: list.length,
+                                  itemCount: list.length + (searching ? 0 : 1),
                                   itemBuilder: (context, index) {
+                                    if (!searching && index == list.length) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: _discoveryRow(),
+                                      );
+                                    }
                                     final artist = list[index];
                                     return SearchArtistRankRow(
                                       artist: artist,
@@ -267,6 +254,24 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _discoveryRow() {
+    return Row(
+      children: [
+        SearchDiscoveryTile(
+          title: 'Top 100\nEngajados',
+          imageAsset: 'assets/images/search/top_100_engajados.png',
+          onPressed: () => handleOpenRanking('engaged'),
+        ),
+        const SizedBox(width: 10),
+        SearchDiscoveryTile(
+          title: 'Top 500\nAtivos',
+          imageAsset: 'assets/images/search/top_500_ativos.png',
+          onPressed: () => handleOpenRanking('active'),
+        ),
+      ],
     );
   }
 }
