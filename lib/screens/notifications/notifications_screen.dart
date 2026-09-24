@@ -1,3 +1,5 @@
+import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/notifications/notification_empty_state.dart';
 import 'package:crowdfans/components/notifications/notification_filter_chip.dart';
 import 'package:crowdfans/components/notifications/notification_item_card.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -48,7 +50,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
       setState(
         () => _error = refresh
-            ? 'Não foi possível atualizar.'
+            ? 'Não foi possível atualizar as notificações.'
             : 'Não foi possível carregar as notificações.',
       );
     } finally {
@@ -101,13 +103,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                   Expanded(
-                    child: Text(
-                      'Notificações',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+                    child: Semantics(
+                      header: true,
+                      child: Text(
+                        'Notificações',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
                   ),
@@ -136,7 +141,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             const SizedBox(height: 12),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Semantics(
+                      liveRegion: true,
+                      label: 'Carregando notificações',
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
                   : RefreshIndicator(
                       onRefresh: () => handleLoad(refresh: true),
                       child: ListView(
@@ -145,31 +154,38 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           if (_error != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 40),
-                              child: Text(
-                                _error!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: colors.textSecondary),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _error!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: colors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  AppButton(
+                                    label: 'Tentar de novo',
+                                    onPressed: handleLoad,
+                                  ),
+                                ],
                               ),
                             )
                           else if (filtered.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 40),
-                              child: Text(
-                                'Nenhuma notificação nesta aba ainda.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: colors.textSecondary),
-                              ),
-                            )
+                            NotificationEmptyState(tab: _tab)
                           else
                             for (final section in filtered) ...[
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
-                                child: Text(
-                                  section.title,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: colors.textPrimary,
+                                child: Semantics(
+                                  header: true,
+                                  child: Text(
+                                    section.title,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: colors.textPrimary,
+                                    ),
                                   ),
                                 ),
                               ),
