@@ -54,9 +54,8 @@ class NotificationItemCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             height: 20 / 14,
-                            fontWeight: segment.accent || item.unread
-                                ? FontWeight.w700
-                                : FontWeight.w400,
+                            // CF-159: accent só por cor — peso regular.
+                            fontWeight: FontWeight.w400,
                             color: segment.accent
                                 ? colors.primary
                                 : colors.textPrimary,
