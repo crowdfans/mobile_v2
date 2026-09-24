@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/fan_club/fan_club_community_cover.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
+import 'package:crowdfans/components/fan_club/fan_club_expelled_banner.dart';
 import 'package:crowdfans/components/fan_club/fan_club_moderation_warning_banner.dart';
 import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
@@ -510,6 +511,37 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                       onAbout: handleAbout,
                                       onRules: handleRules,
                                     ),
+                                    if (club.viewerIsExpelled)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          8,
+                                          16,
+                                          4,
+                                        ),
+                                        child: FanClubExpelledBanner(
+                                          reason: club.viewerExpulsionReason,
+                                          onDefend: () {
+                                            context.push(
+                                              Pages.profileContestations,
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    else if (club.viewerActiveStrikesCount > 0)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          8,
+                                          16,
+                                          4,
+                                        ),
+                                        child: FanClubModerationWarningBanner(
+                                          reason: club.viewerLatestStrikeReason,
+                                          remainingChances:
+                                              club.viewerStrikeRemainingChances,
+                                        ),
+                                      ),
                                   ],
                                 );
                               }
