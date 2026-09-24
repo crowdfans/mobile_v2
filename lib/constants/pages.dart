@@ -336,6 +336,8 @@ abstract final class Pages {
   static const profileNotifications = '/me/settings/notifications';
   static String profileNotificationCategory(String categoryId) =>
       '/me/settings/notifications/$categoryId';
+  static const profileNotificationsArtists =
+      '/me/settings/notifications/artists';
   static const profileSecurity = '/me/settings/security';
   static const profileReferral = '/me/settings/referral';
   static const profileSettings = '/me/settings';
