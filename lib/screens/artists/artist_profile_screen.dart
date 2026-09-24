@@ -1,4 +1,5 @@
 import 'package:crowdfans/api/api_error.dart';
+import 'package:crowdfans/components/artists/artist_profile_options_sheet.dart';
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
@@ -64,6 +65,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   int? _memberCount;
   int? _fanClubRank;
   String? _error;
+  var _menuOpen = false;
 
   @override
   void initState() {
@@ -292,55 +294,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     context.go(Pages.home);
   }
 
-  void handleReport() {
-    context.push(
-      '${Pages.report}?context=artist-profile&targetId=${Uri.encodeComponent(widget.artistId)}&displayName=${Uri.encodeComponent(displayName())}',
-    );
-  }
-
-  Future<void> handleMore() async {
-    final colors = CrowdFansTheme.of(context);
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(Icons.flag_outlined, color: colors.textPrimary),
-                title: Text(
-                  'Denunciar',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  handleReport();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.groups_outlined, color: colors.textPrimary),
-                title: Text(
-                  'Abrir fã clube',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  handleOpenFanClub();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  void handleMore() {
+    setState(() => _menuOpen = true);
   }
 
   void handleVoteApplied(VoteResult result) {
@@ -554,85 +509,100 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     final name = displayName();
     final avatar = avatarUrl();
     final posts = feedPosts();
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: handleLoad,
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  ArtistProfilePublicCover(
-                    imageUrl: avatar,
-                    displayName: name,
-                    membersLabel: membersLabel(),
-                    rank: _fanClubRank,
-                    following: _following,
-                    busy: _togglingFollow,
-                    onBack: handleBack,
-                    onMore: handleMore,
-                    onToggleFollow: handleToggleFollow,
-                  ),
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: Column(
-                        children: [
-                          Text(
-                            _error!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: colors.textSecondary),
-                          ),
-                          const SizedBox(height: 12),
-                          AppButton(
-                            label: 'Tentar novamente',
-                            onPressed: handleLoad,
-                          ),
-                        ],
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: colors.background,
+          body: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                  onRefresh: handleLoad,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      ArtistProfilePublicCover(
+                        imageUrl: avatar,
+                        displayName: name,
+                        membersLabel: membersLabel(),
+                        rank: _fanClubRank,
+                        following: _following,
+                        busy: _togglingFollow,
+                        onBack: handleBack,
+                        onMore: handleMore,
+                        onToggleFollow: handleToggleFollow,
                       ),
-                    ),
-                  ArtistMeTabBar(
-                    selectedId: _tab,
-                    onSelected: (id) => setState(() => _tab = id),
-                  ),
-                  if (_tab == 'feed')
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: Wrap(
-                        spacing: 8,
-                        children: [
-                          ArtistMeFeedFilterChip(
-                            label: 'Todos',
-                            selected: _feedFilter == _FeedFilter.all,
-                            onPressed: () {
-                              setState(() => _feedFilter = _FeedFilter.all);
-                            },
+                      if (_error != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                          child: Column(
+                            children: [
+                              Text(
+                                _error!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: colors.textSecondary),
+                              ),
+                              const SizedBox(height: 12),
+                              AppButton(
+                                label: 'Tentar novamente',
+                                onPressed: handleLoad,
+                              ),
+                            ],
                           ),
-                          ArtistMeFeedFilterChip(
-                            label: 'Posts',
-                            selected: _feedFilter == _FeedFilter.posts,
-                            onPressed: () {
-                              setState(() => _feedFilter = _FeedFilter.posts);
-                            },
-                          ),
-                          ArtistMeFeedFilterChip(
-                            label: 'Media',
-                            selected: _feedFilter == _FeedFilter.media,
-                            onPressed: () {
-                              setState(() => _feedFilter = _FeedFilter.media);
-                            },
-                          ),
-                        ],
+                        ),
+                      ArtistMeTabBar(
+                        selectedId: _tab,
+                        onSelected: (id) => setState(() => _tab = id),
                       ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
-                    child: buildTabBody(colors, posts),
+                      if (_tab == 'feed')
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: Wrap(
+                            spacing: 8,
+                            children: [
+                              ArtistMeFeedFilterChip(
+                                label: 'Todos',
+                                selected: _feedFilter == _FeedFilter.all,
+                                onPressed: () {
+                                  setState(() => _feedFilter = _FeedFilter.all);
+                                },
+                              ),
+                              ArtistMeFeedFilterChip(
+                                label: 'Posts',
+                                selected: _feedFilter == _FeedFilter.posts,
+                                onPressed: () {
+                                  setState(
+                                    () => _feedFilter = _FeedFilter.posts,
+                                  );
+                                },
+                              ),
+                              ArtistMeFeedFilterChip(
+                                label: 'Media',
+                                selected: _feedFilter == _FeedFilter.media,
+                                onPressed: () {
+                                  setState(
+                                    () => _feedFilter = _FeedFilter.media,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
+                        child: buildTabBody(colors, posts),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+        ),
+        ArtistProfileOptionsSheet(
+          visible: _menuOpen,
+          artistId: widget.artistId,
+          artistName: name,
+          onClose: () => setState(() => _menuOpen = false),
+          onOpenFanClub: handleOpenFanClub,
+        ),
+      ],
     );
   }
 }
