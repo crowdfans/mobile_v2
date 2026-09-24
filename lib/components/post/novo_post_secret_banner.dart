@@ -10,45 +10,47 @@ class NovoPostSecretBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppPalette.blue300, AppPalette.blue50],
+      child: IntrinsicWidth(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppPalette.blue300, AppPalette.blue50],
+                ),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: AppPalette.blue200),
               ),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: AppPalette.blue200),
-            ),
-            child: SizedBox(
-              width: 18,
-              height: 18,
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/General/eye-off.svg',
-                  width: 12,
-                  height: 12,
-                  colorFilter: const ColorFilter.mode(
-                    AppPalette.blue700,
-                    BlendMode.srcIn,
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/General/eye-off.svg',
+                    width: 12,
+                    height: 12,
+                    colorFilter: const ColorFilter.mode(
+                      AppPalette.blue700,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'Modo secreto ativo',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppPalette.blue700,
+            const SizedBox(width: 8),
+            const Text(
+              'Modo secreto ativo',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppPalette.blue700,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
