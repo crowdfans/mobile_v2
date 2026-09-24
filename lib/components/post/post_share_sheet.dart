@@ -5,8 +5,9 @@ import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/post_share_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Compartilhar post: grade Copiar/WhatsApp/Stories + compartilhar nativo.
+/// Sheet só de compartilhar (distinto do menu de gerenciamento do post).
 class PostShareSheet extends StatelessWidget {
   const PostShareSheet({
     super.key,
@@ -83,66 +84,93 @@ class PostShareSheet extends StatelessWidget {
     return BottomSheetShell(
       visible: visible,
       onClose: onClose,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+      child: Semantics(
+        scopesRoute: true,
+        namesRoute: true,
+        label: 'Compartilhar post',
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: PostShareActionTile(
-                  label: 'Copiar Link',
-                  icon: Icons.link_rounded,
-                  iconColor: colors.primary,
-                  labelColor: colors.primary,
-                  onPressed: () => handleCopyLink(context),
+              Text(
+                'Compartilhar',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: PostShareActionTile(
-                  label: 'WhatsApp',
-                  icon: Icons.chat_rounded,
-                  iconColor: const Color(0xFF25D366),
-                  onPressed: handleWhatsApp,
-                ),
+              const SizedBox(height: 14),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: PostShareActionTile(
+                      label: 'Copiar Link',
+                      icon: Icons.link_rounded,
+                      iconColor: colors.primary,
+                      labelColor: colors.primary,
+                      onPressed: () => handleCopyLink(context),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: PostShareActionTile(
+                      label: 'WhatsApp',
+                      iconWidget: SvgPicture.asset(
+                        'assets/images/whatsApp.svg',
+                        width: 28,
+                        height: 28,
+                      ),
+                      iconColor: const Color(0xFF25D366),
+                      onPressed: handleWhatsApp,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: PostShareActionTile(
+                      label: 'Stories',
+                      icon: Icons.camera_alt_outlined,
+                      onPressed: handleStories,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: PostShareActionTile(
-                  label: 'Stories',
-                  icon: Icons.camera_alt_outlined,
-                  onPressed: handleStories,
+              const SizedBox(height: 12),
+              Material(
+                color: colors.surfaceAlt,
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  onTap: handleShareMore,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.reply_rounded, color: colors.textPrimary),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Compartilhar para...',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Material(
-            color: colors.surfaceAlt,
-            borderRadius: BorderRadius.circular(14),
-            child: InkWell(
-              onTap: handleShareMore,
-              borderRadius: BorderRadius.circular(14),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    Icon(Icons.reply_rounded, color: colors.textPrimary),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Compartilhar para...',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
