@@ -27,7 +27,16 @@ class WalletPaymentSummaryCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(Icons.toll, size: 32, color: colors.primary),
+            Image.asset(
+              'assets/images/jam-coin.png',
+              width: 36,
+              height: 36,
+              errorBuilder: (_, _, _) => const Icon(
+                Icons.monetization_on,
+                size: 36,
+                color: Color(0xFFF5C451),
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

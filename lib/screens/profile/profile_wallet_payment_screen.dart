@@ -117,6 +117,21 @@ class _ProfileWalletPaymentScreenState
     }
   }
 
+  /// Omite mensagens internas (sandbox / RevenueCat / CF-*).
+  String? get _receiptUserMessage {
+    final raw = _receipt?.message?.trim();
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    final lower = raw.toLowerCase();
+    if (lower.contains('sandbox') ||
+        lower.contains('revenuecat') ||
+        RegExp(r'\bcf-\d+', caseSensitive: false).hasMatch(raw)) {
+      return null;
+    }
+    return raw;
+  }
+
   Future<void> handleCopyPix() async {
     final pix = _receipt?.pixCopyPaste?.trim() ?? '';
     if (pix.isEmpty) {
@@ -241,10 +256,10 @@ class _ProfileWalletPaymentScreenState
                   if (hasPix) ...[
                     const SizedBox(height: 16),
                     WalletPixCodePanel(pixCode: pix, onCopy: handleCopyPix),
-                    if (_receipt?.message != null) ...[
+                    if (_receiptUserMessage != null) ...[
                       const SizedBox(height: 12),
                       Text(
-                        _receipt!.message!,
+                        _receiptUserMessage!,
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,
@@ -261,6 +276,7 @@ class _ProfileWalletPaymentScreenState
                 label: hasPix
                     ? 'Copiar Código PIX'
                     : (_busy ? 'Gerando...' : 'Próximo'),
+                variant: AppButtonVariant.dark,
                 loading: _busy,
                 onPressed: hasPix ? handleCopyPix : handleCheckout,
               ),
