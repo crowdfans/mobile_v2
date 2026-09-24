@@ -17,6 +17,7 @@ class FeedItem extends StatelessWidget {
     this.onPressOptions,
     this.onPressShare,
     this.onPressUnlock,
+    this.clubName,
   });
 
   final FeedPost post;
@@ -25,6 +26,7 @@ class FeedItem extends StatelessWidget {
   final VoidCallback? onPressOptions;
   final VoidCallback? onPressShare;
   final VoidCallback? onPressUnlock;
+  final String? clubName;
 
   void handleOpenArtist(BuildContext context) {
     final artistId = post.artistId?.trim();
@@ -41,6 +43,7 @@ class FeedItem extends StatelessWidget {
         author: post.author,
         handle: post.handle,
         text: post.text,
+        clubName: clubName,
       ),
     );
   }

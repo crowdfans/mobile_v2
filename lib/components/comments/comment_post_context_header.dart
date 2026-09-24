@@ -1,27 +1,56 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Contexto do post no topo da tela de comentários (CF-174).
+/// Contexto do post no topo da tela de comentários (Home e fã-clube).
 class CommentPostContextHeader extends StatelessWidget {
   const CommentPostContextHeader({
     super.key,
     required this.author,
     this.handle,
     this.text,
+    this.clubName,
   });
 
   final String author;
   final String? handle;
   final String? text;
+  final String? clubName;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final club = (clubName ?? '').trim();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (club.isNotEmpty) ...[
+            Semantics(
+              label: 'Contexto do fã-clube $club',
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'Fã-clube · $club',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
           Text(
             author,
             style: TextStyle(
