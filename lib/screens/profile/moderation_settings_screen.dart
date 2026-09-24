@@ -5,7 +5,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Hub de moderação: clubs que modero + minhas contestações.
+/// Hub Fã Clube: moderação + contestações (CF-163).
 class ModerationSettingsScreen extends StatelessWidget {
   const ModerationSettingsScreen({super.key});
 
@@ -26,24 +26,23 @@ class ModerationSettingsScreen extends StatelessWidget {
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Moderação do Fã Clube',
+              title: 'Fã Clube',
               onBack: () => handleBack(context),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              child: Column(
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.only(top: 8, bottom: 24),
                 children: [
                   ModerationHubCard(
                     title: 'Moderação',
                     subtitle:
-                        'Clubs que você possui ou modera — strikes, expulsões e apelações.',
+                        'Veja os fã clubes em que você é moderador.',
                     onTap: () => context.push(Pages.profileModerationList),
                   ),
-                  const SizedBox(height: 12),
                   ModerationHubCard(
-                    title: 'Suas contestações',
+                    title: 'Suas Contestações',
                     subtitle:
-                        'Expulsões recebidas e status das apelações enviadas.',
+                        'Acompanhe seus pedidos de retorno e banimentos recebidos.',
                     onTap: () => context.push(Pages.profileContestations),
                   ),
                 ],

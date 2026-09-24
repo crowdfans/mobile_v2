@@ -1,7 +1,8 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Card de atalho no hub de moderação.
+/// Opção do hub Fã Clube (sem contorno — CF-163).
 class ModerationHubCard extends StatelessWidget {
   const ModerationHubCard({
     super.key,
@@ -19,37 +20,45 @@ class ModerationHubCard extends StatelessWidget {
     final colors = CrowdFansTheme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.border),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 18 / 13,
+                      color: colors.textTertiary,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 18 / 13,
-                  color: colors.textSecondary,
-                ),
+            ),
+            const SizedBox(width: 12),
+            SvgPicture.asset(
+              'assets/icons/arrows/chevron-right.svg',
+              width: 18,
+              height: 18,
+              colorFilter: ColorFilter.mode(
+                colors.textTertiary,
+                BlendMode.srcIn,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
