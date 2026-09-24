@@ -50,6 +50,7 @@ import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notification_category_screen.dart';
+import 'package:crowdfans/screens/profile/profile_notifications_artists_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notifications_screen.dart';
 import 'package:crowdfans/screens/profile/profile_photo_screen.dart';
 import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
@@ -294,6 +295,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileNotifications,
         builder: (context, state) => const ProfileNotificationsScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileNotificationsArtists,
+        builder: (context, state) =>
+            const ProfileNotificationsArtistsScreen(),
       ),
       GoRoute(
         path: '/me/settings/notifications/:categoryId',

@@ -151,7 +151,11 @@ class _ProfileNotificationsScreenState
                             title: group.title,
                             subtitle: group.navSubtitle!,
                             onTap: () => context.push(
-                              Pages.profileNotificationCategory(group.id),
+                              group.id == 'artists'
+                                  ? Pages.profileNotificationsArtists
+                                  : Pages.profileNotificationCategory(
+                                      group.id,
+                                    ),
                             ),
                           ),
                       ],
