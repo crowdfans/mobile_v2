@@ -381,7 +381,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProfileMembershipsScreen(),
       ),
       GoRoute(
-      GoRoute(
         path: Pages.profileMembershipActivationConfirmed,
         builder: (context, state) => ProfileMembershipActivationConfirmedScreen(
           artistName: state.uri.queryParameters['artistName'] ?? '',
