@@ -234,46 +234,29 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     if (_togglingMembership) {
       return;
     }
+    if (!_subscribed) {
+      final handle = _profile?.name.trim() ?? '';
+      context.push(
+        Pages.profileMembershipSubscribeOf(
+          artistId: widget.artistId,
+          artistName: displayName(),
+          artistHandle: handle,
+          artistAvatarUrl: avatarUrl(),
+          pricePerMonth: 100,
+        ),
+      );
+      return;
+    }
     setState(() => _togglingMembership = true);
     try {
-      if (_subscribed) {
-        await SubscriptionService.cancelSubscription(widget.artistId);
-        setState(() => _subscribed = false);
-      } else {
-        final subscription = await SubscriptionService.createSubscription(
-          widget.artistId,
-        );
-        setState(() => _subscribed = true);
-        try {
-          await FollowService.followArtist(widget.artistId);
-        } catch (_) {}
-        if (!mounted) {
-          return;
-        }
-        // Só celebra após assinatura confirmada ativa (não pagamento pendente).
-        if (subscription.isActive) {
-          final handle = _profile?.name.trim() ?? '';
-          context.push(
-            Pages.profileMembershipActivationConfirmedOf(
-              artistName: subscription.artistName.trim().isNotEmpty
-                  ? subscription.artistName.trim()
-                  : displayName(),
-              artistId: widget.artistId,
-              artistHandle: handle,
-              artistAvatarUrl: avatarUrl(),
-              pricePerMonth: 100,
-            ),
-          );
-        }
-      }
+      await SubscriptionService.cancelSubscription(widget.artistId);
+      setState(() => _subscribed = false);
     } on ApiError catch (error) {
       if (mounted) {
         await AppAlert.show(
           context,
           title: 'Assinatura',
-          message: error.status == 402
-              ? 'Saldo de Jam Coins insuficiente para a membership (100). Recarregue em Jam Coins.'
-              : error.message,
+          message: error.message,
         );
       }
     } catch (error) {
