@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crowdfans/components/comments/comment_composer.dart';
 import 'package:crowdfans/components/comments/comment_gif_picker.dart';
 import 'package:crowdfans/components/comments/comment_post_context_header.dart';
+import 'package:crowdfans/components/comments/comment_replies_toggle.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -59,6 +60,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   var _composerNonce = 0;
   String? _error;
   Timer? _gifDebounce;
+  final _expandedReplyIds = <String>{};
 
   @override
   void initState() {
@@ -237,9 +239,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         );
         setState(() {
           if (_replyTo != null) {
+            final parentId = _replyTo!.id;
+            _expandedReplyIds.add(parentId);
             _comments = [
               for (final item in _comments)
-                item.id == _replyTo!.id
+                item.id == parentId
                     ? item.copyWith(replies: [...item.replies, created])
                     : item,
             ];
@@ -501,6 +505,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                             );
                           }
                           final item = sorted[index];
+                          final replyCount = item.replies.length;
+                          final expanded = _expandedReplyIds.contains(item.id);
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -525,25 +531,42 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                 onVoteApplied: (result) =>
                                     handleVoteApplied(item.id, result),
                               ),
-                              for (final reply in item.replies)
-                                CommentRow(
-                                  comment: reply,
-                                  isOwn: isOwnComment(reply),
-                                  isReply: true,
-                                  onOpenProfile: () => handleOpenProfile(reply),
-                                  onReply: () {},
-                                  onReport: () => handleReport(reply),
-                                  onEdit: () => setState(() {
-                                    _editing = reply;
-                                    _replyTo = null;
-                                    _draft = reply.text;
-                                    _selectedGifUrl = reply.gifUrl;
-                                    _composerNonce++;
-                                  }),
-                                  onDelete: () => handleDelete(reply),
-                                  onVoteApplied: (result) =>
-                                      handleVoteApplied(reply.id, result),
+                              if (replyCount > 0) ...[
+                                if (expanded)
+                                  for (final reply in item.replies)
+                                    CommentRow(
+                                      comment: reply,
+                                      isOwn: isOwnComment(reply),
+                                      isReply: true,
+                                      onOpenProfile: () =>
+                                          handleOpenProfile(reply),
+                                      onReply: () {},
+                                      onReport: () => handleReport(reply),
+                                      onEdit: () => setState(() {
+                                        _editing = reply;
+                                        _replyTo = null;
+                                        _draft = reply.text;
+                                        _selectedGifUrl = reply.gifUrl;
+                                        _composerNonce++;
+                                      }),
+                                      onDelete: () => handleDelete(reply),
+                                      onVoteApplied: (result) =>
+                                          handleVoteApplied(reply.id, result),
+                                    ),
+                                CommentRepliesToggle(
+                                  replyCount: replyCount,
+                                  expanded: expanded,
+                                  onToggle: () {
+                                    setState(() {
+                                      if (expanded) {
+                                        _expandedReplyIds.remove(item.id);
+                                      } else {
+                                        _expandedReplyIds.add(item.id);
+                                      }
+                                    });
+                                  },
                                 ),
+                              ],
                             ],
                           );
                         },
