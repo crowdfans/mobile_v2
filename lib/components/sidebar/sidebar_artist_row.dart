@@ -21,52 +21,86 @@ class SidebarArtistRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final avatar = artist.avatarUrl.trim();
+    final name = artist.username.trim().isEmpty ? 'Artista' : artist.username;
+    final starLabel = isFavorite
+        ? 'Remover $name dos favoritos'
+        : 'Adicionar $name aos favoritos';
     return SizedBox(
-      height: 52,
+      height: 56,
       child: Row(
         children: [
           Expanded(
-            child: InkWell(
-              onTap: onPressed,
-              child: Row(
-                children: [
-                  ClipOval(
-                    child: avatar.isEmpty
-                        ? ColoredBox(
-                            color: colors.surface,
-                            child: const SizedBox(width: 24, height: 24),
-                          )
-                        : Image.network(
-                            avatar,
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      artist.username,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: colors.textPrimary,
+            child: Semantics(
+              button: true,
+              label: name,
+              child: InkWell(
+                onTap: onPressed,
+                child: Row(
+                  children: [
+                    ClipOval(
+                      child: avatar.isEmpty
+                          ? ColoredBox(
+                              color: colors.surface,
+                              child: SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 20,
+                                  color: colors.textTertiary,
+                                ),
+                              ),
+                            )
+                          : Image.network(
+                              avatar,
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => ColoredBox(
+                                color: colors.surface,
+                                child: SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 20,
+                                    color: colors.textTertiary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            onPressed: onToggleFavorite,
-            icon: Icon(
-              isFavorite ? Icons.star : Icons.star_border,
-              size: 24,
-              color: isFavorite ? AppPalette.yellow500 : colors.textTertiary,
+          Semantics(
+            button: true,
+            label: starLabel,
+            toggled: isFavorite,
+            child: IconButton(
+              visualDensity: VisualDensity.compact,
+              tooltip: starLabel,
+              onPressed: onToggleFavorite,
+              icon: Icon(
+                isFavorite ? Icons.star : Icons.star_border,
+                size: 24,
+                color: isFavorite ? AppPalette.yellow500 : colors.textTertiary,
+              ),
             ),
           ),
         ],
