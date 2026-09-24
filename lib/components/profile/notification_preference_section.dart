@@ -18,20 +18,23 @@ class NotificationPreferenceItem {
   final bool critical;
 }
 
-/// Grupo visual de preferências (título + card).
+/// Grupo visual de preferências (título + itens).
 class NotificationPreferenceGroup {
   const NotificationPreferenceGroup({
     required this.id,
     required this.title,
     required this.items,
+    this.navSubtitle,
   });
 
   final String id;
   final String title;
   final List<NotificationPreferenceItem> items;
+  /// Resumo exibido no hub de categorias (CF-166); null = só na página geral.
+  final String? navSubtitle;
 }
 
-/// Catálogo da tela de preferências (espelho do Expo).
+/// Catálogo da tela de preferências (espelho do Expo + hub CF-166).
 const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'general',
@@ -57,6 +60,8 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'interactions',
     title: 'Interações com você',
+    navSubtitle:
+        'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeComment,
@@ -87,7 +92,9 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   ),
   NotificationPreferenceGroup(
     id: 'artists',
-    title: 'Artistas, cartas e Fã Clubes',
+    title: 'Artistas, Cartas e Fã Clubes',
+    navSubtitle:
+        'Posts, cartas, destaques do artista, conteúdo exclusivo e controle por artista.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.clubPosts,
@@ -114,6 +121,8 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'meet',
     title: 'Meet & Greet',
+    navSubtitle:
+        'Convites, lembretes de fila, início da chamada e encerramento.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.meetInvites,
@@ -137,6 +146,8 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'wallet',
     title: 'Membership e Jam Coins',
+    navSubtitle:
+        'Renovação, saldo insuficiente, recargas, promoções e pagamentos.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.membershipRenewals,
@@ -159,7 +170,22 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   ),
 ];
 
-/// Card de uma seção de preferências.
+/// Grupos detalhados navegáveis a partir do hub (CF-166).
+List<NotificationPreferenceGroup> get notificationCategoryGroups =>
+    notificationPreferenceGroups
+        .where((group) => group.navSubtitle != null)
+        .toList(growable: false);
+
+NotificationPreferenceGroup? notificationGroupById(String id) {
+  for (final group in notificationPreferenceGroups) {
+    if (group.id == id) {
+      return group;
+    }
+  }
+  return null;
+}
+
+/// Seção de preferências sem contorno externo (CF-166).
 class NotificationPreferenceSection extends StatelessWidget {
   const NotificationPreferenceSection({
     super.key,
@@ -191,32 +217,20 @@ class NotificationPreferenceSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.border),
+        for (var i = 0; i < group.items.length; i++)
+          NotificationPreferenceRow(
+            title: group.items[i].title,
+            description: group.items[i].description,
+            value: preferences[group.items[i].keyName] ?? false,
+            enabled:
+                !(saving ||
+                    (quiet &&
+                        !group.items[i].critical &&
+                        group.items[i].keyName !=
+                            NotificationPreferenceKeys.quietModeEnabled)),
+            showDivider: i > 0,
+            onChanged: (value) => onChanged(group.items[i].keyName, value),
           ),
-          child: Column(
-            children: [
-              for (var i = 0; i < group.items.length; i++)
-                NotificationPreferenceRow(
-                  title: group.items[i].title,
-                  description: group.items[i].description,
-                  value: preferences[group.items[i].keyName] ?? false,
-                  enabled:
-                      !(saving ||
-                          (quiet &&
-                              !group.items[i].critical &&
-                              group.items[i].keyName !=
-                                  NotificationPreferenceKeys.quietModeEnabled)),
-                  showDivider: i > 0,
-                  onChanged: (value) =>
-                      onChanged(group.items[i].keyName, value),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }

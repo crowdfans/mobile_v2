@@ -1,32 +1,35 @@
-import 'package:crowdfans/components/profile/notification_category_nav_row.dart';
 import 'package:crowdfans/components/profile/notification_preference_section.dart';
 import 'package:crowdfans/components/profile/notification_quiet_mode_note.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
-import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Hub de preferências de notificação com categorias (CF-166).
-class ProfileNotificationsScreen extends StatefulWidget {
-  const ProfileNotificationsScreen({super.key});
+/// Página de uma categoria detalhada de notificações (CF-166).
+class ProfileNotificationCategoryScreen extends StatefulWidget {
+  const ProfileNotificationCategoryScreen({
+    super.key,
+    required this.categoryId,
+  });
+
+  final String categoryId;
 
   @override
-  State<ProfileNotificationsScreen> createState() =>
-      _ProfileNotificationsScreenState();
+  State<ProfileNotificationCategoryScreen> createState() =>
+      _ProfileNotificationCategoryScreenState();
 }
 
-class _ProfileNotificationsScreenState
-    extends State<ProfileNotificationsScreen> {
+class _ProfileNotificationCategoryScreenState
+    extends State<ProfileNotificationCategoryScreen> {
   var _preferences = Map<String, bool>.from(notificationPreferenceDefaults);
   var _loading = true;
   var _saving = false;
   String? _error;
 
-  NotificationPreferenceGroup get _generalGroup =>
-      notificationPreferenceGroups.firstWhere((group) => group.id == 'general');
+  NotificationPreferenceGroup? get _group =>
+      notificationGroupById(widget.categoryId);
 
   @override
   void initState() {
@@ -95,6 +98,7 @@ class _ProfileNotificationsScreenState
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final group = _group;
     final quiet =
         _preferences[NotificationPreferenceKeys.quietModeEnabled] == true;
     return Scaffold(
@@ -103,11 +107,16 @@ class _ProfileNotificationsScreenState
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: _saving ? 'Salvando...' : 'Notificações',
+              title: group?.title ?? 'Notificações',
               onBack: () => context.pop(),
             ),
             Expanded(
-              child: _loading
+              child: group == null
+                  ? const ProfileState(
+                      title: 'Categoria indisponível',
+                      message: 'Esta categoria de notificações não existe.',
+                    )
+                  : _loading
                   ? const ProfileState(loading: true)
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
@@ -121,39 +130,11 @@ class _ProfileNotificationsScreenState
                           const SizedBox(height: 16),
                         ],
                         NotificationPreferenceSection(
-                          group: _generalGroup,
+                          group: group,
                           preferences: _preferences,
                           saving: _saving,
                           onChanged: handleChange,
                         ),
-                        const SizedBox(height: 28),
-                        Text(
-                          'Categorias detalhadas',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: colors.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Organizamos os controles em páginas separadas para você ajustar melhor o que quer receber e de quais artistas.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            height: 1.4,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        for (final group in notificationCategoryGroups)
-                          NotificationCategoryNavRow(
-                            key: Key('notification-category-${group.id}'),
-                            title: group.title,
-                            subtitle: group.navSubtitle!,
-                            onTap: () => context.push(
-                              Pages.profileNotificationCategory(group.id),
-                            ),
-                          ),
                       ],
                     ),
             ),
