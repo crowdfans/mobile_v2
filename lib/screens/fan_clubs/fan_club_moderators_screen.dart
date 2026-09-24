@@ -1,6 +1,6 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
+import 'package:crowdfans/components/fan_club/fan_club_moderator_preview_row.dart';
 import 'package:crowdfans/components/fan_club/fan_club_moderator_request_card.dart';
-import 'package:crowdfans/components/fan_club/fan_club_moderator_row.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
@@ -11,11 +11,16 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Lista de moderadores; o dono adiciona, remove e revisa pedidos.
+/// Lista de moderadores (CF-225): introdução + List/Avatar com nomes longos.
 class FanClubModeratorsScreen extends StatefulWidget {
-  const FanClubModeratorsScreen({super.key, required this.artistId});
+  const FanClubModeratorsScreen({
+    super.key,
+    required this.artistId,
+    this.artistName,
+  });
 
   final String artistId;
+  final String? artistName;
 
   @override
   State<FanClubModeratorsScreen> createState() =>
@@ -35,6 +40,18 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
   void initState() {
     super.initState();
     handleLoad();
+  }
+
+  String get _clubLabel {
+    final fromClub = _club?.artistName.trim() ?? '';
+    if (fromClub.isNotEmpty) {
+      return fromClub;
+    }
+    final seed = widget.artistName?.trim() ?? '';
+    if (seed.isNotEmpty) {
+      return seed;
+    }
+    return 'este artista';
   }
 
   Future<void> handleLoad() async {
@@ -58,7 +75,6 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
             widget.artistId,
           );
         } catch (_) {
-          // Pedidos só existem para o dono; 403/404 não bloqueia a lista.
           requests = [];
         }
       }
@@ -212,10 +228,67 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
-                        if (isOwner) ...[
-                          if (_requests.isNotEmpty) ...[
+                        if (_error != null)
+                          ProfileState(title: 'Erro', message: _error)
+                        else ...[
+                          Text(
+                            'Esses fãs ajudam a cuidar do fã-clube de $_clubLabel.',
+                            style: TextStyle(
+                              fontSize: 15,
+                              height: 1.45,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          if (mods.isEmpty)
+                            const ProfileState(
+                              title: 'Nenhum moderador',
+                              message: 'Nenhum moderador encontrado.',
+                            )
+                          else
+                            for (final mod in mods)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: FanClubModeratorPreviewRow(
+                                      moderator: mod,
+                                    ),
+                                  ),
+                                  if (isOwner && !mod.isOwner)
+                                    TextButton(
+                                      onPressed: () =>
+                                          handleRemoveModerator(mod),
+                                      child: Text(
+                                        'Remover',
+                                        style: TextStyle(color: colors.danger),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                          if (isOwner) ...[
+                            const SizedBox(height: 24),
+                            if (_requests.isNotEmpty) ...[
+                              Text(
+                                'Pedidos pendentes',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              for (final request in _requests) ...[
+                                FanClubModeratorRequestCard(
+                                  request: request,
+                                  onApprove: () => handleApprove(request),
+                                  onReject: () => handleReject(request),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ],
                             Text(
-                              'Pedidos pendentes',
+                              'Adicionar moderador (userUid)',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -223,52 +296,19 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            for (final request in _requests) ...[
-                              FanClubModeratorRequestCard(
-                                request: request,
-                                onApprove: () => handleApprove(request),
-                                onReject: () => handleReject(request),
-                              ),
-                              const SizedBox(height: 10),
-                            ],
+                            AppTextField(
+                              key: ValueKey('uid-$_uidNonce'),
+                              hint: 'UUID do fã',
+                              onChanged: (value) => _newUid = value,
+                            ),
+                            const SizedBox(height: 12),
+                            AppButton(
+                              label: 'Adicionar',
+                              loading: _saving,
+                              onPressed: handleAddModerator,
+                            ),
                           ],
-                          Text(
-                            'Adicionar moderador (userUid)',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          AppTextField(
-                            key: ValueKey('uid-$_uidNonce'),
-                            hint: 'UUID do fã',
-                            onChanged: (value) => _newUid = value,
-                          ),
-                          const SizedBox(height: 12),
-                          AppButton(
-                            label: 'Adicionar',
-                            loading: _saving,
-                            onPressed: handleAddModerator,
-                          ),
-                          const SizedBox(height: 16),
                         ],
-                        if (_error != null)
-                          ProfileState(title: 'Erro', message: _error)
-                        else if (mods.isEmpty)
-                          const ProfileState(
-                            title: 'Nenhum moderador',
-                            message: 'Nenhum moderador encontrado.',
-                          )
-                        else
-                          for (final mod in mods)
-                            FanClubModeratorRow(
-                              moderator: mod,
-                              onRemove: isOwner && !mod.isOwner
-                                  ? () => handleRemoveModerator(mod)
-                                  : null,
-                            ),
                       ],
                     ),
             ),
