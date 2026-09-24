@@ -162,13 +162,14 @@ class ArtistProfilePublicCover extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Material(
+                    // Follow gratuito ≠ Membership: branco / borda clara (print Feed).
                     color: following
-                        ? const Color(0xCC3A2418)
+                        ? Colors.white.withValues(alpha: 0.18)
                         : Colors.white,
                     shape: StadiumBorder(
                       side: BorderSide(
                         color: following
-                            ? const Color(0xFFE8A05C)
+                            ? Colors.white.withValues(alpha: 0.85)
                             : Colors.transparent,
                         width: following ? 1.5 : 0,
                       ),
@@ -186,7 +187,7 @@ class ArtistProfilePublicCover extends StatelessWidget {
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: following
-                                  ? const Color(0xFFE8A05C)
+                                  ? Colors.white
                                   : const Color(0xFF1C1C1E),
                             ),
                           ),
