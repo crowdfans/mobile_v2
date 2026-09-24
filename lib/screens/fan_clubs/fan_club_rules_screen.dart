@@ -36,35 +36,34 @@ class FanClubRulesScreen extends StatelessWidget {
                   Text(
                     'Diretrizes da Comunidade',
                     style: TextStyle(
-                      fontSize: 24,
-                      height: 1.3,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 26,
+                      height: 1.25,
+                      fontWeight: FontWeight.w800,
                       color: colors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
-                    'Na Crowd Fans, a música aproxima pessoas. Este é um espaço para viver a relação entre artistas e fãs de um jeito mais próximo, mais verdadeiro e mais humano.',
+                    'Na Crowd Fans, a música aproxima pessoas. Este é um espaço '
+                    'para viver a relação entre artistas e fãs de um jeito mais '
+                    'próximo, mais verdadeiro e mais humano.',
                     style: TextStyle(
                       fontSize: 15,
-                      height: 1.45,
+                      height: 1.5,
                       color: colors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
                   Text(
-                    'Equipe Crowd Fans',
+                    'Equipe Crowd Fans. Feito de fã pra fã. <3',
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
                       color: colors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Feito de fã pra fã.',
-                    style: TextStyle(fontSize: 14, color: colors.textTertiary),
-                  ),
+                  const SizedBox(height: 8),
                   for (var i = 0; i < fanClubRulesSections.length; i++)
                     FanClubRulesSectionView(
                       section: fanClubRulesSections[i],

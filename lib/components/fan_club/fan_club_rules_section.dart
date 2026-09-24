@@ -72,21 +72,24 @@ class FanClubRulesSectionView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            section.title,
-            style: TextStyle(
-              fontSize: 18,
-              height: 1.4,
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
+          Semantics(
+            header: true,
+            child: Text(
+              section.title,
+              style: TextStyle(
+                fontSize: 18,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+                color: colors.textPrimary,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             section.body,
             style: TextStyle(
               fontSize: 15,
-              height: 1.45,
+              height: 1.55,
               color: colors.textSecondary,
             ),
           ),
