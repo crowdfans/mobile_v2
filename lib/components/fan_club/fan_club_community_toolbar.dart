@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Toolbar compacta da comunidade (print Fã Clube / Perfil Artista).
 class FanClubCommunityToolbar extends StatelessWidget {
@@ -61,7 +62,15 @@ class FanClubCommunityToolbar extends StatelessWidget {
           IconButton(
             key: const Key('fan-club-more'),
             onPressed: onMore,
-            icon: Icon(Icons.more_horiz, color: colors.textPrimary),
+            icon: SvgPicture.asset(
+              'assets/icons/General/dots-horizontal.svg',
+              width: 22,
+              height: 22,
+              colorFilter: ColorFilter.mode(
+                colors.textPrimary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ],
       ),

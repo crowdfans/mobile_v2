@@ -2,6 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/post_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Data relativa curta (`agora`, `5m atrás`, …) para a lista Meus posts.
 String formatMyPostDate(String dateString) {
@@ -80,7 +81,15 @@ class MyPostRow extends StatelessWidget {
             IconButton(
               key: const Key('my-posts-item-menu'),
               onPressed: onOpenMenu,
-              icon: Icon(Icons.more_vert, color: colors.textSecondary),
+              icon: SvgPicture.asset(
+                'assets/icons/General/dots-vertical.svg',
+                width: 22,
+                height: 22,
+                colorFilter: ColorFilter.mode(
+                  colors.textSecondary,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ],
         ),
