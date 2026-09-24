@@ -12,12 +12,14 @@ class SearchArtistRankRow extends StatelessWidget {
     required this.onPressed,
     this.onPressMore,
     this.position,
+    this.metricHint,
   });
 
   final ArtistSearchItem artist;
   final VoidCallback onPressed;
   final VoidCallback? onPressMore;
   final int? position;
+  final String? metricHint;
 
   SearchRankTrend trendFor() {
     final delta = artist.rankDelta;
@@ -33,6 +35,14 @@ class SearchArtistRankRow extends StatelessWidget {
     return SearchRankTrend.flat;
   }
 
+  String trendLabel() {
+    return switch (trendFor()) {
+      SearchRankTrend.up => 'subiu',
+      SearchRankTrend.down => 'desceu',
+      SearchRankTrend.flat => 'estável',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
@@ -42,97 +52,109 @@ class SearchArtistRankRow extends StatelessWidget {
     final pos = position ?? artist.rank;
     final showRank = pos != null && pos > 0;
     final url = artist.avatarUri.trim();
+    final hint = (metricHint ?? '').trim();
+    final semanticsLabel = [
+      if (showRank) 'Posição $pos',
+      artist.name,
+      meta,
+      if (hint.isNotEmpty) hint,
+      'tendência $trendLabel()',
+    ].join('. ');
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onPressed,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: url.isEmpty
-                  ? ColoredBox(
-                      color: colors.surfaceAlt,
-                      child: const SizedBox(width: 56, height: 56),
-                    )
-                  : Image.network(
-                      url,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => ColoredBox(
+      child: Semantics(
+        button: true,
+        label: semanticsLabel,
+        child: InkWell(
+          onTap: onPressed,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: url.isEmpty
+                    ? ColoredBox(
                         color: colors.surfaceAlt,
                         child: const SizedBox(width: 56, height: 56),
+                      )
+                    : Image.network(
+                        url,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => ColoredBox(
+                          color: colors.surfaceAlt,
+                          child: const SizedBox(width: 56, height: 56),
+                        ),
                       ),
-                    ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (showRank)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.surfaceAlt,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '#$pos',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                color: colors.textPrimary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (showRank)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.surfaceAlt,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '#$pos',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: colors.textPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          SearchRankTrendDot(trend: trendFor()),
-                        ],
+                            const SizedBox(width: 8),
+                            SearchRankTrendDot(trend: trendFor()),
+                          ],
+                        ),
+                      ),
+                    Text(
+                      artist.name,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
                       ),
                     ),
-                  Text(
-                    artist.name,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                    Text(
+                      meta,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                      ),
                     ),
-                  ),
-                  Text(
-                    meta,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (onPressMore != null)
-              IconButton(
-                onPressed: onPressMore,
-                icon: SvgPicture.asset(
-                  'assets/icons/General/dots-vertical.svg',
-                  width: 22,
-                  height: 22,
-                  colorFilter: ColorFilter.mode(
-                    colors.icon,
-                    BlendMode.srcIn,
-                  ),
+                  ],
                 ),
-                tooltip: 'Opções do artista',
               ),
-          ],
+              if (onPressMore != null)
+                IconButton(
+                  onPressed: onPressMore,
+                  icon: SvgPicture.asset(
+                    'assets/icons/General/dots-vertical.svg',
+                    width: 22,
+                    height: 22,
+                    colorFilter: ColorFilter.mode(
+                      colors.icon,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  tooltip: 'Opções de ${artist.name}',
+                ),
+            ],
+          ),
         ),
       ),
     );
