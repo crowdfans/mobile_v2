@@ -55,6 +55,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _letters = <FanLetter>[];
   var _loading = true;
   var _subscribed = false;
+  var _subscriptionResolved = false;
   var _following = false;
   var _togglingMembership = false;
   var _togglingFollow = false;
@@ -99,6 +100,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   Future<void> handleLoad() async {
     setState(() {
       _loading = true;
+      _subscriptionResolved = false;
       _error = null;
     });
     try {
@@ -150,6 +152,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         _posts = posts;
         _letters = letters;
         _subscribed = check.isSubscribed;
+        _subscriptionResolved = true;
         _following = isFollowing;
         _memberCount = club?.memberCount;
         _fanClubRank = rank;
@@ -171,6 +174,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       }
       setState(() {
         _loading = false;
+        _subscriptionResolved = true;
+        _subscribed = false;
         _error = 'Não foi possível carregar o perfil do artista.';
       });
     }
@@ -472,24 +477,50 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       );
     }
 
-    if (_tab == 'exclusivo' && !_subscribed) {
+    if (_tab == 'exclusivo') {
+      if (!_subscriptionResolved) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (!_subscribed) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ArtistProfileExclusiveTeaser(
+              artistName: name,
+              onSubscribe: handleToggleMembership,
+            ),
+            if (posts.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              for (final post in posts)
+                FeedItem(
+                  post: post,
+                  canAccessExclusive: false,
+                  onPressUnlock: handleToggleMembership,
+                  onVoteApplied: handleVoteApplied,
+                ),
+            ],
+          ],
+        );
+      }
+      // Assinante: posts exclusivos sem CTA de compra.
+      if (posts.isEmpty) {
+        return const ProfileState(
+          title: 'Nenhum post',
+          message: 'Nenhum post exclusivo ainda.',
+        );
+      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ArtistProfileExclusiveTeaser(
-            artistName: name,
-            onSubscribe: handleToggleMembership,
-          ),
-          if (posts.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            for (final post in posts)
-              FeedItem(
-                post: post,
-                canAccessExclusive: canAccessExclusivePost(post, access),
-                onPressUnlock: handleToggleMembership,
-                onVoteApplied: handleVoteApplied,
-              ),
-          ],
+          for (final post in posts)
+            FeedItem(
+              post: post,
+              canAccessExclusive: true,
+              onVoteApplied: handleVoteApplied,
+            ),
         ],
       );
     }
@@ -497,9 +528,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     if (posts.isEmpty) {
       return ProfileState(
         title: 'Nenhum post',
-        message: _tab == 'exclusivo'
-            ? 'Nenhum post exclusivo ainda.'
-            : 'Este artista ainda não publicou posts.',
+        message: 'Este artista ainda não publicou posts.',
       );
     }
 
