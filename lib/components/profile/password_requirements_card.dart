@@ -44,80 +44,69 @@ class PasswordRequirementsCard extends StatelessWidget {
         ? (label: 'Média', color: const Color(0xFFD4A017))
         : (label: 'Forte', color: AppPalette.green700);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    // Sem caixa contornada — critérios abaixo dos campos (CF-164).
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Critérios da nova senha',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
-                    ),
-                  ),
+            Expanded(
+              child: Text(
+                'Critérios da nova senha',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
                 ),
-                if (strength.label.isNotEmpty)
-                  Text(
-                    strength.label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: strength.color,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(
-                value: score / 5,
-                minHeight: 6,
-                backgroundColor: colors.surfaceAlt,
-                color: strength.color,
               ),
             ),
-            const SizedBox(height: 8),
-            for (final item in checks)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: item.ok ? AppPalette.green700 : colors.border,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      item.label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: item.ok
-                            ? colors.textPrimary
-                            : colors.textTertiary,
-                      ),
-                    ),
-                  ],
+            if (strength.label.isNotEmpty)
+              Text(
+                strength.label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: strength.color,
                 ),
               ),
           ],
         ),
-      ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: score / 5,
+            minHeight: 6,
+            backgroundColor: colors.surfaceAlt,
+            color: strength.color,
+          ),
+        ),
+        const SizedBox(height: 8),
+        for (final item in checks)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: item.ok ? AppPalette.green700 : colors.border,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  item.label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: item.ok ? colors.textPrimary : colors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
