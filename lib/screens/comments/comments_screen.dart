@@ -376,7 +376,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     }
     return Scaffold(
       backgroundColor: colors.background,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             Padding(
