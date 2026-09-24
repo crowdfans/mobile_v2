@@ -37,85 +37,98 @@ class FanScoreSettingsEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final accent = accentColor(colors);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: const EdgeInsets.all(13),
-              child: Row(
-                children: [
-                  PostAvatar(url: entry.artistAvatarUri, size: 52),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return Semantics(
+      container: true,
+      expanded: expanded,
+      label:
+          '${entry.artistName}. ${entry.tier.label}. Score ${entry.currentScore}.'
+          '${expanded ? ' Insights expandidos.' : ' Insights recolhidos.'}',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: onToggle,
+              child: Padding(
+                padding: const EdgeInsets.all(13),
+                child: Row(
+                  children: [
+                    PostAvatar(url: entry.artistAvatarUri, size: 52),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            entry.artistName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            entry.tier.label,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: accent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          entry.artistName,
+                          '${entry.currentScore}',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w900,
                             color: colors.textPrimary,
                           ),
                         ),
                         Text(
-                          entry.tier.label,
+                          entry.fanRank == null
+                              ? 'Fora do Top 100'
+                              : '#${entry.fanRank} no ranking',
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: accent,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textSecondary,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '${entry.currentScore}',
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w900,
-                          color: colors.textPrimary,
-                        ),
-                      ),
-                      Text(
-                        entry.fanRank == null
-                            ? 'Fora do Top 100'
-                            : '#${entry.fanRank} no ranking',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    expanded ? Icons.expand_less : Icons.expand_more,
-                    color: colors.textTertiary,
-                  ),
-                ],
+                    Icon(
+                      expanded ? Icons.expand_less : Icons.expand_more,
+                      color: colors.textTertiary,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (expanded)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-              child: FanScoreBreakdownView(
-                breakdown: entry.breakdown,
-                deltaPercentage: entry.deltaPercentage,
-              ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: expanded
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                      child: FanScoreBreakdownView(
+                        breakdown: entry.breakdown,
+                        deltaPercentage: entry.deltaPercentage,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
