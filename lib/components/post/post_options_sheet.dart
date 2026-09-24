@@ -229,16 +229,16 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
           Row(
             children: [
               PostOptionsShortcutCard(
-                label: 'Ver Fã Clube',
-                icon: Icons.campaign_outlined,
+                label: 'Ver Fã Clube do Artista',
+                asset: 'assets/images/rock-hand.png',
                 backgroundColor: AppPalette.purple100,
                 onPressed: () => handleOpenFanClub(context),
               ),
               const SizedBox(width: 10),
               PostOptionsShortcutCard(
-                label: 'Salvar nas Memórias',
-                icon: Icons.bookmark_outline,
-                backgroundColor: AppPalette.yellow400,
+                label: 'Salvar Post nas Memórias',
+                asset: 'assets/images/star-memory.png',
+                backgroundColor: AppPalette.yellow500.withValues(alpha: 0.35),
                 iconColor: AppPalette.platinum900,
                 onPressed: () {
                   handleSave(context);
@@ -250,7 +250,7 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
           Row(
             children: [
               PostOptionsShareAction(
-                label: 'Copiar',
+                label: 'Copiar Link',
                 icon: Icons.link,
                 onPressed: () {
                   handleCopy(context);
@@ -258,13 +258,12 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
               ),
               PostOptionsShareAction(
                 label: 'WhatsApp',
-                icon: Icons.chat,
-                iconColor: const Color(0xFF25D366),
+                asset: 'assets/images/whatsApp.svg',
                 onPressed: handleWhatsApp,
               ),
               PostOptionsShareAction(
                 label: 'Stories',
-                icon: Icons.auto_awesome,
+                asset: 'assets/images/instagram.svg',
                 onPressed: handleStories,
               ),
             ],
@@ -283,14 +282,16 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
                     },
                   ),
                   PostSheetListItem(
-                    label: 'Sobre',
+                    label: 'Sobre este artista',
                     onPressed: () {
                       handleOpenArtist(context);
                     },
                     showDivider: true,
                   ),
                   PostSheetListItem(
-                    label: _favorite ? 'Remover dos favoritos' : 'Favoritar',
+                    label: _favorite
+                        ? 'Remover dos favoritos'
+                        : 'Favoritar Artista',
                     onPressed: handleToggleFavorite,
                     showDivider: true,
                   ),
