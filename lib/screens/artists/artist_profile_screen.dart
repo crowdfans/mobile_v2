@@ -5,6 +5,9 @@ import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
 import 'package:crowdfans/components/profile/artist_me_tab_bar.dart';
 import 'package:crowdfans/components/profile/artist_profile_exclusive_teaser.dart';
+import 'package:crowdfans/components/profile/artist_profile_fan_club_feed.dart';
+import 'package:crowdfans/components/profile/artist_profile_fan_club_header.dart';
+import 'package:crowdfans/components/profile/artist_profile_fan_club_toolbar.dart';
 import 'package:crowdfans/components/profile/artist_profile_letter_tile.dart';
 import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
 import 'package:crowdfans/components/profile/artist_profile_spotify_card.dart';
@@ -15,6 +18,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/models/profile.dart';
+import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
@@ -62,6 +66,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _togglingFollow = false;
   var _tab = 'feed';
   var _feedFilter = _FeedFilter.all;
+  var _clubPosts = <FeedPost>[];
+  var _clubLoading = false;
+  var _clubSortPopular = false;
+  var _clubFilter = ArtistProfileFanClubFilter.all;
   int? _memberCount;
   int? _fanClubRank;
   String? _error;
@@ -97,6 +105,84 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
 
   String membersLabel() {
     return ArtistProfilePublicCover.formatMembers(_memberCount);
+  }
+
+  FeedPost mapClubFeedPost(FanClubFeedPost post, ArtistFanClub club) {
+    final created = DateTime.tryParse(post.createdAt);
+    final minutes = created == null
+        ? 0
+        : DateTime.now().difference(created).inMinutes.clamp(0, 999999);
+    return FeedPost(
+      id: post.postId,
+      type: postTypeFrom(post.type),
+      author: club.artistName,
+      artistId: club.artistUid,
+      handle: club.artistName.toLowerCase().replaceAll(RegExp(r'\s+'), ''),
+      minutesAgo: minutes,
+      avatarUri: avatarUrl(),
+      text: post.content.isEmpty ? (post.title ?? '') : post.content,
+      imageUri: post.imageUrl,
+      votes: post.likesCount,
+      comments: post.commentsCount,
+      shares: 0,
+      isExclusive: post.isExclusive,
+      exclusiveLocked: post.isExclusive,
+    );
+  }
+
+  List<FeedPost> mergeClubPosts(List<FeedPost> fromFeed, List<FeedPost> extra) {
+    final seen = <String>{};
+    final merged = <FeedPost>[];
+    for (final post in [...fromFeed, ...extra]) {
+      if (seen.contains(post.id)) {
+        continue;
+      }
+      seen.add(post.id);
+      merged.add(post);
+    }
+    return merged;
+  }
+
+  Future<void> handleLoadClubFeed() async {
+    setState(() => _clubLoading = true);
+    try {
+      final results = await Future.wait([
+        FanClubService.getArtistFanClubFeed(
+          widget.artistId,
+          page: 1,
+          pageSize: 40,
+        ).then((value) => value, onError: (_) => null),
+        CommunityService.getCommunityPosts(page: 1, pageSize: 50)
+            .then((value) => value, onError: (_) => <CommunityPost>[]),
+      ]);
+      final feed = results[0] as ArtistFanClubFeed?;
+      final community = results[1] as List<CommunityPost>;
+      final club = feed?.fanClub;
+      final fromFeed = [
+        if (club != null)
+          for (final post in feed?.posts ?? const <FanClubFeedPost>[])
+            mapClubFeedPost(post, club),
+      ];
+      final fromCommunity = [
+        for (final post in community)
+          if (post.targetArtistId == widget.artistId) post.toFeedPost(),
+      ];
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _clubPosts = mergeClubPosts(fromFeed, fromCommunity);
+        if (club != null) {
+          _memberCount = club.memberCount;
+        }
+        _clubLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _clubLoading = false);
+    }
   }
 
   Future<void> handleLoad() async {
@@ -161,6 +247,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         _loading = false;
         _error = null;
       });
+      await handleLoadClubFeed();
       if (profile != null) {
         await SidebarArtistsStore.recordVisit(
           HomeFollowedArtist(
@@ -307,6 +394,13 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           else
             item,
       ];
+      _clubPosts = [
+        for (final item in _clubPosts)
+          if (item.id == result.id)
+            item.copyWith(votes: result.votes, myVote: result.myVote)
+          else
+            item,
+      ];
     });
   }
 
@@ -419,18 +513,45 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     }
 
     if (_tab == 'fanclub') {
+      final clubPosts = artistProfileFanClubVisiblePosts(
+        posts: _clubPosts,
+        sortPopular: _clubSortPopular,
+        filter: _clubFilter,
+      );
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ArtistProfileStatTile(
-            label: 'Fã Clube',
-            value: membersLabel(),
+          ArtistProfileFanClubHeader(
+            artistName: name,
+            avatarUrl: avatarUrl(),
+            memberCount: _memberCount,
           ),
           const SizedBox(height: 12),
-          AppButton(
-            label: 'Abrir fã clube',
-            onPressed: handleOpenFanClub,
+          ArtistProfileFanClubToolbar(
+            sortPopular: _clubSortPopular,
+            filter: _clubFilter,
+            onSortPopular: (value) => setState(() => _clubSortPopular = value),
+            onFilter: (value) => setState(() => _clubFilter = value),
           ),
+          const SizedBox(height: 12),
+          if (_clubLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (clubPosts.isEmpty)
+            const ProfileState(
+              title: 'Nenhum post',
+              message: 'Ainda não há publicações neste fã-clube.',
+            )
+          else
+            for (final post in clubPosts)
+              FeedItem(
+                post: post,
+                canAccessExclusive: canAccessExclusivePost(post, access),
+                onPressUnlock: _subscribed ? null : handleToggleMembership,
+                onVoteApplied: handleVoteApplied,
+              ),
         ],
       );
     }
