@@ -30,12 +30,13 @@ abstract final class Pages {
   static const artistProfile = '/artists/:artistId';
   static const comments = '/comments/:postId';
 
-  /// Comentários com contexto opcional do post (CF-174).
+  /// Comentários com contexto opcional do post (CF-174) e fã-clube (CF-194).
   static String commentsOf(
     String postId, {
     String? author,
     String? handle,
     String? text,
+    String? clubName,
   }) {
     return Uri(
       path: '/comments/${Uri.encodeComponent(postId)}',
@@ -43,6 +44,7 @@ abstract final class Pages {
         if ((author ?? '').trim().isNotEmpty) 'author': author!.trim(),
         if ((handle ?? '').trim().isNotEmpty) 'handle': handle!.trim(),
         if ((text ?? '').trim().isNotEmpty) 'text': text!.trim(),
+        if ((clubName ?? '').trim().isNotEmpty) 'club': clubName!.trim(),
       },
     ).toString();
   }

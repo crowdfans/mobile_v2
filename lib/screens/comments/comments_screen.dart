@@ -28,12 +28,14 @@ class CommentsScreen extends ConsumerStatefulWidget {
     this.postAuthor,
     this.postHandle,
     this.postText,
+    this.clubName,
   });
 
   final String postId;
   final String? postAuthor;
   final String? postHandle;
   final String? postText;
+  final String? clubName;
 
   @override
   ConsumerState<CommentsScreen> createState() => _CommentsScreenState();
@@ -446,11 +448,15 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 ],
               ),
             ),
-            if ((widget.postAuthor ?? '').trim().isNotEmpty)
+            if ((widget.postAuthor ?? '').trim().isNotEmpty ||
+                (widget.clubName ?? '').trim().isNotEmpty)
               CommentPostContextHeader(
-                author: widget.postAuthor!.trim(),
+                author: (widget.postAuthor ?? '').trim().isEmpty
+                    ? 'Publicação'
+                    : widget.postAuthor!.trim(),
                 handle: widget.postHandle,
                 text: widget.postText,
+                clubName: widget.clubName,
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -557,6 +563,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                   replyCount: replyCount,
                                   expanded: expanded,
                                   onToggle: () {
+                                    // Recolher não apaga o rascunho do compositor.
                                     setState(() {
                                       if (expanded) {
                                         _expandedReplyIds.remove(item.id);

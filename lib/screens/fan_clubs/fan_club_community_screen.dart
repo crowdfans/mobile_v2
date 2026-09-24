@@ -691,6 +691,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                 ),
                                 child: FeedItem(
                                   post: post,
+                                  clubName: club.artistName,
                                   canAccessExclusive: canAccessExclusivePost(
                                     post,
                                     const ExclusiveAccessContext(),

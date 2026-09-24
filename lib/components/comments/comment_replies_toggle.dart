@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Controle Ver/Ocultar respostas com contagem real do backend.
+/// Controle Ver/Ocultar respostas (fã-clube e Home) com contagem do backend.
 class CommentRepliesToggle extends StatelessWidget {
   const CommentRepliesToggle({
     super.key,
