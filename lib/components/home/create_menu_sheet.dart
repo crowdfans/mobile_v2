@@ -16,7 +16,6 @@ class CreateMenuSheet extends ConsumerWidget {
     this.fanClubArtistId,
     this.fanClubArtistName,
     this.fanClubArtistAvatarUrl,
-    this.bottomOffset = 68,
   });
 
   final bool visible;
@@ -24,9 +23,6 @@ class CreateMenuSheet extends ConsumerWidget {
   final String? fanClubArtistId;
   final String? fanClubArtistName;
   final String? fanClubArtistAvatarUrl;
-
-  /// Altura da bottom nav quando ela fica acima do sheet (toggle do +).
-  final double bottomOffset;
 
   void handleCreatePost(BuildContext context) {
     onClose();
@@ -63,12 +59,15 @@ class CreateMenuSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = CrowdFansTheme.of(context);
     final isArtist = ref.watch(authSessionProvider).profile?.isArtist == true;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return BottomSheetShell(
       visible: visible,
       onClose: onClose,
-      bottomOffset: bottomOffset,
-      coverNavigation: false,
+      // Cobre a barra inferior (print Criar): ações com área de toque
+      // independente da Navigation Bar e respiro de área segura.
+      coverNavigation: true,
+      bottomOffset: createMenuSheetExtraBottom(bottomInset),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -131,4 +130,10 @@ class CreateMenuSheet extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Respiro extra sob as ações além do padding de área segura do shell.
+double createMenuSheetExtraBottom(double safeBottom) {
+  // Garante ≥16px de folga após o safe area (fonte ampliada / home indicator).
+  return safeBottom >= 16 ? 12 : 20;
 }

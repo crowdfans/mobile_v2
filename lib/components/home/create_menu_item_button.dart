@@ -27,24 +27,27 @@ class CreateMenuItemButton extends StatelessWidget {
         InkWell(
           onTap: onPressed,
           child: SizedBox(
-            height: 60,
+            height: 64,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   SvgPicture.asset(
                     asset,
-                    width: 21,
-                    height: 21,
+                    width: 22,
+                    height: 22,
                     colorFilter: ColorFilter.mode(colors.icon, BlendMode.srcIn),
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 20 / 16,
-                      color: colors.textPrimary,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 16,
+                        height: 20 / 16,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textPrimary,
+                      ),
                     ),
                   ),
                 ],

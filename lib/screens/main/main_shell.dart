@@ -14,8 +14,7 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isCreateMenuOpen = ref.watch(createMenuProvider);
-    // Create menu sob a bottom nav (toggle do +); demais sheets cobrem a nav
-    // via BottomSheetShell.coverNavigation (overlay raiz).
+    // Create menu cobre a bottom nav (CF-188); demais sheets idem via overlay.
     return Stack(
       children: [
         Scaffold(body: navigationShell),
