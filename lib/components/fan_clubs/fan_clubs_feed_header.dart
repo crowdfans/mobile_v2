@@ -105,27 +105,35 @@ class FanClubsFeedHeader extends StatelessWidget {
             ],
           ),
         ),
+        // CF-178: só Todos / Posts / Media — sem chips de artistas no feed.
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-          child: Wrap(
-            spacing: 8,
-            children: [
-              MePostsFilterChip(
-                label: 'Todos',
-                selected: filterAll,
-                onPressed: onFilterAll,
-              ),
-              MePostsFilterChip(
-                label: 'Posts',
-                selected: filterPosts,
-                onPressed: onFilterPosts,
-              ),
-              MePostsFilterChip(
-                label: 'Media',
-                selected: filterMedia,
-                onPressed: onFilterMedia,
-              ),
-            ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                MePostsFilterChip(
+                  key: const Key('fan-clubs-filter-all'),
+                  label: 'Todos',
+                  selected: filterAll,
+                  onPressed: onFilterAll,
+                ),
+                const SizedBox(width: 8),
+                MePostsFilterChip(
+                  key: const Key('fan-clubs-filter-posts'),
+                  label: 'Posts',
+                  selected: filterPosts,
+                  onPressed: onFilterPosts,
+                ),
+                const SizedBox(width: 8),
+                MePostsFilterChip(
+                  key: const Key('fan-clubs-filter-media'),
+                  label: 'Media',
+                  selected: filterMedia,
+                  onPressed: onFilterMedia,
+                ),
+              ],
+            ),
           ),
         ),
       ],
