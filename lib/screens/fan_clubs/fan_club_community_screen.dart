@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/fan_club/fan_club_community_cover.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
+import 'package:crowdfans/components/fan_club/fan_club_expelled_banner.dart';
 import 'package:crowdfans/components/fan_club/fan_club_moderation_warning_banner.dart';
 import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
