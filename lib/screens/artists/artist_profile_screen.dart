@@ -13,6 +13,7 @@ import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
 import 'package:crowdfans/components/profile/artist_profile_social_links_card.dart';
 import 'package:crowdfans/components/profile/artist_profile_spotify_card.dart';
 import 'package:crowdfans/components/profile/artist_profile_stat_tile.dart';
+import 'package:crowdfans/components/profile/artist_sobre_base.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
