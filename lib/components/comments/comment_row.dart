@@ -135,18 +135,19 @@ class CommentRow extends StatelessWidget {
                 Wrap(
                   spacing: 16,
                   children: [
-                    if (!isReply)
-                      GestureDetector(
-                        onTap: onReply,
-                        child: Text(
-                          'Responder',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: colors.primary,
-                          ),
+                    // Instagram: Responder também na resposta aninhada —
+                    // a tela amarra o parentCommentId ao comentário raiz.
+                    GestureDetector(
+                      onTap: onReply,
+                      child: Text(
+                        'Responder',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: colors.primary,
                         ),
                       ),
+                    ),
                     if (!isOwn)
                       GestureDetector(
                         onTap: onReport,

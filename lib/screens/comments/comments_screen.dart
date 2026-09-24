@@ -45,7 +45,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   var _comments = <CommentItem>[];
   var _sortPopular = true;
   var _draft = '';
+  /// Comentário raiz usado como `parentCommentId` (sem cadeia Twitter).
   CommentItem? _replyTo;
+  /// Autor exibido no banner (pode ser resposta aninhada; CF-69 Instagram).
+  String? _replyBannerAuthor;
+  String? _replyBannerHandle;
   CommentItem? _editing;
   String? _selectedGifUrl;
   var _gifPickerOpen = false;
@@ -253,6 +257,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
             _comments = [created, ..._comments];
           }
           _replyTo = null;
+          _replyBannerAuthor = null;
+          _replyBannerHandle = null;
         });
       }
       setState(() {
@@ -523,12 +529,16 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                 onOpenProfile: () => handleOpenProfile(item),
                                 onReply: () => setState(() {
                                   _replyTo = item;
+                                  _replyBannerAuthor = item.author;
+                                  _replyBannerHandle = item.handle;
                                   _editing = null;
                                 }),
                                 onReport: () => handleReport(item),
                                 onEdit: () => setState(() {
                                   _editing = item;
                                   _replyTo = null;
+                                  _replyBannerAuthor = null;
+                                  _replyBannerHandle = null;
                                   _draft = item.text;
                                   _selectedGifUrl = item.gifUrl;
                                   _composerNonce++;
@@ -546,11 +556,19 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                       isReply: true,
                                       onOpenProfile: () =>
                                           handleOpenProfile(reply),
-                                      onReply: () {},
+                                      onReply: () => setState(() {
+                                        // Resposta aninhada → ainda sob o raiz.
+                                        _replyTo = item;
+                                        _replyBannerAuthor = reply.author;
+                                        _replyBannerHandle = reply.handle;
+                                        _editing = null;
+                                      }),
                                       onReport: () => handleReport(reply),
                                       onEdit: () => setState(() {
                                         _editing = reply;
                                         _replyTo = null;
+                                        _replyBannerAuthor = null;
+                                        _replyBannerHandle = null;
                                         _draft = reply.text;
                                         _selectedGifUrl = reply.gifUrl;
                                         _composerNonce++;
@@ -583,7 +601,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
             CommentComposer(
               key: ValueKey(_composerNonce),
               draft: _draft,
-              replyAuthor: _replyTo?.author,
+              replyAuthor: _replyBannerAuthor ?? _replyTo?.author,
+              replyHandle: _replyBannerHandle ?? _replyTo?.handle,
               editing: _editing != null,
               selectedGifUrl: _selectedGifUrl,
               submitting: _submitting,
@@ -595,7 +614,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 _selectedGifUrl = null;
                 _composerNonce++;
               }),
-              onCancelReply: () => setState(() => _replyTo = null),
+              onCancelReply: () => setState(() {
+                _replyTo = null;
+                _replyBannerAuthor = null;
+                _replyBannerHandle = null;
+              }),
               onRemoveGif: () => setState(() => _selectedGifUrl = null),
               onPickGif: () {
                 setState(() => _gifPickerOpen = true);
