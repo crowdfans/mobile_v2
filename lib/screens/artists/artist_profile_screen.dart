@@ -61,6 +61,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   var _posts = <FeedPost>[];
   var _letters = <FanLetter>[];
   var _loading = true;
+  var _lettersError = false;
   var _subscribed = false;
   var _subscriptionResolved = false;
   var _following = false;
@@ -206,9 +207,12 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           .then((value) => value, onError: (_) => false);
       final club = await FanClubService.getArtistFanClub(widget.artistId)
           .then((value) => value, onError: (_) => null);
-      final letters = await FanLetterService.listArtistFanLetters(
+      final lettersResult = await FanLetterService.listArtistFanLetters(
         widget.artistId,
-      ).then((value) => value, onError: (_) => <FanLetter>[]);
+      ).then(
+        (value) => (letters: value, error: false),
+        onError: (_) => (letters: <FanLetter>[], error: true),
+      );
       ArtistSearchResponse? rankings;
       try {
         rankings = await SearchService.rankArtists('fan-clubs', limit: 500);
@@ -240,7 +244,8 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       setState(() {
         _profile = profile;
         _posts = posts;
-        _letters = letters;
+        _letters = lettersResult.letters;
+        _lettersError = lettersResult.error;
         _subscribed = check.isSubscribed;
         _subscriptionResolved = true;
         _following = isFollowing;
