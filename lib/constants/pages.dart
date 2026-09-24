@@ -304,6 +304,8 @@ abstract final class Pages {
   }
 
   static const profileAccount = '/me/settings/account';
+  static const profileEditBio = '/me/settings/account/bio';
+  static const profilePhoto = '/me/settings/account/photo';
   static const profileAppearance = '/me/settings/appearance';
   static const profileArtists = '/me/artists';
   static const profileFanScore = '/me/settings/fan-score';
@@ -354,6 +356,8 @@ abstract final class Pages {
     '/pages/fan-clubs/FanClubModerationScreen': fanClubModeration,
     '/pages/fan-clubs/FanClubRulesScreen': fanClubRules,
     '/pages/profile/settings/ProfileAccountScreen': profileAccount,
+    '/pages/profile/settings/ProfileEditBioScreen': profileEditBio,
+    '/pages/profile/settings/ProfilePhotoScreen': profilePhoto,
     '/pages/profile/settings/ProfileAppearanceScreen': profileAppearance,
     '/pages/profile/ProfileArtistsScreen': profileArtists,
     '/pages/profile/settings/ProfileFanScoreScreen': profileFanScore,

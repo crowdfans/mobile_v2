@@ -44,11 +44,13 @@ import 'package:crowdfans/screens/profile/profile_account_screen.dart';
 import 'package:crowdfans/screens/profile/profile_appearance_screen.dart';
 import 'package:crowdfans/screens/profile/profile_artists_screen.dart';
 import 'package:crowdfans/screens/profile/profile_earnings_screen.dart';
+import 'package:crowdfans/screens/profile/profile_edit_bio_screen.dart';
 import 'package:crowdfans/screens/profile/profile_fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notifications_screen.dart';
+import 'package:crowdfans/screens/profile/profile_photo_screen.dart';
 import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
@@ -253,6 +255,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileAccount,
         builder: (context, state) => const ProfileAccountScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileEditBio,
+        builder: (context, state) => const ProfileEditBioScreen(),
+      ),
+      GoRoute(
+        path: Pages.profilePhoto,
+        builder: (context, state) => const ProfilePhotoScreen(),
       ),
       GoRoute(
         path: Pages.profileSecurity,
