@@ -138,7 +138,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Segurança e login',
+              title: isPassword ? 'Alterar senha' : 'Segurança e login',
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -156,7 +156,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                   const SizedBox(height: 16),
                   Text(
                     isPassword
-                        ? 'Confirme sua senha atual antes de definir uma nova senha.'
+                        ? 'Defina uma nova senha para proteger sua conta.'
                         : 'E-mail atual: $_currentEmail. O Firebase enviará a confirmação ao novo endereço.',
                     style: TextStyle(
                       fontSize: 14,
@@ -182,11 +182,6 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                       onChanged: (value) =>
                           setState(() => _newPassword = value),
                     ),
-                    const SizedBox(height: 12),
-                    PasswordRequirementsCard(
-                      password: _newPassword,
-                      confirmPassword: _confirmPassword,
-                    ),
                     const SizedBox(height: 16),
                     AppTextField(
                       key: ValueKey('confirm-pw-$_formNonce'),
@@ -195,6 +190,11 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                       obscureText: true,
                       onChanged: (value) =>
                           setState(() => _confirmPassword = value),
+                    ),
+                    const SizedBox(height: 16),
+                    PasswordRequirementsCard(
+                      password: _newPassword,
+                      confirmPassword: _confirmPassword,
                     ),
                   ] else ...[
                     AppTextField(
