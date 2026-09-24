@@ -49,6 +49,7 @@ import 'package:crowdfans/screens/profile/profile_artists_screen.dart';
 import 'package:crowdfans/screens/profile/profile_earnings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_edit_bio_screen.dart';
 import 'package:crowdfans/screens/profile/profile_fan_score_screen.dart';
+import 'package:crowdfans/screens/profile/profile_help_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_membership_activation_confirmed_screen.dart';
 import 'package:crowdfans/screens/profile/profile_membership_subscribe_screen.dart';
@@ -319,6 +320,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ProfileInformationScreen(
           initialTab: state.uri.queryParameters['tab'],
         ),
+      ),
+      GoRoute(
+        path: Pages.profileHelp,
+        builder: (context, state) => const ProfileHelpScreen(),
       ),
       GoRoute(
         path: Pages.profileHiddenPosts,

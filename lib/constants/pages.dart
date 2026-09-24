@@ -460,6 +460,7 @@ abstract final class Pages {
   static const profileFanScore = '/me/settings/fan-score';
   static const fanScoreHowItWorks = '/me/settings/fan-score/how-it-works';
   static const profileInformation = '/me/settings/information';
+  static const profileHelp = '/me/settings/help';
   static const profileMemberships = '/me/settings/memberships';
   static const profileMembershipActivationConfirmed =
       '/me/settings/memberships/activation-confirmed';
@@ -528,6 +529,7 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileFanScoreScreen': profileFanScore,
     '/pages/profile/settings/FanScoreHowItWorksScreen': fanScoreHowItWorks,
     '/pages/profile/settings/ProfileInformationScreen': profileInformation,
+    '/pages/profile/settings/ProfileHelpScreen': profileHelp,
     '/pages/profile/settings/ProfileMembershipsScreen': profileMemberships,
     '/pages/profile/settings/ProfileMembershipActivationConfirmedScreen':
         profileMembershipActivationConfirmed,
