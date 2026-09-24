@@ -1,4 +1,5 @@
 import 'package:crowdfans/api/api_error.dart';
+import 'package:crowdfans/services/firebase_phone_auth_service.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -34,6 +35,43 @@ abstract final class ProfileSecurityService {
     }
   }
 
+  /// Reautentica e dispara SMS no novo telefone (ainda não confirma o número).
+  static Future<void> requestPhoneChange(
+    String currentPassword,
+    String countryCode,
+    String phoneNumber,
+  ) async {
+    await _reauthenticateWithPassword(currentPassword);
+    try {
+      await FirebasePhoneAuthService.sendPhoneVerificationSMS(
+        countryCode,
+        phoneNumber,
+      );
+    } on FirebaseAuthException catch (error) {
+      throw ApiError(_mapSecurityError(error), 0);
+    } catch (error) {
+      throw ApiError(error.toString(), 0);
+    }
+  }
+
+  /// Confirma o OTP e só então aplica o novo telefone na conta.
+  static Future<void> confirmPhoneChange(String otpCode) async {
+    final user = FirebaseService.auth.currentUser;
+    if (user == null) {
+      throw ApiError('Faça login de novo antes de alterar o telefone.', 0);
+    }
+    try {
+      final credential = FirebasePhoneAuthService.credentialFromOtp(otpCode);
+      await user.updatePhoneNumber(credential);
+      await user.reload();
+      FirebasePhoneAuthService.clearPhoneVerificationState();
+    } on FirebaseAuthException catch (error) {
+      throw ApiError(_mapSecurityError(error), 0);
+    } catch (error) {
+      throw ApiError(error.toString(), 0);
+    }
+  }
+
   static Future<User> _reauthenticateWithPassword(
     String currentPassword,
   ) async {
@@ -61,7 +99,8 @@ abstract final class ProfileSecurityService {
     return switch (error.code) {
       'wrong-password' ||
       'invalid-credential' ||
-      'invalid-login-credentials' => 'Senha atual incorreta.',
+      'invalid-login-credentials' =>
+        'Senha atual incorreta.',
       'weak-password' => 'A nova senha é fraca demais.',
       'email-already-in-use' => 'Este e-mail já está em uso.',
       'requires-recent-login' =>

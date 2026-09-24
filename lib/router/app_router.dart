@@ -57,6 +57,7 @@ import 'package:crowdfans/screens/profile/profile_photo_screen.dart';
 import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
+import 'package:crowdfans/screens/profile/profile_change_phone_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_payment_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_recharge_screen.dart';
@@ -278,6 +279,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileSecurity,
         builder: (context, state) => const ProfileSecurityScreen(),
+      ),
+      GoRoute(
+        path: Pages.profileChangePhone,
+        builder: (context, state) => const ProfileChangePhoneScreen(),
       ),
       GoRoute(
         path: Pages.profileAppearance,
