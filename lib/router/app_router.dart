@@ -6,6 +6,7 @@ import 'package:crowdfans/screens/comments/comments_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_about_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_community_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_compose_screen.dart';
+import 'package:crowdfans/screens/fan_clubs/fan_club_defend_return_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_moderation_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_moderators_screen.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_request_moderation_screen.dart';
@@ -227,6 +228,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.fanClubRules,
         builder: (context, state) => const FanClubRulesScreen(),
+      ),
+      GoRoute(
+        path: Pages.fanClubDefendReturn,
+        builder: (context, state) => FanClubDefendReturnScreen(
+          artistId: state.uri.queryParameters['artistId'] ?? '',
+          artistName: state.uri.queryParameters['name'],
+          expulsionReason: state.uri.queryParameters['reason'],
+        ),
       ),
       GoRoute(
         path: Pages.fanClubModerators,
