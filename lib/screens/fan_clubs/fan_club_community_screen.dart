@@ -511,6 +511,37 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                       onAbout: handleAbout,
                                       onRules: handleRules,
                                     ),
+                                    if (club.viewerIsExpelled)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          8,
+                                          16,
+                                          4,
+                                        ),
+                                        child: FanClubExpelledBanner(
+                                          reason: club.viewerExpulsionReason,
+                                          onDefend: () {
+                                            context.push(
+                                              Pages.profileContestations,
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    else if (club.viewerActiveStrikesCount > 0)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          8,
+                                          16,
+                                          4,
+                                        ),
+                                        child: FanClubModerationWarningBanner(
+                                          reason: club.viewerLatestStrikeReason,
+                                          remainingChances:
+                                              club.viewerStrikeRemainingChances,
+                                        ),
+                                      ),
                                   ],
                                 );
                               }
