@@ -68,6 +68,7 @@ class CreateMenuSheet extends ConsumerWidget {
       visible: visible,
       onClose: onClose,
       bottomOffset: bottomOffset,
+      coverNavigation: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
