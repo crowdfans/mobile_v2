@@ -3,7 +3,6 @@ import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
 import 'package:crowdfans/components/profile/password_requirements_card.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
-import 'package:crowdfans/components/profile/security_unavailable_card.dart';
 import 'package:crowdfans/components/profile/settings_segmented_tabs.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/firebase_service.dart';
@@ -138,7 +137,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: isPassword ? 'Alterar senha' : 'Segurança e login',
+              title: isPassword ? 'Alterar senha' : 'Trocar e-mail',
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -157,7 +156,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                   Text(
                     isPassword
                         ? 'Defina uma nova senha para proteger sua conta.'
-                        : 'E-mail atual: $_currentEmail. O Firebase enviará a confirmação ao novo endereço.',
+                        : 'Atualize o e-mail da sua conta',
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.5,
@@ -231,8 +230,6 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                     disabled: _submitting,
                     onPressed: handleSubmit,
                   ),
-                  const SizedBox(height: 16),
-                  const SecurityUnavailableCard(),
                 ],
               ),
             ),
