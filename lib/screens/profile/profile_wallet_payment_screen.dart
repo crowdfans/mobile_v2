@@ -209,7 +209,7 @@ class _ProfileWalletPaymentScreenState
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Ao tocar em Próximo, o código Pix copia e cola será gerado para esse pacote (sandbox).',
+                              'Ao tocar em Próximo, o código Pix copia e cola será gerado para esse pacote.',
                               style: TextStyle(
                                 fontSize: 13,
                                 height: 18 / 13,
@@ -228,8 +228,8 @@ class _ProfileWalletPaymentScreenState
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(14),
-                        child: Text(
-                          'Cartão na loja (App Store / Google Play) chega com RevenueCat. Por enquanto use PIX sandbox.',
+                        child:                         Text(
+                          'Cartão na loja (App Store / Google Play) chega em breve. Por enquanto use PIX.',
                           style: TextStyle(
                             fontSize: 13,
                             height: 18 / 13,
@@ -261,6 +261,7 @@ class _ProfileWalletPaymentScreenState
                 label: hasPix
                     ? 'Copiar Código PIX'
                     : (_busy ? 'Gerando...' : 'Próximo'),
+                variant: AppButtonVariant.dark,
                 loading: _busy,
                 onPressed: hasPix ? handleCopyPix : handleCheckout,
               ),
