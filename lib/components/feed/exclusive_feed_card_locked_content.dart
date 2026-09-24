@@ -89,11 +89,11 @@ class ExclusiveFeedCardLockedContent extends StatelessWidget {
           SizedBox(
             height: 42,
             width: double.infinity,
-            child: FilledButton(
+            child: OutlinedButton(
               onPressed: canUnlock ? onPressUnlock : null,
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.buttonPrimaryText,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colors.primary,
+                side: BorderSide(color: colors.primary),
                 shape: const StadiumBorder(),
               ),
               child: Text(unlockLabel),
