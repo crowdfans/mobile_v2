@@ -267,6 +267,26 @@ abstract final class Pages {
       },
     ).toString();
   }
+
+  /// Confirmação real da recarga (após crédito).
+  static String profileWalletPaymentConfirmedOf({
+    required int coins,
+    String? checkoutId,
+    String? packId,
+    int? baseCoins,
+    int? bonusCoins,
+  }) {
+    return Uri(
+      path: profileWalletPaymentConfirmed,
+      queryParameters: {
+        'coins': '$coins',
+        if ((checkoutId ?? '').trim().isNotEmpty) 'checkoutId': checkoutId!.trim(),
+        if ((packId ?? '').trim().isNotEmpty) 'packId': packId!.trim(),
+        if (baseCoins != null) 'baseCoins': '$baseCoins',
+        if (bonusCoins != null) 'bonusCoins': '$bonusCoins',
+      },
+    ).toString();
+  }
   static String fanClubComposeOf({
     String? artistId,
     String? name,
@@ -344,6 +364,8 @@ abstract final class Pages {
   static const profileWallet = '/me/settings/wallet';
   static const profileWalletRecharge = '/me/settings/wallet/recharge';
   static const profileWalletPayment = '/me/settings/wallet/payment';
+  static const profileWalletPaymentConfirmed =
+      '/me/settings/wallet/payment/confirmed';
   static const profileEarnings = '/me/settings/earnings';
   static const profileNotifications = '/me/settings/notifications';
   static String profileNotificationCategory(String categoryId) =>
@@ -405,6 +427,8 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileWalletRechargeScreen':
         profileWalletRecharge,
     '/pages/profile/settings/ProfileWalletPaymentScreen': profileWalletPayment,
+    '/pages/profile/settings/ProfileWalletPaymentConfirmedScreen':
+        profileWalletPaymentConfirmed,
     '/pages/profile/settings/ProfileEarningsScreen': profileEarnings,
     '/pages/profile/settings/ProfileNotificationsScreen': profileNotifications,
     '/pages/profile/settings/ProfileNotificationCategoryScreen':
