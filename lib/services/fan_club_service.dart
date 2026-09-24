@@ -16,6 +16,10 @@ class ArtistFanClub {
     this.viewerIsModerator = false,
     this.viewerIsOwner = false,
     this.viewerIsExpelled = false,
+    this.viewerExpulsionReason = '',
+    this.viewerActiveStrikesCount = 0,
+    this.viewerLatestStrikeReason = '',
+    this.viewerStrikeRemainingChances = 0,
     this.moderators = const [],
   });
 
@@ -30,6 +34,10 @@ class ArtistFanClub {
   final bool viewerIsModerator;
   final bool viewerIsOwner;
   final bool viewerIsExpelled;
+  final String viewerExpulsionReason;
+  final int viewerActiveStrikesCount;
+  final String viewerLatestStrikeReason;
+  final int viewerStrikeRemainingChances;
   final List<FanClubModerator> moderators;
 
   factory ArtistFanClub.fromJson(Map<String, dynamic> json) {
@@ -45,6 +53,13 @@ class ArtistFanClub {
       viewerIsModerator: json['viewerIsModerator'] == true,
       viewerIsOwner: json['viewerIsOwner'] == true,
       viewerIsExpelled: json['viewerIsExpelled'] == true,
+      viewerExpulsionReason: json['viewerExpulsionReason'] as String? ?? '',
+      viewerActiveStrikesCount:
+          (json['viewerActiveStrikesCount'] as num?)?.toInt() ?? 0,
+      viewerLatestStrikeReason:
+          json['viewerLatestStrikeReason'] as String? ?? '',
+      viewerStrikeRemainingChances:
+          (json['viewerStrikeRemainingChances'] as num?)?.toInt() ?? 0,
       moderators: [
         for (final item in json['moderators'] as List? ?? const [])
           FanClubModerator.fromJson(item as Map<String, dynamic>),
