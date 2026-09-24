@@ -105,6 +105,17 @@ abstract final class Pages {
     Uri.encodeComponent(handle.trim()),
   );
 
+  /// Explicação das regras do FanScore.
+  static String fanScoreHowItWorksOf({String? cycleEndLabel}) {
+    return Uri(
+      path: fanScoreHowItWorks,
+      queryParameters: {
+        if ((cycleEndLabel ?? '').trim().isNotEmpty)
+          'cycleEndLabel': cycleEndLabel!.trim(),
+      },
+    ).toString();
+  }
+
   /// Artistas seguidos; `handle` opcional para outro perfil.
   static String profileArtistsOf({String? handle}) {
     final value = handle?.trim() ?? '';
@@ -430,6 +441,7 @@ abstract final class Pages {
   static const profileAppearance = '/me/settings/appearance';
   static const profileArtists = '/me/artists';
   static const profileFanScore = '/me/settings/fan-score';
+  static const fanScoreHowItWorks = '/me/settings/fan-score/how-it-works';
   static const profileInformation = '/me/settings/information';
   static const profileMemberships = '/me/settings/memberships';
   static const profileMembershipActivationConfirmed =
@@ -496,6 +508,7 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileAppearanceScreen': profileAppearance,
     '/pages/profile/ProfileArtistsScreen': profileArtists,
     '/pages/profile/settings/ProfileFanScoreScreen': profileFanScore,
+    '/pages/profile/settings/FanScoreHowItWorksScreen': fanScoreHowItWorks,
     '/pages/profile/settings/ProfileInformationScreen': profileInformation,
     '/pages/profile/settings/ProfileMembershipsScreen': profileMemberships,
     '/pages/profile/settings/ProfileMembershipActivationConfirmedScreen':

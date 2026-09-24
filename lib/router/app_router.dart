@@ -38,6 +38,7 @@ import 'package:crowdfans/screens/profile/blocked_users_settings_screen.dart';
 import 'package:crowdfans/screens/profile/fan_club_contestation_list_screen.dart';
 import 'package:crowdfans/screens/profile/fan_club_moderation_list_screen.dart';
 import 'package:crowdfans/screens/profile/fan_profile_screen.dart';
+import 'package:crowdfans/screens/profile/fan_score_how_it_works_screen.dart';
 import 'package:crowdfans/screens/profile/fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/hidden_posts_settings_screen.dart';
 import 'package:crowdfans/screens/profile/moderation_settings_screen.dart';
@@ -435,6 +436,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileFanScore,
         builder: (context, state) => const ProfileFanScoreScreen(),
+      ),
+      GoRoute(
+        path: Pages.fanScoreHowItWorks,
+        builder: (context, state) => FanScoreHowItWorksScreen(
+          cycleEndLabel: state.uri.queryParameters['cycleEndLabel'],
+        ),
       ),
       GoRoute(
         path: Pages.profileArtistInsights,
