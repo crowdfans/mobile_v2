@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:crowdfans/components/comments/comment_composer.dart';
 import 'package:crowdfans/components/comments/comment_gif_picker.dart';
+import 'package:crowdfans/components/comments/comment_post_context_header.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -20,9 +21,18 @@ const _pageSize = 20;
 
 /// Comentários de um post (`/comments/:postId`).
 class CommentsScreen extends ConsumerStatefulWidget {
-  const CommentsScreen({super.key, required this.postId});
+  const CommentsScreen({
+    super.key,
+    required this.postId,
+    this.postAuthor,
+    this.postHandle,
+    this.postText,
+  });
 
   final String postId;
+  final String? postAuthor;
+  final String? postHandle;
+  final String? postText;
 
   @override
   ConsumerState<CommentsScreen> createState() => _CommentsScreenState();
@@ -391,8 +401,12 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                   ),
                   Expanded(
                     child: Text(
-                      'Comentários',
+                      (widget.postAuthor ?? '').trim().isNotEmpty
+                          ? widget.postAuthor!.trim()
+                          : 'Comentários',
                       textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -404,6 +418,12 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 ],
               ),
             ),
+            if ((widget.postAuthor ?? '').trim().isNotEmpty)
+              CommentPostContextHeader(
+                author: widget.postAuthor!.trim(),
+                handle: widget.postHandle,
+                text: widget.postText,
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Row(
@@ -513,6 +533,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               editing: _editing != null,
               selectedGifUrl: _selectedGifUrl,
               submitting: _submitting,
+              avatarUrl: ref.watch(authSessionProvider).profile?.photoUrl,
               onDraftChanged: (value) => setState(() => _draft = value),
               onCancelEdit: () => setState(() {
                 _editing = null;

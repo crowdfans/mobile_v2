@@ -35,7 +35,14 @@ class FeedItem extends StatelessWidget {
   }
 
   void handleOpenComments(BuildContext context, String postId) {
-    context.push(Pages.comments.replaceAll(':postId', postId));
+    context.push(
+      Pages.commentsOf(
+        postId,
+        author: post.author,
+        handle: post.handle,
+        text: post.text,
+      ),
+    );
   }
 
   @override

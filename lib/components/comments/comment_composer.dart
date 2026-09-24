@@ -1,9 +1,8 @@
-import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Compositor de comentário (texto, GIF, publicar).
+/// Compositor compacto: avatar + campo + ícone GIF + enviar (CF-174).
 class CommentComposer extends StatelessWidget {
   const CommentComposer({
     super.key,
@@ -18,6 +17,7 @@ class CommentComposer extends StatelessWidget {
     required this.onRemoveGif,
     required this.onPickGif,
     required this.onSubmit,
+    this.avatarUrl,
   });
 
   final String draft;
@@ -31,6 +31,7 @@ class CommentComposer extends StatelessWidget {
   final VoidCallback onRemoveGif;
   final VoidCallback onPickGif;
   final VoidCallback onSubmit;
+  final String? avatarUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -44,24 +45,10 @@ class CommentComposer extends StatelessWidget {
         border: Border(top: BorderSide(color: colors.border)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            KeyedSubtree(
-              key: const Key('comment-composer'),
-              child: AppTextField(
-                key: ValueKey(
-                  'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
-                ),
-                hint: replyAuthor != null
-                    ? 'Responder a $replyAuthor'
-                    : 'Adicione um comentário...',
-                maxLines: 3,
-                initialValue: draft,
-                onChanged: onDraftChanged,
-              ),
-            ),
             if (editing)
               TextButton(
                 onPressed: onCancelEdit,
@@ -79,15 +66,14 @@ class CommentComposer extends StatelessWidget {
                 ),
               ),
             if (selectedGifUrl != null && selectedGifUrl!.isNotEmpty) ...[
-              const SizedBox(height: 8),
               Row(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
                       selectedGifUrl!,
-                      width: 72,
-                      height: 72,
+                      width: 56,
+                      height: 56,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -100,28 +86,52 @@ class CommentComposer extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
             ],
-            const SizedBox(height: 10),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: AppButton(
-                    key: const Key('comment-gif'),
-                    label: 'GIF',
-                    variant: AppButtonVariant.outline,
-                    onPressed: onPickGif,
-                  ),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: colors.surfaceAlt,
+                  backgroundImage:
+                      (avatarUrl ?? '').startsWith('http')
+                      ? NetworkImage(avatarUrl!)
+                      : null,
+                  child: (avatarUrl ?? '').startsWith('http')
+                      ? null
+                      : Icon(Icons.person, size: 18, color: colors.textTertiary),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  flex: 2,
-                  child: AppButton(
-                    key: const Key('comment-submit'),
-                    label: submitting
-                        ? (editing ? 'Salvando...' : 'Publicando...')
-                        : (editing ? 'Salvar' : 'Publicar'),
-                    disabled: !canSubmit,
-                    onPressed: onSubmit,
+                  child: KeyedSubtree(
+                    key: const Key('comment-composer'),
+                    child: AppTextField(
+                      key: ValueKey(
+                        'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+                      ),
+                      hint: replyAuthor != null
+                          ? 'Responder a $replyAuthor'
+                          : 'Adicione um comentário...',
+                      maxLines: 2,
+                      initialValue: draft,
+                      onChanged: onDraftChanged,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  key: const Key('comment-gif'),
+                  onPressed: onPickGif,
+                  tooltip: 'GIF',
+                  icon: Icon(Icons.gif_box_outlined, color: colors.primary),
+                ),
+                IconButton(
+                  key: const Key('comment-submit'),
+                  onPressed: canSubmit ? onSubmit : null,
+                  tooltip: editing ? 'Salvar' : 'Publicar',
+                  icon: Icon(
+                    Icons.send_rounded,
+                    color: canSubmit ? colors.primary : colors.textTertiary,
                   ),
                 ),
               ],

@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Chip Populares / Novos na tela de comentários.
+/// Chip Populares / Novos — selecionado usa variante escura (CF-174).
 class CommentSortChip extends StatelessWidget {
   const CommentSortChip({
     super.key,
@@ -17,10 +17,12 @@ class CommentSortChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final bg = selected ? AppPalette.platinum900 : colors.surface;
+    final fg = selected ? AppPalette.platinum50 : colors.textPrimary;
     return Material(
-      color: selected ? colors.primary : colors.surface,
+      color: bg,
       shape: StadiumBorder(
-        side: BorderSide(color: selected ? colors.primary : colors.border),
+        side: BorderSide(color: selected ? bg : colors.border),
       ),
       child: InkWell(
         onTap: onPressed,
@@ -32,7 +34,7 @@ class CommentSortChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: selected ? colors.buttonPrimaryText : colors.textPrimary,
+              color: fg,
             ),
           ),
         ),
