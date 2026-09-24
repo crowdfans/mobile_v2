@@ -287,6 +287,30 @@ abstract final class Pages {
       },
     ).toString();
   }
+
+  /// Confirmação de membership ativa (após assinatura confirmada).
+  static String profileMembershipActivationConfirmedOf({
+    required String artistName,
+    required int pricePerMonth,
+    String? artistId,
+    String? artistHandle,
+    String? artistAvatarUrl,
+    String periodLabel = '1 mês',
+  }) {
+    return Uri(
+      path: profileMembershipActivationConfirmed,
+      queryParameters: {
+        'artistName': artistName,
+        'pricePerMonth': '$pricePerMonth',
+        if ((artistId ?? '').trim().isNotEmpty) 'artistId': artistId!.trim(),
+        if ((artistHandle ?? '').trim().isNotEmpty)
+          'artistHandle': artistHandle!.trim(),
+        if ((artistAvatarUrl ?? '').trim().isNotEmpty)
+          'artistAvatarUrl': artistAvatarUrl!.trim(),
+        if (periodLabel.trim().isNotEmpty) 'periodLabel': periodLabel.trim(),
+      },
+    ).toString();
+  }
   static String fanClubComposeOf({
     String? artistId,
     String? name,
@@ -360,6 +384,8 @@ abstract final class Pages {
   static const profileFanScore = '/me/settings/fan-score';
   static const profileInformation = '/me/settings/information';
   static const profileMemberships = '/me/settings/memberships';
+  static const profileMembershipActivationConfirmed =
+      '/me/settings/memberships/activation-confirmed';
   static const profilePro = '/me/settings/pro';
   static const profileWallet = '/me/settings/wallet';
   static const profileWalletRecharge = '/me/settings/wallet/recharge';
@@ -422,6 +448,8 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileFanScoreScreen': profileFanScore,
     '/pages/profile/settings/ProfileInformationScreen': profileInformation,
     '/pages/profile/settings/ProfileMembershipsScreen': profileMemberships,
+    '/pages/profile/settings/ProfileMembershipActivationConfirmedScreen':
+        profileMembershipActivationConfirmed,
     '/pages/profile/settings/ProfileProScreen': profilePro,
     '/pages/profile/settings/ProfileWalletScreen': profileWallet,
     '/pages/profile/settings/ProfileWalletRechargeScreen':
