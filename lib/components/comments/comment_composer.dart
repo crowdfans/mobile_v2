@@ -1,8 +1,9 @@
+import 'package:crowdfans/components/comments/comment_reply_banner.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Compositor compacto: avatar + campo + ícone GIF + enviar (CF-174).
+/// Compositor compacto acima do teclado (CF-174 / CF-196).
 class CommentComposer extends StatelessWidget {
   const CommentComposer({
     super.key,
@@ -17,11 +18,13 @@ class CommentComposer extends StatelessWidget {
     required this.onRemoveGif,
     required this.onPickGif,
     required this.onSubmit,
+    this.replyHandle,
     this.avatarUrl,
   });
 
   final String draft;
   final String? replyAuthor;
+  final String? replyHandle;
   final bool editing;
   final String? selectedGifUrl;
   final bool submitting;
@@ -39,102 +42,123 @@ class CommentComposer extends StatelessWidget {
     final canSubmit =
         !submitting &&
         (draft.trim().isNotEmpty || (selectedGifUrl ?? '').isNotEmpty);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.border)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final bottomPad = keyboardInset > 0 ? keyboardInset : safeBottom;
+
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(bottom: bottomPad),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          border: Border(top: BorderSide(color: colors.border)),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (editing)
-              TextButton(
-                onPressed: onCancelEdit,
-                child: Text(
-                  'Cancelar edição',
-                  style: TextStyle(color: colors.textSecondary),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: onCancelEdit,
+                  child: Text(
+                    'Cancelar edição',
+                    style: TextStyle(color: colors.textSecondary),
+                  ),
                 ),
               ),
             if (replyAuthor != null)
-              TextButton(
-                onPressed: onCancelReply,
-                child: Text(
-                  'Cancelar resposta a $replyAuthor',
-                  style: TextStyle(color: colors.textSecondary),
+              CommentReplyBanner(
+                author: replyAuthor!,
+                handle: replyHandle,
+                onCancel: onCancelReply,
+              ),
+            if (selectedGifUrl != null && selectedGifUrl!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        selectedGifUrl!,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: onRemoveGif,
+                      child: Text(
+                        'Remover GIF',
+                        style: TextStyle(color: colors.danger),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            if (selectedGifUrl != null && selectedGifUrl!.isNotEmpty) ...[
-              Row(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      selectedGifUrl!,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
+                  Semantics(
+                    label: 'Seu avatar',
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: colors.surfaceAlt,
+                      backgroundImage:
+                          (avatarUrl ?? '').startsWith('http')
+                          ? NetworkImage(avatarUrl!)
+                          : null,
+                      child: (avatarUrl ?? '').startsWith('http')
+                          ? null
+                          : Icon(
+                              Icons.person,
+                              size: 18,
+                              color: colors.textTertiary,
+                            ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: onRemoveGif,
-                    child: Text(
-                      'Remover GIF',
-                      style: TextStyle(color: colors.danger),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: KeyedSubtree(
+                      key: const Key('comment-composer'),
+                      child: AppTextField(
+                        key: ValueKey(
+                          'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+                        ),
+                        hint: replyAuthor != null
+                            ? 'Responder a $replyAuthor'
+                            : 'Adicione um comentário...',
+                        maxLines: 2,
+                        initialValue: draft,
+                        onChanged: onDraftChanged,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('comment-gif'),
+                    onPressed: onPickGif,
+                    tooltip: 'Inserir GIF',
+                    icon: Icon(Icons.gif_box_outlined, color: colors.primary),
+                  ),
+                  IconButton(
+                    key: const Key('comment-submit'),
+                    onPressed: canSubmit ? onSubmit : null,
+                    tooltip: editing
+                        ? 'Salvar comentário'
+                        : 'Publicar comentário',
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: canSubmit ? colors.primary : colors.textTertiary,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-            ],
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: colors.surfaceAlt,
-                  backgroundImage:
-                      (avatarUrl ?? '').startsWith('http')
-                      ? NetworkImage(avatarUrl!)
-                      : null,
-                  child: (avatarUrl ?? '').startsWith('http')
-                      ? null
-                      : Icon(Icons.person, size: 18, color: colors.textTertiary),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KeyedSubtree(
-                    key: const Key('comment-composer'),
-                    child: AppTextField(
-                      key: ValueKey(
-                        'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
-                      ),
-                      hint: replyAuthor != null
-                          ? 'Responder a $replyAuthor'
-                          : 'Adicione um comentário...',
-                      maxLines: 2,
-                      initialValue: draft,
-                      onChanged: onDraftChanged,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  key: const Key('comment-gif'),
-                  onPressed: onPickGif,
-                  tooltip: 'GIF',
-                  icon: Icon(Icons.gif_box_outlined, color: colors.primary),
-                ),
-                IconButton(
-                  key: const Key('comment-submit'),
-                  onPressed: canSubmit ? onSubmit : null,
-                  tooltip: editing ? 'Salvar' : 'Publicar',
-                  icon: Icon(
-                    Icons.send_rounded,
-                    color: canSubmit ? colors.primary : colors.textTertiary,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
