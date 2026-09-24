@@ -16,11 +16,29 @@ String _rankingLead(String kind) {
   };
 }
 
+String _rankingQualifier(String kind) {
+  return switch (kind) {
+    'active' => 'Ativos',
+    'engaged' => 'Engajados',
+    _ => 'Brasil',
+  };
+}
+
+/// Título, descrição e métrica da linha usam o mesmo critério do backend
+/// (`search_service.go`: engaged = interações 7d; active = posts 7d).
 String _rankingSubtitle(String kind) {
   return switch (kind) {
-    'active' => 'Atividade e interações nas últimas 24 horas',
-    'engaged' => 'Artistas com mais posts nas últimas 24 horas',
+    'active' => 'Artistas com mais posts nos últimos 7 dias',
+    'engaged' => 'Artistas com mais interações nos últimos 7 dias',
     _ => 'Artistas com mais seguidores / assinantes',
+  };
+}
+
+String _rankingMetricHint(String kind) {
+  return switch (kind) {
+    'active' => 'posts (7d)',
+    'engaged' => 'interações (7d)',
+    _ => 'membros',
   };
 }
 
@@ -107,27 +125,32 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                       children: [
                         ToolbarBackButton(onPressed: () => context.pop()),
                         Expanded(
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: _rankingLead(_kind),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: colors.textPrimary,
+                          child: Semantics(
+                            header: true,
+                            label:
+                                '${_rankingLead(_kind)} ${_rankingQualifier(_kind)}. ${_rankingSubtitle(_kind)}',
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: _rankingLead(_kind),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.textPrimary,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: ' · Brasil',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: colors.textSecondary,
+                                  TextSpan(
+                                    text: ' · ${_rankingQualifier(_kind)}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: colors.textSecondary,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -143,7 +166,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                   child: Text(
-                    'Ordenar postagens por:',
+                    'Ordenar por:',
                     style: TextStyle(
                       fontSize: 13,
                       color: colors.textSecondary,
@@ -216,6 +239,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                                     return SearchArtistRankRow(
                                       artist: artist,
                                       position: artist.rank ?? index + 1,
+                                      metricHint: _rankingMetricHint(_kind),
                                       onPressed: () => context.push(
                                         Pages.artistProfile.replaceAll(
                                           ':artistId',
