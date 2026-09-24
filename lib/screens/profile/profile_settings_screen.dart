@@ -128,7 +128,7 @@ class ProfileSettingsScreen extends ConsumerWidget {
           id: 'help',
           label: 'Ajuda',
           asset: 'assets/icons/General/info-square.svg',
-          onTap: () => openInformation(tab: 'help'),
+          onTap: () => context.push(Pages.profileHelp),
         ),
         ProfileSettingItem(
           id: 'terms',
