@@ -445,8 +445,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.comments,
-        builder: (context, state) =>
-            CommentsScreen(postId: state.pathParameters['postId'] ?? ''),
+        builder: (context, state) => CommentsScreen(
+          postId: state.pathParameters['postId'] ?? '',
+          postAuthor: state.uri.queryParameters['author'],
+          postHandle: state.uri.queryParameters['handle'],
+          postText: state.uri.queryParameters['text'],
+        ),
       ),
       GoRoute(
         path: Pages.searchRanking,

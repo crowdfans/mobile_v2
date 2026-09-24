@@ -30,6 +30,23 @@ abstract final class Pages {
   static const artistProfile = '/artists/:artistId';
   static const comments = '/comments/:postId';
 
+  /// Comentários com contexto opcional do post (CF-174).
+  static String commentsOf(
+    String postId, {
+    String? author,
+    String? handle,
+    String? text,
+  }) {
+    return Uri(
+      path: '/comments/${Uri.encodeComponent(postId)}',
+      queryParameters: {
+        if ((author ?? '').trim().isNotEmpty) 'author': author!.trim(),
+        if ((handle ?? '').trim().isNotEmpty) 'handle': handle!.trim(),
+        if ((text ?? '').trim().isNotEmpty) 'text': text!.trim(),
+      },
+    ).toString();
+  }
+
   /// Perfil público do artista com seeds opcionais de nome/avatar.
   static String artistProfileOf(
     String artistId, {
