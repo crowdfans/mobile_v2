@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Card de saldo na home de Jam Coins.
+/// Card de saldo na home de Jam Coins (CF-168).
 class WalletHomeBalanceCard extends StatelessWidget {
   const WalletHomeBalanceCard({
     super.key,
@@ -25,7 +25,16 @@ class WalletHomeBalanceCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(Icons.toll, size: 36, color: colors.primaryStrong),
+            Image.asset(
+              'assets/images/jam-coin.png',
+              width: 40,
+              height: 40,
+              errorBuilder: (_, _, _) => const Icon(
+                Icons.monetization_on,
+                size: 40,
+                color: Color(0xFFF5C451),
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
