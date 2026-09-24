@@ -127,13 +127,17 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
                   ] else if (_tab == _InformationTab.terms)
                     const InformationDocumentView(
                       title: 'Termos de Uso',
-                      intro: 'Regras essenciais para uso da plataforma, da conta, das comunidades e das experiências CrowdFans.',
+                      intro:
+                          'Regras essenciais para uso da plataforma, da conta, das comunidades e das experiências CrowdFans.',
+                      lastUpdated: 'Última atualização: 17 de março de 2026.',
                       sections: informationTermsSections,
                     )
                   else
                     const InformationDocumentView(
-                      title: 'Política de Privacidade',
-                      intro: 'Como os dados de conta, segurança, interação e suporte são tratados no ecossistema CrowdFans.',
+                      title: 'Política de privacidade detalhada',
+                      intro:
+                          'Este texto consolida como o ecossistema Crowd Fans trata dados de conta, segurança, interação social, memberships, conteúdos e suporte.',
+                      lastUpdated: 'Última atualização: 17 de março de 2026.',
                       sections: informationPrivacySections,
                     ),
                 ],
