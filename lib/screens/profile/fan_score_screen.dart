@@ -8,7 +8,6 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/profile_service.dart';
-import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -90,13 +89,10 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
   }
 
   Future<void> handleOpenInfo() async {
-    await AppAlert.show(
-      context,
-      title: 'Como funciona o FanScore',
-      message:
-          'Há um score diferente para cada artista, recalculado a cada ciclo mensal. '
-          'O ranking compara você com outros fãs do mesmo artista. '
-          'Membership e doações pesam mais na pontuação.',
+    context.push(
+      Pages.fanScoreHowItWorksOf(
+        cycleEndLabel: _data?.cycleDetails?.endLabel,
+      ),
     );
   }
 

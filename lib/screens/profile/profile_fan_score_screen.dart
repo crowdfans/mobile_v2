@@ -78,7 +78,24 @@ class _ProfileFanScoreScreenState extends ConsumerState<ProfileFanScoreScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(title: 'Fan Score', onBack: handleBack),
+            ProfileScreenHeader(
+              title: 'Fan Score',
+              onBack: handleBack,
+              action: IconButton(
+                onPressed: () {
+                  context.push(
+                    Pages.fanScoreHowItWorksOf(
+                      cycleEndLabel: _data?.cycleDetails?.endLabel,
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.info_outline_rounded,
+                  color: colors.textPrimary,
+                ),
+                tooltip: 'Como funciona',
+              ),
+            ),
             Expanded(
               child: _loading
                   ? const ProfileState(loading: true)
