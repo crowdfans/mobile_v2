@@ -227,6 +227,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Pages.fanClubModerators,
         builder: (context, state) => FanClubModeratorsScreen(
           artistId: state.uri.queryParameters['artistId'] ?? '',
+          artistName: state.uri.queryParameters['name'],
         ),
       ),
       GoRoute(
