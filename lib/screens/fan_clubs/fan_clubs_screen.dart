@@ -1,7 +1,8 @@
 import 'package:crowdfans/components/fan_clubs/fan_club_artist_chip.dart';
+import 'package:crowdfans/components/fan_clubs/fan_club_search_result_row.dart';
 import 'package:crowdfans/components/fan_clubs/fan_clubs_feed_header.dart';
+import 'package:crowdfans/components/fan_clubs/fan_clubs_search_chrome.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
-import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -307,40 +308,11 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (_searchOpen)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 4, 12, 8),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: handleToggleSearch,
-                          icon: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            autofocus: true,
-                            onChanged: (value) {
-                              setState(() => _searchQuery = value);
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Buscar fã clube',
-                              filled: true,
-                              fillColor: colors.surfaceAlt,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  FanClubsSearchChrome(
+                    onBack: handleToggleSearch,
+                    onChanged: (value) {
+                      setState(() => _searchQuery = value);
+                    },
                   )
                 else
                   FanClubsFeedHeader(
@@ -402,10 +374,10 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _searchOpen
                       ? ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                           itemCount: artists.isEmpty ? 1 : artists.length,
                           separatorBuilder: (_, _) =>
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 8),
                           itemBuilder: (context, index) {
                             if (artists.isEmpty) {
                               return Padding(
@@ -423,41 +395,10 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                               );
                             }
                             final artist = artists[index];
-                            return Material(
-                              color: colors.surface,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                side: BorderSide(color: colors.border),
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(14),
-                                onTap: () => handleOpenCommunity(artist),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 12,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      PostAvatar(
-                                        url: artist.avatarUrl,
-                                        size: 44,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          artist.artistName,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: colors.textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            return FanClubSearchResultRow(
+                              name: artist.artistName,
+                              avatarUrl: artist.avatarUrl,
+                              onPressed: () => handleOpenCommunity(artist),
                             );
                           },
                         )
