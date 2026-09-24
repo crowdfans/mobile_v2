@@ -25,6 +25,7 @@ class NotificationItem {
     required this.content,
     this.thumbnailUri,
     this.targetRoute,
+    this.unread = false,
   });
 
   final String id;
@@ -34,6 +35,7 @@ class NotificationItem {
   final List<String> avatarUris;
   final List<NotificationSegment> content;
   final String? targetRoute;
+  final bool unread;
 
   factory NotificationItem.fromJson(Object? json) {
     final map = json as Map<String, dynamic>? ?? {};
@@ -51,6 +53,9 @@ class NotificationItem {
           NotificationSegment.fromJson(item),
       ],
       targetRoute: map['targetRoute'] as String?,
+      unread: map['unread'] == true ||
+          map['read'] == false ||
+          map['isRead'] == false,
     );
   }
 }

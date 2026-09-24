@@ -23,6 +23,14 @@ class NotificationItemCard extends StatelessWidget {
         if (uri.trim().isNotEmpty) uri,
     ];
     final thumb = item.thumbnailUri?.trim() ?? '';
+    final plain = item.content.map((s) => s.text).join();
+    final semanticsLabel = [
+      if (item.unread) 'Não lida',
+      if (isMeet) 'Lembrete Meet e Greet',
+      plain,
+      item.time,
+    ].join('. ');
+
     final row = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isMeet ? 12 : 0,
@@ -46,7 +54,7 @@ class NotificationItemCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             height: 20 / 14,
-                            fontWeight: segment.accent
+                            fontWeight: segment.accent || item.unread
                                 ? FontWeight.w700
                                 : FontWeight.w400,
                             color: segment.accent
@@ -60,14 +68,26 @@ class NotificationItemCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   item.time,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.textTertiary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: colors.textTertiary),
                 ),
               ],
             ),
           ),
+          if (item.unread) ...[
+            const SizedBox(width: 8),
+            Semantics(
+              label: 'Não lida',
+              child: Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.only(top: 6),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
           if (thumb.isNotEmpty) ...[
             const SizedBox(width: 10),
             ClipRRect(
@@ -89,21 +109,29 @@ class NotificationItemCard extends StatelessWidget {
     );
 
     if (!isMeet) {
-      return InkWell(onTap: onPressed, child: row);
+      return Semantics(
+        button: true,
+        label: semanticsLabel,
+        child: InkWell(onTap: onPressed, child: row),
+      );
     }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: AppPalette.green50,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppPalette.green200),
-        ),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
-          child: row,
+      child: Semantics(
+        button: true,
+        label: semanticsLabel,
+        child: Material(
+          color: AppPalette.green50,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: AppPalette.green200),
+          ),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(12),
+            child: row,
+          ),
         ),
       ),
     );
