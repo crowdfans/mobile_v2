@@ -22,7 +22,7 @@ class SearchArtistRankRow extends StatelessWidget {
   final String? metricHint;
 
   SearchRankTrend trendFor() {
-    return searchRankTrendFromDelta(artist.rankDelta);
+    return searchRankTrendFromArtist(artist);
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 
 enum SearchRankTrend { up, down, flat }
@@ -19,6 +20,24 @@ SearchRankTrend searchRankTrendFromDelta(int? delta) {
     return SearchRankTrend.up;
   }
   return SearchRankTrend.down;
+}
+
+/// Prefere o campo `trend` da API (`up`/`down`/…); `trendDelta` é absoluto.
+SearchRankTrend searchRankTrendFromArtist(ArtistSearchItem? artist) {
+  if (artist == null) {
+    return SearchRankTrend.flat;
+  }
+  switch ((artist.trend ?? '').toLowerCase()) {
+    case 'up':
+      return SearchRankTrend.up;
+    case 'down':
+      return SearchRankTrend.down;
+    case 'new':
+    case 'neutral':
+    case 'flat':
+      return SearchRankTrend.flat;
+  }
+  return searchRankTrendFromDelta(artist.rankDelta);
 }
 
 /// Indicador de tendência com ícone + texto (não depende só da cor).
