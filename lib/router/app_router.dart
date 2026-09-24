@@ -48,6 +48,7 @@ import 'package:crowdfans/screens/profile/profile_fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
+import 'package:crowdfans/screens/profile/profile_notification_category_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notifications_screen.dart';
 import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
@@ -283,6 +284,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Pages.profileNotifications,
         builder: (context, state) => const ProfileNotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/me/settings/notifications/:categoryId',
+        builder: (context, state) => ProfileNotificationCategoryScreen(
+          categoryId: state.pathParameters['categoryId'] ?? '',
+        ),
       ),
       GoRoute(
         path: Pages.profileWallet,

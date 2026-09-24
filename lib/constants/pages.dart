@@ -315,6 +315,8 @@ abstract final class Pages {
   static const profileWalletPayment = '/me/settings/wallet/payment';
   static const profileEarnings = '/me/settings/earnings';
   static const profileNotifications = '/me/settings/notifications';
+  static String profileNotificationCategory(String categoryId) =>
+      '/me/settings/notifications/$categoryId';
   static const profileSecurity = '/me/settings/security';
   static const profileReferral = '/me/settings/referral';
   static const profileSettings = '/me/settings';
@@ -366,6 +368,8 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileWalletPaymentScreen': profileWalletPayment,
     '/pages/profile/settings/ProfileEarningsScreen': profileEarnings,
     '/pages/profile/settings/ProfileNotificationsScreen': profileNotifications,
+    '/pages/profile/settings/ProfileNotificationCategoryScreen':
+        '/me/settings/notifications/:categoryId',
     '/pages/profile/settings/ProfileSecurityScreen': profileSecurity,
     '/pages/profile/settings/ProfileReferralScreen': profileReferral,
     '/pages/profile/settings/ProfileSettingsScreen': profileSettings,
