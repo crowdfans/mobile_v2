@@ -69,6 +69,7 @@ class PostMedia extends StatelessWidget {
         padding: const EdgeInsets.only(top: 12),
         child: PostVideoPreview(
           thumbnailUri: post.videoThumbnailUri ?? post.imageUri,
+          videoUri: post.videoUri,
           duration: post.videoDuration,
         ),
       );
