@@ -89,42 +89,52 @@ class NovoPostHeader extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                   ],
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: publishEnabled
-                          ? colors.buttonPrimary
-                          : colors.border,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        key: const Key('novo-post-submit'),
-                        onTap: publishEnabled ? onPublish : null,
+                  Semantics(
+                    button: true,
+                    enabled: publishEnabled,
+                    label: publishEnabled
+                        ? 'Postar'
+                        : 'Postar desabilitado — preencha o conteúdo',
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: publishEnabled
+                            ? colors.buttonPrimary
+                            : colors.surfaceAlt,
                         borderRadius: BorderRadius.circular(18),
-                        child: SizedBox(
-                          width: 84,
-                          height: 36,
-                          child: Center(
-                            child: publishing
-                                ? SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: colors.buttonPrimaryText,
+                        border: publishEnabled
+                            ? null
+                            : Border.all(color: colors.border),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          key: const Key('novo-post-submit'),
+                          onTap: publishEnabled ? onPublish : null,
+                          borderRadius: BorderRadius.circular(18),
+                          child: SizedBox(
+                            width: 84,
+                            height: 36,
+                            child: Center(
+                              child: publishing
+                                  ? SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: colors.buttonPrimaryText,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Postar',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: publishEnabled
+                                            ? colors.buttonPrimaryText
+                                            : colors.textSecondary,
+                                      ),
                                     ),
-                                  )
-                                : Text(
-                                    'Postar',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: publishEnabled
-                                          ? colors.buttonPrimaryText
-                                          : colors.textTertiary,
-                                    ),
-                                  ),
+                            ),
                           ),
                         ),
                       ),

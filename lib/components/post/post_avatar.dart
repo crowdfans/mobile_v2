@@ -8,25 +8,36 @@ class PostAvatar extends StatelessWidget {
   final String url;
   final double size;
 
+  Widget _fallback(AppColors colors) {
+    return ColoredBox(
+      color: colors.surfaceAlt,
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Icon(
+          Icons.person,
+          size: size * 0.5,
+          color: colors.textTertiary,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    final trimmed = url.trim();
+    final hasNetwork = trimmed.startsWith('http');
     return ClipOval(
-      child: url.trim().isEmpty
-          ? ColoredBox(
-              color: colors.surfaceAlt,
-              child: SizedBox(width: size, height: size),
-            )
-          : Image.network(
-              url,
+      child: hasNetwork
+          ? Image.network(
+              trimmed,
               width: size,
               height: size,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => ColoredBox(
-                color: colors.surfaceAlt,
-                child: SizedBox(width: size, height: size),
-              ),
-            ),
+              errorBuilder: (context, error, stack) => _fallback(colors),
+            )
+          : _fallback(colors),
     );
   }
 }
