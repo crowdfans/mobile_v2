@@ -4,7 +4,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:flutter/material.dart';
 
-/// Cartão de Fan Score por artista (mock Fanscore).
+/// Cartão de Fan Score por artista — insights expandem no mesmo card (CF-201).
 class FanScoreArtistCard extends StatelessWidget {
   const FanScoreArtistCard({
     super.key,
@@ -34,171 +34,195 @@ class FanScoreArtistCard extends StatelessWidget {
         : delta < 0
         ? const Color(0xFFB91C1C)
         : const Color(0xFF374151);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: border),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradient,
+    return Semantics(
+      container: true,
+      label:
+          '${entry.artistName}. ${entry.tier.label}. Score ${_formatScore(entry.currentScore)}.'
+          '${expanded ? ' Insights expandidos.' : ' Insights recolhidos.'}',
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: border),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradient,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: border),
-                  gradient: LinearGradient(colors: badgeGradient),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: border),
+                    gradient: LinearGradient(colors: badgeGradient),
                   ),
-                  child: Text(
-                    entry.tier.label.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: badgeText,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      entry.tier.label.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: badgeText,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                PostAvatar(url: entry.artistAvatarUri, size: 44),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.artistName,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF111827),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  PostAvatar(url: entry.artistAvatarUri, size: 44),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.artistName,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111827),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${entry.memberCount} membros',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF374151),
+                        Text(
+                          '${entry.memberCount} membros',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF374151),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: onToggleInsights,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
+                  Semantics(
+                    button: true,
+                    expanded: expanded,
+                    label: expanded
+                        ? 'Fechar insights de ${entry.artistName}'
+                        : 'Abrir insights de ${entry.artistName}',
+                    child: Material(
                       color: const Color(0x8CFFFFFF),
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: colors.border),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      child: Text(
-                        expanded ? 'Fechar' : 'Insights',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF111827),
+                      child: InkWell(
+                        onTap: onToggleInsights,
+                        borderRadius: BorderRadius.circular(999),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: colors.border),
+                          ),
+                          child: Text(
+                            expanded ? 'Fechar' : 'Insights',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF111827),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  _formatScore(entry.currentScore),
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  _formatDelta(delta),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: deltaColor,
-                  ),
-                ),
-                const Spacer(),
-                if (entry.fanRank != null)
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: const Color(0x66FFFFFF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      child: Text(
-                        '#${entry.fanRank}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1F2937),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (delta != 0) ...[
-                  const SizedBox(width: 8),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: deltaColor.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6),
-                      child: Icon(
-                        delta > 0
-                            ? Icons.arrow_upward_rounded
-                            : Icons.arrow_downward_rounded,
-                        size: 16,
-                        color: deltaColor,
                       ),
                     ),
                   ),
                 ],
-              ],
-            ),
-            if (expanded) ...[
+              ),
               const SizedBox(height: 12),
-              const Divider(color: Color(0x33111127), height: 1),
-              const SizedBox(height: 10),
-              FanScoreBreakdownView(
-                breakdown: entry.breakdown,
-                deltaPercentage: entry.deltaPercentage,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    _formatScore(entry.currentScore),
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    _formatDelta(delta),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: deltaColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (entry.fanRank != null)
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0x66FFFFFF),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        child: Text(
+                          '#${entry.fanRank}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1F2937),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (delta != 0) ...[
+                    const SizedBox(width: 8),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: deltaColor.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Icon(
+                          delta > 0
+                              ? Icons.arrow_upward_rounded
+                              : Icons.arrow_downward_rounded,
+                          size: 16,
+                          color: deltaColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: expanded
+                    ? Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          const Divider(color: Color(0x33111127), height: 1),
+                          const SizedBox(height: 10),
+                          FanScoreBreakdownView(
+                            breakdown: entry.breakdown,
+                            deltaPercentage: entry.deltaPercentage,
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
               ),
             ],
-          ],
+          ),
         ),
       ),
     );
