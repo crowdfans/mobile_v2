@@ -166,7 +166,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                   child: Text(
-                    'Ordenar por:',
+                    'Ordenar postagens por:',
                     style: TextStyle(
                       fontSize: 13,
                       color: colors.textSecondary,
