@@ -3,7 +3,9 @@ import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
 import 'package:crowdfans/components/profile/password_requirements_card.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
+import 'package:crowdfans/components/profile/security_change_phone_card.dart';
 import 'package:crowdfans/components/profile/settings_segmented_tabs.dart';
+import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_security_service.dart';
@@ -230,6 +232,13 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                     disabled: _submitting,
                     onPressed: handleSubmit,
                   ),
+<<<<<<< HEAD
+=======
+                  const SizedBox(height: 16),
+                  SecurityChangePhoneCard(
+                    onPressed: () => context.push(Pages.profileChangePhone),
+                  ),
+>>>>>>> c5801c5 (CF-217: Trocar telefone — formulário com senha e SMS)
                 ],
               ),
             ),

@@ -73,6 +73,18 @@ abstract final class FirebasePhoneAuthService {
     return uid;
   }
 
+  /// Credencial OTP sem trocar a sessão (para updatePhoneNumber).
+  static PhoneAuthCredential credentialFromOtp(String otpCode) {
+    final id = _verificationId;
+    if (id == null || id.isEmpty) {
+      throw StateError('Reenvie o SMS antes de validar o código.');
+    }
+    return PhoneAuthProvider.credential(
+      verificationId: id,
+      smsCode: otpCode.trim(),
+    );
+  }
+
   static void clearPhoneVerificationState() {
     _verificationId = null;
   }
