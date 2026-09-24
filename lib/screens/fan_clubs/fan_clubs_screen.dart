@@ -1,8 +1,8 @@
-import 'package:crowdfans/components/fan_clubs/fan_club_artist_chip.dart';
 import 'package:crowdfans/components/fan_clubs/fan_club_search_result_row.dart';
 import 'package:crowdfans/components/fan_clubs/fan_clubs_feed_header.dart';
 import 'package:crowdfans/components/fan_clubs/fan_clubs_search_chrome.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
+import 'package:crowdfans/components/home/scroll_to_top_fab.dart';
 import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 const _pageSize = 20;
+const _scrollToTopThreshold = 420.0;
 
 enum _ClubsContentFilter { all, posts, media }
 
@@ -39,6 +40,7 @@ class FanClubsScreen extends StatefulWidget {
 }
 
 class _FanClubsScreenState extends State<FanClubsScreen> {
+  final _scrollController = ScrollController();
   var _artists = <_ClubArtist>[];
   var _posts = <CommunityPost>[];
   var _page = 1;
@@ -50,6 +52,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   var _sidebarVisible = false;
   var _searchOpen = false;
   var _searchQuery = '';
+  var _showScrollToTop = false;
   String? _error;
 
   bool isMediaPost(CommunityPost post) {
@@ -105,7 +108,35 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(handleScroll);
     handleLoad();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(handleScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void handleScroll() {
+    final shouldShow =
+        _scrollController.hasClients &&
+        _scrollController.offset >= _scrollToTopThreshold;
+    if (shouldShow != _showScrollToTop) {
+      setState(() => _showScrollToTop = shouldShow);
+    }
+  }
+
+  void handleScrollToTop() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   Future<void> handleLoad({int page = 1, bool append = false}) async {
@@ -228,16 +259,6 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
     );
   }
 
-  void handleOpenArtist(_ClubArtist artist) {
-    context.push(
-      Pages.artistProfileOf(
-        artist.artistUid,
-        name: artist.artistName,
-        avatarUrl: artist.avatarUrl,
-      ),
-    );
-  }
-
   void handleOpenMenu() {
     setState(() => _sidebarVisible = true);
   }
@@ -338,25 +359,6 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                       );
                     },
                   ),
-                if (!_searchOpen && _artists.isNotEmpty)
-                  SizedBox(
-                    height: 44,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                      children: [
-                        for (final artist in _artists) ...[
-                          FanClubArtistChip(
-                            label: artist.artistName,
-                            selected: false,
-                            onPressed: () => handleOpenCommunity(artist),
-                            onLongPressed: () => handleOpenArtist(artist),
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                      ],
-                    ),
-                  ),
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -412,6 +414,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                           child: RefreshIndicator(
                             onRefresh: handleRefresh,
                             child: ListView.builder(
+                              controller: _scrollController,
                               padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
                               itemCount: posts.isEmpty
                                   ? 1
@@ -421,6 +424,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 40),
                                     child: Text(
+                                      key: const Key('fan-clubs-empty'),
                                       _artists.isEmpty
                                           ? 'Siga artistas para ver posts da comunidade aqui.'
                                           : 'Nenhum post na comunidade ainda.',
@@ -453,6 +457,10 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                 ),
               ],
             ),
+          ),
+          ScrollToTopFab(
+            visible: _showScrollToTop && !_loading && !_searchOpen,
+            onPressed: handleScrollToTop,
           ),
           SidebarMenu(
             visible: _sidebarVisible,
