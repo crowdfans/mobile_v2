@@ -2,7 +2,7 @@ import 'package:crowdfans/components/fan_club/fan_club_community_cover.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_hero.dart';
 import 'package:crowdfans/components/fan_club/fan_club_sort_tab.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
-import 'package:crowdfans/components/post/post_options_sheet.dart';
+import 'package:crowdfans/components/fan_club/fan_club_post_options_sheet.dart';
 import 'package:crowdfans/components/post/post_share_sheet.dart';
 import 'package:crowdfans/components/profile/me_posts_filter_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -665,9 +665,14 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
               ),
             ],
           ),
-          PostOptionsSheet(
+          FanClubPostOptionsSheet(
             visible: _optionsPost != null,
             post: _optionsPost,
+            artistId: widget.artistId,
+            isFavorite: _favorite,
+            onFavoriteChanged: (value) {
+              setState(() => _favorite = value);
+            },
             onClose: () => setState(() => _optionsPost = null),
           ),
           PostShareSheet(
