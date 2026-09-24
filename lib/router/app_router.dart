@@ -587,12 +587,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: Pages.searchRanking,
-        builder: (context, state) => SearchRankingScreen(
-          kind: state.uri.queryParameters['kind'] ?? 'fan-clubs',
-        ),
-      ),
-      GoRoute(
         path: Pages.report,
         builder: (context, state) => ReportScreen(
           contextKind: ReportService.parseContext(
@@ -632,6 +626,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Pages.explore,
                 builder: (context, state) => const SearchScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'ranking',
+                    builder: (context, state) => SearchRankingScreen(
+                      kind: state.uri.queryParameters['kind'] ?? 'fan-clubs',
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
