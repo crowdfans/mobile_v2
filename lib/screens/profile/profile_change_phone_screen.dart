@@ -194,7 +194,7 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
                       label: 'Novo telefone',
                       hint: '(11) 99999-9999',
                       keyboardType: TextInputType.phone,
-                      initialValue: _phoneDisplay,
+                      initialValue: _phoneController.text,
                       onChanged: handlePhoneChanged,
                     ),
                   ] else ...[

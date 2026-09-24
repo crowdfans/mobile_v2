@@ -39,7 +39,7 @@ class ArtistProfileOptionsSheet extends StatelessWidget {
       return;
     }
     context.push(
-      Pages.fanClubCommunityOf(artistId: artistId, name: artistName),
+      Pages.fanClubCommunityOf(artistId, name: artistName),
     );
   }
 
