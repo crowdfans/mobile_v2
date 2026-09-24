@@ -65,6 +65,7 @@ abstract final class Pages {
   static const fanClubAbout = '/fan-clubs/about';
   static const fanClubModerators = '/fan-clubs/moderators';
   static const fanClubModeration = '/fan-clubs/moderation';
+  static const fanClubRequestModeration = '/fan-clubs/request-moderation';
   static const fanClubRules = '/fan-clubs/rules';
   static const searchRanking = '/explore/ranking';
   static const report = '/report';
@@ -300,6 +301,17 @@ abstract final class Pages {
     return _withArtistQuery(fanClubModeration, artistId: artistId, name: name);
   }
 
+  static String fanClubRequestModerationOf({
+    required String artistId,
+    String? name,
+  }) {
+    return _withArtistQuery(
+      fanClubRequestModeration,
+      artistId: artistId,
+      name: name,
+    );
+  }
+
   static String _withArtistQuery(
     String path, {
     String? artistId,
@@ -375,6 +387,7 @@ abstract final class Pages {
     '/pages/fan-clubs/FanClubAboutScreen': fanClubAbout,
     '/pages/fan-clubs/FanClubModeratorsScreen': fanClubModerators,
     '/pages/fan-clubs/FanClubModerationScreen': fanClubModeration,
+    '/pages/fan-clubs/FanClubRequestModerationScreen': fanClubRequestModeration,
     '/pages/fan-clubs/FanClubRulesScreen': fanClubRules,
     '/pages/profile/settings/ProfileAccountScreen': profileAccount,
     '/pages/profile/settings/ProfileEditBioScreen': profileEditBio,
