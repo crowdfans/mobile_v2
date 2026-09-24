@@ -352,8 +352,10 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      resizeToAvoidBottomInset: true,
+      // CF-179: teclado via AnimatedPadding na toolbar (não encolher body).
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             NovoPostHeader(
