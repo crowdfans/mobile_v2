@@ -11,6 +11,7 @@ class ProfileState extends StatelessWidget {
     this.message,
     this.actionLabel,
     this.onAction,
+    this.align = TextAlign.center,
   });
 
   final bool loading;
@@ -18,6 +19,7 @@ class ProfileState extends StatelessWidget {
   final String? message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final TextAlign align;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +30,18 @@ class ProfileState extends StatelessWidget {
         child: Center(child: CircularProgressIndicator()),
       );
     }
+    final crossAxis = align == TextAlign.left || align == TextAlign.start
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
+        crossAxisAlignment: crossAxis,
         children: [
           if (title != null)
             Text(
               title!,
-              textAlign: TextAlign.center,
+              textAlign: align,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -46,7 +52,7 @@ class ProfileState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               message!,
-              textAlign: TextAlign.center,
+              textAlign: align,
               style: TextStyle(fontSize: 14, color: colors.textSecondary),
             ),
           ],

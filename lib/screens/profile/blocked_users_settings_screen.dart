@@ -1,3 +1,4 @@
+import 'package:crowdfans/components/profile/blocked_users_empty_state.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/settings_restore_row.dart';
@@ -92,7 +93,7 @@ class _BlockedUsersSettingsScreenState
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Bloqueados',
+              title: 'Usuários Bloqueados',
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -106,10 +107,7 @@ class _BlockedUsersSettingsScreenState
                       onAction: handleLoad,
                     )
                   : _users.isEmpty
-                  ? const ProfileState(
-                      title: 'Ninguém bloqueado',
-                      message: 'Quem você bloquear deixa de aparecer no feed.',
-                    )
+                  ? const BlockedUsersEmptyState()
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
                       itemCount: _users.length,
