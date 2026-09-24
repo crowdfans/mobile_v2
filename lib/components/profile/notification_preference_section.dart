@@ -61,17 +61,17 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
     id: 'interactions',
     title: 'Interações com você',
     navSubtitle:
-        'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
+        'Curtida do artista, carta, respostas, menções e novos seguidores.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeComment,
-        title: 'Curtidas em comentários',
+        title: 'Curtida do artista no comentário',
         description: 'Quando um artista curtir seu comentário.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeFanLetter,
-        title: 'Curtidas em Fan Letter',
-        description: 'Quando um artista curtir sua carta.',
+        title: 'Curtida do artista na carta',
+        description: 'Quando um artista curtir sua Fan Letter.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.commentReplies,
@@ -81,7 +81,7 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.mentions,
         title: 'Menções',
-        description: 'Quando seu perfil for mencionado.',
+        description: 'Quando mencionarem seu perfil (fan/).',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.newFollowers,
