@@ -9,30 +9,72 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Hub de configurações (CF-108 Superfã / CF-114 Artista).
-class ProfileSettingsScreen extends ConsumerWidget {
+///
+/// CF-259: preserva rolagem ao abrir/voltar opções; bloqueia push duplicado;
+/// Sair exige confirmação.
+class ProfileSettingsScreen extends ConsumerStatefulWidget {
   const ProfileSettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileSettingsScreen> createState() =>
+      _ProfileSettingsScreenState();
+}
+
+class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
+  static const _scrollStorageKey = PageStorageKey<String>('profile-settings');
+
+  final _scrollController = ScrollController();
+  var _openingRoute = false;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> handleLogout() async {
+    final ok = await AppAlert.confirm(
+      context,
+      title: 'Sair',
+      message: 'Deseja encerrar a sessão?',
+      confirmLabel: 'Sair',
+    );
+    if (!ok || !mounted) {
+      return;
+    }
+    await ref.read(authSessionProvider.notifier).logout();
+  }
+
+  /// Evita empilhar a mesma rota duas vezes (toque rápido / reentrada).
+  Future<void> openRoute(String location) async {
+    if (_openingRoute || !mounted) {
+      return;
+    }
+    final current = GoRouterState.of(context).uri;
+    final target = Uri.parse(location);
+    if (current.path == target.path &&
+        current.query == target.query &&
+        ModalRoute.of(context)?.isCurrent == true) {
+      return;
+    }
+    _openingRoute = true;
+    try {
+      await context.push(location);
+    } finally {
+      if (mounted) {
+        _openingRoute = false;
+      }
+    }
+  }
+
+  void openInformation({required String tab}) {
+    openRoute('${Pages.profileInformation}?tab=$tab');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final isArtist = ref.watch(authSessionProvider).profile?.isArtist ?? false;
-
-    Future<void> handleLogout() async {
-      final ok = await AppAlert.confirm(
-        context,
-        title: 'Sair',
-        message: 'Deseja encerrar a sessão?',
-        confirmLabel: 'Sair',
-      );
-      if (!ok) {
-        return;
-      }
-      await ref.read(authSessionProvider.notifier).logout();
-    }
-
-    void openInformation({required String tab}) {
-      context.push('${Pages.profileInformation}?tab=$tab');
-    }
 
     final howYouUse = ProfileSettingsSection(
       title: 'Como você usa a Crowd Fans',
@@ -42,39 +84,39 @@ class ProfileSettingsScreen extends ConsumerWidget {
             id: 'wallet',
             label: 'Jam Coins',
             asset: 'assets/icons/Finance & eCommerce/coins-stacked-01.svg',
-            onTap: () => context.push(Pages.profileWallet),
+            onTap: () => openRoute(Pages.profileWallet),
           ),
         ProfileSettingItem(
           id: 'memberships',
           label: 'Meus Memberships',
           asset: 'assets/icons/Shapes/star-01.svg',
-          onTap: () => context.push(Pages.profileMemberships),
+          onTap: () => openRoute(Pages.profileMemberships),
         ),
         ProfileSettingItem(
           id: 'fan-score',
           label: 'FanScore',
           asset: 'assets/icons/Charts/chart-breakout-circle.svg',
-          onTap: () => context.push(Pages.profileFanScore),
+          onTap: () => openRoute(Pages.profileFanScore),
         ),
         ProfileSettingItem(
           id: 'memories',
           label: 'Memórias',
           asset: 'assets/icons/General/bookmark.svg',
-          onTap: () => context.push(Pages.profileMemories),
+          onTap: () => openRoute(Pages.profileMemories),
         ),
         if (!isArtist)
           ProfileSettingItem(
             id: 'notifications',
             label: 'Notificações',
             asset: 'assets/icons/alerts_and_feedbacks/bell-01.svg',
-            onTap: () => context.push(Pages.profileNotifications),
+            onTap: () => openRoute(Pages.profileNotifications),
           ),
         if (!isArtist)
           ProfileSettingItem(
             id: 'moderation',
             label: 'Fã Clube',
             asset: 'assets/icons/alerts_and_feedbacks/announcement-03.svg',
-            onTap: () => context.push(Pages.profileModeration),
+            onTap: () => openRoute(Pages.profileModeration),
           ),
       ],
     );
@@ -86,19 +128,19 @@ class ProfileSettingsScreen extends ConsumerWidget {
           id: 'profile',
           label: 'Seu Perfil',
           asset: 'assets/icons/Users/user-01.svg',
-          onTap: () => context.push(Pages.profileAccount),
+          onTap: () => openRoute(Pages.profileAccount),
         ),
         ProfileSettingItem(
           id: 'security',
           label: 'Segurança e Login',
           asset: 'assets/icons/Security/passcode-lock.svg',
-          onTap: () => context.push(Pages.profileSecurity),
+          onTap: () => openRoute(Pages.profileSecurity),
         ),
         ProfileSettingItem(
           id: 'appearance',
           label: 'Aparência',
           asset: 'assets/icons/Media & devices/monitor-01.svg',
-          onTap: () => context.push(Pages.profileAppearance),
+          onTap: () => openRoute(Pages.profileAppearance),
         ),
       ],
     );
@@ -110,13 +152,13 @@ class ProfileSettingsScreen extends ConsumerWidget {
           id: 'blocked-users',
           label: 'Usuários Bloqueados',
           asset: 'assets/icons/General/slash-octagon.svg',
-          onTap: () => context.push(Pages.profileBlockedUsers),
+          onTap: () => openRoute(Pages.profileBlockedUsers),
         ),
         ProfileSettingItem(
           id: 'hidden-posts',
           label: 'Posts Ocultados',
           asset: 'assets/icons/General/eye-off.svg',
-          onTap: () => context.push(Pages.profileHiddenPosts),
+          onTap: () => openRoute(Pages.profileHiddenPosts),
         ),
       ],
     );
@@ -128,7 +170,7 @@ class ProfileSettingsScreen extends ConsumerWidget {
           id: 'help',
           label: 'Ajuda',
           asset: 'assets/icons/General/info-square.svg',
-          onTap: () => context.push(Pages.profileHelp),
+          onTap: () => openRoute(Pages.profileHelp),
         ),
         ProfileSettingItem(
           id: 'terms',
@@ -177,6 +219,8 @@ class ProfileSettingsScreen extends ConsumerWidget {
             ),
             Expanded(
               child: ListView(
+                key: _scrollStorageKey,
+                controller: _scrollController,
                 children: [
                   if (isArtist)
                     ProfileSettingsSection(
@@ -186,30 +230,26 @@ class ProfileSettingsScreen extends ConsumerWidget {
                           id: 'insights',
                           label: 'Insights',
                           asset: 'assets/icons/Charts/bar-chart-square-02.svg',
-                          onTap: () =>
-                              context.push(Pages.profileArtistInsights),
+                          onTap: () => openRoute(Pages.profileArtistInsights),
                         ),
                         ProfileSettingItem(
                           id: 'audience',
                           label: 'Público',
                           asset: 'assets/icons/Users/users-01.svg',
-                          onTap: () =>
-                              context.push(Pages.profileArtistAudience),
+                          onTap: () => openRoute(Pages.profileArtistAudience),
                         ),
                         ProfileSettingItem(
                           id: 'artist-fan-club',
                           label: 'Fã Clube',
                           asset: 'assets/icons/Users/users-plus.svg',
-                          onTap: () =>
-                              context.push(Pages.profileArtistFanClub),
+                          onTap: () => openRoute(Pages.profileArtistFanClub),
                         ),
                         ProfileSettingItem(
                           id: 'artist-notifications',
                           label: 'Notificações',
                           asset:
                               'assets/icons/alerts_and_feedbacks/bell-01.svg',
-                          onTap: () =>
-                              context.push(Pages.profileNotifications),
+                          onTap: () => openRoute(Pages.profileNotifications),
                         ),
                       ],
                     ),
