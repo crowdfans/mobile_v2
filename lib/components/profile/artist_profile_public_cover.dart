@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/profile/artist_me_cover.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Cover overlay do perfil público do artista (print Perfil Artista).
 class ArtistProfilePublicCover extends StatelessWidget {
@@ -81,14 +82,26 @@ class ArtistProfilePublicCover extends StatelessWidget {
               children: [
                 _CoverIconButton(
                   key: const Key('artist-profile-back'),
-                  icon: Icons.arrow_back_ios_new_rounded,
                   onPressed: onBack,
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 const Spacer(),
                 _CoverIconButton(
                   key: const Key('artist-profile-more'),
-                  icon: Icons.more_horiz,
                   onPressed: onMore,
+                  child: SvgPicture.asset(
+                    'assets/icons/General/dots-horizontal.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -194,11 +207,11 @@ class ArtistProfilePublicCover extends StatelessWidget {
 class _CoverIconButton extends StatelessWidget {
   const _CoverIconButton({
     super.key,
-    required this.icon,
+    required this.child,
     required this.onPressed,
   });
 
-  final IconData icon;
+  final Widget child;
   final VoidCallback onPressed;
 
   @override
@@ -212,7 +225,7 @@ class _CoverIconButton extends StatelessWidget {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: Icon(icon, color: Colors.white, size: 20),
+          child: Center(child: child),
         ),
       ),
     );

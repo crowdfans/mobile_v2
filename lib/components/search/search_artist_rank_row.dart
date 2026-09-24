@@ -2,6 +2,7 @@ import 'package:crowdfans/components/search/search_rank_trend_dot.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Linha de artista no ranking Top 500 (badge + tendência + avatar quadrado).
 class SearchArtistRankRow extends StatelessWidget {
@@ -108,7 +109,15 @@ class SearchArtistRankRow extends StatelessWidget {
             if (onPressMore != null)
               IconButton(
                 onPressed: onPressMore,
-                icon: Icon(Icons.more_vert, color: colors.icon),
+                icon: SvgPicture.asset(
+                  'assets/icons/General/dots-vertical.svg',
+                  width: 22,
+                  height: 22,
+                  colorFilter: ColorFilter.mode(
+                    colors.icon,
+                    BlendMode.srcIn,
+                  ),
+                ),
                 tooltip: 'Opções do artista',
               ),
           ],

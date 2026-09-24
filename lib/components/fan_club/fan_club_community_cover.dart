@@ -71,10 +71,14 @@ class FanClubCommunityCover extends StatelessWidget {
                 _CoverChromeButton(
                   key: const Key('fan-club-cover-more'),
                   onPressed: onMore,
-                  child: Icon(
-                    Icons.more_horiz,
-                    size: 22,
-                    color: AppPalette.platinum50,
+                  child: SvgPicture.asset(
+                    'assets/icons/General/dots-horizontal.svg',
+                    width: 22,
+                    height: 22,
+                    colorFilter: const ColorFilter.mode(
+                      AppPalette.platinum50,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
               ],
