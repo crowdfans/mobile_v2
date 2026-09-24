@@ -50,6 +50,7 @@ import 'package:crowdfans/screens/profile/profile_fan_score_screen.dart';
 import 'package:crowdfans/screens/profile/profile_information_screen.dart';
 import 'package:crowdfans/screens/profile/profile_membership_activation_confirmed_screen.dart';
 import 'package:crowdfans/screens/profile/profile_membership_subscribe_screen.dart';
+import 'package:crowdfans/screens/profile/profile_membership_manage_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memberships_screen.dart';
 import 'package:crowdfans/screens/profile/profile_memories_screen.dart';
 import 'package:crowdfans/screens/profile/profile_notification_category_screen.dart';
@@ -406,6 +407,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 state.uri.queryParameters['pricePerMonth'] ?? '',
               ) ??
               100,
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileMembershipManage,
+        builder: (context, state) => ProfileMembershipManageScreen(
+          artistId: state.uri.queryParameters['artistId'] ?? '',
+          artistName: state.uri.queryParameters['artistName'] ?? '',
+          artistHandle: state.uri.queryParameters['artistHandle'],
+          artistAvatarUrl: state.uri.queryParameters['artistAvatarUrl'],
+          pricePerMonth:
+              int.tryParse(
+                state.uri.queryParameters['pricePerMonth'] ?? '',
+              ) ??
+              100,
+          monthsLabel: state.uri.queryParameters['monthsLabel'],
         ),
       ),
       GoRoute(
