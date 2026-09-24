@@ -1,8 +1,8 @@
-import 'package:crowdfans/components/buttons/compact_app_button.dart';
+import 'package:crowdfans/components/profile/account_photo_action_button.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Ações de galeria/câmera e aviso de upload pendente.
+/// Ações de galeria/câmera e aviso de upload pendente (CF-220).
 class AccountPhotoActions extends StatelessWidget {
   const AccountPhotoActions({
     super.key,
@@ -20,16 +20,28 @@ class AccountPhotoActions extends StatelessWidget {
     final colors = CrowdFansTheme.of(context);
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CompactAppButton(label: 'Galeria', onPressed: onGallery),
-            const SizedBox(width: 8),
-            CompactAppButton(label: 'Câmera', onPressed: onCamera),
-          ],
+        Text(
+          'Escolha entre galeria ou câmera.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: colors.textTertiary,
+          ),
+        ),
+        const SizedBox(height: 18),
+        AccountPhotoActionButton(
+          label: 'Selecionar foto da galeria',
+          icon: Icons.image_outlined,
+          onPressed: onGallery,
+        ),
+        const SizedBox(height: 12),
+        AccountPhotoActionButton(
+          label: 'Tirar foto',
+          icon: Icons.photo_camera_outlined,
+          onPressed: onCamera,
         ),
         if (hasLocalPhoto) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           DecoratedBox(
             decoration: BoxDecoration(
               color: colors.surfaceAlt,
@@ -39,7 +51,7 @@ class AccountPhotoActions extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Text(
-                'A imagem será enviada ao salvar o perfil.',
+                'A imagem só substitui a atual depois que você salvar o upload.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,

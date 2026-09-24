@@ -20,11 +20,11 @@ class AccountAvatar extends StatelessWidget {
       image = NetworkImage(photoUrl!);
     }
     return CircleAvatar(
-      radius: 56,
+      radius: 88,
       backgroundColor: colors.surfaceAlt,
       backgroundImage: image,
       child: image == null
-          ? Icon(Icons.person, size: 52, color: colors.textTertiary)
+          ? Icon(Icons.person, size: 72, color: colors.textTertiary)
           : null,
     );
   }
