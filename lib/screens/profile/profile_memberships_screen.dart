@@ -218,14 +218,14 @@ class _ProfileMembershipsScreenState
                         MembershipBalanceBanner(
                           balance: overview?.jamCoinsBalance ?? '0',
                         ),
+                        const SizedBox(height: 12),
+                        MembershipProTeaser(
+                          onPressed: () => context.push(Pages.profilePro),
+                        ),
                         const SizedBox(height: 16),
                         AppButton(
                           label: 'Recarregar Jam Coins',
                           onPressed: () => context.push(Pages.profileWallet),
-                        ),
-                        const SizedBox(height: 16),
-                        MembershipProTeaser(
-                          onPressed: () => context.push(Pages.profilePro),
                         ),
                         if (active.isEmpty && late.isEmpty && cancelled.isEmpty)
                           const Padding(
