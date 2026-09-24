@@ -12,6 +12,10 @@ class ArtistSearchItem {
     this.rank,
     this.rankingValueLabel,
     this.rankDelta,
+    this.trend,
+    this.previousRank,
+    this.weeksInRanking,
+    this.peakRank,
   });
 
   final String id;
@@ -22,7 +26,21 @@ class ArtistSearchItem {
   final String membersLabel;
   final int? rank;
   final String? rankingValueLabel;
+
+  /// Delta absoluto de posição (`trendDelta` no backend). Sinal vem de [trend].
   final int? rankDelta;
+
+  /// `up` | `down` | `neutral` | `new` (API `trend`).
+  final String? trend;
+
+  /// Posição na janela anterior (`previousRank`).
+  final int? previousRank;
+
+  /// Semanas consecutivas no ranking — opcional; ausente → UI mostra "—".
+  final int? weeksInRanking;
+
+  /// Melhor posição histórica conhecida — opcional; ausente → UI mostra "—".
+  final int? peakRank;
 
   factory ArtistSearchItem.fromJson(Map<String, dynamic> json) {
     return ArtistSearchItem(
@@ -34,8 +52,14 @@ class ArtistSearchItem {
       membersLabel: json['membersLabel'] as String? ?? '',
       rank: (json['rank'] as num?)?.toInt(),
       rankingValueLabel: json['rankingValueLabel'] as String?,
-      rankDelta: (json['rankDelta'] as num?)?.toInt() ??
+      rankDelta: (json['trendDelta'] as num?)?.toInt() ??
+          (json['rankDelta'] as num?)?.toInt() ??
           (json['delta'] as num?)?.toInt(),
+      trend: (json['trend'] as String?)?.trim(),
+      previousRank: (json['previousRank'] as num?)?.toInt(),
+      weeksInRanking: (json['weeksInRanking'] as num?)?.toInt(),
+      peakRank: (json['peakRank'] as num?)?.toInt() ??
+          (json['maxRank'] as num?)?.toInt(),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
+import 'package:crowdfans/components/search/search_artist_rank_details_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
 import 'package:crowdfans/components/search/search_rank_sort_chip.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
@@ -257,7 +257,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
               ],
             ),
           ),
-          SearchArtistOptionsSheet(
+          SearchArtistRankDetailsSheet(
             visible: _selected != null,
             artist: _selected,
             onClose: () => setState(() => _selected = null),
