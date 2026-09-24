@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Botão primário / outline / ghost (espelho do `ButtonComponent`).
+/// Botão primário / outline / ghost / dark (espelho do `ButtonComponent`).
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,
@@ -47,14 +47,22 @@ class AppButton extends StatelessWidget {
       );
     }
 
+    final background = variant == AppButtonVariant.dark
+        ? AppPalette.platinum900
+        : colors.buttonPrimary;
+    final foreground = variant == AppButtonVariant.dark
+        ? AppPalette.platinum50
+        : colors.buttonPrimaryText;
+
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: FilledButton(
         onPressed: enabled ? onPressed : null,
         style: FilledButton.styleFrom(
-          backgroundColor: colors.buttonPrimary,
-          foregroundColor: colors.buttonPrimaryText,
+          backgroundColor: background,
+          foregroundColor: foreground,
+          disabledBackgroundColor: background.withValues(alpha: 0.4),
           shape: const StadiumBorder(),
         ),
         child: Text(text, style: const TextStyle(fontSize: 18)),
@@ -63,4 +71,4 @@ class AppButton extends StatelessWidget {
   }
 }
 
-enum AppButtonVariant { primary, outline, ghost }
+enum AppButtonVariant { primary, outline, ghost, dark }

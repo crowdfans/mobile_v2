@@ -147,6 +147,7 @@ class _ProfileWalletRechargeScreenState
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: AppButton(
                   label: 'Próximo',
+                  variant: AppButtonVariant.dark,
                   onPressed: handleNext,
                 ),
               ),
