@@ -64,6 +64,19 @@ class CommentRow extends StatelessWidget {
                           ),
                         ),
                       ),
+                      if (comment.handle.trim().isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            comment.handle,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textTertiary,
+                            ),
+                          ),
+                        ),
+                      ],
                       const SizedBox(width: 8),
                       Text(
                         '${comment.minutesAgo}m',
@@ -75,6 +88,18 @@ class CommentRow extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (isReply)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      'Resposta',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
+                      ),
+                    ),
+                  ),
                 if (comment.text.trim().isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
