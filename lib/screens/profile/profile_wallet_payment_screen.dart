@@ -59,7 +59,7 @@ class _ProfileWalletPaymentScreenState
     try {
       final stop = await WalletService.subscribe((event) {
         if (event.type == 'wallet.credited' && mounted) {
-          setState(() {});
+          handleNavigateConfirmedFromEvent(event);
         }
       });
       if (!mounted) {
@@ -68,6 +68,41 @@ class _ProfileWalletPaymentScreenState
       }
       _unsubscribeWs = stop;
     } catch (_) {}
+  }
+
+  void handleNavigateConfirmed({
+    required int coins,
+    String? checkoutId,
+    String? packId,
+  }) {
+    if (!mounted || coins <= 0) {
+      return;
+    }
+    context.go(
+      Pages.profileWalletPaymentConfirmedOf(
+        coins: coins,
+        checkoutId: checkoutId,
+        packId: packId ?? widget.packId,
+      ),
+    );
+  }
+
+  void handleNavigateConfirmedFromEvent(WalletRealtimeEvent event) {
+    final data = (event.data as Map?)?.cast<String, dynamic>() ?? {};
+    final packId = data['packId']?.toString() ?? '';
+    if (packId.isNotEmpty && packId != widget.packId) {
+      return;
+    }
+    final coins =
+        (data['coins'] as num?)?.toInt() ??
+        int.tryParse(widget.coins ?? '') ??
+        _receipt?.coins ??
+        0;
+    handleNavigateConfirmed(
+      coins: coins,
+      checkoutId: _receipt?.checkoutId,
+      packId: packId.isNotEmpty ? packId : widget.packId,
+    );
   }
 
   void handleBack() {
@@ -99,6 +134,14 @@ class _ProfileWalletPaymentScreenState
     try {
       final result = await WalletService.checkout(widget.packId);
       if (!mounted) {
+        return;
+      }
+      if (result.status == 'paid' && result.coins > 0) {
+        handleNavigateConfirmed(
+          coins: result.coins,
+          checkoutId: result.checkoutId,
+          packId: result.packId.isNotEmpty ? result.packId : widget.packId,
+        );
         return;
       }
       setState(() => _receipt = result);

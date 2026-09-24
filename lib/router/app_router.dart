@@ -58,6 +58,7 @@ import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
+import 'package:crowdfans/screens/profile/profile_wallet_payment_confirmed_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_payment_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_recharge_screen.dart';
 import 'package:crowdfans/screens/profile/profile_wallet_screen.dart';
@@ -333,6 +334,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           coins: state.uri.queryParameters['coins'],
           priceCents: int.tryParse(
             state.uri.queryParameters['priceCents'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: Pages.profileWalletPaymentConfirmed,
+        builder: (context, state) => ProfileWalletPaymentConfirmedScreen(
+          coinsTotal:
+              int.tryParse(state.uri.queryParameters['coins'] ?? '') ?? 0,
+          checkoutId: state.uri.queryParameters['checkoutId'],
+          packId: state.uri.queryParameters['packId'],
+          baseCoins: int.tryParse(
+            state.uri.queryParameters['baseCoins'] ?? '',
+          ),
+          bonusCoins: int.tryParse(
+            state.uri.queryParameters['bonusCoins'] ?? '',
           ),
         ),
       ),
