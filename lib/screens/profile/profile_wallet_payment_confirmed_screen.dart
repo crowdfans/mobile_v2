@@ -4,6 +4,7 @@ import 'package:crowdfans/components/profile/wallet_payment_confirmed_info_note.
 import 'package:crowdfans/components/profile/wallet_payment_confirmed_purchase_card.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,7 +32,15 @@ class ProfileWalletPaymentConfirmedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final total = coinsTotal > 0 ? coinsTotal : 0;
+    // TEMP: demo do print (240 = 200 + 40) se a rota chegar sem valores.
+    final useMock =
+        coinsTotal <= 0 && CfTempMocks.useMembershipFixtures && kUseCfTempMocks;
+    final total =
+        useMock ? cfTempMockRechargeConfirmed.coinsTotal : coinsTotal;
+    final base =
+        useMock ? cfTempMockRechargeConfirmed.baseCoins : baseCoins;
+    final bonus =
+        useMock ? cfTempMockRechargeConfirmed.bonusCoins : bonusCoins;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -84,8 +93,8 @@ class ProfileWalletPaymentConfirmedScreen extends StatelessWidget {
                     const SizedBox(height: 28),
                     WalletPaymentConfirmedPurchaseCard(
                       coinsTotal: total,
-                      baseCoins: baseCoins,
-                      bonusCoins: bonusCoins,
+                      baseCoins: base,
+                      bonusCoins: bonus,
                       checkoutId: checkoutId,
                     ),
                     const SizedBox(height: 16),
