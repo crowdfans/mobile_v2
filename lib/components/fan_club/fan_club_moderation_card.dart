@@ -108,12 +108,22 @@ class FanClubModerationCard extends StatelessWidget {
               ),
               if ((body ?? '').isNotEmpty) ...[
                 const SizedBox(height: 10),
-                Text(
-                  body!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.45,
-                    color: colors.textSecondary,
+                // Caixa da defesa/motivo como no print (CF-199).
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colors.surfaceAlt,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                    child: Text(
+                      body!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.45,
+                        color: colors.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
               ],

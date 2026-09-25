@@ -358,14 +358,13 @@ class _FanClubModerationScreenState extends State<FanClubModerationScreen> {
                               count: appeals.length,
                             ),
                             const SizedBox(height: 12),
-                            if (appeals.isEmpty)
+                            // Vazio do print: só o cabeçalho com badge 0 (sem card extra).
+                            if (appeals.isEmpty && _query.trim().isNotEmpty)
                               ProfileState(
-                                title: 'Nenhum pedido',
-                                message: _query.trim().isEmpty
-                                    ? 'Não há contestações pendentes neste fã-clube.'
-                                    : 'Nenhum resultado para a busca.',
+                                title: 'Nenhum resultado',
+                                message: 'Nenhum resultado para a busca.',
                               )
-                            else
+                            else if (appeals.isNotEmpty)
                               for (final appeal in appeals) ...[
                                 FanClubModerationCard(
                                   title: appeal.displayName,
