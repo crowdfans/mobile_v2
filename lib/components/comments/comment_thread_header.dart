@@ -138,7 +138,7 @@ class CommentThreadHeader extends StatelessWidget {
             onPressed: onMenu,
             tooltip: 'Opções do post',
             icon: Icon(
-              Icons.more_vert,
+              Icons.more_horiz,
               color: onMenu == null
                   ? colors.textTertiary.withValues(alpha: 0.35)
                   : colors.textPrimary,
