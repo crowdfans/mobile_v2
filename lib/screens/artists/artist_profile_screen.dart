@@ -520,6 +520,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       final bio = _profile?.description.trim().isNotEmpty == true
           ? _profile!.description
           : 'Este artista ainda não escreveu uma bio.';
+      final useSobreFixtures =
+          kUseCfTempMocks && CfTempMocks.useArtistSobreFixtures;
+      final baseLocation =
+          useSobreFixtures ? Cf182ArtistSobreMock.location : null;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -546,7 +550,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
               Expanded(
                 child: ArtistProfileStatTile(
                   label: 'Base',
-                  value: artistSobreBaseLabel(null),
+                  value: artistSobreBaseLabel(baseLocation),
                 ),
               ),
               const SizedBox(width: 10),
@@ -559,7 +563,21 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          ArtistProfileSpotifyCard(artistName: name),
+          ArtistProfileSpotifyCard(
+            artistName: name,
+            title: useSobreFixtures ? Cf182ArtistSobreMock.trackTitle : null,
+            subtitle: useSobreFixtures
+                ? Cf182ArtistSobreMock.playlistSubtitle
+                : 'Playlist em destaque',
+            previewReady: useSobreFixtures,
+            monthlyListeners: useSobreFixtures
+                ? Cf182ArtistSobreMock.monthlyListeners
+                : 'Não informado',
+            genre: useSobreFixtures
+                ? Cf182ArtistSobreMock.genre
+                : 'Não informado',
+            onOpenSpotify: useSobreFixtures ? () {} : null,
+          ),
           const SizedBox(height: 14),
           const ArtistProfileSocialLinksCard(),
         ],
@@ -638,6 +656,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             FeedItem(
               post: post,
               canAccessExclusive: true,
+              plainExclusiveWhenUnlocked: true,
               onVoteApplied: handleVoteApplied,
             ),
         ],

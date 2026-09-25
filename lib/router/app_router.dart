@@ -208,14 +208,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterArtistDataScreen(),
       ),
       GoRoute(
-        path: Pages.artistProfile,
-        builder: (context, state) => ArtistProfileScreen(
-          artistId: state.pathParameters['artistId'] ?? '',
-          seedName: state.uri.queryParameters['name'],
-          seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
-        ),
-      ),
-      GoRoute(
         path: Pages.fanClubCommunity,
         builder: (context, state) => FanClubCommunityScreen(
           artistId: state.pathParameters['artistId'] ?? '',
@@ -629,6 +621,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Pages.home,
                 builder: (context, state) => const HomeScreen(),
+                routes: [
+                  // CF-181/184/185/186: perfil do artista com bottom nav do shell.
+                  GoRoute(
+                    path: '/artists/:artistId',
+                    builder: (context, state) => ArtistProfileScreen(
+                      artistId: state.pathParameters['artistId'] ?? '',
+                      seedName: state.uri.queryParameters['name'],
+                      seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

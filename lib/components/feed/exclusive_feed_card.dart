@@ -34,6 +34,7 @@ class ExclusiveFeedCard extends StatelessWidget {
     if (!unlocked) {
       return PostCard(
         post: post,
+        hideRank: true,
         onPressOpenProfile: onPressOpenProfile,
         onPressOptions: onPressOptions,
         onPressShare: onPressShare,
@@ -44,14 +45,17 @@ class ExclusiveFeedCard extends StatelessWidget {
         ),
       );
     }
-    // Desbloqueado: badge Exclusivo acima do autor (CF-235 print).
+    // Desbloqueado (Home CF-235): card tintido + badge Exclusivo.
     return PostCard(
       post: post,
+      backgroundColor: const Color(0xFFEEF3F8),
+      borderColor: const Color(0xFFD7E0EA),
       onPressOpenComments: onPressOpenComments,
       onPressOpenProfile: onPressOpenProfile,
       onPressOptions: onPressOptions,
       onPressShare: onPressShare,
       onVoteApplied: onVoteApplied,
+      hideRank: true,
       topContentAfterHeader: false,
       topContent: ExclusivePostMetaRow(
         memberName: resolvedUsername,

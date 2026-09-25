@@ -17,6 +17,7 @@ class PostCard extends StatelessWidget {
     this.topContentAfterHeader = false,
     this.backgroundColor,
     this.borderColor,
+    this.hideRank = false,
     this.onPressOpenComments,
     this.onPressOpenProfile,
     this.onPressOptions,
@@ -34,6 +35,7 @@ class PostCard extends StatelessWidget {
   final bool topContentAfterHeader;
   final Color? backgroundColor;
   final Color? borderColor;
+  final bool hideRank;
   final ValueChanged<String>? onPressOpenComments;
   final VoidCallback? onPressOpenProfile;
   final VoidCallback? onPressOptions;
@@ -85,7 +87,7 @@ class PostCard extends StatelessWidget {
                     PostCardHeader(
                       displayAuthorName: displayAuthorName,
                       displayAuthorHandle: post.handle,
-                      rank: post.rank,
+                      rank: hideRank ? null : post.rank,
                       minutesAgo: post.minutesAgo,
                       membershipBadges: badges,
                       showSecretBadge: showSecret,

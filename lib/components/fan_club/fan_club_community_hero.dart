@@ -48,39 +48,38 @@ class FanClubCommunityHero extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: onOpenArtist,
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: name,
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w600,
-                                      color: colors.textPrimary,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: ' Fã Clube',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: colors.textTertiary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w600,
+                              height: 1.15,
+                              color: colors.textPrimary,
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            size: 22,
-                            color: colors.textTertiary,
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Fã Clube',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: colors.textTertiary,
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                size: 20,
+                                color: colors.textTertiary,
+                              ),
+                            ],
                           ),
                         ],
                       ),

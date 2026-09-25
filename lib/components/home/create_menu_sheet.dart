@@ -72,9 +72,9 @@ class CreateMenuSheet extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             child: ColoredBox(
-              color: colors.surface,
+              color: colors.surfaceAlt,
               child: Column(
                 children: isArtist
                     ? [
