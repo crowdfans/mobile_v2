@@ -20,10 +20,12 @@ class FanScoreCycleCard extends StatelessWidget {
     final body = endLabel.isNotEmpty
         ? 'O ciclo vigente encerra em $endLabel e reseta logo em seguida.'
         : (details.helperText ?? '').trim();
+    // Print CF-201: caixa azul-clara do ciclo vigente.
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceAlt,
+        color: AppPalette.blue50,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppPalette.blue200),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
