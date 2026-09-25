@@ -1063,6 +1063,7 @@ List<ArtistSearchItem>? cfTempMockSearchArtists(String query) {
         item,
   ];
   return filtered.isEmpty ? null : filtered;
+}
 
 /// Liga feed demo CF-178 (Postagens dos Fã Clubes vazio → print).
 const bool kUseCf178FanClubsFeedMocks = true;
