@@ -9,11 +9,14 @@ class ModerationHubCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.badgeCount,
   });
 
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  /// Contagem real à direita (print CF-163); null = chevron.
+  final int? badgeCount;
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +52,34 @@ class ModerationHubCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            SvgPicture.asset(
-              'assets/icons/arrows/chevron-right.svg',
-              width: 18,
-              height: 18,
-              colorFilter: ColorFilter.mode(
-                colors.textTertiary,
-                BlendMode.srcIn,
+            if (badgeCount != null)
+              Container(
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: colors.surfaceAlt,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$badgeCount',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              )
+            else
+              SvgPicture.asset(
+                'assets/icons/arrows/chevron-right.svg',
+                width: 18,
+                height: 18,
+                colorFilter: ColorFilter.mode(
+                  colors.textTertiary,
+                  BlendMode.srcIn,
+                ),
               ),
-            ),
           ],
         ),
       ),
