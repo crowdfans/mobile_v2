@@ -19,12 +19,9 @@
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_score.dart';
-<<<<<<< HEAD
-import 'package:crowdfans/models/profile.dart';
-=======
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
->>>>>>> origin/prod
+import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
