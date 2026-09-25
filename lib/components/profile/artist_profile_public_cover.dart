@@ -1,4 +1,5 @@
 import 'package:crowdfans/components/profile/artist_me_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_cover_cta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -10,10 +11,12 @@ class ArtistProfilePublicCover extends StatelessWidget {
     required this.displayName,
     required this.membersLabel,
     required this.following,
+    required this.subscribed,
     required this.busy,
     required this.onBack,
     required this.onMore,
     required this.onToggleFollow,
+    required this.onMembership,
     this.rank,
   });
 
@@ -22,29 +25,28 @@ class ArtistProfilePublicCover extends StatelessWidget {
   final String membersLabel;
   final int? rank;
   final bool following;
+  final bool subscribed;
   final bool busy;
   final VoidCallback onBack;
   final VoidCallback onMore;
   final VoidCallback onToggleFollow;
+  final VoidCallback onMembership;
 
   static String formatMembers(int? count) => ArtistMeCover.formatMembers(count);
-
-  /// Rótulo do CTA de follow gratuito (CF-140) — membership fica na aba Exclusivo.
-  static String followCtaLabel({
-    required bool following,
-    required bool busy,
-  }) {
-    if (busy) {
-      return 'Aguarde...';
-    }
-    return following ? 'Seguindo' : '+ Seguir';
-  }
 
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.paddingOf(context).top;
     final url = imageUrl.trim();
-    final ctaLabel = followCtaLabel(following: following, busy: busy);
+    final ctaKind = artistProfileCoverCtaKind(
+      following: following,
+      subscribed: subscribed,
+    );
+    final VoidCallback? ctaAction = switch (ctaKind) {
+      ArtistProfileCoverCtaKind.follow => onToggleFollow,
+      ArtistProfileCoverCtaKind.membershipSubscribe => onMembership,
+      ArtistProfileCoverCtaKind.membershipActive => onMembership,
+    };
     return SizedBox(
       height: 320 + topInset,
       width: double.infinity,
@@ -134,15 +136,15 @@ class ArtistProfilePublicCover extends StatelessWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.white.withValues(alpha: 0.28),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '#$rank',
                           style: const TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1C1C1E),
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -161,39 +163,11 @@ class ArtistProfilePublicCover extends StatelessWidget {
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: Material(
-                    // Follow gratuito ≠ Membership: branco / borda clara (print Feed).
-                    color: following
-                        ? Colors.white.withValues(alpha: 0.18)
-                        : Colors.white,
-                    shape: StadiumBorder(
-                      side: BorderSide(
-                        color: following
-                            ? Colors.white.withValues(alpha: 0.85)
-                            : Colors.transparent,
-                        width: following ? 1.5 : 0,
-                      ),
-                    ),
-                    child: InkWell(
-                      key: const Key('artist-profile-follow'),
-                      onTap: busy ? null : onToggleFollow,
-                      customBorder: const StadiumBorder(),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: Center(
-                          child: Text(
-                            ctaLabel,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: following
-                                  ? Colors.white
-                                  : const Color(0xFF1C1C1E),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  child: ArtistProfileCoverCta(
+                    key: const Key('artist-profile-cover-cta'),
+                    kind: ctaKind,
+                    busy: busy,
+                    onPressed: busy ? null : ctaAction,
                   ),
                 ),
               ],

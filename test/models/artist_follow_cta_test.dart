@@ -1,24 +1,19 @@
-import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_cover_cta.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CTA de follow não usa rótulo de membership', () {
+  test('CF-185: estados do CTA do cover seguem prints', () {
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: false, busy: false),
-      '+ Seguir',
+      artistProfileCoverCtaKind(following: false, subscribed: false),
+      ArtistProfileCoverCtaKind.follow,
     );
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: true, busy: false),
-      'Seguindo',
+      artistProfileCoverCtaKind(following: true, subscribed: false),
+      ArtistProfileCoverCtaKind.membershipSubscribe,
     );
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: false, busy: true),
-      'Aguarde...',
-    );
-    expect(
-      ArtistProfilePublicCover.followCtaLabel(following: true, busy: false)
-          .toLowerCase(),
-      isNot(contains('assin')),
+      artistProfileCoverCtaKind(following: false, subscribed: true),
+      ArtistProfileCoverCtaKind.membershipActive,
     );
   });
 }
