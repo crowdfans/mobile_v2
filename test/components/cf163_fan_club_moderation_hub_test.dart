@@ -1,6 +1,8 @@
+import 'package:crowdfans/components/profile/moderation_hub_card.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/screens/profile/moderation_settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,7 +34,7 @@ void main() {
         routerConfig: router,
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.text('Fã Clube'), findsOneWidget);
     expect(find.text('Moderação do Fã Clube'), findsNothing);
@@ -51,5 +53,25 @@ void main() {
 
     // Sem DecoratedBox com borda nos cards (InkWell + Padding apenas).
     expect(find.byType(DecoratedBox), findsNothing);
+  });
+
+  testWidgets('CF-163: badge circular com contagem real', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildCrowdFansTheme(Brightness.light),
+        home: Scaffold(
+          body: ModerationHubCard(
+            title: 'Moderação',
+            subtitle: 'Veja os fã clubes em que você é moderador.',
+            badgeCount: 2,
+            onTap: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('2'), findsOneWidget);
+    expect(find.byType(SvgPicture), findsNothing);
   });
 }
