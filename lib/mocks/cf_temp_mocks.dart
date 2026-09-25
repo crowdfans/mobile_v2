@@ -496,6 +496,9 @@ FanScoreData cfTempMockFanScoreData() {
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
 const bool kUseCf194CommentMocks = true;
 
+/// CF-195 — Home: mesmas fixtures aninhadas quando a API vem vazia.
+const bool kUseCf195HomeCommentMocks = true;
+
 /// Dados do print CF-194 (recolhido / expandido).
 abstract final class Cf194FanClubCommentsMock {
   static const postAuthor = 'Felipe Rhy';

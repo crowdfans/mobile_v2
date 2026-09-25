@@ -134,12 +134,21 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           }
         } else {
           _comments = response.comments;
-          // CF-194: sem dados reais no fã-clube → mock do print (arquivo único).
+          // TEMP: demo do print (CF-194/195) quando a API ainda não povoa.
           if (_comments.isEmpty &&
-              _isFanClubContext &&
-              kUseCf194CommentMocks) {
+              kUseCfTempMocks &&
+              (_isFanClubContext
+                  ? kUseCf194CommentMocks
+                  : kUseCf195HomeCommentMocks)) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
+            // CF-195: respostas expandidas no print.
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
           }
         }
         _loading = false;
@@ -152,10 +161,19 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       setState(() {
         _loading = false;
         if (!append) {
-          if (_isFanClubContext && kUseCf194CommentMocks) {
+          if (kUseCfTempMocks &&
+              (_isFanClubContext
+                  ? kUseCf194CommentMocks
+                  : kUseCf195HomeCommentMocks)) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
             _error = null;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
           } else {
             _error = 'Não foi possível carregar os comentários.';
           }
@@ -208,7 +226,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         _gifItems = const [];
         _gifAnnouncement = null;
         _gifError =
-            'Não foi possível carregar os GIFs. Verifique sua conexão e tente novamente.';
+            'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
       });
     }
   }
