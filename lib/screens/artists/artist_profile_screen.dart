@@ -459,9 +459,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
 
     if (_tab == 'cartas') {
       if (_letters.isEmpty) {
+        // CF-181 redo: vazio em PT (print); sem título EN "Fan letters".
         return const ProfileState(
-          title: 'Fan letters',
-          message: 'Nenhuma fan letter ainda.',
+          title: 'Cartas',
+          message: 'Nenhuma carta ainda.',
         );
       }
       return GridView.builder(
@@ -475,7 +476,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           childAspectRatio: 3 / 4,
         ),
         itemBuilder: (context, index) {
-          return ArtistProfileLetterTile(letter: _letters[index]);
+          return ArtistProfileLetterTile(
+            letter: _letters[index],
+            position: index + 1,
+          );
         },
       );
     }
