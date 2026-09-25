@@ -64,6 +64,7 @@ import 'package:crowdfans/screens/profile/profile_pro_screen.dart';
 import 'package:crowdfans/screens/profile/profile_referral_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_screen.dart';
 import 'package:crowdfans/screens/profile/profile_security_credentials_screen.dart';
+import 'package:crowdfans/screens/profile/profile_change_email_screen.dart';
 import 'package:crowdfans/screens/profile/profile_change_phone_screen.dart';
 import 'package:crowdfans/screens/profile/profile_connected_devices_screen.dart';
 import 'package:crowdfans/screens/profile/profile_settings_screen.dart';
@@ -299,9 +300,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Pages.profileSecurityCredentials,
-        builder: (context, state) => ProfileSecurityCredentialsScreen(
-          initialMode: state.uri.queryParameters['mode'],
-        ),
+        builder: (context, state) {
+          // Compat: ?mode=email → página dedicada CF-165.
+          if ((state.uri.queryParameters['mode'] ?? '').toLowerCase() ==
+              'email') {
+            return const ProfileChangeEmailScreen();
+          }
+          return ProfileSecurityCredentialsScreen(
+            initialMode: state.uri.queryParameters['mode'],
+          );
+        },
+      ),
+      GoRoute(
+        path: Pages.profileChangeEmail,
+        builder: (context, state) => const ProfileChangeEmailScreen(),
       ),
       GoRoute(
         path: Pages.profileChangePhone,
