@@ -134,19 +134,31 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           }
         } else {
           _comments = response.comments;
-          // CF-194: sem dados reais no fã-clube → mock do print (arquivo único).
+          // TEMP: demo do print (CF-194/195) quando a API ainda não povoa.
           if (_comments.isEmpty &&
               _isFanClubContext &&
+              kUseCfTempMocks &&
               kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
           } else if (_comments.isEmpty &&
               !_isFanClubContext &&
+              kUseCfTempMocks &&
               kUseCf195CommentMocks) {
-            // CF-195: Home sem dados → mock do print expandido.
             _comments = Cf195HomeCommentsMock.comments();
             _hasMore = false;
-            _expandedReplyIds.add(_comments.first.id);
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
           }
         }
         _loading = false;
@@ -159,14 +171,29 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       setState(() {
         _loading = false;
         if (!append) {
-          if (_isFanClubContext && kUseCf194CommentMocks) {
+          if (_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
             _error = null;
-          } else if (!_isFanClubContext && kUseCf195CommentMocks) {
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+          } else if (!_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf195CommentMocks) {
             _comments = Cf195HomeCommentsMock.comments();
             _hasMore = false;
-            _expandedReplyIds.add(_comments.first.id);
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
             _error = null;
           } else {
             _error = 'Não foi possível carregar os comentários.';
@@ -220,7 +247,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         _gifItems = const [];
         _gifAnnouncement = null;
         _gifError =
-            'Não foi possível carregar os GIFs. Verifique sua conexão e tente novamente.';
+            'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
       });
     }
   }

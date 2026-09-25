@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Mensagem de erro do seletor de GIF (nunca citar API key).
 String commentGifUserErrorMessage() =>
-    'Não foi possível carregar os GIFs. Verifique sua conexão e tente novamente.';
+    'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
 
 bool messageExposesSecrets(String message) {
   final lower = message.toLowerCase();

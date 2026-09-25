@@ -44,7 +44,19 @@ class CommentRow extends StatelessWidget {
         left: isReply ? 28 : 0,
         bottom: isReply ? 8 : 14,
       ),
-      child: Row(
+      child: DecoratedBox(
+        // Print CF-196: resposta indentada em caixa cinza-clara.
+        decoration: isReply
+            ? BoxDecoration(
+                color: colors.surfaceAlt,
+                borderRadius: BorderRadius.circular(14),
+              )
+            : const BoxDecoration(),
+        child: Padding(
+          padding: isReply
+              ? const EdgeInsets.fromLTRB(10, 10, 10, 8)
+              : EdgeInsets.zero,
+          child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
@@ -185,6 +197,8 @@ class CommentRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
