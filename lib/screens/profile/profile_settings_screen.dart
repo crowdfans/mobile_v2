@@ -1,5 +1,6 @@
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_settings_section.dart';
+import 'package:crowdfans/components/profile/settings_app_version.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -258,6 +259,7 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                   content,
                   support,
                   session,
+                  const SettingsAppVersion(),
                   const SizedBox(height: 24),
                 ],
               ),

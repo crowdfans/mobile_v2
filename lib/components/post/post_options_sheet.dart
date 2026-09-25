@@ -12,6 +12,7 @@ import 'package:crowdfans/services/saved_post_service.dart';
 import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 /// Opções do post (três pontinhos) — layout dos prints CF-68.
@@ -232,14 +233,16 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
                 label: 'Ver Fã Clube do Artista',
                 asset: 'assets/images/rock-hand.png',
                 backgroundColor: AppPalette.purple100,
+                labelColor: AppPalette.purple700,
                 onPressed: () => handleOpenFanClub(context),
               ),
               const SizedBox(width: 10),
               PostOptionsShortcutCard(
                 label: 'Salvar Post nas Memórias',
                 asset: 'assets/images/star-memory.png',
-                backgroundColor: AppPalette.yellow500.withValues(alpha: 0.35),
+                backgroundColor: AppPalette.yellow500.withValues(alpha: 0.18),
                 iconColor: AppPalette.platinum900,
+                labelColor: AppPalette.yellow600,
                 onPressed: () {
                   handleSave(context);
                 },
@@ -277,12 +280,14 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
                 children: [
                   PostSheetListItem(
                     label: 'Deixar de seguir',
+                    iconAsset: 'assets/icons/Users/user-minus-01.svg',
                     onPressed: () {
                       handleUnfollow(context);
                     },
                   ),
                   PostSheetListItem(
                     label: 'Sobre este artista',
+                    iconAsset: 'assets/icons/General/eye.svg',
                     onPressed: () {
                       handleOpenArtist(context);
                     },
@@ -292,16 +297,52 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
                     label: _favorite
                         ? 'Remover dos favoritos'
                         : 'Favoritar Artista',
+                    iconAsset: 'assets/icons/Shapes/star-01.svg',
                     onPressed: handleToggleFavorite,
                     showDivider: true,
                   ),
-                  PostSheetListItem(
-                    label: 'Reportar',
-                    onPressed: () => handleReport(context),
-                    showDivider: true,
-                    danger: true,
-                  ),
                 ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Material(
+            color: colors.danger.withValues(alpha: 0.08),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: colors.danger.withValues(alpha: 0.45)),
+            ),
+            child: InkWell(
+              onTap: () => handleReport(context),
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                height: 52,
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/Communication/message-alert-square.svg',
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(
+                          colors.danger,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Reportar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: colors.danger,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

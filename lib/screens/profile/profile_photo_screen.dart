@@ -209,12 +209,14 @@ class _ProfilePhotoScreenState extends ConsumerState<ProfilePhotoScreen> {
                             success: true,
                           ),
                         ],
-                        const SizedBox(height: 16),
-                        AppButton(
-                          label: _saving ? 'Salvando...' : 'Salvar foto',
-                          disabled: !canSave,
-                          onPressed: handleSave,
-                        ),
+                        if (canSave) ...[
+                          const SizedBox(height: 16),
+                          AppButton(
+                            label: _saving ? 'Salvando...' : 'Salvar foto',
+                            disabled: !canSave,
+                            onPressed: handleSave,
+                          ),
+                        ],
                       ],
                     ),
             ),

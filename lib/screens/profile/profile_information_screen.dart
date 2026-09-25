@@ -10,6 +10,8 @@ enum _InformationTab { terms, privacy }
 
 /// Termos de Uso e Política de Privacidade.
 /// Ajuda vive em [ProfileHelpScreen] (`Pages.profileHelp`).
+///
+/// CF-214: Política abre como página dedicada (sem abas), com hierarquia do print.
 class ProfileInformationScreen extends StatefulWidget {
   const ProfileInformationScreen({super.key, this.initialTab});
 
@@ -24,6 +26,7 @@ class ProfileInformationScreen extends StatefulWidget {
 class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
   late _InformationTab _tab;
   var _redirectingHelp = false;
+  var _privacyOnly = false;
 
   @override
   void initState() {
@@ -40,7 +43,8 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
       });
       return;
     }
-    _tab = raw == 'privacy' ? _InformationTab.privacy : _InformationTab.terms;
+    _privacyOnly = raw == 'privacy';
+    _tab = _privacyOnly ? _InformationTab.privacy : _InformationTab.terms;
   }
 
   @override
@@ -52,25 +56,31 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
+    final headerTitle = _privacyOnly
+        ? 'Política de Privacidade'
+        : (_tab == _InformationTab.terms
+              ? 'Termos de Uso'
+              : 'Política de Privacidade');
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Documentos',
+              title: headerTitle,
               onBack: () => context.pop(),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-              child: SettingsSegmentedTabs(
-                labels: const ['Termos', 'Privacidade'],
-                selectedIndex: _tab.index,
-                onChanged: (index) {
-                  setState(() => _tab = _InformationTab.values[index]);
-                },
+            if (!_privacyOnly)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                child: SettingsSegmentedTabs(
+                  labels: const ['Termos', 'Privacidade'],
+                  selectedIndex: _tab.index,
+                  onChanged: (index) {
+                    setState(() => _tab = _InformationTab.values[index]);
+                  },
+                ),
               ),
-            ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 36),
@@ -80,13 +90,17 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
                       title: 'Termos de Uso',
                       intro:
                           'Regras essenciais para uso da plataforma, da conta, das comunidades e das experiências CrowdFans.',
+                      lastUpdated:
+                          'Última atualização: 17 de março de 2026.',
                       sections: informationTermsSections,
                     )
                   else
                     const InformationDocumentView(
-                      title: 'Política de Privacidade',
+                      title: 'Política de privacidade detalhada',
                       intro:
-                          'Como os dados de conta, segurança, interação e suporte são tratados no ecossistema CrowdFans.',
+                          'Este texto consolida, em formato mais completo, como o ecossistema atual da Crowd Fans trata dados de conta, segurança, interação social, memberships, conteúdo e suporte.',
+                      lastUpdated:
+                          'Última atualização: 17 de março de 2026.',
                       sections: informationPrivacySections,
                     ),
                 ],

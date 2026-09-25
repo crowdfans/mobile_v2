@@ -3,6 +3,7 @@ import 'package:crowdfans/components/profile/notification_preference_section.dar
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/notification_artist_alerts_store.dart';
 import 'package:crowdfans/services/notification_preferences_service.dart';
@@ -68,22 +69,45 @@ class _ProfileNotificationsArtistsScreenState
     try {
       final prefs =
           await NotificationPreferencesService.getNotificationPreferences();
-      final artists = await FollowService.listFollows();
+      var artists = await FollowService.listFollows();
+      artists = [for (final a in artists) if (a.isFollowing) a];
+      if (artists.isEmpty &&
+          kUseCfTempMocks &&
+          CfTempMocks.useNotificationPrefFixtures) {
+        artists = Cf213NotificationPrefFixtures.followedArtists();
+      }
       final artistAlerts = await NotificationArtistAlertsStore.load();
+      final usePrintDefaults = kUseCfTempMocks &&
+          CfTempMocks.useNotificationPrefFixtures;
       if (!mounted) {
         return;
       }
       setState(() {
-        _preferences = prefs;
-        _artists = [for (final a in artists) if (a.isFollowing) a];
+        _preferences = usePrintDefaults
+            ? Cf213NotificationPrefFixtures.alertTypeDefaultsOff()
+            : prefs;
+        _artists = artists;
         _artistAlerts = {
           for (final a in _artists)
-            a.artistUid: artistAlerts[a.artistUid] ?? true,
+            a.artistUid: usePrintDefaults
+                ? false
+                : (artistAlerts[a.artistUid] ?? true),
         };
         _loading = false;
       });
     } catch (error) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks && CfTempMocks.useNotificationPrefFixtures) {
+        final artists = Cf213NotificationPrefFixtures.followedArtists();
+        setState(() {
+          _preferences = Cf213NotificationPrefFixtures.alertTypeDefaultsOff();
+          _artists = artists;
+          _artistAlerts = {for (final a in artists) a.artistUid: false};
+          _loading = false;
+          _error = null;
+        });
         return;
       }
       setState(() {
@@ -117,6 +141,13 @@ class _ProfileNotificationsArtistsScreenState
       if (!mounted) {
         return;
       }
+      // Com fixtures: mantém o estado local e não reverte (API pode falhar).
+      if (kUseCfTempMocks && CfTempMocks.useNotificationPrefFixtures) {
+        setState(() {
+          _saving = false;
+        });
+        return;
+      }
       setState(() {
         _preferences = previous;
         _saving = false;
@@ -133,11 +164,7 @@ class _ProfileNotificationsArtistsScreenState
   }
 
   String artistSubtitle(ArtistFollow artist, int index) {
-    const samples = [
-      'Posts, cartas, Meet & Greet e membership deste artista.',
-      'Lembretes de Meet, destaques e novidades do fã clube.',
-      'Renovação de membership, promoções e conteúdo exclusivo.',
-    ];
+    final samples = Cf213NotificationPrefFixtures.artistSubtitles;
     return samples[index % samples.length];
   }
 
@@ -172,45 +199,33 @@ class _ProfileNotificationsArtistsScreenState
                           'Tipos de alerta',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: colors.textTertiary,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colors.border),
+                        const SizedBox(height: 4),
+                        for (var i = 0; i < _alertTypes.length; i++)
+                          NotificationPreferenceRow(
+                            title: _alertTypes[i].title,
+                            description: _alertTypes[i].description,
+                            value:
+                                _preferences[_alertTypes[i].keyName] ?? false,
+                            enabled: !(
+                              _saving ||
+                              (quiet && !_alertTypes[i].critical)
+                            ),
+                            showDivider: i > 0,
+                            onChanged: (value) => handleTypeChange(
+                              _alertTypes[i].keyName,
+                              value,
+                            ),
                           ),
-                          child: Column(
-                            children: [
-                              for (var i = 0; i < _alertTypes.length; i++)
-                                NotificationPreferenceRow(
-                                  title: _alertTypes[i].title,
-                                  description: _alertTypes[i].description,
-                                  value:
-                                      _preferences[_alertTypes[i].keyName] ??
-                                      false,
-                                  enabled: !(
-                                    _saving ||
-                                    (quiet && !_alertTypes[i].critical)
-                                  ),
-                                  showDivider: i > 0,
-                                  onChanged: (value) => handleTypeChange(
-                                    _alertTypes[i].keyName,
-                                    value,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 28),
                         Text(
                           'Por artista',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: colors.textTertiary,
                           ),
                         ),
@@ -223,7 +238,7 @@ class _ProfileNotificationsArtistsScreenState
                             color: colors.textSecondary,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         if (_artists.isEmpty)
                           Text(
                             'Siga artistas para personalizar alertas por pessoa.',
@@ -233,34 +248,19 @@ class _ProfileNotificationsArtistsScreenState
                             ),
                           )
                         else
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colors.surface,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: colors.border),
+                          for (var i = 0; i < _artists.length; i++)
+                            NotificationPreferenceRow(
+                              title: _artists[i].artistName,
+                              description: artistSubtitle(_artists[i], i),
+                              value:
+                                  _artistAlerts[_artists[i].artistUid] ?? false,
+                              enabled: !_saving && !quiet,
+                              showDivider: i > 0,
+                              onChanged: (value) => handleArtistChange(
+                                _artists[i].artistUid,
+                                value,
+                              ),
                             ),
-                            child: Column(
-                              children: [
-                                for (var i = 0; i < _artists.length; i++)
-                                  NotificationPreferenceRow(
-                                    title: _artists[i].artistName,
-                                    description: artistSubtitle(
-                                      _artists[i],
-                                      i,
-                                    ),
-                                    value:
-                                        _artistAlerts[_artists[i].artistUid] ??
-                                        true,
-                                    enabled: !_saving && !quiet,
-                                    showDivider: i > 0,
-                                    onChanged: (value) => handleArtistChange(
-                                      _artists[i].artistUid,
-                                      value,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
                       ],
                     ),
             ),

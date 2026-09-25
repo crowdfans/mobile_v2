@@ -13,6 +13,8 @@ class SearchQueryField extends StatelessWidget {
     this.onSubmitted,
     this.onClear,
     this.showClear = false,
+    this.pill = false,
+    this.semanticLabel,
   });
 
   final String hint;
@@ -23,22 +25,30 @@ class SearchQueryField extends StatelessWidget {
   final VoidCallback? onClear;
   final bool showClear;
 
+  /// Cantos tipo pílula (print CF-240).
+  final bool pill;
+
+  /// Rótulo acessível quando o hint visual é só "…".
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return TextField(
+    final radius = BorderRadius.circular(pill ? 999 : 10);
+    final field = TextField(
       controller: controller,
       autofocus: autofocus,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: TextInputAction.search,
       autocorrect: false,
+      cursorColor: colors.primary,
       style: TextStyle(color: colors.textPrimary, fontSize: 16),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: colors.textTertiary),
         filled: true,
-        fillColor: colors.inputBackground,
+        fillColor: pill ? colors.surfaceAlt : colors.inputBackground,
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
@@ -68,14 +78,23 @@ class SearchQueryField extends StatelessWidget {
               )
             : null,
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.inputBorder),
+          borderRadius: radius,
+          borderSide: BorderSide(
+            color: pill
+                ? colors.border.withValues(alpha: 0.7)
+                : colors.inputBorder,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: radius,
           borderSide: BorderSide(color: colors.primary),
         ),
       ),
     );
+    final label = semanticLabel?.trim();
+    if (label == null || label.isEmpty) {
+      return field;
+    }
+    return Semantics(textField: true, label: label, child: field);
   }
 }

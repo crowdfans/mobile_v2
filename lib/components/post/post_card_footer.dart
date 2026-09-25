@@ -46,17 +46,15 @@ class PostCardFooter extends StatelessWidget {
                         BlendMode.srcIn,
                       ),
                     ),
-                    if (post.comments > 0) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        '${post.comments}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: colors.textSecondary,
-                        ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${post.comments}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textSecondary,
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
@@ -78,17 +76,15 @@ class PostCardFooter extends StatelessWidget {
                           BlendMode.srcIn,
                         ),
                       ),
-                      if (post.shares > 0) ...[
-                        const SizedBox(width: 6),
-                        Text(
-                          '${post.shares}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: colors.textSecondary,
-                          ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${post.shares}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: colors.textSecondary,
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ),

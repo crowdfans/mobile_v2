@@ -22,16 +22,17 @@ class WalletHomeBalanceCard extends StatelessWidget {
         border: Border.all(color: colors.border),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
               'assets/images/jam-coin.png',
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               errorBuilder: (_, _, _) => const Icon(
                 Icons.monetization_on,
-                size: 40,
+                size: 44,
                 color: Color(0xFFF5C451),
               ),
             ),
@@ -41,18 +42,20 @@ class WalletHomeBalanceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Seu saldo',
+                    'Jam Coins',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: colors.textSecondary,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     balance,
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 34,
                       fontWeight: FontWeight.w900,
+                      height: 1.05,
                       color: colors.textPrimary,
                     ),
                   ),
@@ -67,13 +70,13 @@ class WalletHomeBalanceCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
+                    horizontal: 16,
+                    vertical: 10,
                   ),
                   child: Text(
                     'Recarregar',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w800,
                       color: colors.background,
                     ),

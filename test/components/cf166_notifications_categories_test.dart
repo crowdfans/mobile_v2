@@ -45,15 +45,30 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Preferências gerais'), findsOneWidget);
+    expect(find.text('Preferências Gerais'), findsOneWidget);
     expect(find.text('Notificações push'), findsOneWidget);
     expect(find.text('Categorias detalhadas'), findsOneWidget);
-    expect(find.text('Interações com você'), findsOneWidget);
+    expect(find.text('Interações com Você'), findsOneWidget);
     expect(find.text('Artistas, Cartas e Fã Clubes'), findsOneWidget);
     expect(find.text('Meet & Greet'), findsOneWidget);
     expect(find.text('Membership e Jam Coins'), findsOneWidget);
     expect(find.byType(NotificationCategoryNavRow), findsNWidgets(4));
     // Controles de interações não ficam no hub.
     expect(find.text('Curtidas em comentários'), findsNothing);
+    expect(
+      find.text(
+        'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
+      ),
+      findsOneWidget,
+    );
+    // Print: sem contorno externo nos grupos (só linhas entre itens).
+    final borderedCards = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).borderRadius != null &&
+          (widget.decoration as BoxDecoration).border != null,
+    );
+    expect(borderedCards, findsNothing);
   });
 }

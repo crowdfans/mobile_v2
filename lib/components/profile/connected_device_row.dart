@@ -37,14 +37,23 @@ class ConnectedDeviceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            session.isPhone ? Icons.smartphone_outlined : Icons.laptop_mac,
-            size: 28,
-            color: colors.textPrimary,
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: colors.surfaceAlt,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              session.isPhone ? Icons.smartphone_outlined : Icons.laptop_mac,
+              size: 22,
+              color: colors.textPrimary,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -73,15 +82,15 @@ class ConnectedDeviceRow extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: AppPalette.purple100,
+                          color: colors.primary,
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Este dispositivo',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
-                            color: colors.primary,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -97,13 +106,13 @@ class ConnectedDeviceRow extends StatelessWidget {
                   session.location,
                   style: TextStyle(fontSize: 13, color: colors.textSecondary),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   session.activity,
                   style: TextStyle(
                     fontSize: 13,
-                    color: session.isCurrent
-                        ? AppPalette.green700
-                        : colors.textTertiary,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
                   ),
                 ),
               ],
@@ -112,11 +121,17 @@ class ConnectedDeviceRow extends StatelessWidget {
           if (onDisconnect != null)
             TextButton(
               onPressed: onDisconnect,
+              style: TextButton.styleFrom(
+                foregroundColor: colors.danger,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               child: Text(
                 'Desconectar',
                 style: TextStyle(
                   color: colors.danger,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),

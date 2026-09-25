@@ -145,7 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void handleOpenMenu() {
-    setState(() => _sidebarVisible = true);
+    setState(() => _sidebarVisible = !_sidebarVisible);
   }
 
   void handleCloseSidebar() {
@@ -179,7 +179,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final sidebarWidth = MediaQuery.sizeOf(context).width * 0.78;
 
-    return Scaffold(
+    return PopScope(
+      canPop: !_sidebarVisible,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _sidebarVisible) {
+          handleCloseSidebar();
+        }
+      },
+      child: Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -293,30 +300,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
           ),
-          if (_sidebarVisible)
-            Positioned.fill(
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: sidebarWidth,
-                    child: SidebarMenu(
-                      visible: true,
-                      asDrawerPanel: true,
-                      artists: _followedArtists,
-                      onClose: handleCloseSidebar,
-                      onPressArtist: handlePressSidebarArtist,
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: handleCloseSidebar,
-                      child: const ColoredBox(color: Color(0x33000000)),
-                    ),
-                  ),
-                ],
+          if (_sidebarVisible) ...[
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: sidebarWidth,
+              child: SidebarMenu(
+                visible: true,
+                asDrawerPanel: true,
+                artists: _followedArtists,
+                onClose: handleCloseSidebar,
+                onPressArtist: handlePressSidebarArtist,
               ),
             ),
+            Positioned(
+              left: sidebarWidth,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              child: GestureDetector(
+                key: const Key('sidebar-barrier'),
+                behavior: HitTestBehavior.opaque,
+                onTap: handleCloseSidebar,
+                child: const ColoredBox(color: Color(0x33000000)),
+              ),
+            ),
+          ],
           ScrollToTopFab(
             visible: _showScrollToTop && !_loading && !_sidebarVisible,
             onPressed: handleScrollToTop,
@@ -338,6 +348,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }

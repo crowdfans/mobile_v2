@@ -20,25 +20,28 @@ class FanClubSortTab extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: Padding(
+        // CF-178: underline IntrinsicWidth = largura do rótulo (print).
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? colors.textPrimary : colors.textSecondary,
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? colors.textPrimary : colors.textSecondary,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              height: 2.5,
-              width: 28,
-              color: selected ? colors.textPrimary : Colors.transparent,
-            ),
-          ],
+              const SizedBox(height: 8),
+              Container(
+                height: 3,
+                color: selected ? colors.textPrimary : Colors.transparent,
+              ),
+            ],
+          ),
         ),
       ),
     );

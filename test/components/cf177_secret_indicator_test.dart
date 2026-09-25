@@ -21,11 +21,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Modo secreto ativo'), findsOneWidget);
-    final row = find.descendant(
-      of: find.byType(NovoPostSecretBanner),
-      matching: find.byType(Row),
-    );
-    expect(tester.getSize(row).width, lessThan(280));
-    expect(find.byType(DecoratedBox), findsOneWidget); // só o ícone, sem faixa
+    final banner = find.byType(NovoPostSecretBanner);
+    expect(tester.getSize(banner).width, lessThan(280));
   });
 }

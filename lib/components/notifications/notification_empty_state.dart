@@ -2,50 +2,29 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter/material.dart';
 
-/// Estado vazio específico de cada aba da central de notificações.
+/// Estado vazio da central de notificações (CF-190).
+///
+/// Print: uma única linha centrada — sem título “Sem novidades…”.
 class NotificationEmptyState extends StatelessWidget {
   const NotificationEmptyState({super.key, required this.tab});
 
   final NotificationTab tab;
 
-  static String messageFor(NotificationTab tab) {
-    return switch (tab) {
-      NotificationTab.all => 'Nenhuma notificação por aqui ainda.',
-      NotificationTab.posts => 'Nenhuma notificação de posts nesta aba.',
-      NotificationTab.clubs => 'Nenhuma notificação de fã-clubes nesta aba.',
-      NotificationTab.meet => 'Nenhum lembrete de Meet & Greet nesta aba.',
-      NotificationTab.fanletter => 'Nenhuma notificação de cartas nesta aba.',
-      NotificationTab.system => 'Nenhuma notificação do sistema nesta aba.',
-    };
-  }
+  static const emptyMessage = 'Nenhuma notificação nesta aba ainda.';
+
+  static String messageFor(NotificationTab tab) => emptyMessage;
 
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final label = NotificationFilterChipLabels.of(tab);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-      child: Column(
-        children: [
-          Semantics(
-            header: true,
-            child: Text(
-              'Sem novidades em $label',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            messageFor(tab),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: colors.textSecondary),
-          ),
-        ],
+      padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+      child: Center(
+        child: Text(
+          emptyMessage,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: colors.textSecondary),
+        ),
       ),
     );
   }

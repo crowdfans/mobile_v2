@@ -130,9 +130,9 @@ class _ProfileNotificationsScreenState
                         Text(
                           'Categorias detalhadas',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: colors.textTertiary,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -145,16 +145,23 @@ class _ProfileNotificationsScreenState
                           ),
                         ),
                         const SizedBox(height: 8),
-                        for (final group in notificationCategoryGroups)
+                        for (var i = 0;
+                            i < notificationCategoryGroups.length;
+                            i++)
                           NotificationCategoryNavRow(
-                            key: Key('notification-category-${group.id}'),
-                            title: group.title,
-                            subtitle: group.navSubtitle!,
+                            key: Key(
+                              'notification-category-${notificationCategoryGroups[i].id}',
+                            ),
+                            title: notificationCategoryGroups[i].title,
+                            subtitle:
+                                notificationCategoryGroups[i].navSubtitle!,
+                            showDivider:
+                                i < notificationCategoryGroups.length - 1,
                             onTap: () => context.push(
-                              group.id == 'artists'
+                              notificationCategoryGroups[i].id == 'artists'
                                   ? Pages.profileNotificationsArtists
                                   : Pages.profileNotificationCategory(
-                                      group.id,
+                                      notificationCategoryGroups[i].id,
                                     ),
                             ),
                           ),

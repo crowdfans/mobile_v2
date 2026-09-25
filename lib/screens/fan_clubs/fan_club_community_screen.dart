@@ -9,6 +9,7 @@ import 'package:crowdfans/components/post/post_share_sheet.dart';
 import 'package:crowdfans/components/profile/me_posts_filter_chip.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
@@ -43,7 +44,7 @@ class FanClubCommunityScreen extends StatefulWidget {
 class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   ArtistFanClub? _club;
   var _posts = <FeedPost>[];
-  var _sortPopular = false;
+  var _sortPopular = true;
   var _feedFilter = _ClubFeedFilter.all;
   var _page = 1;
   var _hasMore = true;
@@ -79,21 +80,43 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     final minutes = created == null
         ? 0
         : DateTime.now().difference(created).inMinutes.clamp(0, 999999);
+    final authorName = (post.authorName ?? '').trim().isNotEmpty
+        ? post.authorName!.trim()
+        : club.artistName;
+    final handleRaw = (post.authorHandle ?? '').trim();
+    final handle = handleRaw.isNotEmpty
+        ? handleRaw
+        : club.artistName.toLowerCase().replaceAll(RegExp(r'\s+'), '');
+    final carousel = post.carouselUris;
+    final image = post.imageUrl ?? (carousel.isNotEmpty ? carousel.first : null);
+    final resolvedType = postTypeFrom(post.type);
+    final type = carousel.length > 1
+        ? PostType.carousel
+        : (resolvedType == PostType.unknown && image != null
+            ? PostType.image
+            : resolvedType);
+    final months = (post.membershipMonthsLabel ?? '').trim();
     return FeedPost(
       id: post.postId,
-      type: postTypeFrom(post.type),
-      author: club.artistName,
+      type: type,
+      author: authorName,
       artistId: club.artistUid,
-      handle: club.artistName.toLowerCase().replaceAll(RegExp(r'\s+'), ''),
+      handle: handle,
       minutesAgo: minutes,
-      avatarUri: _avatarUrl,
+      avatarUri: (post.authorAvatarUri ?? '').trim().isNotEmpty
+          ? post.authorAvatarUri!.trim()
+          : _avatarUrl,
       text: post.content.isEmpty ? (post.title ?? '') : post.content,
-      imageUri: post.imageUrl,
+      imageUri: image,
+      carouselUris: carousel,
       votes: post.likesCount,
       comments: post.commentsCount,
-      shares: 0,
+      shares: post.sharesCount,
       isExclusive: post.isExclusive,
       exclusiveLocked: post.isExclusive,
+      membershipBadges: months.isEmpty
+          ? const []
+          : [MembershipBadgeInfo(label: months)],
     );
   }
 
@@ -528,14 +551,27 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                           4,
                                         ),
                                         child: FanClubExpelledBanner(
-                                          reason: club.viewerExpulsionReason,
+                                          reason: club.viewerExpulsionReason
+                                                  .trim()
+                                                  .isNotEmpty
+                                              ? club.viewerExpulsionReason
+                                              : (kUseCfTempMocks &&
+                                                      CfTempMocks
+                                                          .useFanClubFixtures
+                                                  ? cfTempMockExpulsionReason
+                                                  : club.viewerExpulsionReason),
                                           onDefend: () {
                                             context.push(
                                               Pages.fanClubDefendReturnOf(
                                                 artistId: widget.artistId,
                                                 name: club.artistName,
                                                 expulsionReason:
-                                                    club.viewerExpulsionReason,
+                                                    club.viewerExpulsionReason
+                                                            .trim()
+                                                            .isNotEmpty
+                                                        ? club
+                                                            .viewerExpulsionReason
+                                                        : cfTempMockExpulsionReason,
                                               ),
                                             );
                                           },
@@ -607,6 +643,17 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                         ],
                                       ),
                                     ),
+                                    // CF-178: divisor entre ordenação e chips.
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: Divider(
+                                        height: 1,
+                                        thickness: 1,
+                                        color: colors.border,
+                                      ),
+                                    ),
                                   ],
                                 );
                               }
@@ -614,7 +661,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                 return Padding(
                                   padding: const EdgeInsets.fromLTRB(
                                     16,
-                                    4,
+                                    10,
                                     16,
                                     8,
                                   ),

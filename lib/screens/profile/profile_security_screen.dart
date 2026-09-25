@@ -79,7 +79,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                 children: [
                   Text(
-                    'Proteção da conta',
+                    'Proteção da Conta',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,

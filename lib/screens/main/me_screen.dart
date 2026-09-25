@@ -320,8 +320,8 @@ class _MeScreenState extends ConsumerState<MeScreen> {
     if (_artistTab == 'cartas') {
       if (_letters.isEmpty) {
         return const ProfileState(
-          title: 'Fan letters',
-          message: 'Nenhuma fan letter ainda.',
+          title: 'Cartas',
+          message: 'Nenhuma carta ainda.',
         );
       }
       return Column(

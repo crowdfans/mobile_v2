@@ -38,8 +38,9 @@ class FanScoreHowItWorksCard extends StatelessWidget {
             colors.textPrimary,
           ),
           FanScoreHowItWorksCardTone.scoring => (
-            colors.surface,
-            AppPalette.orange200,
+            // Print CF-202: card creme/neutro, sem borda laranja.
+            AppPalette.orange50.withValues(alpha: 0.35),
+            colors.border,
             colors.textPrimary,
             colors.textSecondary,
           ),

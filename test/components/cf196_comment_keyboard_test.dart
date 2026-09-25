@@ -11,27 +11,33 @@ void main() {
       var cancelled = false;
 
       await tester.pumpWidget(
-        MediaQuery(
-          data: const MediaQueryData(viewInsets: EdgeInsets.only(bottom: 280)),
-          child: MaterialApp(
-            theme: buildCrowdFansTheme(Brightness.light),
-            home: Scaffold(
-              body: Align(
-                alignment: Alignment.bottomCenter,
-                child: CommentComposer(
-                  draft: '',
-                  replyAuthor: 'Rafa Nogueira',
-                  replyHandle: 'rafanogueira',
-                  editing: false,
-                  selectedGifUrl: null,
-                  submitting: false,
-                  onDraftChanged: (_) {},
-                  onCancelEdit: () {},
-                  onCancelReply: () => cancelled = true,
-                  onRemoveGif: () {},
-                  onPickGif: () {},
-                  onSubmit: () {},
-                ),
+        MaterialApp(
+          theme: buildCrowdFansTheme(Brightness.light),
+          builder: (context, child) {
+            return MediaQuery(
+              data: const MediaQueryData(
+                viewInsets: EdgeInsets.only(bottom: 280),
+              ),
+              child: child!,
+            );
+          },
+          home: Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: CommentComposer(
+                draft: '',
+                replyAuthor: 'Rafa Nogueira',
+                replyHandle: 'rafanogueira',
+                editing: false,
+                selectedGifUrl: null,
+                submitting: false,
+                onDraftChanged: (_) {},
+                onCancelEdit: () {},
+                onCancelReply: () => cancelled = true,
+                onRemoveGif: () {},
+                onPickGif: () {},
+                onSubmit: () {},
               ),
             ),
           ),
@@ -49,7 +55,7 @@ void main() {
       final padding = tester.widget<AnimatedPadding>(
         find.byType(AnimatedPadding),
       );
-      expect(padding.padding.bottom, 280);
+      expect((padding.padding as EdgeInsets).bottom, 280);
 
       await tester.tap(find.byTooltip('Cancelar resposta'));
       await tester.pump();

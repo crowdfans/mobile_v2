@@ -1,23 +1,23 @@
-import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
+import 'package:crowdfans/components/profile/artist_profile_cover_cta.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CTA do cover é Seguir/Seguindo — nunca Membership/Jam Coins', () {
+  test('CF-185: cover CTA Seguir / Membership♪ / Membership✓', () {
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: false, busy: false),
-      '+ Seguir',
+      artistProfileCoverCtaKind(following: false, subscribed: false),
+      ArtistProfileCoverCtaKind.follow,
     );
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: true, busy: false),
-      'Seguindo',
+      artistProfileCoverCtaKind(following: true, subscribed: false),
+      ArtistProfileCoverCtaKind.membershipSubscribe,
     );
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: false, busy: true),
-      'Aguarde...',
+      artistProfileCoverCtaKind(following: true, subscribed: true),
+      ArtistProfileCoverCtaKind.membershipActive,
     );
     expect(
-      ArtistProfilePublicCover.followCtaLabel(following: true, busy: false),
-      isNot(contains('Membership')),
+      artistProfileCoverCtaKind(following: false, subscribed: true),
+      ArtistProfileCoverCtaKind.membershipActive,
     );
   });
 }
