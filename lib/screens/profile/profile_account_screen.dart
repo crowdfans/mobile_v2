@@ -127,6 +127,10 @@ class _ProfileAccountScreenState extends ConsumerState<ProfileAccountScreen> {
 
   Widget _body(AppColors colors, Profile profile) {
     final username = _usernameOf(profile);
+    Widget rowDivider() => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Divider(height: 1, thickness: 1, color: colors.border),
+        );
     return ListView(
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 34),
       children: [
@@ -135,15 +139,13 @@ class _ProfileAccountScreenState extends ConsumerState<ProfileAccountScreen> {
           label: 'Nome',
           value: profile.name,
         ),
+        rowDivider(),
         AccountSummaryRow(
           key: const Key('account-summary-username'),
           label: 'Nome de usuário',
           value: username,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Divider(height: 1, thickness: 1, color: colors.border),
-        ),
+        rowDivider(),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
@@ -159,15 +161,17 @@ class _ProfileAccountScreenState extends ConsumerState<ProfileAccountScreen> {
         AccountQuickSettingRow(
           key: const Key('account-quick-bio'),
           title: 'Editar bio',
-          subtitle: 'Atualize sua descrição de perfil.',
+          subtitle: 'Atualize sua descrição de perfil',
           onTap: () => context.push(Pages.profileEditBio),
         ),
+        rowDivider(),
         AccountQuickSettingRow(
           key: const Key('account-quick-photo'),
           title: 'Foto de perfil',
-          subtitle: 'Trocar imagem da conta.',
+          subtitle: 'Trocar imagem da conta',
           onTap: () => context.push(Pages.profilePhoto),
         ),
+        rowDivider(),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

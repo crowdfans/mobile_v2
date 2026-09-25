@@ -1326,15 +1326,45 @@ abstract final class Cf181CartasMock {
 /// Liga pacotes demo CF-170 (pagamento print 240 / R$ 19,90).
 const bool kUseCf170WalletPackMocks = true;
 
-/// Pacote do print CF-170.
+/// Pacotes demo CF-169/170 (print de recarga; 240 = CF-170 pagamento).
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
+      JamCoinPack(
+        id: 'cf169-120',
+        coins: 120,
+        priceCents: 990,
+        label: '120 JC',
+      ),
       JamCoinPack(
         id: 'cf170-240',
         coins: 240,
         priceCents: 1990,
         label: '200 JC + 40 bônus',
+      ),
+      JamCoinPack(
+        id: 'cf169-600',
+        coins: 600,
+        priceCents: 4490,
+        label: '500 JC + 100 bônus',
+      ),
+      JamCoinPack(
+        id: 'cf169-1300',
+        coins: 1300,
+        priceCents: 8990,
+        label: '1.000 JC + 300 bônus',
+      ),
+      JamCoinPack(
+        id: 'cf169-2100',
+        coins: 2100,
+        priceCents: 12990,
+        label: '1.600 JC + 500 bônus',
+      ),
+      JamCoinPack(
+        id: 'cf169-2800',
+        coins: 2800,
+        priceCents: 15990,
+        label: '2.000 JC + 800 bônus',
       ),
     ];
   }
