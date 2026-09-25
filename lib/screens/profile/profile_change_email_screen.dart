@@ -149,6 +149,8 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                       label: 'Senha atual',
                       hint: 'Digite sua senha atual',
                       obscureText: true,
+                      // Print CF-165: campo sem ícone de olho.
+                      showObscureToggle: false,
                       onChanged: (value) =>
                           setState(() => _currentPassword = value),
                     ),

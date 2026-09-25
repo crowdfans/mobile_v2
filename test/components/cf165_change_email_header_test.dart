@@ -49,5 +49,8 @@ void main() {
       'Repita o novo e-mail',
     ]);
     expect(fields[0].obscureText, isTrue);
+    expect(fields[0].showObscureToggle, isFalse);
+    expect(find.byIcon(Icons.visibility), findsNothing);
+    expect(find.byIcon(Icons.visibility_off), findsNothing);
   });
 }
