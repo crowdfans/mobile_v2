@@ -31,11 +31,22 @@ class ArtistProfileLetterTile extends StatelessWidget {
     return handle.isEmpty ? 'Fã' : handle;
   }
 
+  /// Print CF-181: autoria legível sobre capas claras/escuras, sem véu escuro.
+  Color authorForeground() {
+    final hasImage = (letter.imageUri ?? '').trim().isNotEmpty;
+    if (hasImage) {
+      return Colors.white;
+    }
+    final luminance = _preset.color.computeLuminance();
+    return luminance > 0.45 ? const Color(0xFF1C1C1E) : Colors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasImage = (letter.imageUri ?? '').trim().isNotEmpty;
     final author = authorLabel();
     final pos = position;
+    final fg = authorForeground();
     return Semantics(
       label: [
         if (pos != null && pos > 0) 'Carta $pos',
@@ -69,20 +80,21 @@ class ArtistProfileLetterTile extends StatelessWidget {
                       strokes: const [],
                       compact: true,
                     ),
-              // CF-181 redo: autoria no topo com avatar (print grade).
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x99000000),
-                      Color(0x00000000),
-                    ],
-                    stops: [0, 0.35],
+              // Só um véu leve em fotos — print das cartas coloridas não usa gradient.
+              if (hasImage)
+                const DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0x66000000),
+                        Color(0x00000000),
+                      ],
+                      stops: [0, 0.28],
+                    ),
                   ),
                 ),
-              ),
               Positioned(
                 top: 8,
                 left: 8,
@@ -96,10 +108,18 @@ class ArtistProfileLetterTile extends StatelessWidget {
                         author,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: fg,
+                          shadows: hasImage
+                              ? const [
+                                  Shadow(
+                                    blurRadius: 4,
+                                    color: Color(0x66000000),
+                                  ),
+                                ]
+                              : null,
                         ),
                       ),
                     ),
@@ -110,15 +130,15 @@ class ArtistProfileLetterTile extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.55),
+                          color: fg.withValues(alpha: 0.14),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           '#$pos',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                            color: fg,
                           ),
                         ),
                       ),
