@@ -37,7 +37,7 @@ class FanClubSortTab extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Container(
-                height: 2,
+                height: 3,
                 color: selected ? colors.textPrimary : Colors.transparent,
               ),
             ],

@@ -3,6 +3,7 @@ import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_recharge_pack_tile.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -47,18 +48,29 @@ class _ProfileWalletRechargeScreenState
       if (!mounted) {
         return;
       }
+      final resolved =
+          packs.isEmpty && kUseCfTempMocks && kUseCf170WalletPackMocks
+          ? Cf170WalletPackMock.packs()
+          : packs;
       setState(() {
-        _packs = packs;
-        _selectedId = packs.isEmpty ? null : packs.first.id;
+        _packs = resolved;
+        _selectedId = resolved.isEmpty ? null : resolved.first.id;
         _loading = false;
       });
     } catch (_) {
       if (!mounted) {
         return;
       }
+      final fallback = kUseCfTempMocks && kUseCf170WalletPackMocks
+          ? Cf170WalletPackMock.packs()
+          : <JamCoinPack>[];
       setState(() {
+        _packs = fallback;
+        _selectedId = fallback.isEmpty ? null : fallback.first.id;
         _loading = false;
-        _error = 'Não foi possível carregar os pacotes.';
+        _error = fallback.isEmpty
+            ? 'Não foi possível carregar os pacotes.'
+            : null;
       });
     }
   }

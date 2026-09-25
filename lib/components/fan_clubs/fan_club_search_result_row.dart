@@ -28,11 +28,11 @@ class FanClubSearchResultRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         onTap: onPressed,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             children: [
               PostAvatar(url: avatarUrl, size: 36),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   name,

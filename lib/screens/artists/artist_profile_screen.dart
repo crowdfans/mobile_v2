@@ -258,11 +258,20 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       if (!mounted) {
         return;
       }
+      // CF-181: grade do print quando API vazia — sem mascarar erro de rede.
+      var letters = lettersResult.letters;
+      final lettersError = lettersResult.error;
+      if (!lettersError &&
+          letters.isEmpty &&
+          kUseCfTempMocks &&
+          kUseCf181CartasMocks) {
+        letters = Cf181CartasMock.letters(artistId: widget.artistId);
+      }
       setState(() {
         _profile = profile;
         _posts = posts;
-        _letters = lettersResult.letters;
-        _lettersError = lettersResult.error;
+        _letters = letters;
+        _lettersError = lettersError;
         _subscribed = subscribed;
         _subscriptionResolved = true;
         _following = isFollowing;
@@ -475,8 +484,14 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     final name = displayName();
 
     if (_tab == 'cartas') {
+      if (_lettersError) {
+        return const ProfileState(
+          title: 'Cartas',
+          message: 'Não foi possível carregar as cartas.',
+        );
+      }
       if (_letters.isEmpty) {
-        // CF-181 redo: vazio em PT (print); sem título EN "Fan letters".
+        // CF-181: vazio em PT (print); sem título EN "Fan letters".
         return const ProfileState(
           title: 'Cartas',
           message: 'Nenhuma carta ainda.',

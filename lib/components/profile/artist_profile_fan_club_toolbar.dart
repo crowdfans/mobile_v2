@@ -40,14 +40,14 @@ class ArtistProfileFanClubToolbar extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             children: [
               FanClubSortTab(
+                label: 'Popularidade',
+                selected: sortPopular,
+                onPressed: () => onSortPopular(true),
+              ),
+              FanClubSortTab(
                 label: 'Novos',
                 selected: !sortPopular,
                 onPressed: () => onSortPopular(false),
-              ),
-              FanClubSortTab(
-                label: 'Populares',
-                selected: sortPopular,
-                onPressed: () => onSortPopular(true),
               ),
             ],
           ),

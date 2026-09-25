@@ -24,8 +24,9 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.text('Popularidade'), findsOneWidget);
       expect(find.text('Novos'), findsOneWidget);
-      expect(find.text('Populares'), findsOneWidget);
+      expect(find.text('Populares'), findsNothing);
       expect(find.byType(MePostsFilterChip), findsNWidgets(3));
       expect(find.byType(Divider), findsOneWidget);
       expect(

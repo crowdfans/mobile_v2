@@ -51,5 +51,10 @@ void main() {
     expect(find.text('Compartilhar'), findsNothing);
     expect(find.byIcon(Icons.ios_share), findsOneWidget);
     expect(find.byType(PostShareActionTile), findsNWidgets(3));
+    // Distinto do menu de gerenciamento do post.
+    expect(find.text('Denunciar'), findsNothing);
+    expect(find.text('Reportar'), findsNothing);
+    expect(find.text('Excluir'), findsNothing);
+    expect(find.text('Editar'), findsNothing);
   });
 }
