@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Critérios visuais da nova senha na tela de segurança.
+/// Critérios da nova senha — apresentação da referência CF-164 (sem caixa).
 class PasswordRequirementsCard extends StatelessWidget {
   const PasswordRequirementsCard({
     super.key,
@@ -15,95 +15,42 @@ class PasswordRequirementsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    // Ordem e rótulos do print YouTrack (CF-164). Validação real permanece no form.
     final checks = [
       (ok: password.length >= 8, label: 'Pelo menos 8 caracteres'),
-      (ok: RegExp(r'[A-Z]').hasMatch(password), label: 'Uma letra maiúscula'),
-      (ok: RegExp(r'[a-z]').hasMatch(password), label: 'Uma letra minúscula'),
-      (ok: RegExp(r'\d').hasMatch(password), label: 'Um número'),
       (
-        ok: RegExp(r'[^A-Za-z0-9]').hasMatch(password),
-        label: 'Um símbolo (recomendado)',
+        ok: RegExp(r'[A-Z]').hasMatch(password),
+        label: 'Pelo menos 1 letra maiúscula',
       ),
+      (ok: RegExp(r'\d').hasMatch(password), label: 'Pelo menos 1 número'),
       (
         ok: password.isNotEmpty && password == confirmPassword,
-        label: 'Confirmação igual',
+        label: 'Confirmação igual à nova senha',
       ),
     ];
-    final score = [
-      password.length >= 8,
-      RegExp(r'[A-Z]').hasMatch(password),
-      RegExp(r'[a-z]').hasMatch(password),
-      RegExp(r'\d').hasMatch(password),
-      RegExp(r'[^A-Za-z0-9]').hasMatch(password),
-    ].where((ok) => ok).length;
-    final strength = password.isEmpty
-        ? (label: '', color: colors.border)
-        : score <= 2
-        ? (label: 'Fraca', color: colors.danger)
-        : score <= 4
-        ? (label: 'Média', color: const Color(0xFFD4A017))
-        : (label: 'Forte', color: AppPalette.green700);
 
-    // Sem caixa contornada — critérios abaixo dos campos (CF-164).
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Critérios da nova senha',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
-              ),
-            ),
-            if (strength.label.isNotEmpty)
-              Text(
-                strength.label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: strength.color,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(999),
-          child: LinearProgressIndicator(
-            value: score / 5,
-            minHeight: 6,
-            backgroundColor: colors.surfaceAlt,
-            color: strength.color,
+        Text(
+          'Critérios da nova senha',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: colors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         for (final item in checks)
           Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: item.ok ? AppPalette.green700 : colors.border,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  item.label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: item.ok ? colors.textPrimary : colors.textTertiary,
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Text(
+              '·  ${item.label}',
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.35,
+                color: item.ok ? colors.textPrimary : colors.textSecondary,
+              ),
             ),
           ),
       ],
