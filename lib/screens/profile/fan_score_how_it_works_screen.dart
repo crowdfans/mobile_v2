@@ -52,8 +52,9 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
                     tone: FanScoreHowItWorksCardTone.purple,
                     title: 'Um score diferente para cada artista',
                     body:
-                        'O FanScore mede sua participação com cada artista que você acompanha. '
-                        'A pontuação é calculada separadamente por artista e reinicia no começo de cada mês.',
+                        'Seu FanScore mede o quanto você participa dentro da plataforma '
+                        'para cada artista que segue. Ele é calculado separadamente por '
+                        'artista e reinicia no começo de cada mês.',
                     footer: cycleFooter(),
                   ),
                   const SizedBox(height: 12),
@@ -61,9 +62,11 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
                     tone: FanScoreHowItWorksCardTone.neutral,
                     title: 'Ranking entre fãs',
                     body:
-                        'Além da pontuação individual, mostramos sua posição em relação aos outros fãs do mesmo artista. '
-                        'Se você estiver entre os 100 primeiros, aparece um badge. '
-                        'Ficar no Top 10 dá prioridade na fila do meet and greet virtual.',
+                        'Além do FanScore individual, cada artista mostra sua posição '
+                        'entre outros fãs. A badge aparece só quando você está no top 100 '
+                        'daquele artista. Estar entre os top 10 garante prioridade de fila '
+                        'para entrar no meet and greet virtual quando essa experiência '
+                        'estiver disponível.',
                   ),
                   const SizedBox(height: 12),
                   const FanScoreHowItWorksCard(
@@ -71,16 +74,18 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
                     eyebrow: 'Benefício importante',
                     title: 'Top 10 tem prioridade na fila do meet and greet',
                     body:
-                        'Manter-se no Top 10 de um artista garante prioridade nas filas de meet and greet virtual '
-                        'daquele artista. O benefício depende do ranking do ciclo vigente.',
+                        'Se você ficar entre os 10 maiores fãs de um artista, ganha '
+                        'prioridade de fila para entrar no meet and greet virtual quando '
+                        'essa experiência estiver disponível.',
                   ),
                   const SizedBox(height: 12),
                   const FanScoreHowItWorksCard(
                     tone: FanScoreHowItWorksCardTone.scoring,
                     title: 'Como a pontuação foi pensada',
                     body:
-                        'Membership e doações pesam mais na pontuação. '
-                        'O status Ultimate Fã é raro e costuma exigir atividade quase diária ao longo do mês.',
+                        'Membership e doações carregam mais peso. O Ultimate Fã precisa '
+                        'ser raro e normalmente só aparece para quem mantém atividade '
+                        'quase diária ao longo do mês.',
                   ),
                   const SizedBox(height: 20),
                   // Print CF-202: seção seguinte abaixo dos cards.
