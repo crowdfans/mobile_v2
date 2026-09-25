@@ -42,7 +42,7 @@ class FanClubModerationWarningBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Aviso de moderação',
+                      'Você recebeu um aviso neste fã clube',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -52,7 +52,7 @@ class FanClubModerationWarningBanner extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       reason.trim().isEmpty
-                          ? 'Você recebeu um aviso da moderação deste fã-clube.'
+                          ? 'Você recebeu um aviso da moderação deste fã clube.'
                           : reason.trim(),
                       style: TextStyle(
                         fontSize: 13,
@@ -63,8 +63,8 @@ class FanClubModerationWarningBanner extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       chances == 1
-                          ? '1 chance restante antes de novas restrições.'
-                          : '$chances chances restantes antes de novas restrições.',
+                          ? 'Você ainda tem 1 chance para ajustar seu comportamento.'
+                          : 'Você ainda tem $chances chances para ajustar seu comportamento.',
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,

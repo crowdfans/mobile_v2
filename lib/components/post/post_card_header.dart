@@ -31,11 +31,19 @@ class PostCardHeader extends StatelessWidget {
   final VoidCallback? onPressOpenPostOptions;
 
   String formatDisplayHandle(String handle) {
-    final cleaned = handle.trim().replaceFirst(RegExp(r'^@'), '');
+    final cleaned = handle.trim();
     if (cleaned.isEmpty) {
       return '';
     }
-    final withoutRole = cleaned.replaceFirst(RegExp(r'^(artist|fan)/', caseSensitive: false), '');
+    // Fã-clube (CF-222): print mostra `fan/username`, não `@username`.
+    if (cleaned.toLowerCase().startsWith('fan/')) {
+      return cleaned;
+    }
+    final withoutAt = cleaned.replaceFirst(RegExp(r'^@'), '');
+    final withoutRole = withoutAt.replaceFirst(
+      RegExp(r'^artist/', caseSensitive: false),
+      '',
+    );
     return '@$withoutRole';
   }
 
