@@ -8,14 +8,19 @@
 // CF-178: feed Postagens dos Fã Clubes.
 // CF-181: grade Cartas no perfil do artista.
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
+// CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
+// CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
 // Forçar vazio: `kCf190MockEmpty = true`
 // Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
+import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_score.dart';
+import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
@@ -39,7 +44,7 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100 Engajados / Top 500 (CF-193, CF-189).
+  /// Ranking Top 100 Engajados / Top 500 (CF-193, CF-189, CF-241).
   static const useRankingFixtures = true;
 
   /// FanScore insights / how-it-works demos (CF-201, CF-202).
@@ -56,6 +61,18 @@ abstract final class CfTempMocks {
 
   /// Fã-clube perfil / moderadores / regras / expulsão (CF-200, CF-222…230).
   static const useFanClubFixtures = true;
+
+  /// Home feed vídeo / carrossel / exclusivo (CF-232…235).
+  static const useHomeFeedFixtures = true;
+
+  /// Busca artistas (CF-240).
+  static const useSearchArtistsFixtures = true;
+
+  /// Seletor de fã-clube no novo post (CF-237).
+  static const useFanClubSelectorFixtures = true;
+
+  /// Perfil artista — Exclusivo liberado (CF-239).
+  static const useArtistExclusiveFixtures = true;
 
   /// Painel de moderação — fila do print CF-199 (2 / 2 / 1).
   static const useModerationPanelFixtures = true;
@@ -232,7 +249,7 @@ abstract final class CfTempMocks {
   }
 }
 
-/// Linhas de ranking para demo quando `rankArtists` vem vazio (CF-193 / CF-189).
+/// Linhas de ranking para demo quando `rankArtists` vem vazio (CF-193 / CF-189 / CF-241).
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
@@ -241,9 +258,9 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   final active = kind == 'active';
   final samples = <ArtistSearchItem>[
     ArtistSearchItem(
-      id: 'mock-rank-1',
-      name: 'Gus Art',
-      handle: '@gusart',
+      id: 'mock-fc-ludmilla',
+      name: 'Ludmilla',
+      handle: '@ludmilla',
       avatarUri: '',
       memberCount: engaged ? 4 : 512000,
       membersLabel: engaged ? '4 interações (7d)' : '512 mil membros',
@@ -251,101 +268,101 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
           ? '4 interações (7d)'
           : (active ? '18 posts (7d)' : '512 mil membros'),
       rank: 1,
-      trend: 'neutral',
-      rankDelta: 0,
-      previousRank: 1,
-      weeksInRanking: 12,
+      trend: 'up',
+      rankDelta: 1,
+      previousRank: 2,
+      weeksInRanking: 11,
       peakRank: 1,
     ),
     ArtistSearchItem(
-      id: 'mock-rank-2',
-      name: 'Mayra Art',
-      handle: '@mayraart',
+      id: 'mock-fc-anitta',
+      name: 'Anitta',
+      handle: '@anitta',
       avatarUri: '',
-      memberCount: engaged ? 0 : 420000,
-      membersLabel: engaged ? '0 interações (7d)' : '420 mil membros',
+      memberCount: engaged ? 0 : 487000,
+      membersLabel: engaged ? '0 interações (7d)' : '487 mil membros',
       rankingValueLabel: engaged
           ? '0 interações (7d)'
-          : (active ? '14 posts (7d)' : '420 mil membros'),
+          : (active ? '14 posts (7d)' : '487 mil membros'),
       rank: 2,
+      trend: 'down',
+      rankDelta: 1,
+      previousRank: 1,
+      weeksInRanking: 9,
+      peakRank: 1,
+    ),
+    ArtistSearchItem(
+      id: 'mock-fc-mayra',
+      name: 'Mayra',
+      handle: '@mayra',
+      avatarUri: '',
+      memberCount: engaged ? 12 : 368000,
+      membersLabel: engaged ? '12 interações (7d)' : '368 mil membros',
+      rankingValueLabel: engaged
+          ? '12 interações (7d)'
+          : (active ? '11 posts (7d)' : '368 mil membros'),
+      rank: 3,
       trend: 'up',
       rankDelta: 2,
-      previousRank: 4,
+      previousRank: 5,
       weeksInRanking: 8,
       peakRank: 2,
     ),
     ArtistSearchItem(
-      id: 'mock-rank-3',
-      name: 'Luna Beat',
-      handle: '@lunabeat',
+      id: 'mock-fc-uelo',
+      name: 'Banda Uelo',
+      handle: '@bandauelo',
       avatarUri: '',
-      memberCount: engaged ? 12 : 318000,
-      membersLabel: engaged ? '12 interações (7d)' : '318 mil membros',
-      rankingValueLabel: engaged
-          ? '12 interações (7d)'
-          : (active ? '11 posts (7d)' : '318 mil membros'),
-      rank: 3,
-      trend: 'down',
-      rankDelta: 1,
-      previousRank: 2,
-      weeksInRanking: 5,
-      peakRank: 1,
-    ),
-    ArtistSearchItem(
-      id: 'mock-rank-4',
-      name: 'Kai Pulse',
-      handle: '@kaipulse',
-      avatarUri: '',
-      memberCount: engaged ? 7 : 275000,
-      membersLabel: engaged ? '7 interações (7d)' : '275 mil membros',
+      memberCount: engaged ? 7 : 228000,
+      membersLabel: engaged ? '7 interações (7d)' : '228 mil membros',
       rankingValueLabel: engaged
           ? '7 interações (7d)'
-          : (active ? '9 posts (7d)' : '275 mil membros'),
+          : (active ? '9 posts (7d)' : '228 mil membros'),
       rank: 4,
       trend: 'neutral',
       rankDelta: 0,
-      previousRank: 4,
-      weeksInRanking: 3,
-      peakRank: 4,
-    ),
-    ArtistSearchItem(
-      id: 'mock-rank-5',
-      name: 'Nora Wave',
-      handle: '@norawave',
-      avatarUri: '',
-      memberCount: engaged ? 3 : 198000,
-      membersLabel: engaged ? '3 interações (7d)' : '198 mil membros',
-      rankingValueLabel: engaged
-          ? '3 interações (7d)'
-          : (active ? '7 posts (7d)' : '198 mil membros'),
-      rank: 5,
-      trend: 'up',
-      rankDelta: 3,
-      previousRank: 8,
-      weeksInRanking: 2,
-      peakRank: 5,
-    ),
-    ArtistSearchItem(
-      id: 'mock-rank-6',
-      name: 'Theo Sound',
-      handle: '@theosound',
-      avatarUri: '',
-      memberCount: engaged ? 1 : 156000,
-      membersLabel: engaged ? '1 interação (7d)' : '156 mil membros',
-      rankingValueLabel: engaged
-          ? '1 interação (7d)'
-          : (active ? '5 posts (7d)' : '156 mil membros'),
-      rank: 6,
-      trend: 'down',
-      rankDelta: 2,
       previousRank: 4,
       weeksInRanking: 6,
       peakRank: 3,
     ),
     ArtistSearchItem(
-      id: 'mock-rank-7',
-      name: 'Vera Notes',
-      handle: '@veranotes',
+      id: 'mock-fc-carol',
+      name: 'Carol Biazin',
+      handle: '@carolbiazin',
+      avatarUri: '',
+      memberCount: engaged ? 3 : 196000,
+      membersLabel: engaged ? '3 interações (7d)' : '196 mil membros',
+      rankingValueLabel: engaged
+          ? '3 interações (7d)'
+          : (active ? '7 posts (7d)' : '196 mil membros'),
+      rank: 5,
+      trend: 'up',
+      rankDelta: 3,
+      previousRank: 8,
+      weeksInRanking: 4,
+      peakRank: 5,
+    ),
+    ArtistSearchItem(
+      id: 'mock-fc-enzo',
+      name: 'Enzo Lima',
+      handle: '@enzolima',
+      avatarUri: '',
+      memberCount: engaged ? 1 : 11841,
+      membersLabel: engaged ? '1 interação (7d)' : '11.841 membros',
+      rankingValueLabel: engaged
+          ? '1 interação (7d)'
+          : (active ? '5 posts (7d)' : '11.841 membros'),
+      rank: 6,
+      trend: 'down',
+      rankDelta: 2,
+      previousRank: 4,
+      weeksInRanking: 3,
+      peakRank: 4,
+    ),
+    ArtistSearchItem(
+      id: 'mock-fc-marinhos',
+      name: 'Marinhos',
+      handle: '@marinhos',
       avatarUri: '',
       memberCount: engaged ? 9 : 142000,
       membersLabel: engaged ? '9 interações (7d)' : '142 mil membros',
@@ -356,13 +373,13 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       trend: 'neutral',
       rankDelta: 0,
       previousRank: 7,
-      weeksInRanking: 4,
+      weeksInRanking: 2,
       peakRank: 7,
     ),
     ArtistSearchItem(
-      id: 'mock-rank-8',
-      name: 'Omar Stage',
-      handle: '@omarstage',
+      id: 'mock-fc-kheper',
+      name: 'Kheper',
+      handle: '@kheperrrr',
       avatarUri: '',
       memberCount: engaged ? 2 : 121000,
       membersLabel: engaged ? '2 interações (7d)' : '121 mil membros',
@@ -383,9 +400,13 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   return samples.take(limit).toList(growable: false);
 }
 
-/// Motivo de expulsão para Defender retorno (CF-200) quando a API não manda.
+/// Motivo de expulsão para Defender retorno (CF-200 / CF-229) quando a API não manda.
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
+
+/// Motivo de aviso de moderação (CF-230).
+const cfTempMockStrikeReason =
+    'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
 
 /// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
 abstract final class Cf199ModerationPanelFixtures {
@@ -810,6 +831,346 @@ abstract final class Cf195HomeCommentsMock {
       ),
     ];
   }
+}
+
+// --- CF-222…230 fã-clube / CF-232…241 feed-busca ---
+
+const _cfCarouselBeach =
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
+const _cfCarouselDeer =
+    'https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=800&q=80';
+const _cfCarouselCity =
+    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80';
+const _cfCarouselSnake =
+    'https://images.unsplash.com/photo-1531386450450-969f935bd522?auto=format&fit=crop&w=800&q=80';
+const _cfCarouselMerch =
+    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80';
+
+enum CfFanClubFixtureKind { community, expelled, warning }
+
+/// Escolhe variante do print pelo artistUid (Felipe→expulsão, Laís→aviso, senão Enzo).
+CfFanClubFixtureKind cfTempMockFanClubKind(String artistUid) {
+  final id = artistUid.trim().toLowerCase();
+  if (id.contains('felipe') ||
+      id.contains('rhy') ||
+      id.contains('expuls') ||
+      id == 'cf229' ||
+      id.endsWith('-expelled')) {
+    return CfFanClubFixtureKind.expelled;
+  }
+  if (id.contains('lais') ||
+      id.contains('laís') ||
+      id.contains('strike') ||
+      id == 'cf230' ||
+      id.endsWith('-warning')) {
+    return CfFanClubFixtureKind.warning;
+  }
+  return CfFanClubFixtureKind.community;
+}
+
+List<FanClubModerator> cfTempMockFanClubModerators() {
+  return const [
+    FanClubModerator(
+      userUid: 'cf-mod-aline',
+      handle: 'alineduarte',
+      displayName: 'Aline Duarte',
+      photoUrl: '',
+      role: 'moderator',
+    ),
+    FanClubModerator(
+      userUid: 'cf-mod-maria',
+      handle: 'mariaeduarda',
+      displayName: 'Maria Eduarda',
+      photoUrl: '',
+      role: 'moderator',
+    ),
+    FanClubModerator(
+      userUid: 'cf-mod-lari',
+      handle: 'larirocha',
+      displayName: 'Lari Rocha',
+      photoUrl: '',
+      role: 'moderator',
+    ),
+  ];
+}
+
+/// Feed do fã-clube alinhado aos prints CF-222 / 229 / 230.
+ArtistFanClubFeed cfTempMockArtistFanClubFeed(
+  String artistUid, {
+  int page = 1,
+}) {
+  if (page > 1) {
+    final kind = cfTempMockFanClubKind(artistUid);
+    final club = _cfTempMockFanClubMeta(artistUid, kind);
+    return ArtistFanClubFeed(fanClub: club, posts: const []);
+  }
+  final kind = cfTempMockFanClubKind(artistUid);
+  final club = _cfTempMockFanClubMeta(artistUid, kind);
+  final posts = switch (kind) {
+    CfFanClubFixtureKind.community => [
+      FanClubFeedPost(
+        postId: 'cf222-aline-merch',
+        content:
+            'Minha coleção de merch agora ficou boa o bastante pra render um post inteiro.',
+        createdAt: DateTime.now()
+            .subtract(const Duration(minutes: 18))
+            .toIso8601String(),
+        type: 'carousel',
+        imageUrl: _cfCarouselSnake,
+        carouselUris: const [_cfCarouselSnake, _cfCarouselMerch],
+        likesCount: 42,
+        commentsCount: 8,
+        sharesCount: 3,
+        authorName: 'Aline Duarte',
+        authorHandle: 'fan/alineduarte',
+        authorAvatarUri: '',
+        membershipMonthsLabel: '3',
+      ),
+    ],
+    CfFanClubFixtureKind.expelled => const <FanClubFeedPost>[],
+    CfFanClubFixtureKind.warning => [
+      FanClubFeedPost(
+        postId: 'cf230-lari-bh',
+        content:
+            'Saí do trabalho e fui direto pra fila. Trouxe brinde pro pessoal do fã clube de BH.',
+        createdAt: DateTime.now()
+            .subtract(const Duration(hours: 1))
+            .toIso8601String(),
+        type: 'image',
+        imageUrl: _cfCarouselCity,
+        likesCount: 88,
+        commentsCount: 14,
+        sharesCount: 5,
+        authorName: 'Lari Rocha',
+        authorHandle: 'fan/larirocha',
+        authorAvatarUri: '',
+        membershipMonthsLabel: '1',
+      ),
+    ],
+  };
+  return ArtistFanClubFeed(fanClub: club, posts: posts);
+}
+
+ArtistFanClub _cfTempMockFanClubMeta(
+  String artistUid,
+  CfFanClubFixtureKind kind,
+) {
+  final mods = cfTempMockFanClubModerators();
+  return switch (kind) {
+    CfFanClubFixtureKind.community => ArtistFanClub(
+      id: 222,
+      name: 'Enzo Lima',
+      description: 'Fã clube de Enzo Lima',
+      artistUid: artistUid.trim().isEmpty ? 'mock-fc-enzo' : artistUid,
+      artistName: 'Enzo Lima',
+      isActive: true,
+      memberCount: 11841,
+      isMember: true,
+      moderators: mods,
+    ),
+    CfFanClubFixtureKind.expelled => ArtistFanClub(
+      id: 229,
+      name: 'Felipe Rhy',
+      description: 'Fã clube de Felipe Rhy',
+      artistUid: artistUid.trim().isEmpty ? 'mock-fc-felipe' : artistUid,
+      artistName: 'Felipe Rhy',
+      isActive: true,
+      memberCount: 6972,
+      isMember: false,
+      viewerIsExpelled: true,
+      viewerExpulsionReason: cfTempMockExpulsionReason,
+      moderators: mods,
+    ),
+    CfFanClubFixtureKind.warning => ArtistFanClub(
+      id: 230,
+      name: 'Laís Costa Fã Clube',
+      description: 'Fã clube de Laís Costa',
+      artistUid: artistUid.trim().isEmpty ? 'mock-fc-lais' : artistUid,
+      artistName: 'Laís Costa',
+      isActive: true,
+      memberCount: 8225,
+      isMember: true,
+      viewerActiveStrikesCount: 1,
+      viewerLatestStrikeReason: cfTempMockStrikeReason,
+      viewerStrikeRemainingChances: 2,
+      moderators: mods,
+    ),
+  };
+}
+
+/// Candidato na tela Solicitar moderação (CF-224 print).
+const cfTempMockModerationCandidate = (
+  displayName: 'Aline Duarte',
+  handle: 'fan/alineduarte',
+  photoUrl: '',
+);
+
+/// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+List<FeedPost> cfTempMockHomeFeedPosts() {
+  return const [
+    FeedPost(
+      id: 'cf232-uelo-video',
+      type: PostType.video,
+      author: 'Banda Uelo',
+      artistId: 'mock-fc-uelo',
+      handle: '@bandauelo',
+      rank: '#18',
+      minutesAgo: 31,
+      avatarUri: '',
+      text:
+          'Prévia do vídeo da passagem de som. Perfeito pra testar autoplay no feed.',
+      votes: 136,
+      comments: 31,
+      shares: 11,
+      videoDuration: '00:00',
+      videoUri: '',
+      videoThumbnailUri: '',
+    ),
+    FeedPost(
+      id: 'cf233-ponzanelli-carousel',
+      type: PostType.carousel,
+      author: 'Ponzanelli',
+      artistId: 'mock-fc-ponzanelli',
+      handle: '@ponzanelli',
+      minutesAgo: 60,
+      avatarUri: '',
+      text:
+          'Momentos do backstage que normalmente não entram em lugar nenhum. Agora entraram.',
+      votes: 227,
+      comments: 31,
+      shares: 5,
+      imageUri: _cfCarouselBeach,
+      carouselUris: [_cfCarouselBeach, _cfCarouselDeer, _cfCarouselCity],
+    ),
+    FeedPost(
+      id: 'cf235-mayra-exclusive',
+      type: PostType.video,
+      author: 'Mayra',
+      artistId: 'mock-fc-mayra',
+      handle: '@mayra',
+      rank: '#3',
+      minutesAgo: 60,
+      avatarUri: '',
+      text:
+          'Versão acústica gravada no camarim. Agora finalmente posso subir isso aqui.',
+      votes: 201,
+      comments: 21,
+      shares: 11,
+      isExclusive: true,
+      exclusiveLocked: false,
+      videoDuration: '00:00',
+      videoUri: '',
+      videoThumbnailUri: '',
+    ),
+    FeedPost(
+      id: 'cf232-carol-text',
+      type: PostType.text,
+      author: 'Carol Biazin',
+      artistId: 'mock-fc-carol',
+      handle: '@carolbiazin',
+      minutesAgo: 36,
+      avatarUri: '',
+      text:
+          'Obrigada por cada mensagem depois último post. Vocês deixam tudo mais leve aqui.',
+      votes: 98,
+      comments: 12,
+      shares: 4,
+    ),
+  ];
+}
+
+HomeFeedDto cfTempMockHomeFeedDto({int page = 1}) {
+  if (page > 1) {
+    return const HomeFeedDto(
+      feedPosts: [],
+      stories: [],
+      hasMore: false,
+    );
+  }
+  return HomeFeedDto(
+    feedPosts: cfTempMockHomeFeedPosts(),
+    stories: const [],
+    hasMore: false,
+  );
+}
+
+/// Seletor Novo post → Fã Clube (CF-237).
+List<FanClubComposeArtist> cfTempMockFanClubSelectorArtists() {
+  return const [
+    FanClubComposeArtist(id: 'mock-fc-mayra', name: 'Mayra'),
+    FanClubComposeArtist(id: 'mock-fc-marinhos', name: 'Marinhos'),
+    FanClubComposeArtist(id: 'mock-fc-uelo', name: 'Banda Uelo'),
+    FanClubComposeArtist(id: 'mock-fc-enzo', name: 'Enzo Lima'),
+    FanClubComposeArtist(id: 'mock-fc-ludmilla', name: 'Ludmilla'),
+    FanClubComposeArtist(id: 'mock-fc-anitta', name: 'Anitta'),
+  ];
+}
+
+/// Exclusivo liberado no perfil (CF-239) — Ludmilla assinante.
+bool cfTempMockArtistExclusiveSubscribed(String artistId, String? name) {
+  final id = artistId.trim().toLowerCase();
+  final n = (name ?? '').trim().toLowerCase();
+  return id.contains('ludmilla') ||
+      id == 'mock-fc-ludmilla' ||
+      n.contains('ludmilla');
+}
+
+List<FeedPost> cfTempMockLudmillaExclusivePosts() {
+  return const [
+    FeedPost(
+      id: 'cf239-lud-1',
+      type: PostType.carousel,
+      author: 'Ludmilla',
+      artistId: 'mock-fc-ludmilla',
+      handle: '@ludmilla',
+      minutesAgo: 25,
+      avatarUri: '',
+      text:
+          'Hoje foi estúdio, prova de look e conversa longa com a equipe. Resolvi largar tudo aqui.',
+      votes: 123,
+      comments: 26,
+      shares: 9,
+      isExclusive: true,
+      exclusiveLocked: false,
+      imageUri: _cfCarouselDeer,
+      carouselUris: [_cfCarouselDeer, _cfCarouselBeach, _cfCarouselCity],
+    ),
+    FeedPost(
+      id: 'cf239-lud-2',
+      type: PostType.image,
+      author: 'Ludmilla',
+      artistId: 'mock-fc-ludmilla',
+      handle: '@ludmilla',
+      minutesAgo: 60,
+      avatarUri: '',
+      text: 'Visual novo, teste de luz e foto roubada de bastidor.',
+      votes: 88,
+      comments: 14,
+      shares: 3,
+      isExclusive: true,
+      exclusiveLocked: false,
+      imageUri: _cfCarouselMerch,
+    ),
+  ];
+}
+
+/// Busca artistas “L” (CF-240).
+List<ArtistSearchItem>? cfTempMockSearchArtists(String query) {
+  final q = query.trim().toLowerCase();
+  if (q.isEmpty) {
+    return null;
+  }
+  final all = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 5);
+  if (q == 'l') {
+    return all;
+  }
+  final filtered = [
+    for (final item in all)
+      if (item.name.toLowerCase().startsWith(q) ||
+          item.handle.toLowerCase().contains(q))
+        item,
+  ];
+  return filtered.isEmpty ? null : filtered;
 }
 
 /// Liga feed demo CF-178 (Postagens dos Fã Clubes vazio → print).

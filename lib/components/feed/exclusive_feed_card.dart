@@ -44,7 +44,7 @@ class ExclusiveFeedCard extends StatelessWidget {
         ),
       );
     }
-    // Desbloqueado: card normal + badge ♪ Exclusivo (print Feed Home Artista).
+    // Desbloqueado: badge Exclusivo acima do autor (CF-235 print).
     return PostCard(
       post: post,
       onPressOpenComments: onPressOpenComments,
@@ -52,7 +52,7 @@ class ExclusiveFeedCard extends StatelessWidget {
       onPressOptions: onPressOptions,
       onPressShare: onPressShare,
       onVoteApplied: onVoteApplied,
-      topContentAfterHeader: true,
+      topContentAfterHeader: false,
       topContent: ExclusivePostMetaRow(
         memberName: resolvedUsername,
         unlocked: true,
