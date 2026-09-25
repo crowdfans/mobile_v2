@@ -1,4 +1,3 @@
-import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_recharge_pack_tile.dart';
@@ -145,10 +144,27 @@ class _ProfileWalletRechargeScreenState
             if (!_loading && _error == null && _packs.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: AppButton(
-                  label: 'Próximo',
-                  variant: AppButtonVariant.dark,
-                  onPressed: handleNext,
+                // Referência CF-169: botão principal escuro, cantos suaves (não pílula).
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: FilledButton(
+                    onPressed: handleNext,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppPalette.platinum900,
+                      foregroundColor: AppPalette.platinum50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Próximo',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
               ),
           ],
