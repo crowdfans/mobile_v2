@@ -37,6 +37,7 @@ class FeedItem extends StatelessWidget {
   }
 
   void handleOpenComments(BuildContext context, String postId) {
+    final clubAvatar = (post.clubArtistAvatarUri ?? '').trim();
     context.push(
       Pages.commentsOf(
         postId,
@@ -45,6 +46,10 @@ class FeedItem extends StatelessWidget {
         text: post.text,
         clubName: clubName,
         avatarUrl: post.avatarUri,
+        clubAvatarUrl: clubAvatar.isEmpty ? null : clubAvatar,
+        minutesAgo: post.minutesAgo,
+        votes: post.votes,
+        shares: post.shares,
       ),
     );
   }
