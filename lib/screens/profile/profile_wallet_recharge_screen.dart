@@ -143,12 +143,12 @@ class _ProfileWalletRechargeScreenState
                           WalletRechargePackTile(
                             pack: _packs[index],
                             selected: _packs[index].id == _selectedId,
-                            featured: index == 1,
+                            featured: _packs[index].coins == 240,
                             onPressed: () {
                               setState(() => _selectedId = _packs[index].id);
                             },
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                         ],
                       ],
                     ),
@@ -156,7 +156,7 @@ class _ProfileWalletRechargeScreenState
             if (!_loading && _error == null && _packs.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                // Referência CF-169: botão principal escuro, cantos suaves (não pílula).
+                // Referência CF-169: botão principal escuro em pílula.
                 child: SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -165,9 +165,7 @@ class _ProfileWalletRechargeScreenState
                     style: FilledButton.styleFrom(
                       backgroundColor: AppPalette.platinum900,
                       foregroundColor: AppPalette.platinum50,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: const StadiumBorder(),
                     ),
                     child: const Text(
                       'Próximo',

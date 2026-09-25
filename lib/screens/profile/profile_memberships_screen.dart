@@ -4,7 +4,6 @@ import 'package:crowdfans/components/profile/membership_artist_card.dart';
 import 'package:crowdfans/components/profile/membership_balance_pill.dart';
 import 'package:crowdfans/components/profile/membership_filter_chip.dart';
 import 'package:crowdfans/components/profile/membership_pro_teaser.dart';
-import 'package:crowdfans/components/profile/notification_quiet_mode_note.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -364,10 +363,6 @@ class _ProfileMembershipsScreenState
                               catalog: true,
                             ),
                         ],
-                        const NotificationQuietModeNote(
-                          message:
-                              'Assinar cobra 100 Jam Coins. Recarga fica em Jam Coins. Cancelar não estorna.',
-                        ),
                       ],
                     ),
             ),

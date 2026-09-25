@@ -54,6 +54,12 @@ class AppButton extends StatelessWidget {
         ? AppPalette.platinum50
         : colors.buttonPrimaryText;
 
+    // Prints (CF-164/217/219): disabled = cinza claro, não roxo esmaecido.
+    final disabledBg = variant == AppButtonVariant.dark
+        ? AppPalette.platinum300
+        : AppPalette.platinum200;
+    final disabledFg = AppPalette.platinum500;
+
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -62,7 +68,8 @@ class AppButton extends StatelessWidget {
         style: FilledButton.styleFrom(
           backgroundColor: background,
           foregroundColor: foreground,
-          disabledBackgroundColor: background.withValues(alpha: 0.4),
+          disabledBackgroundColor: disabledBg,
+          disabledForegroundColor: disabledFg,
           shape: const StadiumBorder(),
         ),
         child: Text(text, style: const TextStyle(fontSize: 18)),
