@@ -4,6 +4,7 @@ import 'package:crowdfans/components/search/search_rank_sort_chip.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -85,9 +86,27 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
         _kind,
         limit: _rankingLimit(_kind),
       );
-      setState(() => _artists = data.artists);
+      var artists = data.artists;
+      // TEMP: demo do chrome Top 100/500 quando a API ainda não povoa.
+      if (artists.isEmpty && CfTempMocks.useRankingFixtures) {
+        artists = cfTempMockRankingArtists(
+          kind: _kind,
+          limit: _rankingLimit(_kind).clamp(1, 8),
+        );
+      }
+      setState(() => _artists = artists);
     } catch (_) {
-      setState(() => _error = 'Não foi possível carregar o ranking.');
+      if (CfTempMocks.useRankingFixtures) {
+        setState(() {
+          _artists = cfTempMockRankingArtists(
+            kind: _kind,
+            limit: _rankingLimit(_kind).clamp(1, 8),
+          );
+          _error = null;
+        });
+      } else {
+        setState(() => _error = 'Não foi possível carregar o ranking.');
+      }
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -240,6 +259,8 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                                       artist: artist,
                                       position: artist.rank ?? index + 1,
                                       metricHint: _rankingMetricHint(_kind),
+                                      layout:
+                                          SearchArtistRankRowLayout.rankLeading,
                                       onPressed: () => context.push(
                                         Pages.artistProfile.replaceAll(
                                           ':artistId',

@@ -5,6 +5,7 @@ import 'package:crowdfans/components/fan_club/fan_club_defend_return_reason_card
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,10 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
     super.initState();
     _reason = widget.expulsionReason;
     if ((_reason ?? '').trim().isEmpty) {
+      // TEMP: demo do card rosado do print enquanto a API não manda motivo.
+      if (CfTempMocks.useFanClubFixtures) {
+        _reason = cfTempMockExpulsionReason;
+      }
       handleLoadReason();
     }
   }
@@ -55,8 +60,23 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _reason = club?.viewerExpulsionReason);
-    } catch (_) {}
+      final apiReason = club?.viewerExpulsionReason?.trim() ?? '';
+      setState(() {
+        if (apiReason.isNotEmpty) {
+          _reason = apiReason;
+        } else if (CfTempMocks.useFanClubFixtures &&
+            (_reason ?? '').trim().isEmpty) {
+          _reason = cfTempMockExpulsionReason;
+        }
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      if (CfTempMocks.useFanClubFixtures && (_reason ?? '').trim().isEmpty) {
+        setState(() => _reason = cfTempMockExpulsionReason);
+      }
+    }
   }
 
   void handleBack() {

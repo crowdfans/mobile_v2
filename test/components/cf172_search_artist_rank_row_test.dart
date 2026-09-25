@@ -5,18 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('CF-172: foto à esquerda e rank acima do nome', (tester) async {
-    const artist = ArtistSearchItem(
-      id: 'a1',
-      name: 'Mayra',
-      handle: '@mayra',
-      avatarUri: '',
-      memberCount: 12000,
-      membersLabel: '12k membros',
-      rank: 3,
-      rankDelta: 1,
-    );
+  const artist = ArtistSearchItem(
+    id: 'a1',
+    name: 'Mayra',
+    handle: '@mayra',
+    avatarUri: '',
+    memberCount: 12000,
+    membersLabel: '12k membros',
+    rank: 3,
+    rankDelta: 1,
+    trend: 'up',
+  );
 
+  testWidgets('CF-172: foto à esquerda e rank acima do nome', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: buildCrowdFansTheme(Brightness.light),
@@ -24,6 +25,7 @@ void main() {
           body: SearchArtistRankRow(
             artist: artist,
             position: 3,
+            layout: SearchArtistRankRowLayout.avatarLeading,
             onPressed: () {},
           ),
         ),
@@ -33,8 +35,39 @@ void main() {
 
     expect(find.text('#3'), findsOneWidget);
     expect(find.text('Mayra'), findsOneWidget);
-    // Avatar placeholder SizedBox 56 precedes text in row.
-    final row = tester.widget<Row>(find.byType(Row).first);
-    expect(row.children.first, isA<ClipRRect>());
+    // Avatar (ClipRRect) precede o texto do badge na ordem visual avatarLeading.
+    final clip = tester.getTopLeft(find.byType(ClipRRect).first);
+    final badge = tester.getTopLeft(find.text('#3'));
+    expect(clip.dx, lessThan(badge.dx));
+  });
+
+  testWidgets('CF-193: # e tendência à esquerda do avatar (print Top 100)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildCrowdFansTheme(Brightness.light),
+        home: Scaffold(
+          body: SearchArtistRankRow(
+            artist: artist,
+            position: 3,
+            layout: SearchArtistRankRowLayout.rankLeading,
+            onPressed: () {},
+            onPressMore: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('#3'), findsOneWidget);
+    expect(find.text('Mayra'), findsOneWidget);
+    // Print: badge à esquerda do avatar.
+    final badge = tester.getTopLeft(find.text('#3'));
+    final clip = tester.getTopLeft(find.byType(ClipRRect).first);
+    expect(badge.dx, lessThan(clip.dx));
+    // Sem rótulo textual de tendência na linha (só o círculo).
+    expect(find.text('subiu'), findsNothing);
+    expect(find.text('estável'), findsNothing);
   });
 }
