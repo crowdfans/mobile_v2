@@ -4,6 +4,7 @@ import 'package:crowdfans/components/profile/membership_activation_confirmed_car
 import 'package:crowdfans/components/profile/membership_activation_confirmed_info_note.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,8 +36,19 @@ class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final name = artistName.trim().isEmpty ? 'o artista' : artistName.trim();
-    final price = pricePerMonth > 0 ? pricePerMonth : 100;
+    final useMock = CfTempMocks.useMembershipFixtures &&
+        kUseCfTempMocks &&
+        (artistName.trim().isEmpty || pricePerMonth <= 0);
+    final name = useMock
+        ? cfTempMockMembershipSummary.artistName
+        : (artistName.trim().isEmpty ? 'o artista' : artistName.trim());
+    final handle =
+        useMock ? cfTempMockMembershipSummary.artistHandle : artistHandle;
+    final price = useMock
+        ? cfTempMockMembershipSummary.pricePerMonth
+        : (pricePerMonth > 0 ? pricePerMonth : 100);
+    final period =
+        useMock ? cfTempMockMembershipSummary.periodLabel : periodLabel;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -89,10 +101,10 @@ class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
                     const SizedBox(height: 28),
                     MembershipActivationConfirmedCard(
                       artistName: name,
-                      artistHandle: artistHandle,
+                      artistHandle: handle,
                       artistAvatarUrl: artistAvatarUrl,
                       pricePerMonth: price,
-                      periodLabel: periodLabel,
+                      periodLabel: period,
                     ),
                     const SizedBox(height: 16),
                     const MembershipActivationConfirmedInfoNote(),

@@ -3,13 +3,14 @@
 // Arquivo único de mocks temporários (QA / demo).
 // CF-190: central de notificações (print image.png).
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
-// CF-194: comentários do fã-clube (prints recolhido/expandido).
+// CF-194: comentários fã-clube demo.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
 // Forçar vazio: `kCf190MockEmpty = true`
 // Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
+import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
@@ -368,18 +369,129 @@ const cfTempMockExpulsionReason =
 
 /// Resumo de membership para telas de confirmação (CF-204…207).
 const cfTempMockMembershipSummary = (
-  artistName: 'Ludmilla',
+  artistName: 'Banda Uelo',
+  artistHandle: '@bandauelo',
+  artistId: 'mock-membership-uelo',
   planName: 'Membership Oficial',
-  priceLabel: 'R\$ 29,90 / mês',
-  jamCoinsLabel: '+ 500 Jam Coins',
+  pricePerMonth: 240,
+  jamCoinsBalanceLabel: '2.684',
+  periodLabel: '1 mês',
 );
 
-/// Recarga confirmada (CF-204).
-const cfTempMockRechargeConfirmed = (
-  amountLabel: 'R\$ 50,00',
-  jamCoinsLabel: '5.000 Jam Coins',
-  methodLabel: 'PIX',
+/// Gerenciar membership (CF-205) — print Marinhos / 240 / 3 meses.
+const cfTempMockMembershipManage = (
+  artistName: 'Marinhos',
+  artistHandle: '@marinhos',
+  artistId: 'mock-membership-marinhos',
+  pricePerMonth: 240,
+  monthsLabel: '3 meses',
 );
+
+/// Recarga confirmada (CF-204) — print: 240 = 200 JC + 40 bônus.
+const cfTempMockRechargeConfirmed = (
+  coinsTotal: 240,
+  baseCoins: 200,
+  bonusCoins: 40,
+);
+
+/// FanScore demo do print CF-201 (ciclo + cards Ultimate/Super).
+FanScoreData cfTempMockFanScoreData() {
+  const ultimate = FanScoreTier(
+    id: 'ultimate',
+    label: 'Ultimate Fan',
+    minScore: 900,
+    gradient: ['#EDE9FE', '#DDD6FE'],
+    badgeGradient: ['#A78BFA', '#7C3AED'],
+    badgeText: '#FFFFFF',
+    border: '#C4B5FD',
+  );
+  const superFan = FanScoreTier(
+    id: 'super',
+    label: 'Super Fan',
+    minScore: 500,
+    gradient: ['#FFEDD5', '#FED7AA'],
+    badgeGradient: ['#FB923C', '#EA580C'],
+    badgeText: '#FFFFFF',
+    border: '#FDBA74',
+  );
+  const superFanAlt = FanScoreTier(
+    id: 'super',
+    label: 'Super Fan',
+    minScore: 500,
+    gradient: ['#FEF9C3', '#FDE68A'],
+    badgeGradient: ['#FB923C', '#EA580C'],
+    badgeText: '#FFFFFF',
+    border: '#FCD34D',
+  );
+  return const FanScoreData(
+    cycleDetails: FanScoreCycleDetails(
+      periodLabel: 'Agosto 2026',
+      cycleLabel: 'Agosto 2026',
+      endLabel: 'segunda-feira, 31/08/2026 às 23:59',
+      helperText:
+          'O ciclo vigente encerra em segunda-feira, 31/08/2026 às 23:59 e reseta logo em seguida.',
+    ),
+    entries: [
+      FanScoreEntry(
+        artistId: 'mock-fs-kheper',
+        artistName: 'Kheper',
+        artistAvatarUri: '',
+        memberCount: '141k',
+        currentScore: 1000,
+        deltaPercentage: 4,
+        fanRank: 7,
+        breakdown: FanScoreBreakdown(
+          hasMembership: true,
+          commentsMade: 100,
+          upvotesMade: 60,
+          fanLettersPosted: 20,
+          liveDonations: 5,
+          liveParticipations: 5,
+          fanClubPosts: 10,
+        ),
+        tier: ultimate,
+      ),
+      FanScoreEntry(
+        artistId: 'mock-fs-marinhos',
+        artistName: 'Marinhos',
+        artistAvatarUri: '',
+        memberCount: '173k',
+        currentScore: 973,
+        deltaPercentage: 21,
+        fanRank: 15,
+        breakdown: FanScoreBreakdown(
+          hasMembership: true,
+          commentsMade: 80,
+          upvotesMade: 40,
+          fanLettersPosted: 12,
+          liveDonations: 3,
+          liveParticipations: 4,
+          fanClubPosts: 8,
+        ),
+        tier: superFan,
+      ),
+      FanScoreEntry(
+        artistId: 'mock-fs-uelo',
+        artistName: 'Banda Uelo',
+        artistAvatarUri: '',
+        memberCount: '228k',
+        currentScore: 560,
+        deltaPercentage: 12,
+        fanRank: 48,
+        breakdown: FanScoreBreakdown(
+          hasMembership: false,
+          commentsMade: 40,
+          upvotesMade: 22,
+          fanLettersPosted: 6,
+          liveDonations: 1,
+          liveParticipations: 2,
+          fanClubPosts: 5,
+        ),
+        tier: superFanAlt,
+      ),
+    ],
+  );
+}
 
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
 const bool kUseCf194CommentMocks = true;

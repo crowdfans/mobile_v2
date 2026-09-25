@@ -6,6 +6,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:flutter/material.dart';
@@ -58,12 +59,33 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
       if (!mounted) {
         return;
       }
+      var resolved = data;
+      // TEMP: demo do print CF-201 quando a API ainda não povoa.
+      if ((resolved.entries.isEmpty || resolved.cycleDetails == null) &&
+          CfTempMocks.useFanScoreFixtures &&
+          kUseCfTempMocks) {
+        resolved = cfTempMockFanScoreData();
+      }
       setState(() {
-        _data = data;
+        _data = resolved;
         _loading = false;
+        // Print: primeiro card expandido com grade de métricas.
+        if (_expandedArtistId == null && resolved.entries.isNotEmpty) {
+          _expandedArtistId = resolved.entries.first.artistId;
+        }
       });
     } catch (_) {
       if (!mounted) {
+        return;
+      }
+      if (CfTempMocks.useFanScoreFixtures && kUseCfTempMocks) {
+        final mock = cfTempMockFanScoreData();
+        setState(() {
+          _data = mock;
+          _loading = false;
+          _error = null;
+          _expandedArtistId = mock.entries.first.artistId;
+        });
         return;
       }
       setState(() {
