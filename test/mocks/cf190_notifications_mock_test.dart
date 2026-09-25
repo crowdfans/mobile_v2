@@ -1,12 +1,14 @@
-import 'package:crowdfans/mocks/cf190_notifications_mock.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CF-190 mock: Agora/Hoje, categorias e não-lida', () {
-    expect(kUseCf190Mocks, isTrue);
+  test('CF-190 mock em cf_temp_mocks: Agora/Hoje, categorias e não-lida', () {
+    expect(kUseCfTempMocks, isTrue);
+    expect(kUseCf190NotificationMocks, isTrue);
+    expect(kCf190MockEmpty, isFalse);
 
-    final sections = Cf190NotificationsMock.sections();
+    final sections = CfTempMocks.notificationSections();
     expect(sections.map((s) => s.title), ['Agora', 'Hoje']);
 
     final allItems = [for (final s in sections) ...s.items];
@@ -37,10 +39,5 @@ void main() {
       NotificationTab.meet,
     );
     expect(meetOnly.expand((s) => s.items).length, 1);
-  });
-
-  test('CF-190 mock: empty flag devolve lista vazia', () {
-    // Documenta o contrato: kCf190MockEmpty controla o vazio no mesmo arquivo.
-    expect(kCf190MockEmpty, isFalse);
   });
 }

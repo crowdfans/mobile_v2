@@ -4,6 +4,9 @@ import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter/material.dart';
 
 /// Card de uma notificação (avatares, texto com accent, thumbnail, Meet).
+///
+/// CF-190: Meet usa card verde + accents verdes (não lilás); não-lida = ponto
+/// (além da cor do texto); thumbnail à direita quando houver.
 class NotificationItemCard extends StatelessWidget {
   const NotificationItemCard({
     super.key,
@@ -31,6 +34,8 @@ class NotificationItemCard extends StatelessWidget {
       item.time,
     ].join('. ');
 
+    final accentColor = isMeet ? AppPalette.green700 : colors.primary;
+
     final row = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isMeet ? 12 : 0,
@@ -54,10 +59,13 @@ class NotificationItemCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             height: 20 / 14,
-                            // CF-159: accent só por cor — peso regular.
-                            fontWeight: FontWeight.w400,
+                            // Meet: título/nome em destaque semibold; demais accents
+                            // só por cor (CF-159).
+                            fontWeight: isMeet && segment.accent
+                                ? FontWeight.w600
+                                : FontWeight.w400,
                             color: segment.accent
-                                ? colors.primary
+                                ? accentColor
                                 : colors.textPrimary,
                           ),
                         ),
@@ -72,6 +80,8 @@ class NotificationItemCard extends StatelessWidget {
               ],
             ),
           ),
+          // Não-lida: ponto (não só cor). Com thumbnail, o print prioriza a
+          // miniatura — o ponto fica antes dela quando ambos existem.
           if (item.unread) ...[
             const SizedBox(width: 8),
             Semantics(
@@ -116,7 +126,7 @@ class NotificationItemCard extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8, top: 4),
       child: Semantics(
         button: true,
         label: semanticsLabel,
@@ -124,7 +134,7 @@ class NotificationItemCard extends StatelessWidget {
           color: AppPalette.green50,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppPalette.green200),
+            side: const BorderSide(color: AppPalette.green200, width: 1),
           ),
           child: InkWell(
             onTap: onPressed,
