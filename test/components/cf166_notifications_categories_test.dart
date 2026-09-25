@@ -48,7 +48,7 @@ void main() {
     expect(find.text('Preferências Gerais'), findsOneWidget);
     expect(find.text('Notificações push'), findsOneWidget);
     expect(find.text('Categorias detalhadas'), findsOneWidget);
-    expect(find.text('Interações com você'), findsOneWidget);
+    expect(find.text('Interações com Você'), findsOneWidget);
     expect(find.text('Artistas, Cartas e Fã Clubes'), findsOneWidget);
     expect(find.text('Meet & Greet'), findsOneWidget);
     expect(find.text('Membership e Jam Coins'), findsOneWidget);

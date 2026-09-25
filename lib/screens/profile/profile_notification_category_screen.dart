@@ -129,11 +129,23 @@ class _ProfileNotificationCategoryScreenState
                           const NotificationQuietModeNote(),
                           const SizedBox(height: 16),
                         ],
+                        if ((group.pageIntro ?? '').trim().isNotEmpty) ...[
+                          Text(
+                            group.pageIntro!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              height: 1.4,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
                         NotificationPreferenceSection(
                           group: group,
                           preferences: _preferences,
                           saving: _saving,
                           onChanged: handleChange,
+                          showTitle: false,
                         ),
                       ],
                     ),

@@ -25,6 +25,7 @@ class NotificationPreferenceGroup {
     required this.title,
     required this.items,
     this.navSubtitle,
+    this.pageIntro,
   });
 
   final String id;
@@ -32,6 +33,8 @@ class NotificationPreferenceGroup {
   final List<NotificationPreferenceItem> items;
   /// Resumo exibido no hub de categorias (CF-166); null = só na página geral.
   final String? navSubtitle;
+  /// Texto introdutório da subpágina (CF-208 / CF-209 / CF-211).
+  final String? pageIntro;
 }
 
 /// Catálogo da tela de preferências (espelho do Expo + hub CF-166).
@@ -59,34 +62,40 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   ),
   NotificationPreferenceGroup(
     id: 'interactions',
-    title: 'Interações com você',
+    title: 'Interações com Você',
     navSubtitle:
         'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
+    pageIntro:
+        'Escolha quais interações pessoais merecem um alerta imediato, principalmente quando vierem do próprio artista.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeComment,
-        title: 'Curtida do artista no comentário',
-        description: 'Quando um artista curtir seu comentário.',
+        title: 'Artista curtiu seu comentário',
+        description:
+            'Quando o próprio artista curtir especificamente um comentário seu.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeFanLetter,
-        title: 'Curtida do artista na carta',
-        description: 'Quando um artista curtir sua Fan Letter.',
+        title: 'Artista curtiu sua carta',
+        description:
+            'Quando o artista der upvote ou destaque na sua Carta de Fã.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.commentReplies,
-        title: 'Respostas',
-        description: 'Novas respostas aos seus comentários.',
+        title: 'Respostas aos seus comentários',
+        description:
+            'Quando responderem um comentário seu em posts e fã clubes.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.mentions,
-        title: 'Menções',
-        description: 'Quando mencionarem seu perfil (fan/).',
+        title: 'Menções ao seu fan/',
+        description:
+            'Quando alguém mencionar o seu fan/ em comentários, posts ou cartas.',
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.newFollowers,
         title: 'Novos seguidores',
-        description: 'Quando alguém começar a seguir você.',
+        description: 'Quando novos fãs começarem a seguir você.',
       ),
     ],
   ),
@@ -123,23 +132,28 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
     title: 'Meet & Greet',
     navSubtitle:
         'Convites, lembretes de fila, início da chamada e encerramento.',
+    pageIntro:
+        'Controle desde convites e lembretes de fila até os avisos de encerramento das chamadas.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.meetInvites,
-        title: 'Convites',
-        description: 'Convites para participar de Meet & Greet.',
+        title: 'Convites para Meet & Greet',
+        description:
+            'Quando você for selecionado ou convocado para uma chamada.',
         critical: true,
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.meetReminders,
-        title: 'Lembretes',
-        description: 'Fila, horário e início da chamada.',
+        title: 'Lembretes de Meet & Greet',
+        description:
+            'Avisos antes da chamada, entrada na fila e início da sua vez.',
         critical: true,
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.meetResults,
-        title: 'Encerramento',
-        description: 'Resultado e gravação quando disponível.',
+        title: 'Resultado e encerramento',
+        description:
+            'Quando o Meet terminar ou quando a janela de acesso mudar.',
       ),
     ],
   ),
@@ -148,23 +162,28 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
     title: 'Membership e Jam Coins',
     navSubtitle:
         'Renovação, saldo insuficiente, recargas, promoções e pagamentos.',
+    pageIntro:
+        'Ajuste tudo que envolve cobrança, saldo, promoções e alertas ligados ao seu membership.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.membershipRenewals,
-        title: 'Renovações',
-        description: 'Cobranças, falhas e saldo insuficiente.',
-        critical: true,
-      ),
-      NotificationPreferenceItem(
-        keyName: NotificationPreferenceKeys.jamCoinsBalance,
-        title: 'Saldo de Jam Coins',
-        description: 'Movimentações e alertas de saldo.',
+        title: 'Renovação de membership',
+        description:
+            'Cobrança próxima, saldo insuficiente, renovação confirmada e cancelamento.',
         critical: true,
       ),
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.jamCoinsPromos,
-        title: 'Promoções',
-        description: 'Campanhas e ofertas de Jam Coins.',
+        title: 'Promoções de Jam Coins',
+        description:
+            'Campanhas, bônus de recarga e ofertas especiais de Jam Coins.',
+      ),
+      NotificationPreferenceItem(
+        keyName: NotificationPreferenceKeys.jamCoinsBalance,
+        title: 'Saldo e pagamentos',
+        description:
+            'Recargas aprovadas, saldo baixo e pagamentos concluídos.',
+        critical: true,
       ),
     ],
   ),
@@ -193,12 +212,15 @@ class NotificationPreferenceSection extends StatelessWidget {
     required this.preferences,
     required this.saving,
     required this.onChanged,
+    this.showTitle = true,
   });
 
   final NotificationPreferenceGroup group;
   final NotificationPreferences preferences;
   final bool saving;
   final void Function(String key, bool value) onChanged;
+  /// Na subpágina o título já está no header (prints CF-208+).
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -208,15 +230,17 @@ class NotificationPreferenceSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          group.title,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: colors.textTertiary,
+        if (showTitle) ...[
+          Text(
+            group.title,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: colors.textTertiary,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
+          const SizedBox(height: 8),
+        ],
         for (var i = 0; i < group.items.length; i++)
           NotificationPreferenceRow(
             title: group.items[i].title,
