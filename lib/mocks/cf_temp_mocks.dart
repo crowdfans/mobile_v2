@@ -23,6 +23,7 @@ import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
+import 'package:crowdfans/services/wallet_service.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
 const bool kUseCfTempMocks = true;
@@ -831,6 +832,23 @@ abstract final class Cf181CartasMock {
         postedAt: 0,
         bodyText: 'MEU CONFORTO',
         backgroundId: 'grad-peach',
+      ),
+    ];
+  }
+}
+
+/// Liga pacotes demo CF-170 (pagamento print 240 / R$ 19,90).
+const bool kUseCf170WalletPackMocks = true;
+
+/// Pacote do print CF-170.
+abstract final class Cf170WalletPackMock {
+  static List<JamCoinPack> packs() {
+    return const [
+      JamCoinPack(
+        id: 'cf170-240',
+        coins: 240,
+        priceCents: 1990,
+        label: '200 JC + 40 bônus',
       ),
     ];
   }
