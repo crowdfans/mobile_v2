@@ -17,6 +17,7 @@ import 'package:crowdfans/components/profile/artist_sobre_base.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/models/profile.dart';
@@ -241,10 +242,16 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       if (!mounted) {
         return;
       }
+      var letters = lettersResult.letters;
+      if (letters.isEmpty &&
+          kUseCfTempMocks &&
+          kUseCf181CartasMocks) {
+        letters = Cf181CartasMock.letters(artistId: widget.artistId);
+      }
       setState(() {
         _profile = profile;
         _posts = posts;
-        _letters = lettersResult.letters;
+        _letters = letters;
         _lettersError = lettersResult.error;
         _subscribed = check.isSubscribed;
         _subscriptionResolved = true;

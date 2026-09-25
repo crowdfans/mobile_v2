@@ -6,6 +6,7 @@ import 'package:crowdfans/components/home/scroll_to_top_fab.dart';
 import 'package:crowdfans/components/sidebar/sidebar_menu.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
@@ -162,6 +163,12 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
         final subs = results[0] as List<Subscription>;
         final follows = results[1] as List<ArtistFollow>;
         final posts = results[2] as List<CommunityPost>;
+        final feedPosts =
+            posts.isEmpty &&
+                kUseCfTempMocks &&
+                kUseCf178FanClubsFeedMocks
+            ? Cf178FanClubsFeedMock.posts()
+            : posts;
         final merged = <_ClubArtist>[];
         for (final item in subs) {
           if (item.isActive && item.artistUid.trim().isNotEmpty) {
@@ -193,7 +200,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
         }
         setState(() {
           _artists = merged;
-          _posts = posts;
+          _posts = feedPosts;
           _page = 1;
           _hasMore = posts.length >= _pageSize;
           _loading = false;
