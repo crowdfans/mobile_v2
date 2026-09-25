@@ -9,6 +9,7 @@ import 'package:crowdfans/components/comments/comment_sort_chip.dart';
 import 'package:crowdfans/components/comments/comment_thread_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/comment_gif_service.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
@@ -31,6 +32,10 @@ class CommentsScreen extends ConsumerStatefulWidget {
     this.postText,
     this.clubName,
     this.postAvatarUrl,
+    this.clubAvatarUrl,
+    this.postMinutesAgo,
+    this.postVotes,
+    this.postShares,
   });
 
   final String postId;
@@ -39,6 +44,10 @@ class CommentsScreen extends ConsumerStatefulWidget {
   final String? postText;
   final String? clubName;
   final String? postAvatarUrl;
+  final String? clubAvatarUrl;
+  final int? postMinutesAgo;
+  final int? postVotes;
+  final int? postShares;
 
   @override
   ConsumerState<CommentsScreen> createState() => _CommentsScreenState();
@@ -70,6 +79,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   String? _error;
   Timer? _gifDebounce;
   final _expandedReplyIds = <String>{};
+  late int _postVotes = widget.postVotes ?? 0;
+  late int _postMyVote = 0;
+  final int _postShares = widget.postShares ?? 0;
+
+  bool get _isFanClubContext => (widget.clubName ?? '').trim().isNotEmpty;
 
   @override
   void initState() {
@@ -120,6 +134,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           }
         } else {
           _comments = response.comments;
+          // CF-194: sem dados reais no fã-clube → mock do print (arquivo único).
+          if (_comments.isEmpty &&
+              _isFanClubContext &&
+              kUseCf194CommentMocks) {
+            _comments = Cf194FanClubCommentsMock.comments();
+            _hasMore = false;
+          }
         }
         _loading = false;
         _error = null;
@@ -131,7 +152,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       setState(() {
         _loading = false;
         if (!append) {
-          _error = 'Não foi possível carregar os comentários.';
+          if (_isFanClubContext && kUseCf194CommentMocks) {
+            _comments = Cf194FanClubCommentsMock.comments();
+            _hasMore = false;
+            _error = null;
+          } else {
+            _error = 'Não foi possível carregar os comentários.';
+          }
         }
       });
     }
@@ -429,17 +456,29 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               author: widget.postAuthor,
               handle: widget.postHandle,
               avatarUrl: widget.postAvatarUrl,
+              clubAvatarUrl: widget.clubAvatarUrl,
+              clubName: widget.clubName,
             ),
             if ((widget.postAuthor ?? '').trim().isNotEmpty ||
                 (widget.clubName ?? '').trim().isNotEmpty ||
-                (widget.postText ?? '').trim().isNotEmpty)
+                (widget.postText ?? '').trim().isNotEmpty ||
+                widget.postMinutesAgo != null)
               CommentPostContextHeader(
-                author: (widget.postAuthor ?? '').trim().isEmpty
-                    ? 'Publicação'
-                    : widget.postAuthor!.trim(),
+                author: widget.postAuthor,
                 handle: widget.postHandle,
                 text: widget.postText,
                 clubName: widget.clubName,
+                minutesAgo: widget.postMinutesAgo,
+                votes: _postVotes,
+                myVote: _postMyVote,
+                shares: _postShares,
+                onVote: (direction) =>
+                    VoteService.votePost(widget.postId, direction),
+                onVoteApplied: (result) => setState(() {
+                  _postVotes = result.votes;
+                  _postMyVote = result.myVote;
+                }),
+                onShare: () {},
               )
             else
               Padding(
@@ -447,7 +486,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 child: Text(
                   'Comentários',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: colors.textPrimary,
                   ),
@@ -543,6 +582,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                       comment: reply,
                                       isOwn: isOwnComment(reply),
                                       isReply: true,
+                                      replyToHandle: item.handle,
                                       onOpenProfile: () =>
                                           handleOpenProfile(reply),
                                       onReply: () => setState(() {
