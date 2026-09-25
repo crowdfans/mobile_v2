@@ -106,8 +106,10 @@ void main() {
     expect(find.text('Populares'), findsOneWidget);
     expect(find.text('Novos'), findsOneWidget);
     expect(find.byKey(const Key('comment-gif')), findsOneWidget);
+    expect(find.text('GIF'), findsOneWidget);
     expect(find.byKey(const Key('comment-submit')), findsOneWidget);
     // Responder no raiz e na resposta aninhada (sem cadeia Twitter).
     expect(find.text('Responder'), findsNWidgets(2));
+    expect(find.textContaining('Respondendo a'), findsOneWidget);
   });
 }
