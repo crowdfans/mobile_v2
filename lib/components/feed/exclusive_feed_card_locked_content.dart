@@ -21,7 +21,6 @@ class ExclusiveFeedCardLockedContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final badgeBg = isDark ? AppPalette.purple950 : AppPalette.purple50;
     final badgeFg = isDark ? AppPalette.purple300 : AppPalette.purple600;
     final badgeText = isDark ? AppPalette.purple100 : AppPalette.purple700;
 
@@ -29,43 +28,33 @@ class ExclusiveFeedCardLockedContent extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? AppPalette.purple950 : AppPalette.purple50,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? AppPalette.purple800 : AppPalette.purple200,
-        ),
+        // Print CF-175: card claro com borda cinza (não lilás externo).
+        color: isDark ? colors.surfaceAlt : AppPalette.platinum50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: badgeBg,
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/Media & devices/music-note-01.svg',
-                    width: 14,
-                    height: 14,
-                    colorFilter: ColorFilter.mode(badgeFg, BlendMode.srcIn),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Exclusivo',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: badgeText,
-                    ),
-                  ),
-                ],
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                'assets/icons/Media & devices/music-note-01.svg',
+                width: 14,
+                height: 14,
+                colorFilter: ColorFilter.mode(badgeFg, BlendMode.srcIn),
               ),
-            ),
+              const SizedBox(width: 6),
+              Text(
+                'Exclusivo',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: badgeText,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 14),
           Text(

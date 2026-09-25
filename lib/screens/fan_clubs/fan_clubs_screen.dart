@@ -393,7 +393,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                           itemCount: artists.isEmpty ? 1 : artists.length,
                           separatorBuilder: (_, _) =>
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
                           itemBuilder: (context, index) {
                             if (artists.isEmpty) {
                               return Padding(

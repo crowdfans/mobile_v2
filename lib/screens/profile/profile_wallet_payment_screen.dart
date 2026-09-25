@@ -344,9 +344,8 @@ class _ProfileWalletPaymentScreenState
                     foregroundColor: AppPalette.platinum50,
                     disabledBackgroundColor:
                         AppPalette.platinum900.withValues(alpha: 0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    // Print CF-170: botão escuro em pílula.
+                    shape: const StadiumBorder(),
                   ),
                   child: Text(
                     hasPix
