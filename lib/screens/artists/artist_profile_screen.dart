@@ -331,16 +331,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       return;
     }
     if (!_subscribed) {
-      final handle = _profile?.name.trim() ?? '';
-      context.push(
-        Pages.profileMembershipSubscribeOf(
-          artistId: widget.artistId,
-          artistName: displayName(),
-          artistHandle: handle,
-          artistAvatarUrl: avatarUrl(),
-          pricePerMonth: 100,
-        ),
-      );
+      handleOpenMembershipSubscribe();
       return;
     }
     setState(() => _togglingMembership = true);
@@ -368,6 +359,30 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         setState(() => _togglingMembership = false);
       }
     }
+  }
+
+  void handleOpenMembershipSubscribe() {
+    final handle = _profile?.name.trim() ?? '';
+    context.push(
+      Pages.profileMembershipSubscribeOf(
+        artistId: widget.artistId,
+        artistName: displayName(),
+        artistHandle: handle,
+        artistAvatarUrl: avatarUrl(),
+        pricePerMonth: 100,
+      ),
+    );
+  }
+
+  void handleOpenMembershipManage() {
+    context.push(
+      Pages.profileMembershipManageOf(
+        artistId: widget.artistId,
+        artistName: displayName(),
+        artistHandle: _profile?.name.trim() ?? '',
+        artistAvatarUrl: avatarUrl(),
+      ),
+    );
   }
 
   void handleOpenFanClub() {
@@ -636,10 +651,18 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
                         membersLabel: membersLabel(),
                         rank: _fanClubRank,
                         following: _following,
-                        busy: _togglingFollow,
+                        subscribed: _subscribed,
+                        busy: _togglingFollow || _togglingMembership,
                         onBack: handleBack,
                         onMore: handleMore,
                         onToggleFollow: handleToggleFollow,
+                        onMembership: () {
+                          if (_subscribed) {
+                            handleOpenMembershipManage();
+                          } else {
+                            handleOpenMembershipSubscribe();
+                          }
+                        },
                       ),
                       if (_error != null)
                         Padding(
