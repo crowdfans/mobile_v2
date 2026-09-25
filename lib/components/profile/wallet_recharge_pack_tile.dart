@@ -23,25 +23,38 @@ class WalletRechargePackTile extends StatelessWidget {
     return 'R\$ $reais';
   }
 
+  /// Formata quantidade no padrão BR (ex.: 1.300).
+  String coinsLabel() {
+    final raw = pack.coins.toString();
+    final buffer = StringBuffer();
+    for (var i = 0; i < raw.length; i++) {
+      final fromEnd = raw.length - i;
+      if (i > 0 && fromEnd % 3 == 0) {
+        buffer.write('.');
+      }
+      buffer.write(raw[i]);
+    }
+    return buffer.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    // Referência: fundo lilás quando selecionado, sem borda roxa forte.
+    // Referência: fundo lilás + borda lilás fina quando selecionado.
     return Material(
-      color: selected
-          ? const Color(0xFFF3EEFF)
-          : colors.surface,
+      color: selected ? const Color(0xFFF3EEFF) : colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: selected ? const Color(0xFFE4D9FF) : colors.border,
+          color: selected ? const Color(0xFFD6C7FF) : colors.border,
+          width: selected ? 1.2 : 1,
         ),
       ),
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(14),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               Image.asset(
@@ -60,7 +73,7 @@ class WalletRechargePackTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      pack.coins.toString(),
+                      coinsLabel(),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -83,12 +96,22 @@ class WalletRechargePackTile extends StatelessWidget {
                   if (featured)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        'Mais pedido',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF3EEFF),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'Mais pedido',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
                         ),
                       ),
                     ),

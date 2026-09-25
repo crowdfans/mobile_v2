@@ -73,7 +73,7 @@ class _BlockedUsersSettingsScreenState
       if (mounted) {
         await AppAlert.show(
           context,
-          title: 'Bloqueados',
+          title: 'Usuários Bloqueados',
           message: error.toString(),
         );
       }
