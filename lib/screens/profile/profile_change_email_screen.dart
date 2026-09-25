@@ -119,7 +119,8 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: ListView(
                   key: ValueKey(_formNonce),
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  // Espaçamento generoso = REFERÊNCIA CF-165 (não o hub com abas).
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   children: [
@@ -127,12 +128,12 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                       'Atualize o e-mail da sua conta',
                       style: TextStyle(
                         fontSize: 22,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         height: 1.25,
                         color: colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Text(
                       'Para trocar o e-mail, a conta exige dois fatores: sua '
                       'senha atual e um OTP enviado por SMS para o telefone '
@@ -143,7 +144,7 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                         color: colors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
                     AppTextField(
                       key: ValueKey('current-$_formNonce'),
                       label: 'Senha atual',
@@ -154,7 +155,7 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                       onChanged: (value) =>
                           setState(() => _currentPassword = value),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
                     AppTextField(
                       key: ValueKey('new-email-$_formNonce'),
                       label: 'Novo e-mail',
@@ -162,7 +163,7 @@ class _ProfileChangeEmailScreenState extends State<ProfileChangeEmailScreen> {
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (value) => setState(() => _newEmail = value),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
                     AppTextField(
                       key: ValueKey('confirm-email-$_formNonce'),
                       label: 'Confirmar novo e-mail',
