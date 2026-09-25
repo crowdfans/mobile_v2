@@ -74,6 +74,12 @@ abstract final class CfTempMocks {
   /// Perfil artista — Exclusivo liberado (CF-239).
   static const useArtistExclusiveFixtures = true;
 
+  /// Painel de moderação — fila do print CF-199 (2 / 2 / 1).
+  static const useModerationPanelFixtures = true;
+
+  /// Preferências das subpáginas CF-208 / 209 / 211 (switches do print).
+  static const useNotificationCategoryPrintFixtures = true;
+
   /// Artistas favoritos no menu lateral (CF-191).
   static const useFavoriteArtistsFixtures = true;
 
@@ -401,6 +407,108 @@ const cfTempMockExpulsionReason =
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
+
+/// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
+abstract final class Cf199ModerationPanelFixtures {
+  static const _avatarAnna =
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
+  static const _avatarVic =
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80';
+
+  static List<FanClubAppeal> appeals() {
+    return const [
+      FanClubAppeal(
+        appealId: 'cf199-appeal-anna',
+        expulsionId: 'cf199-exp-anna',
+        requesterUid: 'cf199-anna',
+        displayName: 'Anna Lu',
+        handle: 'annalu',
+        photoUrl: _avatarAnna,
+        defense:
+            'Eu entendi o motivo da expulsão, apaguei as publicações e quero voltar para contribuir de forma respeitosa.',
+        status: 'pending',
+        createdAt: '2026-01-01T12:00:00Z',
+      ),
+      FanClubAppeal(
+        appealId: 'cf199-appeal-vic',
+        expulsionId: 'cf199-exp-vic',
+        requesterUid: 'cf199-vic',
+        displayName: 'Vic Melo',
+        handle: 'vicmelo',
+        photoUrl: _avatarVic,
+        defense:
+            'Quero explicar o contexto da discussão e mostrar que segui as orientações da moderação depois do caso.',
+        status: 'pending',
+        createdAt: '2026-01-01T13:00:00Z',
+      ),
+    ];
+  }
+
+  static List<FanClubStrike> strikes() {
+    return const [
+      FanClubStrike(
+        strikeId: 'cf199-strike-1',
+        targetUid: 'cf199-fan-a',
+        displayName: 'Fan A',
+        handle: 'fana',
+        photoUrl: '',
+        reason: 'Linguagem agressiva em comentários do feed.',
+        remainingChances: 2,
+        issuedByUid: 'mod-1',
+        createdAt: '2026-01-01T10:00:00Z',
+      ),
+      FanClubStrike(
+        strikeId: 'cf199-strike-2',
+        targetUid: 'cf199-fan-b',
+        displayName: 'Fan B',
+        handle: 'fanb',
+        photoUrl: '',
+        reason: 'Spam de links externos no chat da comunidade.',
+        remainingChances: 1,
+        issuedByUid: 'mod-1',
+        createdAt: '2026-01-01T11:00:00Z',
+      ),
+    ];
+  }
+
+  static List<FanClubExpulsion> expulsions() {
+    return const [
+      FanClubExpulsion(
+        expulsionId: 'cf199-exp-1',
+        targetUid: 'cf199-fan-c',
+        displayName: 'Fan C',
+        handle: 'fanc',
+        photoUrl: '',
+        reason: 'Ataques recorrentes após avisos prévios.',
+        issuedByUid: 'mod-1',
+        createdAt: '2026-01-01T09:00:00Z',
+      ),
+    ];
+  }
+}
+
+/// CF-208 / 209 / 211 — switches iguais aos prints das subpáginas.
+abstract final class Cf208209211NotificationPrintFixtures {
+  static Map<String, bool> preferences() {
+    return {
+      ...notificationPreferenceDefaults,
+      // CF-208 — todos off no print.
+      NotificationPreferenceKeys.artistLikeComment: false,
+      NotificationPreferenceKeys.artistLikeFanLetter: false,
+      NotificationPreferenceKeys.commentReplies: false,
+      NotificationPreferenceKeys.mentions: false,
+      NotificationPreferenceKeys.newFollowers: false,
+      // CF-209 — convites e lembretes on; resultado off.
+      NotificationPreferenceKeys.meetInvites: true,
+      NotificationPreferenceKeys.meetReminders: true,
+      NotificationPreferenceKeys.meetResults: false,
+      // CF-211 — renovação e saldo on; promo off.
+      NotificationPreferenceKeys.membershipRenewals: true,
+      NotificationPreferenceKeys.jamCoinsPromos: false,
+      NotificationPreferenceKeys.jamCoinsBalance: true,
+    };
+  }
+}
 
 /// Resumo de membership para telas de confirmação (CF-204…207).
 const cfTempMockMembershipSummary = (

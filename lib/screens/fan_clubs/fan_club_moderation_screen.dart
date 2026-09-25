@@ -8,6 +8,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
@@ -57,11 +58,20 @@ class _FanClubModerationScreenState extends State<FanClubModerationScreen> {
       _error = null;
     });
     try {
-      final strikes = await FanClubService.listFanClubStrikes(widget.artistId);
-      final expulsions = await FanClubService.listFanClubExpulsions(
+      var strikes = await FanClubService.listFanClubStrikes(widget.artistId);
+      var expulsions = await FanClubService.listFanClubExpulsions(
         widget.artistId,
       );
-      final appeals = await FanClubService.listFanClubAppeals(widget.artistId);
+      var appeals = await FanClubService.listFanClubAppeals(widget.artistId);
+      if (kUseCfTempMocks &&
+          CfTempMocks.useModerationPanelFixtures &&
+          appeals.isEmpty &&
+          strikes.isEmpty &&
+          expulsions.isEmpty) {
+        appeals = Cf199ModerationPanelFixtures.appeals();
+        strikes = Cf199ModerationPanelFixtures.strikes();
+        expulsions = Cf199ModerationPanelFixtures.expulsions();
+      }
       if (!mounted) {
         return;
       }
@@ -74,6 +84,16 @@ class _FanClubModerationScreenState extends State<FanClubModerationScreen> {
       });
     } catch (_) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks && CfTempMocks.useModerationPanelFixtures) {
+        setState(() {
+          _appeals = Cf199ModerationPanelFixtures.appeals();
+          _strikes = Cf199ModerationPanelFixtures.strikes();
+          _expulsions = Cf199ModerationPanelFixtures.expulsions();
+          _loading = false;
+          _error = null;
+        });
         return;
       }
       setState(() {
