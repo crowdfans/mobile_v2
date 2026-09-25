@@ -5,6 +5,8 @@
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
+// CF-178: feed Postagens dos Fã Clubes.
+// CF-181: grade Cartas no perfil do artista.
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
@@ -15,6 +17,8 @@
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/comment_service.dart';
+import 'package:crowdfans/services/community_service.dart';
+import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
@@ -693,6 +697,140 @@ abstract final class Cf195HomeCommentsMock {
         text: 'Alguém mais ficou com vontade de ver o making of completo?',
         votes: 48,
         replies: [collapsedA, collapsedB],
+      ),
+    ];
+  }
+}
+
+/// Liga feed demo CF-178 (Postagens dos Fã Clubes vazio → print).
+const bool kUseCf178FanClubsFeedMocks = true;
+
+/// Posts do print CF-178 (Felipe Rhy + Laís Costa carrossel).
+abstract final class Cf178FanClubsFeedMock {
+  static List<CommunityPost> posts() {
+    return const [
+      CommunityPost(
+        id: 'cf178-1',
+        type: 'text',
+        author: 'Felipe Rhy',
+        handle: 'fan/thiagok',
+        minutesAgo: 120,
+        avatarUri: '',
+        text:
+            'Se abrirem novo meet & greet, a gente precisa entrar mais coordenado dessa vez.',
+        votes: 1039,
+        comments: 69,
+        shares: 20,
+      ),
+      CommunityPost(
+        id: 'cf178-2',
+        type: 'carousel',
+        author: 'Laís Costa',
+        handle: 'fan/fefe_cf',
+        minutesAgo: 120,
+        avatarUri: '',
+        text:
+            'Dias de gravação, espera e conversa até tarde. Resolvi largar tudo nesse carrossel.',
+        imageUri:
+            'https://images.unsplash.com/photo-1491002052546-bf38f386af0e?auto=format&fit=crop&w=800&q=80',
+        votes: 412,
+        comments: 28,
+        shares: 11,
+      ),
+    ];
+  }
+}
+
+/// Liga grade demo CF-181 (Cartas vazias → print povoado).
+const bool kUseCf181CartasMocks = true;
+
+/// Cartas do print CF-181 (autoria no topo da grade).
+abstract final class Cf181CartasMock {
+  static List<FanLetter> letters({required String artistId}) {
+    return [
+      FanLetter(
+        id: 'cf181-1',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Aline Duarte',
+        fanHandle: 'alineduarte',
+        fanAvatarUri: '',
+        votesCount: 12,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'xhxucucucic',
+        backgroundId: 'night',
+      ),
+      FanLetter(
+        id: 'cf181-2',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Caio Loux',
+        fanHandle: 'caioloux',
+        fanAvatarUri: '',
+        votesCount: 8,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'Teu show foi incrível',
+        backgroundId: 'grad-lilac',
+      ),
+      FanLetter(
+        id: 'cf181-3',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Nina Costa',
+        fanHandle: 'ninacosta',
+        fanAvatarUri: '',
+        votesCount: 5,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'TEU SOM ME SALVA',
+        backgroundId: 'blush',
+      ),
+      FanLetter(
+        id: 'cf181-4',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Vic Melo',
+        fanHandle: 'vicmelo',
+        fanAvatarUri: '',
+        votesCount: 3,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'SHOW LOTADO',
+        backgroundId: 'sky-soft',
+      ),
+      FanLetter(
+        id: 'cf181-5',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Rafa Nogueira',
+        fanHandle: 'rafanogueira',
+        fanAvatarUri: '',
+        votesCount: 2,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'VOCE ACENOU',
+        backgroundId: 'solid-butter',
+      ),
+      FanLetter(
+        id: 'cf181-6',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Lia Costa',
+        fanHandle: 'liacosta',
+        fanAvatarUri: '',
+        votesCount: 1,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'MEU CONFORTO',
+        backgroundId: 'grad-peach',
       ),
     ];
   }

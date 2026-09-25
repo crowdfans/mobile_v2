@@ -43,7 +43,7 @@ class FanClubCommunityScreen extends StatefulWidget {
 class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   ArtistFanClub? _club;
   var _posts = <FeedPost>[];
-  var _sortPopular = false;
+  var _sortPopular = true;
   var _feedFilter = _ClubFeedFilter.all;
   var _page = 1;
   var _hasMore = true;
@@ -587,6 +587,15 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                         ),
                                         children: [
                                           FanClubSortTab(
+                                            label: 'Popularidade',
+                                            selected: _sortPopular,
+                                            onPressed: () {
+                                              setState(
+                                                () => _sortPopular = true,
+                                              );
+                                            },
+                                          ),
+                                          FanClubSortTab(
                                             label: 'Novos',
                                             selected: !_sortPopular,
                                             onPressed: () {
@@ -595,16 +604,18 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                               );
                                             },
                                           ),
-                                          FanClubSortTab(
-                                            label: 'Populares',
-                                            selected: _sortPopular,
-                                            onPressed: () {
-                                              setState(
-                                                () => _sortPopular = true,
-                                              );
-                                            },
-                                          ),
                                         ],
+                                      ),
+                                    ),
+                                    // CF-178: divisor entre ordenação e chips.
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: Divider(
+                                        height: 1,
+                                        thickness: 1,
+                                        color: colors.border,
                                       ),
                                     ),
                                   ],
@@ -614,7 +625,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                 return Padding(
                                   padding: const EdgeInsets.fromLTRB(
                                     16,
-                                    4,
+                                    10,
                                     16,
                                     8,
                                   ),

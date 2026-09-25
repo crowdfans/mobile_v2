@@ -18,10 +18,10 @@ class MePostsFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Material(
-      color: selected ? const Color(0xFF1C1C1E) : colors.surface,
+      color: selected ? AppPalette.platinum900 : colors.surface,
       shape: StadiumBorder(
         side: BorderSide(
-          color: selected ? const Color(0xFF1C1C1E) : colors.border,
+          color: selected ? AppPalette.platinum900 : colors.border,
         ),
       ),
       child: InkWell(
