@@ -25,7 +25,9 @@ class WalletPixCodePanel extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.border),
+              border: Border.all(
+                color: colors.primary.withValues(alpha: 0.35),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
@@ -44,7 +46,7 @@ class WalletPixCodePanel extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: onCopy,
-                    icon: Icon(Icons.copy, color: colors.textPrimary),
+                    icon: Icon(Icons.copy, color: colors.primary),
                   ),
                 ],
               ),

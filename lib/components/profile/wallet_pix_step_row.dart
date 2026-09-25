@@ -2,6 +2,8 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
 /// Etapa numerada do fluxo PIX (CF-171).
+///
+/// Referência: numeração grande e em negrito à esquerda, sem chip/caixa.
 class WalletPixStepRow extends StatelessWidget {
   const WalletPixStepRow({
     super.key,
@@ -20,24 +22,19 @@ class WalletPixStepRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 36,
-          height: 36,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: colors.surfaceAlt,
-            borderRadius: BorderRadius.circular(10),
-          ),
+        SizedBox(
+          width: 40,
           child: Text(
             number,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
+              fontSize: 26,
+              height: 1.1,
+              fontWeight: FontWeight.w900,
               color: colors.textPrimary,
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
