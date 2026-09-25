@@ -5,6 +5,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
@@ -56,6 +57,23 @@ class _FanClubRequestModerationScreenState
       _error = null;
     });
     try {
+      if (kUseCfTempMocks && CfTempMocks.useFanClubFixtures) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _profile = Profile(
+            userUid: 'cf-mod-aline',
+            displayName: cfTempMockModerationCandidate.displayName,
+            name: 'alineduarte',
+            description: '',
+            photoUrl: cfTempMockModerationCandidate.photoUrl,
+            isArtist: false,
+          );
+          _loading = false;
+        });
+        return;
+      }
       final profile = await ProfileService.getMyProfile();
       if (!mounted) {
         return;
@@ -66,6 +84,20 @@ class _FanClubRequestModerationScreenState
       });
     } catch (_) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks && CfTempMocks.useFanClubFixtures) {
+        setState(() {
+          _profile = Profile(
+            userUid: 'cf-mod-aline',
+            displayName: cfTempMockModerationCandidate.displayName,
+            name: 'alineduarte',
+            description: '',
+            photoUrl: cfTempMockModerationCandidate.photoUrl,
+            isArtist: false,
+          );
+          _loading = false;
+        });
         return;
       }
       setState(() {

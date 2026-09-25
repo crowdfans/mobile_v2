@@ -10,6 +10,7 @@ import 'package:crowdfans/components/post/novo_post_secret_banner.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/media_service.dart';
@@ -126,8 +127,14 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
       if (!mounted) {
         return;
       }
+      var candidates = merged.values.toList();
+      if (candidates.isEmpty &&
+          kUseCfTempMocks &&
+          CfTempMocks.useFanClubSelectorFixtures) {
+        candidates = cfTempMockFanClubSelectorArtists();
+      }
       setState(() {
-        _candidates = merged.values.toList();
+        _candidates = candidates;
         _loadingArtists = false;
       });
     } catch (_) {
@@ -135,7 +142,9 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
         return;
       }
       setState(() {
-        _candidates = [];
+        _candidates = kUseCfTempMocks && CfTempMocks.useFanClubSelectorFixtures
+            ? cfTempMockFanClubSelectorArtists()
+            : [];
         _loadingArtists = false;
       });
     }

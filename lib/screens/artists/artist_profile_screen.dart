@@ -17,6 +17,7 @@ import 'package:crowdfans/components/profile/artist_sobre_base.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/models/profile.dart';
@@ -235,9 +236,25 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         isArtist: true,
       );
       final owner = profile ?? fallbackOwner;
-      final posts = [
+      var posts = [
         for (final item in postItems) item.toFeedPost(owner: owner),
       ];
+      var subscribed = check.isSubscribed;
+      if (kUseCfTempMocks &&
+          CfTempMocks.useArtistExclusiveFixtures &&
+          cfTempMockArtistExclusiveSubscribed(
+            widget.artistId,
+            displayName(),
+          )) {
+        subscribed = true;
+        final exclusive = cfTempMockLudmillaExclusivePosts();
+        final seen = posts.map((p) => p.id).toSet();
+        posts = [
+          ...exclusive,
+          for (final post in posts)
+            if (!seen.contains(post.id)) post,
+        ];
+      }
       if (!mounted) {
         return;
       }
@@ -246,7 +263,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         _posts = posts;
         _letters = lettersResult.letters;
         _lettersError = lettersResult.error;
-        _subscribed = check.isSubscribed;
+        _subscribed = subscribed;
         _subscriptionResolved = true;
         _following = isFollowing;
         _memberCount = club?.memberCount;

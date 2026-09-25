@@ -57,12 +57,12 @@ class ExclusivePostMetaRow extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
+            const Text(
               'Disponível para membros',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: CrowdFansTheme.of(context).textSecondary,
+                color: AppPalette.purple700,
               ),
             ),
           ],

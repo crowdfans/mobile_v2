@@ -8,6 +8,7 @@ import 'package:crowdfans/components/search/search_discovery_tile.dart';
 import 'package:crowdfans/components/search/search_query_field.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -121,12 +122,32 @@ class _SearchScreenState extends State<SearchScreen> {
       _error = null;
     });
     try {
+      if (kUseCfTempMocks && CfTempMocks.useSearchArtistsFixtures) {
+        final mocked = cfTempMockSearchArtists(query);
+        if (mocked != null) {
+          if (!mounted || _query.trim() != query.trim()) {
+            return;
+          }
+          setState(() {
+            _results = mocked;
+            _error = null;
+            _searchingBusy = false;
+          });
+          return;
+        }
+      }
       final data = await SearchService.searchArtists(query, limit: 30);
       if (!mounted || _query.trim() != query.trim()) {
         return;
       }
+      var artists = data.artists;
+      if (artists.isEmpty &&
+          kUseCfTempMocks &&
+          CfTempMocks.useSearchArtistsFixtures) {
+        artists = cfTempMockSearchArtists(query) ?? artists;
+      }
       setState(() {
-        _results = data.artists;
+        _results = artists;
         _error = null;
         _searchingBusy = false;
       });
@@ -134,9 +155,17 @@ class _SearchScreenState extends State<SearchScreen> {
       if (!mounted || _query.trim() != query.trim()) {
         return;
       }
+      final mocked = kUseCfTempMocks && CfTempMocks.useSearchArtistsFixtures
+          ? cfTempMockSearchArtists(query)
+          : null;
       setState(() {
+        if (mocked != null) {
+          _results = mocked;
+          _error = null;
+        } else {
+          _error = 'Não foi possível buscar artistas.';
+        }
         _searchingBusy = false;
-        _error = 'Não foi possível buscar artistas.';
       });
     }
   }
