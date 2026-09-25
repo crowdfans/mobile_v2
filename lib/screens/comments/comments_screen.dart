@@ -260,6 +260,33 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     });
   }
 
+  /// Prefill `fan/...` no compositor (print CF-196).
+  String replyMentionDraft(String? handle) {
+    final raw = (handle ?? '').trim();
+    if (raw.isEmpty) {
+      return '';
+    }
+    if (raw.startsWith('fan/') || raw.startsWith('@')) {
+      return '$raw ';
+    }
+    return 'fan/$raw ';
+  }
+
+  void handleStartReply({
+    required CommentItem parent,
+    required String bannerAuthor,
+    required String bannerHandle,
+  }) {
+    setState(() {
+      _replyTo = parent;
+      _replyBannerAuthor = bannerAuthor;
+      _replyBannerHandle = bannerHandle;
+      _editing = null;
+      _draft = replyMentionDraft(bannerHandle);
+      _composerNonce++;
+    });
+  }
+
   bool isOwnComment(CommentItem comment) {
     final profile = ref.read(authSessionProvider).profile;
     if (profile == null) {
@@ -594,12 +621,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                 isOwn: isOwnComment(item),
                                 isReply: false,
                                 onOpenProfile: () => handleOpenProfile(item),
-                                onReply: () => setState(() {
-                                  _replyTo = item;
-                                  _replyBannerAuthor = item.author;
-                                  _replyBannerHandle = item.handle;
-                                  _editing = null;
-                                }),
+                                onReply: () => handleStartReply(
+                                  parent: item,
+                                  bannerAuthor: item.author,
+                                  bannerHandle: item.handle,
+                                ),
                                 onReport: () => handleReport(item),
                                 onEdit: () => setState(() {
                                   _editing = item;
@@ -624,13 +650,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                       replyToHandle: item.handle,
                                       onOpenProfile: () =>
                                           handleOpenProfile(reply),
-                                      onReply: () => setState(() {
-                                        // Resposta aninhada → ainda sob o raiz.
-                                        _replyTo = item;
-                                        _replyBannerAuthor = reply.author;
-                                        _replyBannerHandle = reply.handle;
-                                        _editing = null;
-                                      }),
+                                      onReply: () => handleStartReply(
+                                        parent: item,
+                                        bannerAuthor: reply.author,
+                                        bannerHandle: reply.handle,
+                                      ),
                                       onReport: () => handleReport(reply),
                                       onEdit: () => setState(() {
                                         _editing = reply;
