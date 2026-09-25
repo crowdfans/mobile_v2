@@ -12,6 +12,7 @@ class AppTextField extends StatefulWidget {
     this.helperColor,
     this.keyboardType,
     this.obscureText = false,
+    this.showObscureToggle = true,
     this.maxLines = 1,
     this.maxLength,
     this.initialValue,
@@ -28,6 +29,9 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final TextInputType? keyboardType;
   final bool obscureText;
+
+  /// Quando [obscureText] é true, controla o ícone de olho (CF-165 print sem olho).
+  final bool showObscureToggle;
   final int maxLines;
   final int? maxLength;
   final bool enabled;
@@ -67,7 +71,7 @@ class _AppTextFieldState extends State<AppTextField> {
           vertical: 16,
         ),
         isDense: true,
-        suffixIcon: widget.obscureText
+        suffixIcon: widget.obscureText && widget.showObscureToggle
             ? IconButton(
                 onPressed: () => setState(() => _visible = !_visible),
                 icon: Icon(

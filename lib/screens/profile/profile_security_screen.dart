@@ -120,9 +120,8 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                   SecurityAccessNavRow(
                     title: 'Trocar e-mail',
                     subtitle: 'Atualize o e-mail principal usado no login.',
-                    onTap: () => context.push(
-                      '${Pages.profileSecurityCredentials}?mode=email',
-                    ),
+                    // CF-165: página dedicada — NUNCA credentials?mode=email (abas).
+                    onTap: () => context.push(Pages.profileChangeEmail),
                   ),
                   SecurityAccessNavRow(
                     title: 'Trocar telefone',
