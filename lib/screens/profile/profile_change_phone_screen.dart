@@ -3,6 +3,7 @@ import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_security_service.dart';
 import 'package:crowdfans/utils/phone_utils.dart';
@@ -38,6 +39,9 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
   String get _currentPhoneLabel {
     final raw = FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
     if (raw.isEmpty) {
+      if (kUseCfTempMocks && CfTempMocks.useSecuritySettingsFixtures) {
+        return Cf217ChangePhoneMock.currentPhoneLabel;
+      }
       return 'não informado';
     }
     final digits = raw.replaceAll(RegExp(r'\D'), '');
@@ -170,8 +174,8 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
                     'Telefone atual: $_currentPhoneLabel',
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textTertiary,
                     ),
                   ),
                   const SizedBox(height: 20),

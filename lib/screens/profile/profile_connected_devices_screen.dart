@@ -2,6 +2,7 @@ import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,16 +20,24 @@ class ProfileConnectedDevicesScreen extends StatefulWidget {
 
 class _ProfileConnectedDevicesScreenState
     extends State<ProfileConnectedDevicesScreen> {
-  var _sessions = <ConnectedDeviceSession>[
-    const ConnectedDeviceSession(
-      id: 'current',
-      name: 'Este aparelho',
-      platformLine: 'Crowd Fans App',
-      location: 'Sessão atual',
-      activity: 'Ativo agora',
-      isCurrent: true,
-    ),
-  ];
+  late List<ConnectedDeviceSession> _sessions;
+
+  @override
+  void initState() {
+    super.initState();
+    _sessions = kUseCfTempMocks && CfTempMocks.useSecuritySettingsFixtures
+        ? Cf216ConnectedDevicesFixtures.sessions()
+        : const [
+            ConnectedDeviceSession(
+              id: 'current',
+              name: 'Este aparelho',
+              platformLine: 'Crowd Fans App',
+              location: 'Sessão atual',
+              activity: 'Ativo agora',
+              isCurrent: true,
+            ),
+          ];
+  }
 
   Future<void> handleDisconnect(ConnectedDeviceSession session) async {
     final ok = await AppAlert.confirm(
@@ -96,12 +105,23 @@ class _ProfileConnectedDevicesScreenState
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    '$count dispositivo${count == 1 ? '' : 's'} conectado${count == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: colors.textPrimary,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '$count',
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        TextSpan(
+                          text:
+                              ' dispositivo${count == 1 ? '' : 's'} conectado${count == 1 ? '' : 's'}',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 8),

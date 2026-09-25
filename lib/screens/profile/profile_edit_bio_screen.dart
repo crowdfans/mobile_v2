@@ -5,6 +5,7 @@ import 'package:crowdfans/components/profile/profile_bio_field_meta.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -37,9 +38,14 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
     super.initState();
     final stored = ref.read(authSessionProvider).profile;
     if (stored != null) {
-      _profile = stored;
-      _bio = stored.description;
-      _initialBio = stored.description;
+      final seeded = (!kUseCfTempMocks ||
+              !CfTempMocks.useSecuritySettingsFixtures ||
+              stored.description.trim().isNotEmpty)
+          ? stored
+          : stored.copyWith(description: Cf219EditBioMock.bio);
+      _profile = seeded;
+      _bio = seeded.description;
+      _initialBio = seeded.description;
       _loading = false;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -55,10 +61,11 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
         return;
       }
       ref.read(authSessionProvider.notifier).applyProfile(profile);
+      final seeded = _seedBioIfNeeded(profile);
       setState(() {
-        _profile = profile;
-        _bio = profile.description;
-        _initialBio = profile.description;
+        _profile = seeded;
+        _bio = seeded.description;
+        _initialBio = seeded.description;
         _error = null;
         _loading = false;
       });
@@ -73,6 +80,16 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
         }
       });
     }
+  }
+
+  Profile _seedBioIfNeeded(Profile profile) {
+    if (!kUseCfTempMocks || !CfTempMocks.useSecuritySettingsFixtures) {
+      return profile;
+    }
+    if (profile.description.trim().isNotEmpty) {
+      return profile;
+    }
+    return profile.copyWith(description: Cf219EditBioMock.bio);
   }
 
   void handleChangeBio(String value) {
