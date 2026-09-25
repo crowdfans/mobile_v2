@@ -26,15 +26,6 @@ class FanClubDefendReturnField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Sua defesa',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: colors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
         TextField(
           controller: controller,
           onChanged: onChanged,
