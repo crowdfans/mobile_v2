@@ -37,6 +37,10 @@ void main() {
       expect(find.byKey(const Key('fan-clubs-filter-posts')), findsOneWidget);
       expect(find.byKey(const Key('fan-clubs-filter-media')), findsOneWidget);
       expect(find.byType(FanClubArtistChip), findsNothing);
+      // Divisor entre ordenação e chips (print referência).
+      expect(find.byType(Divider), findsOneWidget);
+      // Underline acompanha o rótulo (IntrinsicWidth).
+      expect(find.byType(IntrinsicWidth), findsWidgets);
     },
   );
 
