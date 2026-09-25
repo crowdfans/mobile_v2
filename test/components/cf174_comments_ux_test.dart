@@ -58,7 +58,8 @@ void main() {
     expect(find.text('Vic Artist'), findsOneWidget);
     expect(find.text('Comentários'), findsOneWidget);
     expect(find.byKey(const Key('comment-gif')), findsOneWidget);
-    expect(find.byKey(const Key('comment-submit')), findsOneWidget);
+    // Idle: só emoji no campo — send aparece ao digitar / responder (CF-196).
+    expect(find.byKey(const Key('comment-submit')), findsNothing);
     expect(find.text('Publicar'), findsNothing);
 
     final material = tester.widget<Material>(

@@ -173,21 +173,40 @@ class CommentComposer extends StatelessWidget {
                                 size: 22,
                               ),
                             ),
-                            IconButton(
-                              key: const Key('comment-submit'),
-                              onPressed: canSubmit ? onSubmit : null,
-                              tooltip: editing
-                                  ? 'Salvar comentário'
-                                  : 'Publicar comentário',
-                              visualDensity: VisualDensity.compact,
-                              icon: Icon(
-                                Icons.send_rounded,
-                                size: 20,
-                                color: canSubmit
-                                    ? colors.primary
-                                    : colors.textTertiary,
+                            // Print CF-196: enviar = círculo escuro com ↑ (só ativo).
+                            if (canSubmit || replyAuthor != null || editing)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Semantics(
+                                  button: true,
+                                  enabled: canSubmit,
+                                  label: editing
+                                      ? 'Salvar comentário'
+                                      : 'Publicar comentário',
+                                  child: Material(
+                                    color: canSubmit
+                                        ? const Color(0xFF1C1C1E)
+                                        : colors.surfaceAlt,
+                                    shape: const CircleBorder(),
+                                    child: InkWell(
+                                      key: const Key('comment-submit'),
+                                      onTap: canSubmit ? onSubmit : null,
+                                      customBorder: const CircleBorder(),
+                                      child: SizedBox(
+                                        width: 34,
+                                        height: 34,
+                                        child: Icon(
+                                          Icons.arrow_upward_rounded,
+                                          size: 18,
+                                          color: canSubmit
+                                              ? Colors.white
+                                              : colors.textTertiary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

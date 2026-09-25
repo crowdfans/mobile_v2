@@ -123,7 +123,7 @@ void main() {
     expect(find.text('Populares'), findsOneWidget);
     expect(find.text('Fê Andrade'), findsOneWidget);
     expect(find.text('Responder'), findsOneWidget);
-    expect(find.text('Ver 1 resposta'), findsOneWidget);
+    expect(find.text('Ver 1 respostas'), findsOneWidget);
     expect(find.text('Rafa Nogueira'), findsNothing);
     expect(find.text('Resposta'), findsNothing);
     expect(find.text('Adicione um comentário...'), findsOneWidget);

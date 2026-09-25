@@ -22,8 +22,6 @@ class CommentRepliesToggle extends StatelessWidget {
     }
     final label = expanded
         ? 'Ocultar respostas'
-        : replyCount == 1
-        ? 'Ver 1 resposta'
         : 'Ver $replyCount respostas';
     return Padding(
       padding: const EdgeInsets.only(left: 48, bottom: 12, top: 2),

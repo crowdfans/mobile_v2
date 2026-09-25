@@ -7,9 +7,7 @@ String commentRepliesToggleLabel({
   if (expanded) {
     return 'Ocultar respostas';
   }
-  if (replyCount == 1) {
-    return 'Ver 1 resposta';
-  }
+  // Print CF-194: sempre "Ver N respostas" (plural).
   return 'Ver $replyCount respostas';
 }
 
@@ -21,7 +19,7 @@ void main() {
     );
     expect(
       commentRepliesToggleLabel(replyCount: 1, expanded: false),
-      'Ver 1 resposta',
+      'Ver 1 respostas',
     );
     expect(
       commentRepliesToggleLabel(replyCount: 3, expanded: true),

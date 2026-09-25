@@ -132,7 +132,7 @@ class MembershipActivationConfirmedCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '$pricePerMonth /mês',
+                          '$pricePerMonth/mês',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
