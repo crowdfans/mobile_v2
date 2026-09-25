@@ -81,7 +81,9 @@ class _ModerationTabPill extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: selected ? colors.buttonPrimaryText : colors.textPrimary,
+                color: selected
+                    ? colors.buttonPrimaryText
+                    : colors.textTertiary,
               ),
             ),
           ),
