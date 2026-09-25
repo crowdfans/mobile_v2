@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:crowdfans/components/search/search_artist_options_sheet.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
 import 'package:crowdfans/components/search/search_artist_result_row.dart';
+import 'package:crowdfans/components/search/search_artists_chrome.dart';
 import 'package:crowdfans/components/search/search_discovery_tile.dart';
 import 'package:crowdfans/components/search/search_query_field.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -96,6 +97,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  /// Voltar do chrome de resultados: limpa a busca (aba Explorar).
+  void handleBackFromSearch() {
+    if (_query.trim().isNotEmpty) {
+      handleClearQuery();
+      return;
+    }
+    if (context.canPop()) {
+      context.pop();
+    }
+  }
+
   Future<void> handleSearch(String query) async {
     if (query.trim().isEmpty) {
       setState(() {
@@ -150,7 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final listBusy = searching ? _searchingBusy : _loading;
 
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: searching ? colors.surfaceAlt : colors.background,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -158,17 +170,25 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: SearchQueryField(
+                if (searching)
+                  SearchArtistsChrome(
                     controller: _queryController,
-                    hint: 'Buscar artista',
+                    onBack: handleBackFromSearch,
                     onChanged: handleQueryChanged,
-                    showClear: searching,
+                    showClear: true,
                     onClear: handleClearQuery,
+                  )
+                else ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                    child: SearchQueryField(
+                      controller: _queryController,
+                      hint: 'Buscar artista',
+                      onChanged: handleQueryChanged,
+                      showClear: false,
+                      onClear: handleClearQuery,
+                    ),
                   ),
-                ),
-                if (!searching)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                     child: Row(
@@ -196,6 +216,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
+                ],
                 if (searching && !_searchingBusy && _error == null)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -274,7 +295,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     if (searching) {
                                       return SearchArtistResultRow(
                                         artist: artist,
-                                        position: artist.rank ?? index + 1,
+                                        position: artist.rank,
                                         onPressed: openProfile,
                                         onPressMore: openMore,
                                       );
