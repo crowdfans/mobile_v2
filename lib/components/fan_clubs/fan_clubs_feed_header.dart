@@ -87,7 +87,7 @@ class FanClubsFeedHeader extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 44,
+          height: 40,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -105,9 +105,14 @@ class FanClubsFeedHeader extends StatelessWidget {
             ],
           ),
         ),
+        // CF-178 redo: divisor entre ordenação e chips (print referência).
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Divider(height: 1, thickness: 1, color: colors.border),
+        ),
         // CF-178: só Todos / Posts / Media — sem chips de artistas no feed.
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
