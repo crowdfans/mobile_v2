@@ -116,7 +116,11 @@ class _ProfileMemoriesScreenState extends State<ProfileMemoriesScreen> {
                         final post = _posts[index];
                         return GestureDetector(
                           onTap: () => context.push(
-                            Pages.comments.replaceAll(':postId', post.postId),
+                            Pages.commentsOf(
+                              post.postId,
+                              author: post.authorName,
+                              text: post.text,
+                            ),
                           ),
                           child: SettingsRestoreRow(
                             title: post.authorName,

@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/comments/comment_composer.dart';
 import 'package:crowdfans/components/comments/comment_post_context_header.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
+import 'package:crowdfans/components/comments/comment_thread_header.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,12 @@ void main() {
         home: Scaffold(
           body: Column(
             children: [
+              CommentThreadHeader(
+                onBack: () {},
+                author: 'Ponzanelli',
+                handle: '@ponzanelli',
+                avatarUrl: '',
+              ),
               const CommentPostContextHeader(
                 author: 'Vic Artist',
                 handle: '@vic',
@@ -45,12 +52,13 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('@ponzanelli'), findsOneWidget);
+    expect(find.text('Voltar'), findsNothing);
     expect(find.text('Vic Artist'), findsOneWidget);
     expect(find.text('Comentários'), findsOneWidget);
     expect(find.byKey(const Key('comment-gif')), findsOneWidget);
     expect(find.byKey(const Key('comment-submit')), findsOneWidget);
     expect(find.text('Publicar'), findsNothing);
-    expect(find.byType(IconButton), findsNWidgets(2));
 
     final material = tester.widget<Material>(
       find.descendant(

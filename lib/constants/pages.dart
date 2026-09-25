@@ -37,6 +37,7 @@ abstract final class Pages {
     String? handle,
     String? text,
     String? clubName,
+    String? avatarUrl,
   }) {
     return Uri(
       path: '/comments/${Uri.encodeComponent(postId)}',
@@ -45,6 +46,7 @@ abstract final class Pages {
         if ((handle ?? '').trim().isNotEmpty) 'handle': handle!.trim(),
         if ((text ?? '').trim().isNotEmpty) 'text': text!.trim(),
         if ((clubName ?? '').trim().isNotEmpty) 'club': clubName!.trim(),
+        if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
       },
     ).toString();
   }
