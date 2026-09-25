@@ -162,39 +162,29 @@ class CommentComposer extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Print CF-69 p12/p13: rótulo GIF ao lado do campo.
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: Material(
-                                color: colors.surface,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: BorderSide(color: colors.border),
-                                ),
-                                child: InkWell(
+                            // Print CF-194/195: idle = ícone smile no campo (abre GIF).
+                            // Com rascunho/resposta: só o enviar (CF-196).
+                            if (!(canSubmit || replyAuthor != null || editing))
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: IconButton(
                                   key: const Key('comment-gif'),
-                                  onTap: onPickGif,
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: const SizedBox(
-                                    width: 36,
-                                    height: 28,
-                                    child: Center(
-                                      child: Text(
-                                        'GIF',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.2,
-                                          color: Color(0xFF1C1C1E),
-                                        ),
-                                      ),
-                                    ),
+                                  onPressed: onPickGif,
+                                  tooltip: 'Escolher GIF',
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
+                                  icon: Icon(
+                                    Icons.sentiment_satisfied_alt_outlined,
+                                    size: 22,
+                                    color: colors.textTertiary,
                                   ),
                                 ),
                               ),
-                            ),
                             // Print CF-196: enviar = círculo escuro com ↑
-                            // (só com foco/rascunho/resposta — não no idle).
                             if (canSubmit || replyAuthor != null || editing)
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
@@ -222,6 +212,38 @@ class CommentComposer extends StatelessWidget {
                                           color: canSubmit
                                               ? Colors.white
                                               : colors.textTertiary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            // Atalho GIF explícito enquanto redige (CF-69).
+                            if (canSubmit || replyAuthor != null || editing)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Material(
+                                  color: colors.surface,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(color: colors.border),
+                                  ),
+                                  child: InkWell(
+                                    key: const Key('comment-gif-chip'),
+                                    onTap: onPickGif,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: const SizedBox(
+                                      width: 36,
+                                      height: 28,
+                                      child: Center(
+                                        child: Text(
+                                          'GIF',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.2,
+                                            color: Color(0xFF1C1C1E),
+                                          ),
                                         ),
                                       ),
                                     ),

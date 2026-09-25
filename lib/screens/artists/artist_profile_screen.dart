@@ -4,6 +4,7 @@ import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
 import 'package:crowdfans/components/profile/artist_me_feed_filter_chip.dart';
 import 'package:crowdfans/components/profile/artist_me_tab_bar.dart';
+import 'package:crowdfans/components/profile/artist_profile_compact_header.dart';
 import 'package:crowdfans/components/profile/artist_profile_exclusive_teaser.dart';
 import 'package:crowdfans/components/profile/artist_profile_fan_club_feed.dart';
 import 'package:crowdfans/components/profile/artist_profile_fan_club_header.dart';
@@ -77,6 +78,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
   int? _memberCount;
   int? _fanClubRank;
   String? _error;
+  var _showCompactHeader = false;
   var _menuOpen = false;
 
   @override
@@ -520,6 +522,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
       final bio = _profile?.description.trim().isNotEmpty == true
           ? _profile!.description
           : 'Este artista ainda não escreveu uma bio.';
+      final useSobreFixtures =
+          kUseCfTempMocks && CfTempMocks.useArtistSobreFixtures;
+      final baseLocation =
+          useSobreFixtures ? Cf182ArtistSobreMock.location : null;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -546,7 +552,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
               Expanded(
                 child: ArtistProfileStatTile(
                   label: 'Base',
-                  value: artistSobreBaseLabel(null),
+                  value: artistSobreBaseLabel(baseLocation),
                 ),
               ),
               const SizedBox(width: 10),
@@ -559,7 +565,21 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          ArtistProfileSpotifyCard(artistName: name),
+          ArtistProfileSpotifyCard(
+            artistName: name,
+            title: useSobreFixtures ? Cf182ArtistSobreMock.trackTitle : null,
+            subtitle: useSobreFixtures
+                ? Cf182ArtistSobreMock.playlistSubtitle
+                : 'Playlist em destaque',
+            previewReady: useSobreFixtures,
+            monthlyListeners: useSobreFixtures
+                ? Cf182ArtistSobreMock.monthlyListeners
+                : 'Não informado',
+            genre: useSobreFixtures
+                ? Cf182ArtistSobreMock.genre
+                : 'Não informado',
+            onOpenSpotify: useSobreFixtures ? () {} : null,
+          ),
           const SizedBox(height: 14),
           const ArtistProfileSocialLinksCard(),
         ],
@@ -638,6 +658,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             FeedItem(
               post: post,
               canAccessExclusive: true,
+              plainExclusiveWhenUnlocked: true,
               onVoteApplied: handleVoteApplied,
             ),
         ],
@@ -676,94 +697,123 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           backgroundColor: colors.background,
           body: _loading
               ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(
-                  onRefresh: handleLoad,
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      ArtistProfilePublicCover(
-                        imageUrl: avatar,
-                        displayName: name,
-                        membersLabel: membersLabel(),
-                        rank: _fanClubRank,
-                        following: _following,
-                        subscribed: _subscribed,
-                        busy: _togglingFollow || _togglingMembership,
-                        onBack: handleBack,
-                        onMore: handleMore,
-                        onToggleFollow: handleToggleFollow,
-                        onMembership: () {
-                          if (_subscribed) {
-                            handleOpenMembershipManage();
-                          } else {
-                            handleOpenMembershipSubscribe();
-                          }
-                        },
-                      ),
-                      if (_error != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                          child: Column(
-                            children: [
-                              Text(
-                                _error!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: colors.textSecondary),
-                              ),
-                              const SizedBox(height: 12),
-                              AppButton(
-                                label: 'Tentar novamente',
-                                onPressed: handleLoad,
-                              ),
-                            ],
-                          ),
+              : NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    final coverThreshold =
+                        240 + MediaQuery.paddingOf(context).top;
+                    final show =
+                        notification.metrics.pixels > coverThreshold;
+                    if (show != _showCompactHeader) {
+                      setState(() => _showCompactHeader = show);
+                    }
+                    return false;
+                  },
+                  child: RefreshIndicator(
+                    onRefresh: handleLoad,
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        ArtistProfilePublicCover(
+                          imageUrl: avatar,
+                          displayName: name,
+                          membersLabel: membersLabel(),
+                          rank: _fanClubRank,
+                          following: _following,
+                          subscribed: _subscribed,
+                          busy: _togglingFollow || _togglingMembership,
+                          onBack: handleBack,
+                          onMore: handleMore,
+                          onToggleFollow: handleToggleFollow,
+                          onMembership: () {
+                            if (_subscribed) {
+                              handleOpenMembershipManage();
+                            } else {
+                              handleOpenMembershipSubscribe();
+                            }
+                          },
                         ),
-                      ArtistMeTabBar(
-                        selectedId: _tab,
-                        onSelected: (id) => setState(() => _tab = id),
-                      ),
-                      if (_tab == 'feed')
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                          child: Wrap(
-                            spacing: 8,
-                            children: [
-                              ArtistMeFeedFilterChip(
-                                label: 'Todos',
-                                selected: _feedFilter == _FeedFilter.all,
-                                onPressed: () {
-                                  setState(() => _feedFilter = _FeedFilter.all);
-                                },
-                              ),
-                              ArtistMeFeedFilterChip(
-                                label: 'Posts',
-                                selected: _feedFilter == _FeedFilter.posts,
-                                onPressed: () {
-                                  setState(
-                                    () => _feedFilter = _FeedFilter.posts,
-                                  );
-                                },
-                              ),
-                              ArtistMeFeedFilterChip(
-                                label: 'Media',
-                                selected: _feedFilter == _FeedFilter.media,
-                                onPressed: () {
-                                  setState(
-                                    () => _feedFilter = _FeedFilter.media,
-                                  );
-                                },
-                              ),
-                            ],
+                        if (_error != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  _error!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: colors.textSecondary),
+                                ),
+                                const SizedBox(height: 12),
+                                AppButton(
+                                  label: 'Tentar novamente',
+                                  onPressed: handleLoad,
+                                ),
+                              ],
+                            ),
                           ),
+                        ArtistMeTabBar(
+                          selectedId: _tab,
+                          onSelected: (id) => setState(() => _tab = id),
                         ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
-                        child: buildTabBody(colors, posts),
-                      ),
-                    ],
+                        if (_tab == 'feed')
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                            child: Wrap(
+                              spacing: 8,
+                              children: [
+                                ArtistMeFeedFilterChip(
+                                  label: 'Todos',
+                                  selected: _feedFilter == _FeedFilter.all,
+                                  onPressed: () {
+                                    setState(
+                                      () => _feedFilter = _FeedFilter.all,
+                                    );
+                                  },
+                                ),
+                                ArtistMeFeedFilterChip(
+                                  label: 'Posts',
+                                  selected: _feedFilter == _FeedFilter.posts,
+                                  onPressed: () {
+                                    setState(
+                                      () => _feedFilter = _FeedFilter.posts,
+                                    );
+                                  },
+                                ),
+                                ArtistMeFeedFilterChip(
+                                  label: 'Media',
+                                  selected: _feedFilter == _FeedFilter.media,
+                                  onPressed: () {
+                                    setState(
+                                      () => _feedFilter = _FeedFilter.media,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
+                          child: buildTabBody(colors, posts),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
         ),
+        if (_showCompactHeader && !_loading)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ArtistProfileCompactHeader(
+              displayName: name,
+              handle: _profile?.name.trim().isNotEmpty == true
+                  ? _profile!.name.trim()
+                  : '@${widget.artistId}',
+              avatarUrl: avatar,
+              onBack: handleBack,
+              onMore: handleMore,
+            ),
+          ),
         ArtistProfileOptionsSheet(
           visible: _menuOpen,
           artistId: widget.artistId,

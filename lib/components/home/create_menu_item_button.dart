@@ -27,7 +27,7 @@ class CreateMenuItemButton extends StatelessWidget {
         InkWell(
           onTap: onPressed,
           child: SizedBox(
-            height: 64,
+            height: 56,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(

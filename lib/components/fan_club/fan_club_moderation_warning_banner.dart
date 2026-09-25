@@ -27,51 +27,38 @@ class FanClubModerationWarningBanner extends StatelessWidget {
           border: Border.all(color: const Color(0xFFF5C84C)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-          child: Row(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                color: Color(0xFFB45309),
-                size: 22,
+              Text(
+                'Você recebeu um aviso neste fã clube',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textPrimary,
+                ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Você recebeu um aviso neste fã clube',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      reason.trim().isEmpty
-                          ? 'Você recebeu um aviso da moderação deste fã clube.'
-                          : reason.trim(),
-                      style: TextStyle(
-                        fontSize: 13,
-                        height: 1.4,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      chances == 1
-                          ? 'Você ainda tem 1 chance para ajustar seu comportamento.'
-                          : 'Você ainda tem $chances chances para ajustar seu comportamento.',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFB45309),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 4),
+              Text(
+                reason.trim().isEmpty
+                    ? 'Você recebeu um aviso da moderação deste fã clube.'
+                    : reason.trim(),
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                chances == 1
+                    ? 'Você ainda tem 1 chance para ajustar seu comportamento.'
+                    : 'Você ainda tem $chances chances para ajustar seu comportamento.',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFB45309),
                 ),
               ),
             ],

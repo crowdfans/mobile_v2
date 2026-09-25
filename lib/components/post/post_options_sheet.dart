@@ -240,7 +240,7 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
               PostOptionsShortcutCard(
                 label: 'Salvar Post nas Memórias',
                 asset: 'assets/images/star-memory.png',
-                backgroundColor: AppPalette.yellow500.withValues(alpha: 0.35),
+                backgroundColor: AppPalette.yellow500.withValues(alpha: 0.18),
                 iconColor: AppPalette.platinum900,
                 labelColor: AppPalette.yellow600,
                 onPressed: () {

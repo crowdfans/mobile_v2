@@ -392,8 +392,11 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                       ? ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                           itemCount: artists.isEmpty ? 1 : artists.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: 4),
+                          separatorBuilder: (_, _) => Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: colors.border,
+                          ),
                           itemBuilder: (context, index) {
                             if (artists.isEmpty) {
                               return Padding(

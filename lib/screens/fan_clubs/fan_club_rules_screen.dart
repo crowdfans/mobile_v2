@@ -55,12 +55,22 @@ class FanClubRulesScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Equipe Crowd Fans. Feito de fã pra fã. <3',
+                    'Equipe Crowd Fans',
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Feito de fã pra fã. <3',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),

@@ -84,6 +84,9 @@ abstract final class CfTempMocks {
   /// Hub Seu Perfil (CF-162) — Aline Duarte quando a API falha/vazio.
   static const useProfileAccountFixtures = true;
 
+  /// Perfil artista — Sobre Spotify/base (CF-182).
+  static const useArtistSobreFixtures = true;
+
   /// Artistas favoritos no menu lateral (CF-191).
   static const useFavoriteArtistsFixtures = true;
 
@@ -1368,4 +1371,13 @@ abstract final class Cf170WalletPackMock {
       ),
     ];
   }
+}
+
+/// CF-182 — Sobre do artista (Spotify + base do print).
+abstract final class Cf182ArtistSobreMock {
+  static const location = 'Rio de Janeiro, BR';
+  static const trackTitle = 'Maldivas';
+  static const playlistSubtitle = 'Playlist em destaque';
+  static const monthlyListeners = '12,4 mi';
+  static const genre = 'Funk / Pop';
 }
