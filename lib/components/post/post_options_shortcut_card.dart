@@ -11,6 +11,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
     this.asset,
     this.icon,
     this.iconColor,
+    this.labelColor,
   });
 
   final String label;
@@ -19,6 +20,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
   final String? asset;
   final IconData? icon;
   final Color? iconColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                      color: labelColor ?? colors.textPrimary,
                     ),
                   ),
                 ],
