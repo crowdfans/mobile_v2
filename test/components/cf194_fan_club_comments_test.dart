@@ -26,6 +26,7 @@ Widget _harness({required bool expanded, required String draft}) {
             clubName: Cf194FanClubCommentsMock.clubName,
             avatarUrl: '',
             clubAvatarUrl: '',
+            onMenu: () {},
           ),
           CommentPostContextHeader(
             text: Cf194FanClubCommentsMock.postText,
@@ -116,7 +117,9 @@ void main() {
 
     expect(find.text('Felipe Rhy'), findsOneWidget);
     expect(find.text('fan/thiagok'), findsOneWidget);
-    expect(find.textContaining('Fã-clube · Thiago K'), findsOneWidget);
+    // Print CF-194: sem badge “Fã-clube · …” no header (só avatar stack).
+    expect(find.textContaining('Fã-clube ·'), findsNothing);
+    expect(find.byKey(const Key('comment-thread-menu')), findsOneWidget);
     expect(find.text('2 horas atrás'), findsOneWidget);
     expect(find.text(Cf194FanClubCommentsMock.postText), findsOneWidget);
     expect(find.text('Comentários'), findsOneWidget);
@@ -127,6 +130,19 @@ void main() {
     expect(find.text('Rafa Nogueira'), findsNothing);
     expect(find.text('Resposta'), findsNothing);
     expect(find.text('Adicione um comentário...'), findsOneWidget);
+    expect(find.byKey(const Key('comment-gif')), findsOneWidget);
+    // Idle com rascunho: send aparece; emoji permanece no campo.
+    expect(find.byKey(const Key('comment-submit')), findsOneWidget);
+  });
+
+  testWidgets('CF-194 idle vazio: só emoji no campo, sem enviar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness(expanded: false, draft: ''));
+    await tester.pump();
+
+    expect(find.byKey(const Key('comment-gif')), findsOneWidget);
+    expect(find.byKey(const Key('comment-submit')), findsNothing);
   });
 
   testWidgets('CF-194 expandido: menção, Ocultar e rascunho intacto', (

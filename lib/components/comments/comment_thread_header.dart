@@ -75,49 +75,35 @@ class CommentThreadHeader extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Print CF-194: só nome + handle na mesma linha (sem badge
+              // “Fã-clube · …” — o stack de avatares já marca o contexto).
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      if (name.isNotEmpty)
-                        Flexible(
-                          child: Text(
-                            name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
-                            ),
-                          ),
+                  if (name.isNotEmpty)
+                    Flexible(
+                      child: Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
                         ),
-                      if (name.isNotEmpty && displayHandle.isNotEmpty)
-                        const SizedBox(width: 6),
-                      if (displayHandle.isNotEmpty)
-                        Flexible(
-                          child: Text(
-                            displayHandle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: colors.textTertiary,
-                            ),
-                          ),
+                      ),
+                    ),
+                  if (name.isNotEmpty && displayHandle.isNotEmpty)
+                    const SizedBox(width: 6),
+                  if (displayHandle.isNotEmpty)
+                    Flexible(
+                      child: Text(
+                        displayHandle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.textTertiary,
                         ),
-                    ],
-                  ),
-                  if (_isFanClub && (clubName ?? '').trim().isNotEmpty)
-                    Text(
-                      'Fã-clube · ${clubName!.trim()}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textSecondary,
                       ),
                     ),
                 ],
@@ -135,14 +121,10 @@ class CommentThreadHeader extends StatelessWidget {
               ),
             ),
           IconButton(
+            key: const Key('comment-thread-menu'),
             onPressed: onMenu,
             tooltip: 'Opções do post',
-            icon: Icon(
-              Icons.more_horiz,
-              color: onMenu == null
-                  ? colors.textTertiary.withValues(alpha: 0.35)
-                  : colors.textPrimary,
-            ),
+            icon: Icon(Icons.more_horiz, color: colors.textPrimary),
           ),
         ],
       ),
