@@ -109,7 +109,7 @@ class CommentRow extends StatelessWidget {
                     PopupMenuButton<String>(
                       padding: EdgeInsets.zero,
                       icon: Icon(
-                        Icons.more_vert,
+                        Icons.more_horiz,
                         size: 20,
                         color: colors.textTertiary,
                       ),

@@ -3,7 +3,8 @@
 // Arquivo único de mocks temporários (QA / demo).
 // CF-190: central de notificações (print image.png).
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
-// CF-194: comentários fã-clube demo.
+// CF-194: comentários do fã-clube (prints recolhido/expandido).
+// CF-195: comentários Home — respostas expandidas.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
@@ -496,9 +497,6 @@ FanScoreData cfTempMockFanScoreData() {
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
 const bool kUseCf194CommentMocks = true;
 
-/// CF-195 — Home: mesmas fixtures aninhadas quando a API vem vazia.
-const bool kUseCf195HomeCommentMocks = true;
-
 /// Dados do print CF-194 (recolhido / expandido).
 abstract final class Cf194FanClubCommentsMock {
   static const postAuthor = 'Felipe Rhy';
@@ -534,6 +532,72 @@ abstract final class Cf194FanClubCommentsMock {
             'Quero mais posts de bastidor assim. Dá vontade de salvar tudo e mandar no grupo do fandom.',
         votes: 229,
         replies: [reply],
+      ),
+    ];
+  }
+}
+
+/// Liga dados de demo do CF-195 (Home sem comentários → print populado).
+const bool kUseCf195CommentMocks = true;
+
+/// Dados do print CF-195 (Home — pai + resposta expandida + thread recolhida).
+abstract final class Cf195HomeCommentsMock {
+  static const postAuthor = 'Ponzanelli';
+  static const postHandle = '@ponzanelli';
+  static const parentHandle = 'fan/feandrade';
+
+  static List<CommentItem> comments() {
+    final expandedReply = CommentItem(
+      id: 'cf195-reply-1',
+      author: 'Rafa Nogueira',
+      handle: 'fan/rafanogueira',
+      avatarUri: '',
+      minutesAgo: 180,
+      text: 'Esse tipo de conteúdo sempre rende discussão boa.',
+      votes: 15,
+      parentCommentId: 'cf195-c1',
+    );
+    final collapsedA = CommentItem(
+      id: 'cf195-reply-2a',
+      author: 'Lia Costa',
+      handle: 'fan/liacosta',
+      avatarUri: '',
+      minutesAgo: 90,
+      text: 'Concordo demais.',
+      votes: 4,
+      parentCommentId: 'cf195-c2',
+    );
+    final collapsedB = CommentItem(
+      id: 'cf195-reply-2b',
+      author: 'Bruno M.',
+      handle: 'fan/brunom',
+      avatarUri: '',
+      minutesAgo: 60,
+      text: 'Salvei aqui.',
+      votes: 2,
+      parentCommentId: 'cf195-c2',
+    );
+    return [
+      CommentItem(
+        id: 'cf195-c1',
+        author: 'Fê Andrade',
+        handle: parentHandle,
+        avatarUri: '',
+        minutesAgo: 180,
+        text:
+            'Quero mais posts de bastidor assim. Dá vontade de salvar tudo e mandar no grupo do fandom.',
+        votes: 229,
+        replies: [expandedReply],
+      ),
+      CommentItem(
+        id: 'cf195-c2',
+        author: 'Camila R.',
+        handle: 'fan/camilar',
+        avatarUri: '',
+        minutesAgo: 120,
+        text: 'Alguém mais ficou com vontade de ver o making of completo?',
+        votes: 48,
+        replies: [collapsedA, collapsedB],
       ),
     ];
   }

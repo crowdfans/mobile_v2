@@ -136,13 +136,23 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           _comments = response.comments;
           // TEMP: demo do print (CF-194/195) quando a API ainda não povoa.
           if (_comments.isEmpty &&
+              _isFanClubContext &&
               kUseCfTempMocks &&
-              (_isFanClubContext
-                  ? kUseCf194CommentMocks
-                  : kUseCf195HomeCommentMocks)) {
+              kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
-            // CF-195: respostas expandidas no print.
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+          } else if (_comments.isEmpty &&
+              !_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf195CommentMocks) {
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
             _expandedReplyIds
               ..clear()
               ..addAll([
@@ -161,10 +171,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       setState(() {
         _loading = false;
         if (!append) {
-          if (kUseCfTempMocks &&
-              (_isFanClubContext
-                  ? kUseCf194CommentMocks
-                  : kUseCf195HomeCommentMocks)) {
+          if (_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
             _error = null;
@@ -174,6 +183,18 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 for (final c in _comments)
                   if (c.replies.isNotEmpty) c.id,
               ]);
+          } else if (!_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf195CommentMocks) {
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+            _error = null;
           } else {
             _error = 'Não foi possível carregar os comentários.';
           }
