@@ -623,20 +623,20 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                         ),
                                         children: [
                                           FanClubSortTab(
-                                            label: 'Popularidade',
-                                            selected: _sortPopular,
-                                            onPressed: () {
-                                              setState(
-                                                () => _sortPopular = true,
-                                              );
-                                            },
-                                          ),
-                                          FanClubSortTab(
                                             label: 'Novos',
                                             selected: !_sortPopular,
                                             onPressed: () {
                                               setState(
                                                 () => _sortPopular = false,
+                                              );
+                                            },
+                                          ),
+                                          FanClubSortTab(
+                                            label: 'Populares',
+                                            selected: _sortPopular,
+                                            onPressed: () {
+                                              setState(
+                                                () => _sortPopular = true,
                                               );
                                             },
                                           ),

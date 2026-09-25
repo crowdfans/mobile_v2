@@ -25,34 +25,25 @@ class ArtistProfileFanClubToolbar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Ordenar postagens por:',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: colors.textTertiary,
-          ),
-        ),
-        const SizedBox(height: 4),
         SizedBox(
           height: 40,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
               FanClubSortTab(
-                label: 'Popularidade',
-                selected: sortPopular,
-                onPressed: () => onSortPopular(true),
-              ),
-              FanClubSortTab(
                 label: 'Novos',
                 selected: !sortPopular,
                 onPressed: () => onSortPopular(false),
               ),
+              FanClubSortTab(
+                label: 'Populares',
+                selected: sortPopular,
+                onPressed: () => onSortPopular(true),
+              ),
             ],
           ),
         ),
-        // CF-186 redo: divisor + chips escuros como no print da comunidade.
+        // CF-186: divisor + chips escuros como no print da comunidade.
         Divider(height: 1, thickness: 1, color: colors.border),
         const SizedBox(height: 10),
         SingleChildScrollView(

@@ -1,7 +1,6 @@
 import 'package:crowdfans/components/comments/comment_reply_banner.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// Compositor fixo — avatar + campo arredondado + emoji/enviar (CF-174 / CF-194).
 class CommentComposer extends StatelessWidget {
@@ -163,28 +162,30 @@ class CommentComposer extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Print CF-194 idle: emoji sticker *dentro* do
-                            // campo, com respiro à direita; sem botão enviar.
+                            // Print CF-69 p12/p13: rótulo GIF ao lado do campo.
                             Padding(
                               padding: const EdgeInsets.only(right: 8),
                               child: Material(
-                                color: colors.surfaceAlt,
-                                shape: const CircleBorder(),
+                                color: colors.surface,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(color: colors.border),
+                                ),
                                 child: InkWell(
                                   key: const Key('comment-gif'),
                                   onTap: onPickGif,
-                                  customBorder: const CircleBorder(),
-                                  child: SizedBox(
-                                    width: 34,
-                                    height: 34,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: const SizedBox(
+                                    width: 36,
+                                    height: 28,
                                     child: Center(
-                                      child: SvgPicture.asset(
-                                        'assets/icons/Communication/message-smile-square.svg',
-                                        width: 20,
-                                        height: 20,
-                                        colorFilter: ColorFilter.mode(
-                                          colors.textPrimary,
-                                          BlendMode.srcIn,
+                                      child: Text(
+                                        'GIF',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.2,
+                                          color: Color(0xFF1C1C1E),
                                         ),
                                       ),
                                     ),

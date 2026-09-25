@@ -19,8 +19,12 @@
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_score.dart';
+<<<<<<< HEAD
+import 'package:crowdfans/models/profile.dart';
+=======
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
+>>>>>>> origin/prod
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
@@ -79,6 +83,9 @@ abstract final class CfTempMocks {
 
   /// Preferências das subpáginas CF-208 / 209 / 211 (switches do print).
   static const useNotificationCategoryPrintFixtures = true;
+
+  /// Hub Seu Perfil (CF-162) — Aline Duarte quando a API falha/vazio.
+  static const useProfileAccountFixtures = true;
 
   /// Artistas favoritos no menu lateral (CF-191).
   static const useFavoriteArtistsFixtures = true;
@@ -508,6 +515,18 @@ abstract final class Cf208209211NotificationPrintFixtures {
       NotificationPreferenceKeys.jamCoinsBalance: true,
     };
   }
+}
+
+/// CF-162 — hub Seu Perfil (print Aline Duarte).
+abstract final class Cf162ProfileAccountFixtures {
+  static const Profile aline = Profile(
+    userUid: 'cf162-aline',
+    displayName: 'fan/alineduarte',
+    name: 'Aline Duarte',
+    description: '',
+    photoUrl: '',
+    isArtist: false,
+  );
 }
 
 /// Resumo de membership para telas de confirmação (CF-204…207).

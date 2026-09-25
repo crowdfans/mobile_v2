@@ -4,6 +4,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -54,6 +55,16 @@ class _ProfileAccountScreenState extends ConsumerState<ProfileAccountScreen> {
       });
     } catch (error) {
       if (!mounted) {
+        return;
+      }
+      if (_profile == null &&
+          kUseCfTempMocks &&
+          CfTempMocks.useProfileAccountFixtures) {
+        setState(() {
+          _profile = Cf162ProfileAccountFixtures.aline;
+          _error = null;
+          _loading = false;
+        });
         return;
       }
       setState(() {
