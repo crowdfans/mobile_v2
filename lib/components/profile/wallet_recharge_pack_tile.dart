@@ -26,18 +26,20 @@ class WalletRechargePackTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    // Referência: fundo lilás quando selecionado, sem borda roxa forte.
     return Material(
-      color: selected ? colors.primary.withValues(alpha: 0.08) : colors.surface,
+      color: selected
+          ? const Color(0xFFF3EEFF)
+          : colors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: selected ? colors.primary : colors.border,
-          width: selected ? 1.5 : 1,
+          color: selected ? const Color(0xFFE4D9FF) : colors.border,
         ),
       ),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
@@ -72,9 +74,16 @@ class WalletRechargePackTile extends StatelessWidget {
                         color: colors.textSecondary,
                       ),
                     ),
-                    if (featured) ...[
-                      const SizedBox(height: 4),
-                      Text(
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (featured)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
                         'Mais pedido',
                         style: TextStyle(
                           fontSize: 11,
@@ -82,17 +91,16 @@ class WalletRechargePackTile extends StatelessWidget {
                           color: colors.primary,
                         ),
                       ),
-                    ],
-                  ],
-                ),
-              ),
-              Text(
-                priceLabel(),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
-                ),
+                    ),
+                  Text(
+                    priceLabel(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 12),
               Icon(
