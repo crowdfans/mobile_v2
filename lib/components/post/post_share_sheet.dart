@@ -88,20 +88,11 @@ class PostShareSheet extends StatelessWidget {
         scopesRoute: true,
         namesRoute: true,
         label: 'Compartilhar post',
+        // Print CF-236: só alça (no shell) + tiles + “Compartilhar para…”.
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Compartilhar',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 14),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -131,7 +122,11 @@ class PostShareSheet extends StatelessWidget {
                   Expanded(
                     child: PostShareActionTile(
                       label: 'Stories',
-                      icon: Icons.camera_alt_outlined,
+                      iconWidget: SvgPicture.asset(
+                        'assets/images/instagram.svg',
+                        width: 28,
+                        height: 28,
+                      ),
                       onPressed: handleStories,
                     ),
                   ),
@@ -151,7 +146,7 @@ class PostShareSheet extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.reply_rounded, color: colors.textPrimary),
+                        Icon(Icons.ios_share, color: colors.textPrimary),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
