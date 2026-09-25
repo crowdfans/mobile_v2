@@ -367,10 +367,22 @@ const cfTempMockExpulsionReason =
 
 /// Resumo de membership para telas de confirmação (CF-204…207).
 const cfTempMockMembershipSummary = (
-  artistName: 'Ludmilla',
+  artistName: 'Banda Uelo',
+  artistHandle: '@bandauelo',
+  artistId: 'mock-membership-uelo',
   planName: 'Membership Oficial',
-  priceLabel: 'R\$ 29,90 / mês',
-  jamCoinsLabel: '+ 500 Jam Coins',
+  pricePerMonth: 240,
+  jamCoinsBalanceLabel: '2.684',
+  periodLabel: '1 mês',
+);
+
+/// Gerenciar membership (CF-205) — print Marinhos / 240 / 3 meses.
+const cfTempMockMembershipManage = (
+  artistName: 'Marinhos',
+  artistHandle: '@marinhos',
+  artistId: 'mock-membership-marinhos',
+  pricePerMonth: 240,
+  monthsLabel: '3 meses',
 );
 
 /// Recarga confirmada (CF-204) — print: 240 = 200 JC + 40 bônus.

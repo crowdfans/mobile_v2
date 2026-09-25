@@ -7,6 +7,7 @@ import 'package:crowdfans/components/profile/membership_subscribe_terms_checkbox
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
@@ -55,7 +56,17 @@ class _ProfileMembershipSubscribeScreenState
         return;
       }
       setState(() => _balance = wallet.displayBalance);
-    } catch (_) {}
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      // TEMP: saldo do print CF-206 quando a carteira falha.
+      if (CfTempMocks.useMembershipFixtures && kUseCfTempMocks) {
+        setState(
+          () => _balance = cfTempMockMembershipSummary.jamCoinsBalanceLabel,
+        );
+      }
+    }
   }
 
   void handleBack() {
@@ -134,10 +145,25 @@ class _ProfileMembershipSubscribeScreenState
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final name = widget.artistName.trim().isEmpty
-        ? 'Artista'
-        : widget.artistName.trim();
-    final price = widget.pricePerMonth > 0 ? widget.pricePerMonth : 100;
+    final useMock = CfTempMocks.useMembershipFixtures &&
+        kUseCfTempMocks &&
+        (widget.artistName.trim().isEmpty || widget.pricePerMonth <= 0);
+    final name = useMock
+        ? cfTempMockMembershipSummary.artistName
+        : (widget.artistName.trim().isEmpty
+            ? 'Artista'
+            : widget.artistName.trim());
+    final handle = useMock
+        ? cfTempMockMembershipSummary.artistHandle
+        : widget.artistHandle;
+    final price = useMock
+        ? cfTempMockMembershipSummary.pricePerMonth
+        : (widget.pricePerMonth > 0 ? widget.pricePerMonth : 100);
+    final balance = (_balance == '—' || _balance.trim().isEmpty) &&
+            CfTempMocks.useMembershipFixtures &&
+            kUseCfTempMocks
+        ? cfTempMockMembershipSummary.jamCoinsBalanceLabel
+        : _balance;
     final canSubscribe = _accepted && !_busy;
 
     return Scaffold(
@@ -149,7 +175,7 @@ class _ProfileMembershipSubscribeScreenState
               title: 'Assinar',
               onBack: handleBack,
               action: MembershipSubscribeBalancePill(
-                balance: _balance,
+                balance: balance,
                 onPressed: () => context.push(Pages.profileWallet),
               ),
             ),
@@ -159,7 +185,7 @@ class _ProfileMembershipSubscribeScreenState
                 children: [
                   MembershipSubscribeArtistSummary(
                     artistName: name,
-                    artistHandle: widget.artistHandle,
+                    artistHandle: handle,
                     artistAvatarUrl: widget.artistAvatarUrl,
                     pricePerMonth: price,
                   ),
