@@ -8,6 +8,7 @@ class WalletPromoBanner extends StatelessWidget {
     required this.onRecharge,
   });
 
+  /// Mantido para compatibilidade; a arte já traz o prazo visual.
   final String countdown;
   final VoidCallback onRecharge;
 
@@ -20,40 +21,63 @@ class WalletPromoBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 7,
-                child: Image.asset(
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
                   'assets/images/Banner Jam Coins.png',
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Container(
-                    color: const Color(0xFF7E49FF),
+                    color: const Color(0xFFFFD54F),
                     alignment: Alignment.center,
                     child: const Text(
-                      '15% OFF na recarga',
+                      '30% OFF',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                        color: Color(0xFFE42217),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 28,
                       ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 16,
-                bottom: 12,
-                child: Text(
-                  'Oferta termina em $countdown',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 14,
+                  child: Center(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(999),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          'Recarregar agora',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
