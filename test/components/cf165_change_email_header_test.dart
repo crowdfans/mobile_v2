@@ -18,6 +18,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Trocar e-mail'), findsOneWidget);
+    expect(find.text('Segurança e login'), findsNothing);
     expect(find.text('Atualize o e-mail da sua conta'), findsOneWidget);
     expect(
       find.text(
