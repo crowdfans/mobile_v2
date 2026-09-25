@@ -140,6 +140,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
+          } else if (_comments.isEmpty &&
+              !_isFanClubContext &&
+              kUseCf195CommentMocks) {
+            // CF-195: Home sem dados → mock do print expandido.
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds.add(_comments.first.id);
           }
         }
         _loading = false;
@@ -155,6 +162,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           if (_isFanClubContext && kUseCf194CommentMocks) {
             _comments = Cf194FanClubCommentsMock.comments();
             _hasMore = false;
+            _error = null;
+          } else if (!_isFanClubContext && kUseCf195CommentMocks) {
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds.add(_comments.first.id);
             _error = null;
           } else {
             _error = 'Não foi possível carregar os comentários.';

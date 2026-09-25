@@ -43,8 +43,8 @@ class CommentRepliesToggle extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: colors.primary,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textSecondary,
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -53,7 +53,7 @@ class CommentRepliesToggle extends StatelessWidget {
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
                   size: 18,
-                  color: colors.primary,
+                  color: colors.textSecondary,
                 ),
               ],
             ),
