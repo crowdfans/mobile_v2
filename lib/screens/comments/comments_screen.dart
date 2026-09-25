@@ -6,8 +6,10 @@ import 'package:crowdfans/components/comments/comment_post_context_header.dart';
 import 'package:crowdfans/components/comments/comment_replies_toggle.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
+import 'package:crowdfans/components/comments/comment_thread_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/comment_gif_service.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
@@ -29,6 +31,11 @@ class CommentsScreen extends ConsumerStatefulWidget {
     this.postHandle,
     this.postText,
     this.clubName,
+    this.postAvatarUrl,
+    this.clubAvatarUrl,
+    this.postMinutesAgo,
+    this.postVotes,
+    this.postShares,
   });
 
   final String postId;
@@ -36,6 +43,11 @@ class CommentsScreen extends ConsumerStatefulWidget {
   final String? postHandle;
   final String? postText;
   final String? clubName;
+  final String? postAvatarUrl;
+  final String? clubAvatarUrl;
+  final int? postMinutesAgo;
+  final int? postVotes;
+  final int? postShares;
 
   @override
   ConsumerState<CommentsScreen> createState() => _CommentsScreenState();
@@ -67,6 +79,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   String? _error;
   Timer? _gifDebounce;
   final _expandedReplyIds = <String>{};
+  late int _postVotes = widget.postVotes ?? 0;
+  late int _postMyVote = 0;
+  final int _postShares = widget.postShares ?? 0;
+
+  bool get _isFanClubContext => (widget.clubName ?? '').trim().isNotEmpty;
 
   @override
   void initState() {
@@ -117,6 +134,32 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           }
         } else {
           _comments = response.comments;
+          // TEMP: demo do print (CF-194/195) quando a API ainda não povoa.
+          if (_comments.isEmpty &&
+              _isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf194CommentMocks) {
+            _comments = Cf194FanClubCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+          } else if (_comments.isEmpty &&
+              !_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf195CommentMocks) {
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+          }
         }
         _loading = false;
         _error = null;
@@ -128,7 +171,33 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       setState(() {
         _loading = false;
         if (!append) {
-          _error = 'Não foi possível carregar os comentários.';
+          if (_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf194CommentMocks) {
+            _comments = Cf194FanClubCommentsMock.comments();
+            _hasMore = false;
+            _error = null;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+          } else if (!_isFanClubContext &&
+              kUseCfTempMocks &&
+              kUseCf195CommentMocks) {
+            _comments = Cf195HomeCommentsMock.comments();
+            _hasMore = false;
+            _expandedReplyIds
+              ..clear()
+              ..addAll([
+                for (final c in _comments)
+                  if (c.replies.isNotEmpty) c.id,
+              ]);
+            _error = null;
+          } else {
+            _error = 'Não foi possível carregar os comentários.';
+          }
         }
       });
     }
@@ -178,7 +247,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         _gifItems = const [];
         _gifAnnouncement = null;
         _gifError =
-            'Não foi possível carregar os GIFs. Verifique sua conexão e tente novamente.';
+            'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
       });
     }
   }
@@ -188,6 +257,33 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     _gifDebounce?.cancel();
     _gifDebounce = Timer(const Duration(milliseconds: 350), () {
       handleLoadGifs(value);
+    });
+  }
+
+  /// Prefill `fan/...` no compositor (print CF-196).
+  String replyMentionDraft(String? handle) {
+    final raw = (handle ?? '').trim();
+    if (raw.isEmpty) {
+      return '';
+    }
+    if (raw.startsWith('fan/') || raw.startsWith('@')) {
+      return '$raw ';
+    }
+    return 'fan/$raw ';
+  }
+
+  void handleStartReply({
+    required CommentItem parent,
+    required String bannerAuthor,
+    required String bannerHandle,
+  }) {
+    setState(() {
+      _replyTo = parent;
+      _replyBannerAuthor = bannerAuthor;
+      _replyBannerHandle = bannerHandle;
+      _editing = null;
+      _draft = replyMentionDraft(bannerHandle);
+      _composerNonce++;
     });
   }
 
@@ -381,6 +477,17 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     );
   }
 
+  /// Menu ⋯ do cabeçalho (print CF-194 — sempre acionável).
+  Future<void> handleOpenPostMenu() async {
+    final author = (widget.postAuthor ?? '').trim();
+    final label = author.isEmpty ? 'este post' : author;
+    await AppAlert.show(
+      context,
+      title: 'Opções',
+      message: 'Ações do post de $label estarão disponíveis em breve.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
@@ -415,54 +522,54 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         bottom: false,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      if (context.canPop()) {
-                        context.pop();
-                        return;
-                      }
-                      context.go(Pages.home);
-                    },
-                    child: Text(
-                      'Voltar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      (widget.postAuthor ?? '').trim().isNotEmpty
-                          ? widget.postAuthor!.trim()
-                          : 'Comentários',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 72),
-                ],
-              ),
+            CommentThreadHeader(
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                  return;
+                }
+                context.go(Pages.home);
+              },
+              author: widget.postAuthor,
+              handle: widget.postHandle,
+              avatarUrl: widget.postAvatarUrl,
+              clubAvatarUrl: widget.clubAvatarUrl,
+              clubName: widget.clubName,
+              // Print CF-194: ⋯ ativo (não esmaecido).
+              onMenu: handleOpenPostMenu,
             ),
             if ((widget.postAuthor ?? '').trim().isNotEmpty ||
-                (widget.clubName ?? '').trim().isNotEmpty)
+                (widget.clubName ?? '').trim().isNotEmpty ||
+                (widget.postText ?? '').trim().isNotEmpty ||
+                widget.postMinutesAgo != null)
               CommentPostContextHeader(
-                author: (widget.postAuthor ?? '').trim().isEmpty
-                    ? 'Publicação'
-                    : widget.postAuthor!.trim(),
+                author: widget.postAuthor,
                 handle: widget.postHandle,
                 text: widget.postText,
                 clubName: widget.clubName,
+                minutesAgo: widget.postMinutesAgo,
+                votes: _postVotes,
+                myVote: _postMyVote,
+                shares: _postShares,
+                onVote: (direction) =>
+                    VoteService.votePost(widget.postId, direction),
+                onVoteApplied: (result) => setState(() {
+                  _postVotes = result.votes;
+                  _postMyVote = result.myVote;
+                }),
+                onShare: () {},
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Text(
+                  'Comentários',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
+                ),
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -527,12 +634,11 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                 isOwn: isOwnComment(item),
                                 isReply: false,
                                 onOpenProfile: () => handleOpenProfile(item),
-                                onReply: () => setState(() {
-                                  _replyTo = item;
-                                  _replyBannerAuthor = item.author;
-                                  _replyBannerHandle = item.handle;
-                                  _editing = null;
-                                }),
+                                onReply: () => handleStartReply(
+                                  parent: item,
+                                  bannerAuthor: item.author,
+                                  bannerHandle: item.handle,
+                                ),
                                 onReport: () => handleReport(item),
                                 onEdit: () => setState(() {
                                   _editing = item;
@@ -554,15 +660,14 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                                       comment: reply,
                                       isOwn: isOwnComment(reply),
                                       isReply: true,
+                                      replyToHandle: item.handle,
                                       onOpenProfile: () =>
                                           handleOpenProfile(reply),
-                                      onReply: () => setState(() {
-                                        // Resposta aninhada → ainda sob o raiz.
-                                        _replyTo = item;
-                                        _replyBannerAuthor = reply.author;
-                                        _replyBannerHandle = reply.handle;
-                                        _editing = null;
-                                      }),
+                                      onReply: () => handleStartReply(
+                                        parent: item,
+                                        bannerAuthor: reply.author,
+                                        bannerHandle: reply.handle,
+                                      ),
                                       onReport: () => handleReport(reply),
                                       onEdit: () => setState(() {
                                         _editing = reply;

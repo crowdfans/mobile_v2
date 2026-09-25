@@ -121,27 +121,14 @@ class CommentGifPicker extends StatelessWidget {
                         : hasError
                         ? Padding(
                             padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                            child: Column(
-                              children: [
-                                Text(
-                                  errorMessage!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    height: 1.45,
-                                    color: colors.danger,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Sua busca foi preservada. Tente de novo quando a conexão melhorar.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: colors.textSecondary,
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              errorMessage!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.45,
+                                color: colors.danger,
+                              ),
                             ),
                           )
                         : empty

@@ -45,6 +45,7 @@ class WalletPaymentMethodTabs extends StatelessWidget {
       );
     }
 
+    // Print CF-170/171: só underline da aba ativa — sem régua full-width.
     return Column(
       children: [
         Text(
@@ -63,7 +64,6 @@ class WalletPaymentMethodTabs extends StatelessWidget {
             tab('Crédito', WalletPaymentMethod.credit),
           ],
         ),
-        Divider(height: 1, color: colors.border),
       ],
     );
   }

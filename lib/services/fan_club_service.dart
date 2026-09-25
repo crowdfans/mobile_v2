@@ -1,5 +1,6 @@
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/api/api_urls.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/http_service.dart';
 
 /// Metadados do fan club (`GET /artist/:artistUid/fanclub`).
@@ -261,6 +262,12 @@ class FanClubFeedPost {
     this.isExclusive = false,
     this.likesCount = 0,
     this.commentsCount = 0,
+    this.sharesCount = 0,
+    this.authorName,
+    this.authorHandle,
+    this.authorAvatarUri,
+    this.carouselUris = const [],
+    this.membershipMonthsLabel,
   });
 
   final String postId;
@@ -272,6 +279,14 @@ class FanClubFeedPost {
   final String createdAt;
   final int likesCount;
   final int commentsCount;
+  final int sharesCount;
+  /// Autor do post no clube (fan). Se nulo, UI usa o artista do clube.
+  final String? authorName;
+  final String? authorHandle;
+  final String? authorAvatarUri;
+  final List<String> carouselUris;
+  /// Meses de membership no selo (ex.: `"3"` do print CF-222).
+  final String? membershipMonthsLabel;
 
   factory FanClubFeedPost.fromJson(Map<String, dynamic> json) {
     return FanClubFeedPost(
@@ -284,6 +299,15 @@ class FanClubFeedPost {
       createdAt: json['createdAt'] as String? ?? '',
       likesCount: (json['likesCount'] as num?)?.toInt() ?? 0,
       commentsCount: (json['commentsCount'] as num?)?.toInt() ?? 0,
+      sharesCount: (json['sharesCount'] as num?)?.toInt() ?? 0,
+      authorName: json['authorName'] as String?,
+      authorHandle: json['authorHandle'] as String?,
+      authorAvatarUri: json['authorAvatarUri'] as String?,
+      carouselUris: [
+        for (final item in json['carouselUris'] as List? ?? const [])
+          item.toString(),
+      ],
+      membershipMonthsLabel: json['membershipMonthsLabel'] as String?,
     );
   }
 }
@@ -314,6 +338,10 @@ abstract final class FanClubService {
     int page = 1,
     int pageSize = 20,
   }) async {
+    // QA image-first: fixtures do print (CF-222/229/230). Desligar useFanClubFixtures.
+    if (kUseCfTempMocks && CfTempMocks.useFanClubFixtures) {
+      return cfTempMockArtistFanClubFeed(artistUid, page: page);
+    }
     final params = Uri(
       queryParameters: {'page': '$page', 'pageSize': '$pageSize'},
     );

@@ -1,7 +1,8 @@
+import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Aviso vermelho de expulsão com motivo e CTA para defender o retorno.
+/// Aviso vermelho de expulsão com motivo e CTA para defender o retorno (CF-229).
 class FanClubExpelledBanner extends StatelessWidget {
   const FanClubExpelledBanner({
     super.key,
@@ -25,61 +26,34 @@ class FanClubExpelledBanner extends StatelessWidget {
           border: Border.all(color: colors.danger.withValues(alpha: 0.45)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.block, color: colors.danger, size: 22),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Você foi expulso deste fã-clube',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          reason.trim().isEmpty
-                              ? 'A moderação removeu seu acesso a esta comunidade.'
-                              : reason.trim(),
-                          style: TextStyle(
-                            fontSize: 13,
-                            height: 1.4,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: onDefend,
-                  style: TextButton.styleFrom(
-                    backgroundColor: colors.danger,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                  ),
-                  child: const Text(
-                    'Defender por que voltar',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
+              Text(
+                'Você foi expulso deste fã clube',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: colors.danger,
                 ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                reason.trim().isEmpty
+                    ? 'A moderação removeu seu acesso a esta comunidade.'
+                    : reason.trim(),
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 14),
+              AppButton(
+                label: 'Defender por que voltar',
+                variant: AppButtonVariant.dark,
+                onPressed: onDefend,
               ),
             ],
           ),

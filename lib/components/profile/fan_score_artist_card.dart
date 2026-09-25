@@ -140,6 +140,7 @@ class FanScoreArtistCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+              // Print CF-201: score · +% · círculo tendência · #rank
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -160,6 +161,25 @@ class FanScoreArtistCard extends StatelessWidget {
                       color: deltaColor,
                     ),
                   ),
+                  if (delta != 0) ...[
+                    const SizedBox(width: 8),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: deltaColor.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Icon(
+                          delta > 0
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
+                          size: 16,
+                          color: deltaColor,
+                        ),
+                      ),
+                    ),
+                  ],
                   const Spacer(),
                   if (entry.fanRank != null)
                     DecoratedBox(
@@ -182,25 +202,6 @@ class FanScoreArtistCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (delta != 0) ...[
-                    const SizedBox(width: 8),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: deltaColor.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Icon(
-                          delta > 0
-                              ? Icons.arrow_upward_rounded
-                              : Icons.arrow_downward_rounded,
-                          size: 16,
-                          color: deltaColor,
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
               AnimatedSize(

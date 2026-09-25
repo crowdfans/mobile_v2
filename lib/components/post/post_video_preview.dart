@@ -230,7 +230,7 @@ class _PostVideoPreviewState extends State<PostVideoPreview> {
                       child: Icon(
                         playing
                             ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
+                            : Icons.play_disabled_rounded,
                         size: 32,
                         color: Colors.white,
                       ),

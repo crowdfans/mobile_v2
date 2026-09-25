@@ -208,14 +208,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterArtistDataScreen(),
       ),
       GoRoute(
-        path: Pages.artistProfile,
-        builder: (context, state) => ArtistProfileScreen(
-          artistId: state.pathParameters['artistId'] ?? '',
-          seedName: state.uri.queryParameters['name'],
-          seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
-        ),
-      ),
-      GoRoute(
         path: Pages.fanClubCommunity,
         builder: (context, state) => FanClubCommunityScreen(
           artistId: state.pathParameters['artistId'] ?? '',
@@ -596,6 +588,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           postHandle: state.uri.queryParameters['handle'],
           postText: state.uri.queryParameters['text'],
           clubName: state.uri.queryParameters['club'],
+          postAvatarUrl: state.uri.queryParameters['avatarUrl'],
+          clubAvatarUrl: state.uri.queryParameters['clubAvatarUrl'],
+          postMinutesAgo: int.tryParse(
+            state.uri.queryParameters['minutesAgo'] ?? '',
+          ),
+          postVotes: int.tryParse(state.uri.queryParameters['votes'] ?? ''),
+          postShares: int.tryParse(state.uri.queryParameters['shares'] ?? ''),
         ),
       ),
       GoRoute(
@@ -622,6 +621,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Pages.home,
                 builder: (context, state) => const HomeScreen(),
+                routes: [
+                  // CF-181/184/185/186: perfil do artista com bottom nav do shell.
+                  GoRoute(
+                    path: '/artists/:artistId',
+                    builder: (context, state) => ArtistProfileScreen(
+                      artistId: state.pathParameters['artistId'] ?? '',
+                      seedName: state.uri.queryParameters['name'],
+                      seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

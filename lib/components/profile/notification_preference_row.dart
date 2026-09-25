@@ -32,8 +32,8 @@ class NotificationPreferenceRow extends StatelessWidget {
               : null,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          child: Row(
+                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
+                      child: Row(
             children: [
               Expanded(
                 child: Column(

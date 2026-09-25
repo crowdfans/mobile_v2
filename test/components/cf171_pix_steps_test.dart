@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('CF-171: etapas numeradas e sem texto técnico embutido', (
+  testWidgets('CF-171: etapas numeradas grandes e sem texto técnico', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -29,5 +29,24 @@ void main() {
     expect(find.textContaining('Sandbox'), findsNothing);
     expect(find.textContaining('RevenueCat'), findsNothing);
     expect(find.textContaining('CF-54'), findsNothing);
+
+    final numberStyle = tester.widget<Text>(find.text('01')).style!;
+    expect(numberStyle.fontSize, greaterThanOrEqualTo(24));
+    expect(numberStyle.fontWeight, FontWeight.w900);
+  });
+
+  testWidgets('CF-171: numeração sem chip/caixa de fundo', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildCrowdFansTheme(Brightness.light),
+        home: const Scaffold(
+          body: WalletPixStepRow(number: '01', text: 'Passo'),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(DecoratedBox), findsNothing);
+    expect(find.byType(Container), findsNothing);
   });
 }

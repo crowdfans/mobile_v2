@@ -11,6 +11,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
     this.asset,
     this.icon,
     this.iconColor,
+    this.labelColor,
   });
 
   final String label;
@@ -19,6 +20,7 @@ class PostOptionsShortcutCard extends StatelessWidget {
   final String? asset;
   final IconData? icon;
   final Color? iconColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,37 +28,44 @@ class PostOptionsShortcutCard extends StatelessWidget {
     return Expanded(
       child: Material(
         color: backgroundColor ?? colors.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 72),
+            constraints: const BoxConstraints(minHeight: 96),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 14),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (asset != null)
                     Image.asset(
                       asset!,
-                      width: 28,
-                      height: 28,
+                      width: 40,
+                      height: 40,
                       errorBuilder: (_, _, _) => Icon(
                         icon ?? Icons.image,
+                        size: 40,
                         color: iconColor ?? colors.primaryStrong,
                       ),
                     )
                   else if (icon != null)
-                    Icon(icon, color: iconColor ?? colors.primaryStrong),
-                  if (asset != null || icon != null) const SizedBox(height: 8),
+                    Icon(
+                      icon,
+                      size: 40,
+                      color: iconColor ?? colors.primaryStrong,
+                    ),
+                  if (asset != null || icon != null) const SizedBox(height: 10),
                   Text(
                     label,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                      height: 1.2,
+                      color: labelColor ?? colors.textPrimary,
                     ),
                   ),
                 ],

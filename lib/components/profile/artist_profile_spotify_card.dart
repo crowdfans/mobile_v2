@@ -9,12 +9,18 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
     this.title,
     this.subtitle = 'Playlist em destaque',
     this.previewReady = false,
+    this.monthlyListeners = 'Não informado',
+    this.genre = 'Não informado',
+    this.onOpenSpotify,
   });
 
   final String artistName;
   final String? title;
   final String subtitle;
   final bool previewReady;
+  final String monthlyListeners;
+  final String genre;
+  final VoidCallback? onOpenSpotify;
 
   @override
   Widget build(BuildContext context) {
@@ -214,23 +220,43 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: ArtistProfileSpotifyStatTile(
                       label: 'OUVINTES MENSAIS',
-                      value: 'Não informado',
+                      value: monthlyListeners,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: ArtistProfileSpotifyStatTile(
                       label: 'GÊNERO',
-                      value: 'Não informado',
+                      value: genre,
                     ),
                   ),
                 ],
               ),
+              if (onOpenSpotify != null) ...[
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: onOpenSpotify,
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF1DB954),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text(
+                      'Abrir no Spotify',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

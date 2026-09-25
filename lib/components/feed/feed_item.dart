@@ -18,6 +18,7 @@ class FeedItem extends StatelessWidget {
     this.onPressShare,
     this.onPressUnlock,
     this.clubName,
+    this.plainExclusiveWhenUnlocked = false,
   });
 
   final FeedPost post;
@@ -28,6 +29,9 @@ class FeedItem extends StatelessWidget {
   final VoidCallback? onPressUnlock;
   final String? clubName;
 
+  /// CF-239: aba Exclusivo do assinante = anatomia de post comum (sem badges).
+  final bool plainExclusiveWhenUnlocked;
+
   void handleOpenArtist(BuildContext context) {
     final artistId = post.artistId?.trim();
     if (artistId == null || artistId.isEmpty) {
@@ -37,6 +41,7 @@ class FeedItem extends StatelessWidget {
   }
 
   void handleOpenComments(BuildContext context, String postId) {
+    final clubAvatar = (post.clubArtistAvatarUri ?? '').trim();
     context.push(
       Pages.commentsOf(
         postId,
@@ -44,6 +49,11 @@ class FeedItem extends StatelessWidget {
         handle: post.handle,
         text: post.text,
         clubName: clubName,
+        avatarUrl: post.avatarUri,
+        clubAvatarUrl: clubAvatar.isEmpty ? null : clubAvatar,
+        minutesAgo: post.minutesAgo,
+        votes: post.votes,
+        shares: post.shares,
       ),
     );
   }
@@ -52,6 +62,16 @@ class FeedItem extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isExclusivePost(post)) {
       final unlocked = canAccessExclusive || post.exclusiveLocked == false;
+      if (unlocked && plainExclusiveWhenUnlocked) {
+        return PostCard(
+          post: post,
+          onPressOpenProfile: () => handleOpenArtist(context),
+          onPressOpenComments: (postId) => handleOpenComments(context, postId),
+          onVoteApplied: onVoteApplied,
+          onPressOptions: onPressOptions,
+          onPressShare: onPressShare,
+        );
+      }
       return ExclusiveFeedCard(
         post: post,
         unlocked: unlocked,

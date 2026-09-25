@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_payment_method_tabs.dart';
@@ -175,6 +174,15 @@ class _ProfileWalletPaymentScreenState
     return raw;
   }
 
+  /// Validade do código PIX (referência CF-171).
+  String _pixValidityLabel() {
+    final brasilia = DateTime.now().toUtc().subtract(const Duration(hours: 3));
+    final until = brasilia.add(const Duration(minutes: 30));
+    final hour = until.hour.toString().padLeft(2, '0');
+    final minute = until.minute.toString().padLeft(2, '0');
+    return 'Este código é válido até hoje, $hour:$minute - Horário de Brasília.';
+  }
+
   Future<void> handleCopyPix() async {
     final pix = _receipt?.pixCopyPaste?.trim() ?? '';
     if (pix.isEmpty) {
@@ -299,8 +307,16 @@ class _ProfileWalletPaymentScreenState
                   if (hasPix) ...[
                     const SizedBox(height: 16),
                     WalletPixCodePanel(pixCode: pix, onCopy: handleCopyPix),
+                    const SizedBox(height: 12),
+                    Text(
+                      _pixValidityLabel(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                      ),
+                    ),
                     if (_receiptUserMessage != null) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
                         _receiptUserMessage!,
                         style: TextStyle(
@@ -315,13 +331,32 @@ class _ProfileWalletPaymentScreenState
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: AppButton(
-                label: hasPix
-                    ? 'Copiar Código PIX'
-                    : (_busy ? 'Gerando...' : 'Próximo'),
-                variant: AppButtonVariant.dark,
-                loading: _busy,
-                onPressed: hasPix ? handleCopyPix : handleCheckout,
+              // Referência CF-171: botão escuro com cantos suaves (não pílula roxa).
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: FilledButton(
+                  onPressed: _busy
+                      ? null
+                      : (hasPix ? handleCopyPix : handleCheckout),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppPalette.platinum900,
+                    foregroundColor: AppPalette.platinum50,
+                    disabledBackgroundColor:
+                        AppPalette.platinum900.withValues(alpha: 0.4),
+                    // Print CF-170: botão escuro em pílula.
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(
+                    hasPix
+                        ? 'Copiar Código PIX'
+                        : (_busy ? 'Gerando...' : 'Próximo'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

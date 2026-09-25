@@ -47,12 +47,12 @@ class _FanClubModerationSearchFieldState
       label: 'Buscar no painel de moderação',
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colors.surfaceAlt,
-          borderRadius: BorderRadius.circular(14),
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(999),
           border: Border.all(color: colors.border),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Row(
             children: [
               Icon(Icons.search, size: 22, color: colors.textTertiary),
@@ -66,7 +66,7 @@ class _FanClubModerationSearchFieldState
                   },
                   style: TextStyle(fontSize: 15, color: colors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Buscar pessoa ou motivo',
+                    hintText: '',
                     hintStyle: TextStyle(color: colors.textTertiary),
                     border: InputBorder.none,
                     isDense: true,

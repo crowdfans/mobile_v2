@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/membership_artist_card.dart';
-import 'package:crowdfans/components/profile/membership_balance_banner.dart';
+import 'package:crowdfans/components/profile/membership_balance_pill.dart';
+import 'package:crowdfans/components/profile/membership_filter_chip.dart';
 import 'package:crowdfans/components/profile/membership_pro_teaser.dart';
-import 'package:crowdfans/components/profile/notification_quiet_mode_note.dart';
-import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
+import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/membership.dart';
@@ -16,9 +15,12 @@ import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-/// Memberships ativas, catálogo e atalho para recarga / Pro.
+enum _MembershipFilter { all, active, late, cancelled, available }
+
+/// Memberships ativas, catálogo e banner aprovado (CF-167).
 class ProfileMembershipsScreen extends ConsumerStatefulWidget {
   const ProfileMembershipsScreen({super.key});
 
@@ -33,6 +35,7 @@ class _ProfileMembershipsScreenState
   var _loading = true;
   String? _error;
   String? _busyId;
+  var _filter = _MembershipFilter.all;
   VoidCallback? _unsubscribeWs;
 
   @override
@@ -131,19 +134,10 @@ class _ProfileMembershipsScreenState
     );
   }
 
-  List<Widget> section(
-    BuildContext context, {
-    required String title,
-    required List<MembershipCard> items,
-    required bool allowCancel,
-  }) {
-    final colors = CrowdFansTheme.of(context);
-    if (items.isEmpty) {
-      return const [];
-    }
-    return [
-      const SizedBox(height: 12),
-      Text(
+  Widget _sectionTitle(String title, AppColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 10),
+      child: Text(
         title,
         style: TextStyle(
           fontSize: 18,
@@ -151,10 +145,22 @@ class _ProfileMembershipsScreenState
           color: colors.textPrimary,
         ),
       ),
-      const SizedBox(height: 10),
+    );
+  }
+
+  List<Widget> _cards(
+    List<MembershipCard> items, {
+    required bool allowCancel,
+    required bool catalog,
+  }) {
+    if (items.isEmpty) {
+      return const [];
+    }
+    return [
       for (final item in items) ...[
         MembershipArtistCard(
           item: item,
+          catalog: catalog,
           busy: _busyId == item.id,
           onCancel: allowCancel && item.canCancel
               ? () => handleManage(item)
@@ -176,14 +182,46 @@ class _ProfileMembershipsScreenState
     final catalog =
         overview?.catalog.where((item) => !item.isCurrentMember).toList() ??
         const <MembershipCard>[];
+    final balance = overview?.jamCoinsBalance ?? '0';
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
-            ProfileScreenHeader(
-              title: 'Meus memberships',
-              onBack: () => context.pop(),
+            SizedBox(
+              height: 56,
+              child: Row(
+                children: [
+                  ToolbarBackButton(onPressed: () => context.pop()),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/Shapes/star-01.svg',
+                          width: 18,
+                          height: 18,
+                          colorFilter: ColorFilter.mode(
+                            colors.textPrimary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Meus Memberships',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  MembershipBalancePill(balance: balance),
+                ],
+              ),
             ),
             Expanded(
               child: _loading
@@ -198,72 +236,133 @@ class _ProfileMembershipsScreenState
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
-                        MembershipBalanceBanner(
-                          balance: overview?.jamCoinsBalance ?? '0',
-                        ),
-                        const SizedBox(height: 12),
                         MembershipProTeaser(
                           onPressed: () => context.push(Pages.profilePro),
                         ),
-                        const SizedBox(height: 16),
-                        AppButton(
-                          label: 'Recarregar Jam Coins',
-                          onPressed: () => context.push(Pages.profileWallet),
+                        const SizedBox(height: 20),
+                        _sectionTitle('Meus Memberships', colors),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              MembershipFilterChip(
+                                label: 'Todos',
+                                selected: _filter == _MembershipFilter.all,
+                                onTap: () => setState(
+                                  () => _filter = _MembershipFilter.all,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              MembershipFilterChip(
+                                label: 'Ativos',
+                                selected: _filter == _MembershipFilter.active,
+                                onTap: () => setState(
+                                  () => _filter = _MembershipFilter.active,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              MembershipFilterChip(
+                                label: 'Em atraso',
+                                selected: _filter == _MembershipFilter.late,
+                                onTap: () => setState(
+                                  () => _filter = _MembershipFilter.late,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              MembershipFilterChip(
+                                label: 'Cancelados',
+                                selected:
+                                    _filter == _MembershipFilter.cancelled,
+                                onTap: () => setState(
+                                  () =>
+                                      _filter = _MembershipFilter.cancelled,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              MembershipFilterChip(
+                                label: 'Disponíveis',
+                                selected:
+                                    _filter == _MembershipFilter.available,
+                                onTap: () => setState(
+                                  () =>
+                                      _filter = _MembershipFilter.available,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        if (active.isEmpty && late.isEmpty && cancelled.isEmpty)
+                        const SizedBox(height: 12),
+                        if (_filter == _MembershipFilter.all ||
+                            _filter == _MembershipFilter.active) ...[
+                          if (active.isEmpty &&
+                              _filter == _MembershipFilter.active)
+                            const ProfileState(
+                              title: 'Nenhuma membership ativa',
+                              message:
+                                  'Suas assinaturas ativas aparecerão aqui.',
+                              align: TextAlign.left,
+                            )
+                          else if (active.isNotEmpty) ...[
+                            if (_filter == _MembershipFilter.all)
+                              _sectionTitle('Ativos', colors),
+                            ..._cards(
+                              active,
+                              allowCancel: true,
+                              catalog: false,
+                            ),
+                          ],
+                        ],
+                        if (_filter == _MembershipFilter.all ||
+                            _filter == _MembershipFilter.late) ...[
+                          if (late.isNotEmpty) ...[
+                            if (_filter == _MembershipFilter.all)
+                              _sectionTitle('Em atraso', colors),
+                            ..._cards(late, allowCancel: true, catalog: false),
+                          ],
+                        ],
+                        if (_filter == _MembershipFilter.all ||
+                            _filter == _MembershipFilter.cancelled) ...[
+                          if (cancelled.isNotEmpty) ...[
+                            if (_filter == _MembershipFilter.all)
+                              _sectionTitle('Cancelados', colors),
+                            ..._cards(
+                              cancelled,
+                              allowCancel: false,
+                              catalog: false,
+                            ),
+                          ],
+                        ],
+                        if (_filter == _MembershipFilter.all &&
+                            active.isEmpty &&
+                            late.isEmpty &&
+                            cancelled.isEmpty)
                           const Padding(
-                            padding: EdgeInsets.only(top: 22),
+                            padding: EdgeInsets.only(bottom: 12),
                             child: ProfileState(
                               title: 'Nenhuma membership ativa',
                               message:
                                   'Suas assinaturas ativas aparecerão aqui.',
+                              align: TextAlign.left,
                             ),
-                          )
-                        else ...[
-                          ...section(
-                            context,
-                            title: 'Ativos',
-                            items: active,
-                            allowCancel: true,
                           ),
-                          ...section(
-                            context,
-                            title: 'Em atraso',
-                            items: late,
-                            allowCancel: true,
-                          ),
-                          ...section(
-                            context,
-                            title: 'Cancelados',
-                            items: cancelled,
-                            allowCancel: false,
-                          ),
+                        if (_filter == _MembershipFilter.all ||
+                            _filter == _MembershipFilter.available) ...[
+                          if (_filter == _MembershipFilter.all)
+                            _sectionTitle('Disponíveis', colors),
+                          if (catalog.isEmpty)
+                            const ProfileState(
+                              title: 'Nenhuma nova membership',
+                              message:
+                                  'Não há outras assinaturas disponíveis neste momento.',
+                              align: TextAlign.left,
+                            )
+                          else
+                            ..._cards(
+                              catalog,
+                              allowCancel: false,
+                              catalog: true,
+                            ),
                         ],
-                        const SizedBox(height: 10),
-                        Text(
-                          'Disponíveis',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        if (catalog.isEmpty)
-                          const ProfileState(
-                            title: 'Nenhuma nova membership',
-                            message:
-                                'Não há outras assinaturas disponíveis neste momento.',
-                          )
-                        else
-                          for (final item in catalog) ...[
-                            MembershipArtistCard(item: item, catalog: true),
-                            const SizedBox(height: 12),
-                          ],
-                        const NotificationQuietModeNote(
-                          message:
-                              'Assinar cobra 100 Jam Coins. Recarga fica em Jam Coins. Cancelar não estorna.',
-                        ),
                       ],
                     ),
             ),

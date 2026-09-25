@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/profile/fan_score_how_it_works_card.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,6 +24,10 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
     final end = (cycleEndLabel ?? '').trim();
     if (end.isNotEmpty) {
       return 'O ciclo vigente encerra em $end e reseta logo em seguida.';
+    }
+    // TEMP: copy do print CF-202 quando não há ciclo da API.
+    if (CfTempMocks.useFanScoreFixtures && kUseCfTempMocks) {
+      return 'O ciclo vigente encerra em ${cfTempMockFanScoreData().cycleDetails!.endLabel!} e reseta logo em seguida.';
     }
     return 'O ciclo vigente encerra no fim do período mensal e reseta logo em seguida.';
   }
@@ -78,12 +83,13 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
                         'O status Ultimate Fã é raro e costuma exigir atividade quase diária ao longo do mês.',
                   ),
                   const SizedBox(height: 20),
+                  // Print CF-202: seção seguinte abaixo dos cards.
                   Text(
                     'O que entra na conta',
-                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: colors.textTertiary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],

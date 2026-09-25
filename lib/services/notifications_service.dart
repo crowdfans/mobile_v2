@@ -1,4 +1,5 @@
 import 'package:crowdfans/api/api_urls.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/http_service.dart';
 
 class NotificationSegment {
@@ -89,6 +90,10 @@ enum NotificationTab { all, posts, clubs, meet, fanletter, system }
 /// Inbox autenticada (`GET /api/v1/notifications`).
 abstract final class NotificationsService {
   static Future<List<NotificationSection>> getNotifications() async {
+    // TEMP MOCK CF-190 — remover quando API povoar a inbox.
+    if (kUseCfTempMocks && kUseCf190NotificationMocks) {
+      return CfTempMocks.notificationSections();
+    }
     return HttpService.request<List<NotificationSection>>(
       ApiUrls.notifications,
       parse: (json) {

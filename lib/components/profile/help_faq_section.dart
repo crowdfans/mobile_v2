@@ -15,33 +15,39 @@ class HelpFaqItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Semantics(
-            header: true,
-            child: Text(
-              question,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: colors.textPrimary,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 14, bottom: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  question,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                answer,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.55,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            answer,
-            style: TextStyle(
-              fontSize: 13,
-              height: 1.55,
-              color: colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+        ),
+        Divider(height: 1, thickness: 1, color: colors.border),
+      ],
     );
   }
 }

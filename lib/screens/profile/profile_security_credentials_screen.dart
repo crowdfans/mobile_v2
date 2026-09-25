@@ -109,7 +109,7 @@ class _ProfileSecurityCredentialsScreenState
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: SingleChildScrollView(
                   key: ValueKey(_formNonce),
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 34),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   child: Column(
@@ -180,17 +180,17 @@ class _ProfileSecurityCredentialsScreenState
                           success: true,
                         ),
                       ],
-                      const SizedBox(height: 28),
-                      AppButton(
-                        label: _submitting
-                            ? 'Atualizando...'
-                            : 'Salvar nova senha',
-                        disabled: _submitting || !_passwordFormReady,
-                        onPressed: handleSubmit,
-                      ),
                     ],
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              child: AppButton(
+                label: _submitting ? 'Atualizando...' : 'Salvar nova senha',
+                disabled: _submitting || !_passwordFormReady,
+                onPressed: handleSubmit,
               ),
             ),
           ],

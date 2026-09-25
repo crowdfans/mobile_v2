@@ -17,11 +17,14 @@ class MePostsFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
+    // CF-178 print: selecionado charcoal; não selecionado borda fina escura.
+    final unselectedBorder = colors.textPrimary.withValues(alpha: 0.55);
     return Material(
-      color: selected ? const Color(0xFF1C1C1E) : colors.surface,
+      color: selected ? AppPalette.platinum900 : colors.surface,
       shape: StadiumBorder(
         side: BorderSide(
-          color: selected ? const Color(0xFF1C1C1E) : colors.border,
+          color: selected ? AppPalette.platinum900 : unselectedBorder,
+          width: 1,
         ),
       ),
       child: InkWell(

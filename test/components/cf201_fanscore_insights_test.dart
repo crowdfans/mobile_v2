@@ -50,8 +50,15 @@ void main() {
 
       expect(find.text('Kheper'), findsOneWidget);
       expect(find.text('1.000'), findsOneWidget);
+      expect(find.text('+4%'), findsOneWidget);
+      expect(find.text('#7'), findsOneWidget);
       expect(find.text('Insights'), findsOneWidget);
       expect(find.text('Posts FC'), findsNothing);
+
+      // Print: círculo de tendência fica à esquerda do #rank.
+      final delta = tester.getTopLeft(find.text('+4%'));
+      final rank = tester.getTopLeft(find.text('#7'));
+      expect(delta.dx, lessThan(rank.dx));
 
       await tester.tap(find.text('Insights'));
       await tester.pumpAndSettle();

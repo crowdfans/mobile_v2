@@ -1,9 +1,8 @@
 import 'package:crowdfans/components/comments/comment_reply_banner.dart';
-import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Compositor compacto acima do teclado (CF-174 / CF-196).
+/// Compositor fixo — avatar + campo arredondado + emoji/enviar (CF-174 / CF-194).
 class CommentComposer extends StatelessWidget {
   const CommentComposer({
     super.key,
@@ -101,7 +100,7 @@ class CommentComposer extends StatelessWidget {
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -110,8 +109,7 @@ class CommentComposer extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 18,
                       backgroundColor: colors.surfaceAlt,
-                      backgroundImage:
-                          (avatarUrl ?? '').startsWith('http')
+                      backgroundImage: (avatarUrl ?? '').startsWith('http')
                           ? NetworkImage(avatarUrl!)
                           : null,
                       child: (avatarUrl ?? '').startsWith('http')
@@ -127,34 +125,134 @@ class CommentComposer extends StatelessWidget {
                   Expanded(
                     child: KeyedSubtree(
                       key: const Key('comment-composer'),
-                      child: AppTextField(
-                        key: ValueKey(
-                          'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: colors.inputBackground,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: colors.border),
                         ),
-                        hint: replyAuthor != null
-                            ? 'Responder a $replyAuthor'
-                            : 'Adicione um comentário...',
-                        maxLines: 2,
-                        initialValue: draft,
-                        onChanged: onDraftChanged,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                key: ValueKey(
+                                  'comment-${editing ? 'edit' : replyAuthor ?? 'new'}',
+                                ),
+                                initialValue: draft,
+                                onChanged: onDraftChanged,
+                                maxLines: 2,
+                                minLines: 1,
+                                autocorrect: false,
+                                decoration: InputDecoration(
+                                  hintText: replyAuthor != null
+                                      ? 'Responder a $replyAuthor'
+                                      : 'Adicione um comentário...',
+                                  hintStyle: TextStyle(
+                                    color: colors.textTertiary,
+                                    fontSize: 14,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    12,
+                                    8,
+                                    12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Print CF-194/195: idle = ícone smile no campo (abre GIF).
+                            // Com rascunho/resposta: só o enviar (CF-196).
+                            if (!(canSubmit || replyAuthor != null || editing))
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: IconButton(
+                                  key: const Key('comment-gif'),
+                                  onPressed: onPickGif,
+                                  tooltip: 'Escolher GIF',
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
+                                  icon: Icon(
+                                    Icons.sentiment_satisfied_alt_outlined,
+                                    size: 22,
+                                    color: colors.textTertiary,
+                                  ),
+                                ),
+                              ),
+                            // Print CF-196: enviar = círculo escuro com ↑
+                            if (canSubmit || replyAuthor != null || editing)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Semantics(
+                                  button: true,
+                                  enabled: canSubmit,
+                                  label: editing
+                                      ? 'Salvar comentário'
+                                      : 'Publicar comentário',
+                                  child: Material(
+                                    color: canSubmit
+                                        ? const Color(0xFF1C1C1E)
+                                        : colors.surfaceAlt,
+                                    shape: const CircleBorder(),
+                                    child: InkWell(
+                                      key: const Key('comment-submit'),
+                                      onTap: canSubmit ? onSubmit : null,
+                                      customBorder: const CircleBorder(),
+                                      child: SizedBox(
+                                        width: 34,
+                                        height: 34,
+                                        child: Icon(
+                                          Icons.arrow_upward_rounded,
+                                          size: 18,
+                                          color: canSubmit
+                                              ? Colors.white
+                                              : colors.textTertiary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            // Atalho GIF explícito enquanto redige (CF-69).
+                            if (canSubmit || replyAuthor != null || editing)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Material(
+                                  color: colors.surface,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(color: colors.border),
+                                  ),
+                                  child: InkWell(
+                                    key: const Key('comment-gif-chip'),
+                                    onTap: onPickGif,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: const SizedBox(
+                                      width: 36,
+                                      height: 28,
+                                      child: Center(
+                                        child: Text(
+                                          'GIF',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.2,
+                                            color: Color(0xFF1C1C1E),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  IconButton(
-                    key: const Key('comment-gif'),
-                    onPressed: onPickGif,
-                    tooltip: 'Inserir GIF',
-                    icon: Icon(Icons.gif_box_outlined, color: colors.primary),
-                  ),
-                  IconButton(
-                    key: const Key('comment-submit'),
-                    onPressed: canSubmit ? onSubmit : null,
-                    tooltip: editing
-                        ? 'Salvar comentário'
-                        : 'Publicar comentário',
-                    icon: Icon(
-                      Icons.send_rounded,
-                      color: canSubmit ? colors.primary : colors.textTertiary,
                     ),
                   ),
                 ],
