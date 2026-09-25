@@ -477,6 +477,17 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     );
   }
 
+  /// Menu ⋯ do cabeçalho (print CF-194 — sempre acionável).
+  Future<void> handleOpenPostMenu() async {
+    final author = (widget.postAuthor ?? '').trim();
+    final label = author.isEmpty ? 'este post' : author;
+    await AppAlert.show(
+      context,
+      title: 'Opções',
+      message: 'Ações do post de $label estarão disponíveis em breve.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
@@ -524,6 +535,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               avatarUrl: widget.postAvatarUrl,
               clubAvatarUrl: widget.clubAvatarUrl,
               clubName: widget.clubName,
+              // Print CF-194: ⋯ ativo (não esmaecido).
+              onMenu: handleOpenPostMenu,
             ),
             if ((widget.postAuthor ?? '').trim().isNotEmpty ||
                 (widget.clubName ?? '').trim().isNotEmpty ||

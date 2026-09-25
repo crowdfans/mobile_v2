@@ -1,8 +1,9 @@
 import 'package:crowdfans/components/comments/comment_reply_banner.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-/// Compositor fixo — avatar + campo arredondado + GIF/enviar (CF-174 / CF-194).
+/// Compositor fixo — avatar + campo arredondado + emoji/enviar (CF-174 / CF-194).
 class CommentComposer extends StatelessWidget {
   const CommentComposer({
     super.key,
@@ -162,18 +163,37 @@ class CommentComposer extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            IconButton(
-                              key: const Key('comment-gif'),
-                              onPressed: onPickGif,
-                              tooltip: 'Inserir GIF',
-                              visualDensity: VisualDensity.compact,
-                              icon: Icon(
-                                Icons.sentiment_satisfied_alt_outlined,
-                                color: colors.textTertiary,
-                                size: 22,
+                            // Print CF-194 idle: emoji sticker *dentro* do
+                            // campo, com respiro à direita; sem botão enviar.
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: Material(
+                                color: colors.surfaceAlt,
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  key: const Key('comment-gif'),
+                                  onTap: onPickGif,
+                                  customBorder: const CircleBorder(),
+                                  child: SizedBox(
+                                    width: 34,
+                                    height: 34,
+                                    child: Center(
+                                      child: SvgPicture.asset(
+                                        'assets/icons/Communication/message-smile-square.svg',
+                                        width: 20,
+                                        height: 20,
+                                        colorFilter: ColorFilter.mode(
+                                          colors.textPrimary,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            // Print CF-196: enviar = círculo escuro com ↑ (só ativo).
+                            // Print CF-196: enviar = círculo escuro com ↑
+                            // (só com foco/rascunho/resposta — não no idle).
                             if (canSubmit || replyAuthor != null || editing)
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
