@@ -260,7 +260,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   }
 
   void handleOpenMenu() {
-    setState(() => _sidebarVisible = true);
+    setState(() => _sidebarVisible = !_sidebarVisible);
   }
 
   void handleCloseSidebar() {
@@ -320,7 +320,14 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
     final colors = CrowdFansTheme.of(context);
     final posts = visiblePosts();
     final artists = searchArtists();
-    return Scaffold(
+    return PopScope(
+      canPop: !_sidebarVisible,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _sidebarVisible) {
+          handleCloseSidebar();
+        }
+      },
+      child: Scaffold(
       backgroundColor: colors.background,
       body: Stack(
         children: [
@@ -470,6 +477,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }

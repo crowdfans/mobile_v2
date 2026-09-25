@@ -35,6 +35,7 @@ class _SidebarMenuState extends State<SidebarMenu>
   var _favoriteIds = <String>{};
   var _recent = <HomeFollowedArtist>[];
   var _ready = false;
+  var _shouldRender = false;
 
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _SidebarMenuState extends State<SidebarMenu>
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     handleLoadStore();
     if (widget.visible) {
+      _shouldRender = true;
       _controller.value = 1;
     }
   }
@@ -59,9 +61,11 @@ class _SidebarMenuState extends State<SidebarMenu>
     super.didUpdateWidget(oldWidget);
     if (widget.visible && !oldWidget.visible) {
       handleLoadStore();
-      if (!widget.asDrawerPanel) {
-        _controller.forward();
+      if (widget.asDrawerPanel) {
+        return;
       }
+      setState(() => _shouldRender = true);
+      _controller.forward(from: 0);
       return;
     }
     if (widget.visible == oldWidget.visible) {
@@ -71,9 +75,15 @@ class _SidebarMenuState extends State<SidebarMenu>
       return;
     }
     if (widget.visible) {
-      _controller.forward();
+      setState(() => _shouldRender = true);
+      _controller.forward(from: 0);
     } else {
-      _controller.reverse();
+      _controller.reverse().whenComplete(() {
+        if (!mounted || widget.visible) {
+          return;
+        }
+        setState(() => _shouldRender = false);
+      });
     }
   }
 
@@ -130,13 +140,23 @@ class _SidebarMenuState extends State<SidebarMenu>
     ];
     return Material(
       color: colors.surfaceAlt,
+      clipBehavior: Clip.hardEdge,
       child: SafeArea(
         child: SizedBox(
           width: MediaQuery.sizeOf(context).width * 0.78,
           height: double.infinity,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 34),
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 34),
             children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  key: const Key('sidebar-close'),
+                  onPressed: widget.onClose,
+                  tooltip: 'Fechar menu',
+                  icon: Icon(Icons.close, color: colors.textPrimary),
+                ),
+              ),
               Semantics(
                 header: true,
                 child: Text(
@@ -231,34 +251,43 @@ class _SidebarMenuState extends State<SidebarMenu>
     if (widget.asDrawerPanel) {
       return buildPanel(context);
     }
+    if (!_shouldRender) {
+      return const SizedBox.shrink();
+    }
     final colors = CrowdFansTheme.of(context);
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return IgnorePointer(
-          ignoring: !widget.visible && _controller.value == 0,
-          child: child,
-        );
-      },
-      child: FadeTransition(
-        opacity: _fade,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: widget.onClose,
-                behavior: HitTestBehavior.opaque,
-                child: ColoredBox(color: colors.overlay),
+    // SizedBox.expand: a barreira cobre a tela inteira (pai = Stack).
+    // Sem isso o Stack encolhia ao painel e o tap fora nunca chamava onClose.
+    return SizedBox.expand(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return IgnorePointer(
+            ignoring: !widget.visible && _controller.value == 0,
+            child: child,
+          );
+        },
+        child: FadeTransition(
+          opacity: _fade,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  key: const Key('sidebar-barrier'),
+                  onTap: widget.onClose,
+                  behavior: HitTestBehavior.opaque,
+                  child: ColoredBox(color: colors.overlay),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: SlideTransition(
-                position: _slide,
-                child: buildPanel(context),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SlideTransition(
+                  position: _slide,
+                  child: buildPanel(context),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
