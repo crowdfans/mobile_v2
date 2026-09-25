@@ -148,15 +148,6 @@ class _SidebarMenuState extends State<SidebarMenu>
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 12, 24, 34),
             children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  key: const Key('sidebar-close'),
-                  onPressed: widget.onClose,
-                  tooltip: 'Fechar menu',
-                  icon: Icon(Icons.close, color: colors.textPrimary),
-                ),
-              ),
               Semantics(
                 header: true,
                 child: Text(

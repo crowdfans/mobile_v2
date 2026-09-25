@@ -10,15 +10,21 @@ class SearchArtistsChrome extends StatelessWidget {
     required this.controller,
     required this.onBack,
     required this.onChanged,
+    this.focusNode,
     this.onClear,
     this.showClear = false,
   });
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final VoidCallback onBack;
   final ValueChanged<String> onChanged;
   final VoidCallback? onClear;
   final bool showClear;
+
+  void handleFocusSearch() {
+    focusNode?.requestFocus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +52,9 @@ class SearchArtistsChrome extends StatelessWidget {
                   color: colors.surfaceAlt,
                   shape: const CircleBorder(),
                   child: InkWell(
+                    key: const Key('search-artists-focus'),
                     customBorder: const CircleBorder(),
-                    onTap: () {},
+                    onTap: handleFocusSearch,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: SvgPicture.asset(
@@ -70,6 +77,7 @@ class SearchArtistsChrome extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: SearchQueryField(
             controller: controller,
+            focusNode: focusNode,
             hint: '...',
             semanticLabel: 'Buscar artista',
             autofocus: false,

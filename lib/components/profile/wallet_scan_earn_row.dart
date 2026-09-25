@@ -45,13 +45,24 @@ class WalletScanEarnRow extends StatelessWidget {
                   color: Color(0xFFF5C451),
                 ),
               ),
-              const SizedBox(width: 6),
-              Text(
-                bonusLabel,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
+              const SizedBox(width: 8),
+              // Print CF-168: +120 em pílula amarela clara.
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF4C2),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  bonusLabel,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
                 ),
               ),
             ],

@@ -169,33 +169,37 @@ class SearchArtistRankDetailsSheet extends StatelessWidget {
           Semantics(
             button: true,
             label: 'Reportar ${current?.name ?? 'artista'}',
-            child: InkWell(
-              onTap: () => handleReport(context),
+            child: Material(
+              color: colors.surfaceAlt,
               borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/Communication/message-alert-circle.svg',
-                      width: 22,
-                      height: 22,
-                      colorFilter: ColorFilter.mode(
-                        colors.danger,
-                        BlendMode.srcIn,
+              child: InkWell(
+                onTap: () => handleReport(context),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/Communication/message-alert-circle.svg',
+                        width: 22,
+                        height: 22,
+                        colorFilter: ColorFilter.mode(
+                          colors.danger,
+                          BlendMode.srcIn,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Reportar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: colors.danger,
+                      const SizedBox(width: 8),
+                      Text(
+                        'Reportar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: colors.danger,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
