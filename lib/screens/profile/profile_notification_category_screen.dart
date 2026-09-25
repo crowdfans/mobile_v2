@@ -3,6 +3,7 @@ import 'package:crowdfans/components/profile/notification_quiet_mode_note.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -48,12 +49,25 @@ class _ProfileNotificationCategoryScreenState
       if (!mounted) {
         return;
       }
+      final usePrint = kUseCfTempMocks &&
+          CfTempMocks.useNotificationCategoryPrintFixtures;
       setState(() {
-        _preferences = next;
+        _preferences = usePrint
+            ? Cf208209211NotificationPrintFixtures.preferences()
+            : next;
         _loading = false;
       });
     } catch (error) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks &&
+          CfTempMocks.useNotificationCategoryPrintFixtures) {
+        setState(() {
+          _preferences = Cf208209211NotificationPrintFixtures.preferences();
+          _loading = false;
+          _error = null;
+        });
         return;
       }
       setState(() {
@@ -85,6 +99,13 @@ class _ProfileNotificationCategoryScreenState
       });
     } catch (error) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks &&
+          CfTempMocks.useNotificationCategoryPrintFixtures) {
+        setState(() {
+          _saving = false;
+        });
         return;
       }
       setState(() {

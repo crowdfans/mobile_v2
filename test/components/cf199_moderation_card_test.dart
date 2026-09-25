@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
-    'CF-199: defesa em caixa surfaceAlt; Aceitar/Recusar nomeados',
+    'CF-199: bloco lavanda, defesa em texto corrido, Aceitar/Recusar fora',
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -31,12 +31,21 @@ void main() {
       expect(find.text('Recusar'), findsOneWidget);
 
       final bodyBox = tester.widgetList<DecoratedBox>(find.byType(DecoratedBox));
-      final hasAltFill = bodyBox.any((box) {
+      final hasLavender = bodyBox.any((box) {
         final decoration = box.decoration;
         return decoration is BoxDecoration &&
-            decoration.color == AppPalette.platinum100;
+            decoration.color == AppPalette.purple50;
       });
-      expect(hasAltFill, isTrue);
+      expect(hasLavender, isTrue);
+
+      // Sem caixa aninhada cinza (surfaceAlt) em volta da defesa.
+      final hasNestedAlt = bodyBox.any((box) {
+        final decoration = box.decoration;
+        return decoration is BoxDecoration &&
+            decoration.color == AppPalette.platinum100 &&
+            (decoration.borderRadius != null);
+      });
+      expect(hasNestedAlt, isFalse);
     },
   );
 }
