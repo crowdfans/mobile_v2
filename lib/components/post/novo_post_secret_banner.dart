@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Indicador compacto “Modo secreto ativo” (CF-177).
+/// Indicador compacto “Modo secreto ativo” (CF-177) — pílula, não faixa.
 class NovoPostSecretBanner extends StatelessWidget {
   const NovoPostSecretBanner({super.key});
 
@@ -13,40 +13,23 @@ class NovoPostSecretBanner extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: AppPalette.blue50,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(999),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(6, 4, 10, 4),
+          padding: const EdgeInsets.fromLTRB(8, 5, 12, 5),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppPalette.blue300, AppPalette.blue50],
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: AppPalette.blue200),
-                ),
-                child: SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: Center(
-                    child: SvgPicture.asset(
-                      'assets/icons/General/eye-off.svg',
-                      width: 12,
-                      height: 12,
-                      colorFilter: const ColorFilter.mode(
-                        AppPalette.blue700,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
+              SvgPicture.asset(
+                'assets/icons/General/eye-off.svg',
+                width: 14,
+                height: 14,
+                colorFilter: const ColorFilter.mode(
+                  AppPalette.blue700,
+                  BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               const Text(
                 'Modo secreto ativo',
                 style: TextStyle(

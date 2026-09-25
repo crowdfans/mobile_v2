@@ -130,9 +130,10 @@ class _ProfileNotificationsScreenState
                         Text(
                           'Categorias detalhadas',
                           style: TextStyle(
-                            fontSize: 15,
+                            // Mesmo peso/cor de “Preferências Gerais” (CF-166).
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
+                            color: colors.textTertiary,
                           ),
                         ),
                         const SizedBox(height: 8),
