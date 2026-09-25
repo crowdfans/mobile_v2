@@ -3,12 +3,14 @@
 // Arquivo único de mocks temporários (QA / demo).
 // CF-190: central de notificações (print image.png).
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
+// CF-194: comentários do fã-clube (prints recolhido/expandido).
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
 // Forçar vazio: `kCf190MockEmpty = true`
 // Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
+import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 
@@ -378,3 +380,46 @@ const cfTempMockRechargeConfirmed = (
   jamCoinsLabel: '5.000 Jam Coins',
   methodLabel: 'PIX',
 );
+
+/// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
+const bool kUseCf194CommentMocks = true;
+
+/// Dados do print CF-194 (recolhido / expandido).
+abstract final class Cf194FanClubCommentsMock {
+  static const postAuthor = 'Felipe Rhy';
+  static const postHandle = 'fan/thiagok';
+  static const postText =
+      'Se abrirem novo meet & greet, a gente precisa entrar mais coordenado dessa vez.';
+  static const clubName = 'Thiago K';
+  static const postMinutesAgo = 120;
+  static const postVotes = 1039;
+  static const postShares = 20;
+
+  static const parentHandle = 'fan/feandrade';
+
+  static List<CommentItem> comments() {
+    final reply = CommentItem(
+      id: 'cf194-reply-1',
+      author: 'Rafa Nogueira',
+      handle: 'fan/rafanogueira',
+      avatarUri: '',
+      minutesAgo: 180,
+      text: 'Esse tipo de conteúdo sempre rende discussão boa.',
+      votes: 15,
+      parentCommentId: 'cf194-c1',
+    );
+    return [
+      CommentItem(
+        id: 'cf194-c1',
+        author: 'Fê Andrade',
+        handle: parentHandle,
+        avatarUri: '',
+        minutesAgo: 180,
+        text:
+            'Quero mais posts de bastidor assim. Dá vontade de salvar tudo e mandar no grupo do fandom.',
+        votes: 229,
+        replies: [reply],
+      ),
+    ];
+  }
+}

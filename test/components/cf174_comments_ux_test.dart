@@ -52,6 +52,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('Ponzanelli'), findsOneWidget);
     expect(find.text('@ponzanelli'), findsOneWidget);
     expect(find.text('Voltar'), findsNothing);
     expect(find.text('Vic Artist'), findsOneWidget);

@@ -597,6 +597,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           postText: state.uri.queryParameters['text'],
           clubName: state.uri.queryParameters['club'],
           postAvatarUrl: state.uri.queryParameters['avatarUrl'],
+          clubAvatarUrl: state.uri.queryParameters['clubAvatarUrl'],
+          postMinutesAgo: int.tryParse(
+            state.uri.queryParameters['minutesAgo'] ?? '',
+          ),
+          postVotes: int.tryParse(state.uri.queryParameters['votes'] ?? ''),
+          postShares: int.tryParse(state.uri.queryParameters['shares'] ?? ''),
         ),
       ),
       GoRoute(

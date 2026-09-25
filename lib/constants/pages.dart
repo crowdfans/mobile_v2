@@ -38,6 +38,10 @@ abstract final class Pages {
     String? text,
     String? clubName,
     String? avatarUrl,
+    String? clubAvatarUrl,
+    int? minutesAgo,
+    int? votes,
+    int? shares,
   }) {
     return Uri(
       path: '/comments/${Uri.encodeComponent(postId)}',
@@ -47,6 +51,11 @@ abstract final class Pages {
         if ((text ?? '').trim().isNotEmpty) 'text': text!.trim(),
         if ((clubName ?? '').trim().isNotEmpty) 'club': clubName!.trim(),
         if ((avatarUrl ?? '').trim().isNotEmpty) 'avatarUrl': avatarUrl!.trim(),
+        if ((clubAvatarUrl ?? '').trim().isNotEmpty)
+          'clubAvatarUrl': clubAvatarUrl!.trim(),
+        if (minutesAgo != null) 'minutesAgo': '$minutesAgo',
+        if (votes != null) 'votes': '$votes',
+        if (shares != null) 'shares': '$shares',
       },
     ).toString();
   }
