@@ -6,6 +6,7 @@ import 'package:crowdfans/components/comments/comment_post_context_header.dart';
 import 'package:crowdfans/components/comments/comment_replies_toggle.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
+import 'package:crowdfans/components/comments/comment_thread_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/comment_gif_service.dart';
@@ -29,6 +30,7 @@ class CommentsScreen extends ConsumerStatefulWidget {
     this.postHandle,
     this.postText,
     this.clubName,
+    this.postAvatarUrl,
   });
 
   final String postId;
@@ -36,6 +38,7 @@ class CommentsScreen extends ConsumerStatefulWidget {
   final String? postHandle;
   final String? postText;
   final String? clubName;
+  final String? postAvatarUrl;
 
   @override
   ConsumerState<CommentsScreen> createState() => _CommentsScreenState();
@@ -415,47 +418,21 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         bottom: false,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      if (context.canPop()) {
-                        context.pop();
-                        return;
-                      }
-                      context.go(Pages.home);
-                    },
-                    child: Text(
-                      'Voltar',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      (widget.postAuthor ?? '').trim().isNotEmpty
-                          ? widget.postAuthor!.trim()
-                          : 'Comentários',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 72),
-                ],
-              ),
+            CommentThreadHeader(
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                  return;
+                }
+                context.go(Pages.home);
+              },
+              author: widget.postAuthor,
+              handle: widget.postHandle,
+              avatarUrl: widget.postAvatarUrl,
             ),
             if ((widget.postAuthor ?? '').trim().isNotEmpty ||
-                (widget.clubName ?? '').trim().isNotEmpty)
+                (widget.clubName ?? '').trim().isNotEmpty ||
+                (widget.postText ?? '').trim().isNotEmpty)
               CommentPostContextHeader(
                 author: (widget.postAuthor ?? '').trim().isEmpty
                     ? 'Publicação'
@@ -463,6 +440,18 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 handle: widget.postHandle,
                 text: widget.postText,
                 clubName: widget.clubName,
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Text(
+                  'Comentários',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
+                ),
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

@@ -44,6 +44,7 @@ class FeedItem extends StatelessWidget {
         handle: post.handle,
         text: post.text,
         clubName: clubName,
+        avatarUrl: post.avatarUri,
       ),
     );
   }
