@@ -56,8 +56,19 @@ void main() {
     // Controles de interações não ficam no hub.
     expect(find.text('Curtidas em comentários'), findsNothing);
     expect(
-      find.text('Curtidas do artista, respostas, menções e novos seguidores.'),
+      find.text(
+        'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
+      ),
       findsOneWidget,
     );
+    // Print: sem contorno externo nos grupos (só linhas entre itens).
+    final borderedCards = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).borderRadius != null &&
+          (widget.decoration as BoxDecoration).border != null,
+    );
+    expect(borderedCards, findsNothing);
   });
 }

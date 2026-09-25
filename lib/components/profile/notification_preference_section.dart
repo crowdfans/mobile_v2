@@ -61,7 +61,7 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
     id: 'interactions',
     title: 'Interações com você',
     navSubtitle:
-        'Curtidas do artista, respostas, menções e novos seguidores.',
+        'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeComment,
@@ -185,7 +185,7 @@ NotificationPreferenceGroup? notificationGroupById(String id) {
   return null;
 }
 
-/// Seção de preferências (CF-166): título + card com linhas internas.
+/// Seção de preferências sem contorno externo (CF-166): título + linhas.
 class NotificationPreferenceSection extends StatelessWidget {
   const NotificationPreferenceSection({
     super.key,
@@ -217,32 +217,20 @@ class NotificationPreferenceSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.border),
+        for (var i = 0; i < group.items.length; i++)
+          NotificationPreferenceRow(
+            title: group.items[i].title,
+            description: group.items[i].description,
+            value: preferences[group.items[i].keyName] ?? false,
+            enabled:
+                !(saving ||
+                    (quiet &&
+                        !group.items[i].critical &&
+                        group.items[i].keyName !=
+                            NotificationPreferenceKeys.quietModeEnabled)),
+            showDivider: i > 0,
+            onChanged: (value) => onChanged(group.items[i].keyName, value),
           ),
-          child: Column(
-            children: [
-              for (var i = 0; i < group.items.length; i++)
-                NotificationPreferenceRow(
-                  title: group.items[i].title,
-                  description: group.items[i].description,
-                  value: preferences[group.items[i].keyName] ?? false,
-                  enabled:
-                      !(saving ||
-                          (quiet &&
-                              !group.items[i].critical &&
-                              group.items[i].keyName !=
-                                  NotificationPreferenceKeys.quietModeEnabled)),
-                  showDivider: i > 0,
-                  onChanged: (value) =>
-                      onChanged(group.items[i].keyName, value),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }
