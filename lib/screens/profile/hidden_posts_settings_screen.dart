@@ -91,7 +91,7 @@ class _HiddenPostsSettingsScreenState extends State<HiddenPostsSettingsScreen> {
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: 'Posts ocultos',
+              title: 'Posts Ocultados',
               onBack: () => context.pop(),
             ),
             Expanded(
@@ -106,8 +106,10 @@ class _HiddenPostsSettingsScreenState extends State<HiddenPostsSettingsScreen> {
                     )
                   : _posts.isEmpty
                   ? const ProfileState(
-                      title: 'Nenhum post oculto',
-                      message: 'Os posts que você ocultar aparecem aqui.',
+                      title: 'Nenhum post ocultado',
+                      message:
+                          'Quando você ocultar um conteúdo, ele aparecerá aqui.',
+                      align: TextAlign.left,
                     )
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),

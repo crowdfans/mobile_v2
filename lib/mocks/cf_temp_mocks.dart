@@ -5,14 +5,18 @@
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
+// CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
 // Forçar vazio: `kCf190MockEmpty = true`
 // Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
+import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/services/comment_service.dart';
+import 'package:crowdfans/services/follow_service.dart';
+import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 
@@ -40,6 +44,9 @@ abstract final class CfTempMocks {
 
   /// Preferências de notificação povoadas (CF-213).
   static const useNotificationPrefFixtures = true;
+
+  /// Segurança / dispositivos / telefone / bio (CF-216, 217, 219).
+  static const useSecuritySettingsFixtures = true;
 
   /// Fã-clube perfil / moderadores / regras / expulsão (CF-200, CF-222…230).
   static const useFanClubFixtures = true;
@@ -535,6 +542,94 @@ abstract final class Cf194FanClubCommentsMock {
       ),
     ];
   }
+}
+
+/// CF-213 — Artistas e Fã Clubes (print: tipos off + Mayra / Laís / Marinhos).
+extension Cf213NotificationPrefFixtures on CfTempMocks {
+  static Map<String, bool> alertTypeDefaultsOff() {
+    return {
+      ...notificationPreferenceDefaults,
+      NotificationPreferenceKeys.clubPosts: false,
+      NotificationPreferenceKeys.exclusiveContent: false,
+      NotificationPreferenceKeys.fanLetterReceived: false,
+      NotificationPreferenceKeys.artistHighlights: false,
+    };
+  }
+
+  static List<ArtistFollow> followedArtists() {
+    return const [
+      ArtistFollow(
+        artistUid: 'cf213-mayra',
+        artistName: 'Mayra',
+        avatarUrl: '',
+        isFollowing: true,
+      ),
+      ArtistFollow(
+        artistUid: 'cf213-lais',
+        artistName: 'Laís Costa',
+        avatarUrl: '',
+        isFollowing: true,
+      ),
+      ArtistFollow(
+        artistUid: 'cf213-marinhos',
+        artistName: 'Marinhos',
+        avatarUrl: '',
+        isFollowing: true,
+      ),
+    ];
+  }
+
+  static const artistSubtitles = <String>[
+    'Posts, cartas, Meet & Greet e membership deste artista.',
+    'Lembretes de Meet, destaques e novidades do fã clube.',
+    'Renovação de membership, promoções e conteúdo exclusivo.',
+  ];
+}
+
+/// CF-216 — três sessões do print.
+extension Cf216ConnectedDevicesFixtures on CfTempMocks {
+  static List<ConnectedDeviceSession> sessions() {
+    return const [
+      ConnectedDeviceSession(
+        id: 'current',
+        name: 'iPhone 15 Pro',
+        platformLine: 'iOS · Crowd Fans App',
+        location: 'São Paulo, Brasil',
+        activity: 'Ativo agora',
+        isCurrent: true,
+        isPhone: true,
+      ),
+      ConnectedDeviceSession(
+        id: 'macbook',
+        name: 'MacBook Air',
+        platformLine: 'Chrome · Web',
+        location: 'São Paulo, Brasil',
+        activity: 'Hoje às 14:12',
+        isCurrent: false,
+        isPhone: false,
+      ),
+      ConnectedDeviceSession(
+        id: 'galaxy',
+        name: 'Galaxy S24',
+        platformLine: 'Android · Crowd Fans App',
+        location: 'Campinas, Brasil',
+        activity: 'Ontem às 22:41',
+        isCurrent: false,
+        isPhone: true,
+      ),
+    ];
+  }
+}
+
+/// CF-217 — telefone atual do print.
+abstract final class Cf217ChangePhoneMock {
+  static const currentPhoneLabel = '(11) 98765-4321';
+}
+
+/// CF-219 — bio do print (contador 56).
+abstract final class Cf219EditBioMock {
+  static const bio =
+      'Gosto muito di rock e pop, se vc gosta tb vamos ser ami!';
 }
 
 /// Liga dados de demo do CF-195 (Home sem comentários → print populado).

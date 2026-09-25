@@ -170,32 +170,36 @@ const informationTermsSections = [
   ),
 ];
 
-/// Conteúdo da Política de Privacidade (espelho do Expo).
+/// Conteúdo da Política de Privacidade (hierarquia do print CF-214).
 const informationPrivacySections = [
   InformationDocumentSection(
-    title: '1. Dados tratados',
+    title: '1. Escopo desta política',
     paragraphs: [
-      'A CrowdFans pode tratar nome, username, e-mail, telefone, foto, dados de autenticação, preferências, artistas seguidos, memberships, interações e conteúdos publicados.',
-      'Também podem ser registrados dados técnicos de sessão, segurança, dispositivo e uso necessários para operar o aplicativo, prevenir fraude e investigar incidentes.',
+      'Esta Política de Privacidade explica como a Crowd Fans trata dados pessoais e informações relacionadas ao uso do aplicativo, do site e das experiências associadas ao ecossistema da plataforma.',
+      'Ela cobre dados de conta, autenticação, perfil, segurança, comunidades, interações, memberships, Jam Coins, cartas, notificações, suporte, moderação e demais pontos de contato em que a plataforma possa tratar informações vinculadas a um usuário identificável.',
+      'Ao usar a Crowd Fans, você reconhece que esse tratamento pode ocorrer nos limites necessários ao funcionamento do serviço, à proteção da conta, à segurança do ecossistema e ao cumprimento de obrigações aplicáveis.',
     ],
   ),
   InformationDocumentSection(
-    title: '2. Finalidades',
+    title: '2. Categorias de dados que podem ser tratados',
+    paragraphs: [
+      'A plataforma pode tratar dados de cadastro e identificação, como nome, username, e-mail, telefone, foto de perfil e outras informações fornecidas durante o onboarding ou em ajustes posteriores de conta.',
+      'Também podem ser tratados dados de autenticação e segurança, como credenciais, tokens, validações por OTP, histórico de dispositivos conectados, tentativas de acesso, trocas de e-mail, trocas de telefone e alterações de senha.',
+      'No contexto do uso de produtos, a Crowd Fans pode tratar dados de comunidades, interações, memberships, Jam Coins, cartas, notificações, suporte e moderação na medida necessária para operar esses recursos.',
+    ],
+  ),
+  InformationDocumentSection(
+    title: '3. Finalidades do tratamento',
     paragraphs: [
       'Os dados são usados para criar e proteger sua conta, personalizar a experiência, operar comunidades e recursos sociais, processar funcionalidades contratadas, entregar notificações e prestar suporte.',
       'Quando uma operação exigir câmera, galeria ou outra permissão do aparelho, o aplicativo solicitará sua autorização antes do acesso.',
     ],
   ),
   InformationDocumentSection(
-    title: '3. Compartilhamento e retenção',
+    title: '4. Compartilhamento, retenção e direitos',
     paragraphs: [
       'Informações podem ser processadas por provedores de autenticação, infraestrutura, armazenamento, notificações, pagamentos e segurança na medida necessária para executar o serviço.',
       'Os dados são mantidos pelo período necessário para operação, segurança, cumprimento de obrigações e defesa de direitos. Depois disso, podem ser excluídos ou anonimizados.',
-    ],
-  ),
-  InformationDocumentSection(
-    title: '4. Seus direitos',
-    paragraphs: [
       'Você pode solicitar acesso, correção e esclarecimentos sobre seus dados e, quando aplicável, exclusão, oposição ou limitação do tratamento. Pedidos sensíveis podem exigir verificação adicional de identidade.',
     ],
   ),
