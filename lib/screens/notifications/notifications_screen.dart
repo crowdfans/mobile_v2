@@ -176,13 +176,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           else if (filtered.isEmpty)
                             NotificationEmptyState(tab: _tab)
                           else
-                            for (final section in filtered) ...[
+                            for (var i = 0; i < filtered.length; i++) ...[
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
+                                padding: EdgeInsets.only(
+                                  top: i == 0 ? 4 : 16,
+                                  bottom: 8,
+                                ),
                                 child: Semantics(
                                   header: true,
                                   child: Text(
-                                    section.title,
+                                    filtered[i].title,
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
@@ -191,7 +194,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   ),
                                 ),
                               ),
-                              for (final item in section.items)
+                              for (final item in filtered[i].items)
                                 NotificationItemCard(
                                   item: item,
                                   onPressed: () => handleOpen(item),

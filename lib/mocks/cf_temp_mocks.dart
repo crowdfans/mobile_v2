@@ -1,19 +1,27 @@
-// TEMP MOCK — delete this file when API is ready
+// TEMP MOCKS — delete this file when APIs are ready
 //
-// CF-190: dados fictícios da central de notificações (print image.png).
-// Para desligar: `kUseCf190Mocks = false`. Para forçar vazio: `kCf190MockEmpty = true`.
-// Depois apague este arquivo e o import em `notifications_service.dart`.
+// Arquivo único de mocks temporários (QA / demo).
+// CF-190: central de notificações (print image.png).
+// Outros CFs: acrescentar seções abaixo — não criar outros arquivos em lib/mocks/.
+//
+// Desligar CF-190: `kUseCf190NotificationMocks = false`
+// Forçar vazio: `kCf190MockEmpty = true`
+// Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
 import 'package:crowdfans/services/notifications_service.dart';
 
-/// Liga a inbox à lista mock (QA / demo). Desligue antes de produção real.
-const bool kUseCf190Mocks = true;
+/// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
+const bool kUseCfTempMocks = true;
 
-/// Quando `true` (e mocks ligados), a lista vem vazia — valida o empty state.
+/// CF-190 — inbox povoada (Agora / Hoje) igual ao print.
+const bool kUseCf190NotificationMocks = true;
+
+/// CF-190 — lista vazia para validar empty state do print.
 const bool kCf190MockEmpty = false;
 
-/// Avatares / thumbs de exemplo (Unsplash). Rock-hand local para membership.
-abstract final class Cf190NotificationsMock {
+/// Mocks temporários CrowdFans (um arquivo só).
+abstract final class CfTempMocks {
+  // --- CF-190 avatars / thumbs ---
   static const _avatarWoman =
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
   static const _avatarMayra =
@@ -32,8 +40,8 @@ abstract final class Cf190NotificationsMock {
   static const _thumbMic =
       'https://images.unsplash.com/photo-1516280440612-596598c2f5a2?auto=format&fit=crop&w=200&q=80';
 
-  /// Seções Agora / Hoje espelhando o print de referência CF-190.
-  static List<NotificationSection> sections() {
+  /// CF-190: seções Agora / Hoje do print de referência.
+  static List<NotificationSection> notificationSections() {
     if (kCf190MockEmpty) {
       return const [];
     }
