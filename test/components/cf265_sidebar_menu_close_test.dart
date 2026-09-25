@@ -137,7 +137,9 @@ void main() {
       expect(find.text('Favoritos'), findsNothing);
     });
 
-    testWidgets('botão fechar (X) dispensa o painel', (tester) async {
+    testWidgets('tap na barreira (overlay) também dispensa sem botão X', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
@@ -147,8 +149,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Favoritos'), findsOneWidget);
+      expect(find.byKey(const Key('sidebar-close')), findsNothing);
 
-      await tester.tap(find.byKey(const Key('sidebar-close')));
+      await tester.tap(find.byKey(const Key('sidebar-barrier')));
       await tester.pumpAndSettle();
 
       expect(find.text('Favoritos'), findsNothing);

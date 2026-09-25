@@ -23,6 +23,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _queryController = TextEditingController();
+  final _searchFocusNode = FocusNode();
   var _topArtists = <ArtistSearchItem>[];
   var _results = <ArtistSearchItem>[];
   var _query = '';
@@ -42,6 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     _debounce?.cancel();
     _queryController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -202,6 +204,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (searching)
                   SearchArtistsChrome(
                     controller: _queryController,
+                    focusNode: _searchFocusNode,
                     onBack: handleBackFromSearch,
                     onChanged: handleQueryChanged,
                     showClear: true,

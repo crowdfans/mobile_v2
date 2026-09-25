@@ -6,8 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Linha de resultado da busca de artistas (print CF-240).
 ///
-/// Avatar circular, nome + @handle + membros, badge #rank e menu ⋮ —
-/// área de toque ≥ 48px sem comprimir metadados.
+/// Lista plana com divisor — avatar, nome/@handle/membros, #rank e ⋮.
 class SearchArtistResultRow extends StatelessWidget {
   const SearchArtistResultRow({
     super.key,
@@ -15,12 +14,14 @@ class SearchArtistResultRow extends StatelessWidget {
     required this.onPressed,
     this.onPressMore,
     this.position,
+    this.showDivider = true,
   });
 
   final ArtistSearchItem artist;
   final VoidCallback onPressed;
   final VoidCallback? onPressMore;
   final int? position;
+  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -41,28 +42,20 @@ class SearchArtistResultRow extends StatelessWidget {
       if (pos != null && pos > 0) 'posição $pos',
     ].join('. ');
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Semantics(
-        button: true,
-        label: semanticsLabel,
-        child: Material(
-          color: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-            side: BorderSide(color: colors.border.withValues(alpha: 0.85)),
-          ),
+    return Column(
+      children: [
+        Semantics(
+          button: true,
+          label: semanticsLabel,
           child: InkWell(
-            borderRadius: BorderRadius.circular(14),
             onTap: onPressed,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 72),
+              constraints: const BoxConstraints(minHeight: 64),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+                padding: const EdgeInsets.fromLTRB(4, 10, 0, 10),
                 child: Row(
                   children: [
-                    PostAvatar(url: artist.avatarUri, size: 52),
+                    PostAvatar(url: artist.avatarUri, size: 48),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -111,12 +104,7 @@ class SearchArtistResultRow extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0xFFE8EEF8),
-                              colors.surfaceAlt,
-                            ],
-                          ),
+                          color: colors.surfaceAlt,
                         ),
                         child: Text(
                           '#$pos',
@@ -151,7 +139,9 @@ class SearchArtistResultRow extends StatelessWidget {
             ),
           ),
         ),
-      ),
+        if (showDivider)
+          Divider(height: 1, thickness: 1, color: colors.border),
+      ],
     );
   }
 }

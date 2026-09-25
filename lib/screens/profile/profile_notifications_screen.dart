@@ -130,9 +130,9 @@ class _ProfileNotificationsScreenState
                         Text(
                           'Categorias detalhadas',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
+                            color: colors.textTertiary,
                           ),
                         ),
                         const SizedBox(height: 8),
