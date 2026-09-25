@@ -38,7 +38,7 @@ class NotificationPreferenceGroup {
 const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'general',
-    title: 'Preferências gerais',
+    title: 'Preferências Gerais',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.pushEnabled,
@@ -61,7 +61,7 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
     id: 'interactions',
     title: 'Interações com você',
     navSubtitle:
-        'Curtida do artista, carta, respostas, menções e novos seguidores.',
+        'Curtidas do artista, respostas, menções e novos seguidores.',
     items: [
       NotificationPreferenceItem(
         keyName: NotificationPreferenceKeys.artistLikeComment,
@@ -185,7 +185,7 @@ NotificationPreferenceGroup? notificationGroupById(String id) {
   return null;
 }
 
-/// Seção de preferências sem contorno externo (CF-166).
+/// Seção de preferências (CF-166): título + card com linhas internas.
 class NotificationPreferenceSection extends StatelessWidget {
   const NotificationPreferenceSection({
     super.key,
@@ -217,20 +217,32 @@ class NotificationPreferenceSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        for (var i = 0; i < group.items.length; i++)
-          NotificationPreferenceRow(
-            title: group.items[i].title,
-            description: group.items[i].description,
-            value: preferences[group.items[i].keyName] ?? false,
-            enabled:
-                !(saving ||
-                    (quiet &&
-                        !group.items[i].critical &&
-                        group.items[i].keyName !=
-                            NotificationPreferenceKeys.quietModeEnabled)),
-            showDivider: i > 0,
-            onChanged: (value) => onChanged(group.items[i].keyName, value),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: colors.border),
           ),
+          child: Column(
+            children: [
+              for (var i = 0; i < group.items.length; i++)
+                NotificationPreferenceRow(
+                  title: group.items[i].title,
+                  description: group.items[i].description,
+                  value: preferences[group.items[i].keyName] ?? false,
+                  enabled:
+                      !(saving ||
+                          (quiet &&
+                              !group.items[i].critical &&
+                              group.items[i].keyName !=
+                                  NotificationPreferenceKeys.quietModeEnabled)),
+                  showDivider: i > 0,
+                  onChanged: (value) =>
+                      onChanged(group.items[i].keyName, value),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }

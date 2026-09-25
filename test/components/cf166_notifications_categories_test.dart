@@ -45,7 +45,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Preferências gerais'), findsOneWidget);
+    expect(find.text('Preferências Gerais'), findsOneWidget);
     expect(find.text('Notificações push'), findsOneWidget);
     expect(find.text('Categorias detalhadas'), findsOneWidget);
     expect(find.text('Interações com você'), findsOneWidget);
@@ -55,5 +55,9 @@ void main() {
     expect(find.byType(NotificationCategoryNavRow), findsNWidgets(4));
     // Controles de interações não ficam no hub.
     expect(find.text('Curtidas em comentários'), findsNothing);
+    expect(
+      find.text('Curtidas do artista, respostas, menções e novos seguidores.'),
+      findsOneWidget,
+    );
   });
 }
