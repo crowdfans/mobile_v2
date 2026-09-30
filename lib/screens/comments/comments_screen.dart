@@ -81,7 +81,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   final _expandedReplyIds = <String>{};
   late int _postVotes = widget.postVotes ?? 0;
   late int _postMyVote = 0;
-  final int _postShares = widget.postShares ?? 0;
+  // `late` — field initializers cannot read `this`/`widget` (same as `_postVotes`).
+  late final int _postShares = widget.postShares ?? 0;
 
   bool get _isFanClubContext => (widget.clubName ?? '').trim().isNotEmpty;
 
