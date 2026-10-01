@@ -32,6 +32,8 @@ abstract final class ApiUrls {
   static const meEarningsWithdrawals = '/api/v1/me/earnings/withdrawals';
   static const meMediaUploads = '/api/v1/me/media/uploads';
   static const meWs = '/api/v1/me/ws';
+  /// Sessões de aparelho (CF-266).
+  static const meSessions = '/api/v1/me/sessions';
   static const jamCoinPacks = '/api/v1/jam-coin-packs';
   static const communityPosts = '/api/v1/community/posts';
   static const artistFollow = '/api/v1/artist/:artistUid/follow';

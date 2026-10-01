@@ -1,6 +1,5 @@
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/api/api_urls.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/http_service.dart';
 
 /// Metadados do fan club (`GET /artist/:artistUid/fanclub`).
@@ -338,10 +337,6 @@ abstract final class FanClubService {
     int page = 1,
     int pageSize = 20,
   }) async {
-    // QA image-first: fixtures do print (CF-222/229/230). Desligar useFanClubFixtures.
-    if (kUseCfTempMocks && CfTempMocks.useFanClubFixtures) {
-      return cfTempMockArtistFanClubFeed(artistUid, page: page);
-    }
     final params = Uri(
       queryParameters: {'page': '$page', 'pageSize': '$pageSize'},
     );

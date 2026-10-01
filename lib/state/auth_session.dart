@@ -5,6 +5,7 @@ import 'package:crowdfans/services/auth_service.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/services/push_token_service.dart';
+import 'package:crowdfans/services/user_session_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,6 +91,7 @@ class AuthSessionNotifier extends Notifier<AuthSession> {
         isBackendValidated: true,
       );
       unawaited(PushTokenService.syncPushTokenWithBackend());
+      unawaited(UserSessionService.syncCurrentSession());
       return true;
     } catch (_) {
       state = AuthSession(
