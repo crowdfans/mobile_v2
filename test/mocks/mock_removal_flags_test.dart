@@ -3,18 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Documenta: mock só fica off quando a feature real existe.
 void main() {
-  test('TEMP mocks: só security/devices off (CF-266); resto até CF-267…270', () {
+  test('TEMP mocks: devices+inbox off; packs/Sobre até CF-270/269', () {
     expect(kUseCfTempMocks, isTrue);
 
-    // Feature real: sessões /me/sessions
-    expect(CfTempMocks.useSecuritySettingsFixtures, isFalse);
+    expect(CfTempMocks.useSecuritySettingsFixtures, isFalse); // CF-266
+    expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
-    // Ainda TEMP (backend gap)
-    expect(kUseCf190NotificationMocks, isTrue); // CF-267
     expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
     expect(kUseCf170WalletPackMocks, isTrue); // CF-270
 
-    // Já wireados à API (batch1)
     expect(CfTempMocks.useRankingFixtures, isFalse);
     expect(CfTempMocks.useFanScoreFixtures, isFalse);
     expect(CfTempMocks.useMembershipFixtures, isFalse);
