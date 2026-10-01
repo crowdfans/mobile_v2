@@ -3,14 +3,14 @@ import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/firebase_service.dart';
 import 'package:crowdfans/services/profile_security_service.dart';
+import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/utils/phone_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Trocar telefone de recuperação (CF-217).
+/// Trocar telefone de recuperação (CF-217 / CF-271 sync backend).
 class ProfileChangePhoneScreen extends StatefulWidget {
   const ProfileChangePhoneScreen({super.key});
 
@@ -29,6 +29,13 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
   var _formNonce = 0;
   String? _error;
   String? _success;
+  String _backendPhone = '';
+
+  @override
+  void initState() {
+    super.initState();
+    handleLoadBackendPhone();
+  }
 
   @override
   void dispose() {
@@ -36,15 +43,25 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
     super.dispose();
   }
 
+  Future<void> handleLoadBackendPhone() async {
+    try {
+      final profile = await ProfileService.getMyProfile();
+      if (!mounted) {
+        return;
+      }
+      setState(() => _backendPhone = profile.phone.trim());
+    } catch (_) {
+      // Firebase permanece como fallback de exibição.
+    }
+  }
+
   String get _currentPhoneLabel {
     final raw = FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
-    if (raw.isEmpty) {
-      if (kUseCfTempMocks && CfTempMocks.useSecuritySettingsFixtures) {
-        return Cf217ChangePhoneMock.currentPhoneLabel;
-      }
+    final source = raw.isNotEmpty ? raw : _backendPhone;
+    if (source.isEmpty) {
       return 'não informado';
     }
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
+    final digits = source.replaceAll(RegExp(r'\D'), '');
     if (digits.length >= 12 && digits.startsWith('55')) {
       return formatPhoneNumber(digits.substring(2));
     }
@@ -53,7 +70,7 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
         digits.length > 11 ? digits.substring(digits.length - 11) : digits,
       );
     }
-    return raw;
+    return source;
   }
 
   bool get _canContinue {
@@ -96,6 +113,8 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
         if (!mounted) {
           return;
         }
+        final e164 =
+            FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
         setState(() {
           _awaitingOtp = false;
           _otp = '';
@@ -103,9 +122,13 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
           _phoneDigits = '';
           _phoneController.clear();
           _formNonce++;
+          if (e164.isNotEmpty) {
+            _backendPhone = e164;
+          }
           _success =
               'Telefone confirmado. O novo número já está vinculado à conta.';
         });
+        await handleLoadBackendPhone();
       } else {
         await ProfileSecurityService.requestPhoneChange(
           _currentPassword,

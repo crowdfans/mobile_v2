@@ -3,7 +3,7 @@ import 'package:crowdfans/services/notifications_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CF-190 mock em cf_temp_mocks: Agora/Hoje, categorias e não-lida', () {
+  test('CF-190: inbox TEMP ligado (CF-267); fixtures Agora/Hoje OK', () {
     expect(kUseCfTempMocks, isTrue);
     expect(kUseCf190NotificationMocks, isTrue);
     expect(kCf190MockEmpty, isFalse);
