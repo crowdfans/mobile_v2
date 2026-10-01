@@ -33,11 +33,11 @@ import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
-/// Só desligar flag depois da feature real (backend + front). CF-266 sessions OK.
+/// Só desligar flag depois da feature real (backend + front). CF-266/267 OK.
 const bool kUseCfTempMocks = true;
 
-/// CF-190 — inbox. **TEMP** até [CF-267] (categorias incompletas).
-const bool kUseCf190NotificationMocks = true;
+/// CF-190 — inbox. Off: API CF-267 (posts/clubs/meet/fanletter/system + unread).
+const bool kUseCf190NotificationMocks = false;
 
 /// CF-190 — lista vazia para validar empty state do print.
 const bool kCf190MockEmpty = false;
