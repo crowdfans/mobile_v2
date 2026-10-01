@@ -33,12 +33,11 @@ import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
-/// Batch2: master off — UI usa API / empty state. Gaps CF-266…270 = UI parcial,
-/// não fixture de print (inbox incompleta, packs live ≠ print, Sobre sem Spotify).
-const bool kUseCfTempMocks = false;
+/// Só desligar flag depois da feature real (backend + front). CF-266 sessions OK.
+const bool kUseCfTempMocks = true;
 
-/// CF-190 — inbox. Off: `GET /api/v1/notifications` (categorias ainda [CF-267]).
-const bool kUseCf190NotificationMocks = false;
+/// CF-190 — inbox. **TEMP** até [CF-267] (categorias incompletas).
+const bool kUseCf190NotificationMocks = true;
 
 /// CF-190 — lista vazia para validar empty state do print.
 const bool kCf190MockEmpty = false;
@@ -60,7 +59,7 @@ abstract final class CfTempMocks {
   /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
   static const useNotificationPrefFixtures = false;
 
-  /// Segurança/dispositivos. Off: só “Este aparelho” até [CF-266] `/me/sessions`.
+  /// Segurança/dispositivos. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.
   static const useSecuritySettingsFixtures = false;
 
@@ -88,8 +87,8 @@ abstract final class CfTempMocks {
   /// Hub Seu Perfil — `GET /api/v1/profile`.
   static const useProfileAccountFixtures = false;
 
-  /// Sobre Spotify/base. Off: UI omite métricas até [CF-269].
-  static const useArtistSobreFixtures = false;
+  /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
+  static const useArtistSobreFixtures = true;
 
   /// Favoritos menu — follows/social reais.
   static const useFavoriteArtistsFixtures = false;
@@ -1334,8 +1333,8 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-170 packs. Off: `GET /api/v1/jam-coin-packs` (catálogo live; print = [CF-270]).
-const bool kUseCf170WalletPackMocks = false;
+/// CF-170 packs. **TEMP** até [CF-270] (catálogo + RevenueCat alinhados ao print).
+const bool kUseCf170WalletPackMocks = true;
 
 /// Pacotes demo CF-169/170 (print de recarga; 240 = CF-170 pagamento).
 abstract final class Cf170WalletPackMock {
