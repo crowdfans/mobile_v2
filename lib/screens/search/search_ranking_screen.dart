@@ -262,9 +262,10 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                                       layout:
                                           SearchArtistRankRowLayout.rankLeading,
                                       onPressed: () => context.push(
-                                        Pages.artistProfile.replaceAll(
-                                          ':artistId',
+                                        Pages.artistProfileOf(
                                           artist.id,
+                                          name: artist.name,
+                                          avatarUrl: artist.avatarUri,
                                         ),
                                       ),
                                       onPressMore: () {

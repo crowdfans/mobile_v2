@@ -158,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
     SidebarArtistsStore.recordVisit(artist);
-    context.push(Pages.artistProfile.replaceAll(':artistId', artistId));
+    context.push(Pages.artistProfileOf(artistId));
   }
 
   void handleOpenNotifications() {
