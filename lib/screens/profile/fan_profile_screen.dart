@@ -278,9 +278,10 @@ class _FanProfileScreenState extends ConsumerState<FanProfileScreen> {
                                   return;
                                 }
                                 context.push(
-                                  Pages.artistProfile.replaceAll(
-                                    ':artistId',
+                                  Pages.artistProfileOf(
                                     artist.id,
+                                    name: artist.label,
+                                    avatarUrl: artist.avatarUri,
                                   ),
                                 );
                               },

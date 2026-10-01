@@ -621,17 +621,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Pages.home,
                 builder: (context, state) => const HomeScreen(),
-                routes: [
-                  // CF-181/184/185/186: perfil do artista com bottom nav do shell.
-                  GoRoute(
-                    path: '/artists/:artistId',
-                    builder: (context, state) => ArtistProfileScreen(
-                      artistId: state.pathParameters['artistId'] ?? '',
-                      seedName: state.uri.queryParameters['name'],
-                      seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
-                    ),
-                  ),
-                ],
+              ),
+              // Perfil público `/artists/:artistId` — irmão do feed (não filho).
+              // Filho absoluto sob `/feed` não era registrado pelo go_router
+              // (GoException: no routes for location: /artists/<uuid>).
+              GoRoute(
+                path: Pages.artistProfile,
+                builder: (context, state) => ArtistProfileScreen(
+                  artistId: state.pathParameters['artistId'] ?? '',
+                  seedName: state.uri.queryParameters['name'],
+                  seedAvatarUrl: state.uri.queryParameters['avatarUrl'],
+                ),
               ),
             ],
           ),
