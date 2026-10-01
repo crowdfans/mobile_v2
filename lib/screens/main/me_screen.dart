@@ -206,7 +206,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
     if (id.isEmpty) {
       return;
     }
-    context.push(Pages.artistProfile.replaceAll(':artistId', id));
+    context.push(Pages.artistProfileOf(id));
   }
 
   void handleOpenFanClub(Profile profile) {

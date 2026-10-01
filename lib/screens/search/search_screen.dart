@@ -313,9 +313,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                     }
                                     final artist = list[index];
                                     final openProfile = () => context.push(
-                                      Pages.artistProfile.replaceAll(
-                                        ':artistId',
+                                      Pages.artistProfileOf(
                                         artist.id,
+                                        name: artist.name,
+                                        avatarUrl: artist.avatarUri,
                                       ),
                                     );
                                     final openMore = () {

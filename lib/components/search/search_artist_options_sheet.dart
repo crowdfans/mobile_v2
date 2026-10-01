@@ -25,7 +25,13 @@ class SearchArtistOptionsSheet extends StatelessWidget {
     if (current == null) {
       return;
     }
-    context.push(Pages.artistProfile.replaceAll(':artistId', current.id));
+    context.push(
+      Pages.artistProfileOf(
+        current.id,
+        name: current.name,
+        avatarUrl: current.avatarUri,
+      ),
+    );
   }
 
   void handleOpenFanClub(BuildContext context) {

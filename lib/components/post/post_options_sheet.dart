@@ -96,7 +96,7 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
       await SidebarArtistsStore.recordVisit(artist);
     }
     if (context.mounted) {
-      context.push(Pages.artistProfile.replaceAll(':artistId', _artistId));
+      context.push(Pages.artistProfileOf(_artistId));
     }
   }
 
