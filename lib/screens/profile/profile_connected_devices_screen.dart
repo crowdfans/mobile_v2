@@ -9,7 +9,8 @@ import 'package:go_router/go_router.dart';
 
 /// Dispositivos conectados (CF-216).
 ///
-/// Sem API de sessões ainda: lista local ilustrativa + ações com confirmação.
+/// **TEMP** até [CF-266]: sem `GET/DELETE /me/sessions` (só FCM device-tokens).
+/// Lista ilustrativa + ações locais de confirmação.
 class ProfileConnectedDevicesScreen extends StatefulWidget {
   const ProfileConnectedDevicesScreen({super.key});
 

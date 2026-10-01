@@ -1,6 +1,7 @@
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/services/firebase_phone_auth_service.dart';
 import 'package:crowdfans/services/firebase_service.dart';
+import 'package:crowdfans/services/profile_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Segurança da conta (reset, troca de senha e e-mail no Firebase).
@@ -54,7 +55,7 @@ abstract final class ProfileSecurityService {
     }
   }
 
-  /// Confirma o OTP e só então aplica o novo telefone na conta.
+  /// Confirma o OTP, aplica o telefone no Firebase e sincroniza o backend (CF-271).
   static Future<void> confirmPhoneChange(String otpCode) async {
     final user = FirebaseService.auth.currentUser;
     if (user == null) {
@@ -65,9 +66,17 @@ abstract final class ProfileSecurityService {
       await user.updatePhoneNumber(credential);
       await user.reload();
       FirebasePhoneAuthService.clearPhoneVerificationState();
+      final refreshed = FirebaseService.auth.currentUser;
+      final e164 = refreshed?.phoneNumber?.trim() ?? '';
+      if (e164.isNotEmpty) {
+        await ProfileService.updateMyProfile(phone: e164, phoneVerified: true);
+      }
     } on FirebaseAuthException catch (error) {
       throw ApiError(_mapSecurityError(error), 0);
     } catch (error) {
+      if (error is ApiError) {
+        rethrow;
+      }
       throw ApiError(error.toString(), 0);
     }
   }
