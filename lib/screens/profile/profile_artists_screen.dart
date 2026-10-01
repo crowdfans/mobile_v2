@@ -155,9 +155,10 @@ class _ProfileArtistsScreenState extends ConsumerState<ProfileArtistsScreen> {
                                   ? null
                                   : () {
                                       context.push(
-                                        Pages.artistProfile.replaceAll(
-                                          ':artistId',
+                                        Pages.artistProfileOf(
                                           artist.id,
+                                          name: artist.label,
+                                          avatarUrl: artist.avatarUri,
                                         ),
                                       );
                                     },

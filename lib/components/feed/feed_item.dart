@@ -37,7 +37,7 @@ class FeedItem extends StatelessWidget {
     if (artistId == null || artistId.isEmpty) {
       return;
     }
-    context.push(Pages.artistProfile.replaceAll(':artistId', artistId));
+    context.push(Pages.artistProfileOf(artistId));
   }
 
   void handleOpenComments(BuildContext context, String postId) {
