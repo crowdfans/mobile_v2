@@ -29,6 +29,8 @@ class Profile {
     required this.description,
     required this.photoUrl,
     required this.isArtist,
+    this.phone = '',
+    this.phoneVerified = false,
     this.stats = const ProfileStats(),
   });
 
@@ -38,6 +40,10 @@ class Profile {
   final String description;
   final String photoUrl;
   final bool isArtist;
+
+  /// E.164 do login (`user_logins.phone`), quando sincronizado (CF-271).
+  final String phone;
+  final bool phoneVerified;
   final ProfileStats stats;
 
   Profile copyWith({
@@ -47,6 +53,8 @@ class Profile {
     String? description,
     String? photoUrl,
     bool? isArtist,
+    String? phone,
+    bool? phoneVerified,
     ProfileStats? stats,
   }) {
     return Profile(
@@ -56,6 +64,8 @@ class Profile {
       description: description ?? this.description,
       photoUrl: photoUrl ?? this.photoUrl,
       isArtist: isArtist ?? this.isArtist,
+      phone: phone ?? this.phone,
+      phoneVerified: phoneVerified ?? this.phoneVerified,
       stats: stats ?? this.stats,
     );
   }
@@ -68,6 +78,8 @@ class Profile {
       description: json['description'] as String? ?? '',
       photoUrl: json['photoUrl'] as String? ?? '',
       isArtist: json['isArtist'] == true,
+      phone: json['phone'] as String? ?? '',
+      phoneVerified: json['phoneVerified'] == true,
       stats: ProfileStats.fromJson(json['stats'] as Map<String, dynamic>?),
     );
   }

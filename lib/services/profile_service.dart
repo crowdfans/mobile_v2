@@ -104,6 +104,8 @@ abstract final class ProfileService {
     String? name,
     String? description,
     String? photoUrl,
+    String? phone,
+    bool? phoneVerified,
   }) async {
     await HttpService.request<dynamic>(
       ApiUrls.profile,
@@ -113,6 +115,9 @@ abstract final class ProfileService {
         'name': ?name,
         'description': ?description,
         'photoUrl': ?photoUrl,
+        // CF-271: sync user_logins após troca Firebase.
+        'phone': ?phone,
+        'phoneVerified': ?phoneVerified,
       },
     );
   }

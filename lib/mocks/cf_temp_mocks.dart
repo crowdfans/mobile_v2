@@ -33,9 +33,10 @@ import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
+/// Mock-off: wire quando API OK; manter TEMP só onde CF-266…270 bloqueiam.
 const bool kUseCfTempMocks = true;
 
-/// CF-190 — inbox povoada (Agora / Hoje) igual ao print.
+/// CF-190 — inbox Agora/Hoje. **TEMP** até [CF-267] (categorias incompletas).
 const bool kUseCf190NotificationMocks = true;
 
 /// CF-190 — lista vazia para validar empty state do print.
@@ -45,50 +46,52 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100 Engajados / Top 500 (CF-193, CF-189, CF-241).
-  static const useRankingFixtures = true;
+  /// Ranking Top 100/500. API `…/search/artists/rankings` OK;
+  /// [CF-268] só falta weeksInRanking/peakRank (UI já tolera null).
+  static const useRankingFixtures = false;
 
-  /// FanScore insights / how-it-works demos (CF-201, CF-202).
-  static const useFanScoreFixtures = true;
+  /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
+  static const useFanScoreFixtures = false;
 
-  /// Membership / recarga confirmação (CF-204…207).
-  static const useMembershipFixtures = true;
+  /// Membership / recarga — subscriptions + wallet APIs.
+  static const useMembershipFixtures = false;
 
-  /// Preferências de notificação povoadas (CF-213).
-  static const useNotificationPrefFixtures = true;
+  /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
+  static const useNotificationPrefFixtures = false;
 
-  /// Segurança / dispositivos / telefone / bio (CF-216, 217, 219).
+  /// Segurança: dispositivos **TEMP** ([CF-266] sem `/me/sessions`).
+  /// Telefone/bio: screens usam perfil/Firebase, não este flag.
   static const useSecuritySettingsFixtures = true;
 
-  /// Fã-clube perfil / moderadores / regras / expulsão (CF-200, CF-222…230).
-  static const useFanClubFixtures = true;
+  /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
+  static const useFanClubFixtures = false;
 
-  /// Home feed vídeo / carrossel / exclusivo (CF-232…235).
-  static const useHomeFeedFixtures = true;
+  /// Home feed — `GET /api/v1/home`.
+  static const useHomeFeedFixtures = false;
 
-  /// Busca artistas (CF-240).
-  static const useSearchArtistsFixtures = true;
+  /// Busca artistas — `GET /api/v1/search/artists`.
+  static const useSearchArtistsFixtures = false;
 
-  /// Seletor de fã-clube no novo post (CF-237).
-  static const useFanClubSelectorFixtures = true;
+  /// Seletor fã-clube compose — follows/subscriptions.
+  static const useFanClubSelectorFixtures = false;
 
-  /// Perfil artista — Exclusivo liberado (CF-239).
-  static const useArtistExclusiveFixtures = true;
+  /// Exclusivo perfil — subscriptions/check + posts reais.
+  static const useArtistExclusiveFixtures = false;
 
-  /// Painel de moderação — fila do print CF-199 (2 / 2 / 1).
-  static const useModerationPanelFixtures = true;
+  /// Painel moderação — appeals/strikes/expulsions APIs.
+  static const useModerationPanelFixtures = false;
 
-  /// Preferências das subpáginas CF-208 / 209 / 211 (switches do print).
-  static const useNotificationCategoryPrintFixtures = true;
+  /// Prefs subpáginas CF-208/209/211 — preferences API.
+  static const useNotificationCategoryPrintFixtures = false;
 
-  /// Hub Seu Perfil (CF-162) — Aline Duarte quando a API falha/vazio.
-  static const useProfileAccountFixtures = true;
+  /// Hub Seu Perfil — `GET /api/v1/profile`.
+  static const useProfileAccountFixtures = false;
 
-  /// Perfil artista — Sobre Spotify/base (CF-182).
+  /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
   static const useArtistSobreFixtures = true;
 
-  /// Artistas favoritos no menu lateral (CF-191).
-  static const useFavoriteArtistsFixtures = true;
+  /// Favoritos menu — follows/social reais.
+  static const useFavoriteArtistsFixtures = false;
 
   // --- CF-190 avatars / thumbs ---
   static const _avatarWoman =
@@ -656,7 +659,8 @@ FanScoreData cfTempMockFanScoreData() {
 }
 
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
-const bool kUseCf194CommentMocks = true;
+/// Desligado: `GET /api/v1/posts/:postId/comments`.
+const bool kUseCf194CommentMocks = false;
 
 /// Dados do print CF-194 (recolhido / expandido).
 abstract final class Cf194FanClubCommentsMock {
@@ -787,7 +791,8 @@ abstract final class Cf219EditBioMock {
 }
 
 /// Liga dados de demo do CF-195 (Home sem comentários → print populado).
-const bool kUseCf195CommentMocks = true;
+/// Desligado: comments API real.
+const bool kUseCf195CommentMocks = false;
 
 /// Dados do print CF-195 (Home — pai + resposta expandida + thread recolhida).
 abstract final class Cf195HomeCommentsMock {
@@ -1193,7 +1198,8 @@ List<ArtistSearchItem>? cfTempMockSearchArtists(String query) {
 }
 
 /// Liga feed demo CF-178 (Postagens dos Fã Clubes vazio → print).
-const bool kUseCf178FanClubsFeedMocks = true;
+/// Desligado: `GET /api/v1/community/posts`.
+const bool kUseCf178FanClubsFeedMocks = false;
 
 /// Posts do print CF-178 (Felipe Rhy + Laís Costa carrossel).
 abstract final class Cf178FanClubsFeedMock {
@@ -1232,7 +1238,8 @@ abstract final class Cf178FanClubsFeedMock {
 }
 
 /// Liga grade demo CF-181 (Cartas vazias → print povoado).
-const bool kUseCf181CartasMocks = true;
+/// Desligado: `GET /api/v1/fan-letters/artist/:artistId`.
+const bool kUseCf181CartasMocks = false;
 
 /// Cartas do print CF-181 (autoria no topo da grade).
 abstract final class Cf181CartasMock {
@@ -1327,6 +1334,7 @@ abstract final class Cf181CartasMock {
 }
 
 /// Liga pacotes demo CF-170 (pagamento print 240 / R$ 19,90).
+/// **TEMP** até [CF-270] (catálogo live ≠ print; RevenueCat productId).
 const bool kUseCf170WalletPackMocks = true;
 
 /// Pacotes demo CF-169/170 (print de recarga; 240 = CF-170 pagamento).
