@@ -35,7 +35,7 @@ void main() {
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
-    expect(kUseCf195CommentMocks, isFalse);
+    expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
   });

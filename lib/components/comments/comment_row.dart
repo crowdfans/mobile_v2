@@ -7,7 +7,7 @@ import 'package:crowdfans/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Linha de um comentário (ou resposta) — layout do print CF-194.
+/// Linha de um comentário (ou resposta) — layout do print CF-195 (Home).
 class CommentRow extends StatelessWidget {
   const CommentRow({
     super.key,
@@ -40,24 +40,13 @@ class CommentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final handle = comment.handle.trim();
+    // Print CF-195: resposta só com recuo (sem caixa cinza).
     return Padding(
       padding: EdgeInsets.only(
-        left: isReply ? 28 : 0,
+        left: isReply ? 48 : 0,
         bottom: isReply ? 8 : 14,
       ),
-      child: DecoratedBox(
-        // Print CF-196: resposta indentada em caixa cinza-clara.
-        decoration: isReply
-            ? BoxDecoration(
-                color: colors.surfaceAlt,
-                borderRadius: BorderRadius.circular(14),
-              )
-            : const BoxDecoration(),
-        child: Padding(
-          padding: isReply
-              ? const EdgeInsets.fromLTRB(10, 10, 10, 8)
-              : EdgeInsets.zero,
-          child: Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
@@ -202,8 +191,6 @@ class CommentRow extends StatelessWidget {
             ),
           ),
         ],
-      ),
-        ),
       ),
     );
   }
