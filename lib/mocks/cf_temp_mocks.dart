@@ -289,6 +289,9 @@ abstract final class CfTempMocks {
 
 /// Linhas de ranking equivalentes ao print CF-189 (image.png).
 /// Tendências: up / down / neutral — ícone + semantics, sem colorir neutro.
+///
+/// CF-241 (sheet ⋮): Ludmilla #1 leva `weeksInRanking: 11`, `peakRank: 1`,
+/// `previousRank: 2` — métricas do print; ausente na API real vira "—" no sheet.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
@@ -323,6 +326,7 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   }
 
   final samples = <ArtistSearchItem>[
+    // CF-241 print: sheet Ludmilla — semanas 11 / máx 1 / semana passada 2.
     ArtistSearchItem(
       id: 'mock-fc-ludmilla',
       name: 'Ludmilla',
