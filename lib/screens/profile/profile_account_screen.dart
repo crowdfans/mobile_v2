@@ -161,14 +161,14 @@ class _ProfileAccountScreenState extends ConsumerState<ProfileAccountScreen> {
         AccountQuickSettingRow(
           key: const Key('account-quick-bio'),
           title: 'Editar bio',
-          subtitle: 'Atualize sua descrição de perfil',
+          subtitle: 'Atualize sua descrição de perfil.',
           onTap: () => context.push(Pages.profileEditBio),
         ),
         rowDivider(),
         AccountQuickSettingRow(
           key: const Key('account-quick-photo'),
           title: 'Foto de perfil',
-          subtitle: 'Trocar imagem da conta',
+          subtitle: 'Trocar imagem da conta.',
           onTap: () => context.push(Pages.profilePhoto),
         ),
         rowDivider(),

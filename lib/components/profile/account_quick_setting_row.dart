@@ -32,7 +32,7 @@ class AccountQuickSettingRow extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
                     ),
                   ),
@@ -41,8 +41,9 @@ class AccountQuickSettingRow extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 13,
+                      height: 1.35,
                       fontWeight: FontWeight.w400,
-                      color: colors.textTertiary,
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],
