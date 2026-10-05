@@ -3,14 +3,18 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Cabeçalho da busca de fã clube: voltar + lupa; campo abaixo.
+/// Cabeçalho da busca de fã clube (CF-173): voltar + lupa; campo pílula abaixo.
 class FanClubsSearchChrome extends StatelessWidget {
   const FanClubsSearchChrome({
     super.key,
+    required this.controller,
+    required this.focusNode,
     required this.onBack,
     required this.onChanged,
   });
 
+  final TextEditingController controller;
+  final FocusNode focusNode;
   final VoidCallback onBack;
   final ValueChanged<String> onChanged;
 
@@ -25,6 +29,7 @@ class FanClubsSearchChrome extends StatelessWidget {
           child: Row(
             children: [
               IconButton(
+                key: const Key('fan-clubs-search-back'),
                 onPressed: onBack,
                 tooltip: 'Voltar',
                 icon: Icon(
@@ -40,8 +45,9 @@ class FanClubsSearchChrome extends StatelessWidget {
                   color: colors.surfaceAlt,
                   shape: const CircleBorder(),
                   child: InkWell(
+                    key: const Key('fan-clubs-search-lupa'),
                     customBorder: const CircleBorder(),
-                    onTap: () {},
+                    onTap: () => focusNode.requestFocus(),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: SvgPicture.asset(
@@ -63,8 +69,12 @@ class FanClubsSearchChrome extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: SearchQueryField(
+            key: const Key('fan-clubs-search-field'),
+            controller: controller,
+            focusNode: focusNode,
             hint: 'Buscar fã clube',
             autofocus: true,
+            pill: true,
             onChanged: onChanged,
           ),
         ),

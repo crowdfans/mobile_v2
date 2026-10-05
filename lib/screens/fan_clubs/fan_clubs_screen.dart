@@ -43,6 +43,8 @@ class FanClubsScreen extends StatefulWidget {
 
 class _FanClubsScreenState extends State<FanClubsScreen> {
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
   var _artists = <_ClubArtist>[];
   var _posts = <CommunityPost>[];
   var _page = 1;
@@ -127,6 +129,8 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   void dispose() {
     _scrollController.removeListener(handleScroll);
     _scrollController.dispose();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -309,6 +313,8 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
       _searchOpen = !_searchOpen;
       if (!_searchOpen) {
         _searchQuery = '';
+        _searchController.clear();
+        _searchFocusNode.unfocus();
       }
     });
   }
@@ -363,6 +369,8 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
               children: [
                 if (_searchOpen)
                   FanClubsSearchChrome(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
                     onBack: handleToggleSearch,
                     onChanged: (value) {
                       setState(() => _searchQuery = value);
@@ -409,7 +417,8 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                       ? const Center(child: CircularProgressIndicator())
                       : _searchOpen
                       ? ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                          key: const Key('fan-clubs-search-results'),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
                           itemCount: artists.isEmpty ? 1 : artists.length,
                           separatorBuilder: (_, _) => Divider(
                             height: 1,
@@ -419,7 +428,12 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                           itemBuilder: (context, index) {
                             if (artists.isEmpty) {
                               return Padding(
-                                padding: const EdgeInsets.only(top: 40),
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  40,
+                                  16,
+                                  0,
+                                ),
                                 child: Text(
                                   _artists.isEmpty
                                       ? 'Siga artistas para buscar fã clubes.'
