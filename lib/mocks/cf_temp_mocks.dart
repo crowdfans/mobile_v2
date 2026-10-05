@@ -74,7 +74,7 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  /// **TEMP on** (CF-186 aba perfil + CF-222…230 + CF-223 Ver mais).
+  /// **TEMP on** (CF-186 aba perfil + CF-222…230 + CF-223 Ver mais + CF-227 menu).
   /// Lista Moderadores também usa [kUseCf225ModeratorsMocks].
   /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
@@ -570,14 +570,19 @@ bool cf229ExpelledFixturesEnabled() =>
 /// Não altera o caminho expulso (CF-229).
 const bool kUseCf230WarningFixtures = true;
 
+/// CF-227 — menu do post no fã-clube (print Lari Rocha / Laís Costa).
+/// TEMP até o feed real do clube expor o post do print; reutiliza a variante
+/// warning ([cfTempMockLaisArtistUid]) e o atalho Clubes do CF-230.
+const bool kUseCf227FanClubPostMenuFixtures = true;
+
 /// Cover do print CF-230 (Laís Costa).
 const cfTempMockLaisCoverUrl =
     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80';
 
-/// ArtistUid do print CF-230 para atalho em Clubes.
+/// ArtistUid do print CF-227 / CF-230 para atalho em Clubes.
 const cfTempMockLaisArtistUid = 'mock-fc-lais';
 
-/// Avatar do post Lari Rocha no print CF-230.
+/// Avatar do post Lari Rocha no print CF-230 / CF-227.
 const cfTempMockLariAvatarUrl =
     'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=80';
 
@@ -1433,7 +1438,7 @@ ArtistFanClub _cfTempMockLudmillaFanClubMeta(String artistUid) {
   );
 }
 
-/// Feed do fã-clube alinhado aos prints CF-186 / 222 / 229 / 230.
+/// Feed do fã-clube alinhado aos prints CF-186 / 222 / 227 / 229 / 230.
 ArtistFanClubFeed cfTempMockArtistFanClubFeed(
   String artistUid, {
   int page = 1,
@@ -1478,9 +1483,10 @@ ArtistFanClubFeed cfTempMockArtistFanClubFeed(
       ),
     ],
     CfFanClubFixtureKind.expelled => const <FanClubFeedPost>[],
+    // CF-227 menu do post + CF-230 aviso: post Lari Rocha (cidade / BH).
     CfFanClubFixtureKind.warning => [
       FanClubFeedPost(
-        postId: 'cf230-lari-bh',
+        postId: 'cf227-lari-bh',
         content:
             'Saí do trabalho e fui direto pra fila. Trouxe brinde pro pessoal do fã clube de BH.',
         createdAt: DateTime.now()

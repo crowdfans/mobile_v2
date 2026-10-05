@@ -232,7 +232,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
             ),
           );
         }
-        // CF-230: atalho Laís Costa (aviso) para QA abrir o print.
+        // CF-230 aviso + CF-227 menu do post: atalho Laís Costa (Lari Rocha).
         if (cf230WarningFixturesEnabled() &&
             !merged.any(
               (artist) =>
