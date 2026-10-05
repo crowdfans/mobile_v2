@@ -4,7 +4,7 @@ import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/post/create_post_exclusive_toggle.dart';
 import 'package:crowdfans/components/post/create_post_feedback_banner.dart';
-import 'package:crowdfans/components/post/create_post_image_picker.dart';
+import 'package:crowdfans/components/post/create_post_media_actions.dart';
 import 'package:crowdfans/components/post/create_post_preview.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// Criação e edição de post (texto + mídia opcional).
+/// Criação e edição de post (descrição + imagem/música opcional — CF-141).
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key, this.postId, this.targetArtistId});
 
@@ -28,14 +28,44 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 /// Tipo do post a partir do conteúdo (CF-141 — sem menu texto/imagem).
-PostType resolveCreatePostType({required bool hasMedia}) {
-  return hasMedia ? PostType.image : PostType.text;
+PostType resolveCreatePostType({
+  required bool hasMedia,
+  bool hasMusic = false,
+}) {
+  if (hasMedia) {
+    return PostType.image;
+  }
+  if (hasMusic) {
+    return PostType.membership;
+  }
+  return PostType.text;
 }
 
-/// Publicar só com texto e/ou mídia, até 280 caracteres (CF-128).
-bool canPublishCreatePost({required String text, required bool hasMedia}) {
-  final trimmed = text.trim();
-  return (trimmed.isNotEmpty || hasMedia) && text.length <= 280;
+/// Publicar habilitado: texto ou mídia, até 280 caracteres (CF-128 / CF-141).
+bool canPublishCreatePost({
+  required String text,
+  required bool hasMedia,
+  bool hasMusic = false,
+}) {
+  if (text.length > 280) {
+    return false;
+  }
+  return text.trim().isNotEmpty || hasMedia || hasMusic;
+}
+
+/// Valida o formulário; retorna mensagem de erro ou `null`.
+String? validateCreatePost({
+  required String text,
+  required bool hasMedia,
+  bool hasMusic = false,
+}) {
+  if (text.length > 280) {
+    return 'O post pode ter no máximo 280 caracteres';
+  }
+  if (text.trim().isEmpty && !hasMedia && !hasMusic) {
+    return 'Escreva um texto ou adicione uma imagem ou música';
+  }
+  return null;
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
@@ -43,6 +73,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? _selectedImageUri;
   Uint8List? _selectedImageBytes;
   String? _selectedImageMime;
+  var _hasMusic = false;
   var _isExclusive = false;
   var _loading = false;
   var _hydrating = false;
@@ -56,8 +87,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   bool get _hasMedia =>
       _selectedImageUri != null && _selectedImageUri!.isNotEmpty;
 
-  bool get _canPublish =>
-      canPublishCreatePost(text: _text, hasMedia: _hasMedia);
+  bool get _canPublish => canPublishCreatePost(
+    text: _text,
+    hasMedia: _hasMedia,
+    hasMusic: _hasMusic,
+  );
 
   @override
   void initState() {
@@ -88,6 +122,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _text = post.text;
         _selectedImageUri = post.imageUri;
         _selectedImageBytes = null;
+        _hasMusic = post.type == PostType.membership;
         _isExclusive = post.isExclusive;
         _hydrating = false;
       });
@@ -146,13 +181,28 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     });
   }
 
+  void handleToggleMusic() {
+    setState(() {
+      _hasMusic = !_hasMusic;
+      _error = null;
+    });
+  }
+
+  void handleClearMusic() {
+    setState(() {
+      _hasMusic = false;
+      _error = null;
+    });
+  }
+
   bool validatePost() {
-    if (_text.length > 280) {
-      setState(() => _error = 'O post pode ter no máximo 280 caracteres');
-      return false;
-    }
-    if (_text.trim().isEmpty && !_hasMedia) {
-      setState(() => _error = 'Escreva um texto ou adicione uma imagem');
+    final message = validateCreatePost(
+      text: _text,
+      hasMedia: _hasMedia,
+      hasMusic: _hasMusic,
+    );
+    if (message != null) {
+      setState(() => _error = message);
       return false;
     }
     return true;
@@ -177,13 +227,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           bytes: _selectedImageBytes,
         );
       }
-      final type = resolveCreatePostType(hasMedia: imageUri != null && imageUri.isNotEmpty);
+      final hasUploadedImage = imageUri != null && imageUri.isNotEmpty;
+      final type = resolveCreatePostType(
+        hasMedia: hasUploadedImage,
+        hasMusic: _hasMusic,
+      );
       final payload = PostWriteRequest(
         type: type,
         text: _text.trim(),
         imageUri: imageUri,
+        membershipTitle: _hasMusic && !hasUploadedImage ? 'Música' : null,
         targetArtistId: widget.targetArtistId,
-        isExclusive: _isExclusive,
+        isExclusive: _isExclusive || type == PostType.membership,
       );
       if (_isEdit) {
         await PostService.updatePost(widget.postId!, payload);
@@ -258,7 +313,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         ? 'Atualize o conteúdo e publique novamente'
                         : _isFanClubPost
                         ? 'Post no Fã Clube'
-                        : 'Escreva a descrição e, se quiser, adicione uma imagem.',
+                        : 'Escreva a descrição e, se quiser, adicione imagem ou música.',
                     style: TextStyle(fontSize: 16, color: colors.textSecondary),
                   ),
                   const SizedBox(height: 24),
@@ -300,19 +355,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ),
                   ],
                   const SizedBox(height: 24),
-                  Text(
-                    'Mídia (opcional)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  CreatePostImagePicker(
-                    key: const Key('create-post-add-image'),
+                  CreatePostMediaActions(
                     hasImage: _hasMedia,
-                    onPressed: handlePickImage,
+                    hasMusic: _hasMusic,
+                    onAddImage: handlePickImage,
+                    onAddMusic: handleToggleMusic,
                   ),
                   if (_hasMedia) ...[
                     const SizedBox(height: 8),
@@ -328,11 +375,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
                     ),
                   ],
-                  if (_text.trim().isNotEmpty || _hasMedia) ...[
+                  if (_hasMusic) ...[
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        key: const Key('create-post-clear-music'),
+                        onPressed: handleClearMusic,
+                        child: Text(
+                          'Remover música',
+                          style: TextStyle(color: colors.danger),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (_text.trim().isNotEmpty || _hasMedia || _hasMusic) ...[
                     const SizedBox(height: 24),
                     CreatePostPreview(
                       text: _text,
                       hasImage: _hasMedia,
+                      hasMusic: _hasMusic,
                     ),
                   ],
                 ],
