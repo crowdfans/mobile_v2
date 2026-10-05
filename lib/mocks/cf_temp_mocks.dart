@@ -62,8 +62,9 @@ const bool kCf191MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 + sheet (CF-172/189/193/241). Off: API CF-268
-  /// entrega `weeksInRanking`/`peakRank` via snapshots semanais.
+  /// Ranking Top 100/500 + sheet (CF-172/189/193/241). **Off** — UI usa
+  /// API real (CF-268 weeks/peak + tendência). Amostra
+  /// [cfTempMockRankingArtists] só para testes print/G-R-E.
   static const useRankingFixtures = false;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
@@ -407,9 +408,8 @@ abstract final class CfTempMocks {
   }
 }
 
-/// Amostra de linhas de ranking (print CF-189/193/241) para testes e, se a
-/// flag [CfTempMocks.useRankingFixtures] estiver on, para UI TEMP.
-/// Com CF-268 a API popula `weeksInRanking`/`peakRank`; flag fica off.
+/// Amostra de linhas de ranking (print CF-189/193/241) **só para testes**.
+/// UI não consome mais — flag [CfTempMocks.useRankingFixtures] permanece off.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
