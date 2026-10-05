@@ -2,6 +2,7 @@ import 'package:crowdfans/components/fan_club/fan_club_expelled_banner.dart';
 import 'package:crowdfans/components/fan_club/fan_club_moderation_warning_banner.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
+import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,6 +26,29 @@ void main() {
     expect(find.textContaining('ataques recorrentes'), findsOneWidget);
     expect(find.text('Defender por que voltar'), findsOneWidget);
     expect(find.text('Você foi expulso deste fã-clube'), findsNothing);
+  });
+
+  test('CF-229 fixtures: Felipe expulso sem posts + flag dedicada', () async {
+    expect(kUseCf229ExpelledFixtures, isTrue);
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // pack CF-222…230 on prod
+    expect(cfTempMockFanClubKind(cfTempMockFelipeArtistUid),
+        CfFanClubFixtureKind.expelled);
+
+    final feed =
+        await FanClubService.getArtistFanClubFeed(cfTempMockFelipeArtistUid);
+    expect(feed, isNotNull);
+    expect(feed!.fanClub.viewerIsExpelled, isTrue);
+    expect(feed.fanClub.viewerExpulsionReason, cfTempMockExpulsionReason);
+    expect(feed.fanClub.memberCount, 6972);
+    expect(feed.fanClub.artistName, 'Felipe Rhy');
+    expect(feed.posts, isEmpty);
+  });
+
+  test('CF-229 fixtures: Enzo (CF-222) não usa short-circuit expulso', () {
+    expect(
+      cfTempMockFanClubKind('mock-fc-enzo'),
+      CfFanClubFixtureKind.community,
+    );
   });
 
   testWidgets('CF-230 warning banner: título e chances do print', (

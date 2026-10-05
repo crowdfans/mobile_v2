@@ -6,6 +6,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,20 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
       _error = null;
     });
     try {
+      // CF-225 print: Enzo Lima + Aline / Maria Eduarda / Lari Rocha.
+      if (kUseCfTempMocks && kUseCf225ModeratorsMocks) {
+        final club = cfTempMockArtistFanClubFeed(widget.artistId).fanClub;
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _club = club;
+          _requests = const [];
+          _loading = false;
+          _error = null;
+        });
+        return;
+      }
       final club = await FanClubService.getArtistFanClub(widget.artistId);
       var requests = <FanClubModeratorRequest>[];
       if (club?.viewerIsOwner == true) {
@@ -91,6 +106,16 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
       });
     } catch (_) {
       if (!mounted) {
+        return;
+      }
+      if (kUseCfTempMocks && kUseCf225ModeratorsMocks) {
+        final club = cfTempMockArtistFanClubFeed(widget.artistId).fanClub;
+        setState(() {
+          _club = club;
+          _requests = const [];
+          _loading = false;
+          _error = null;
+        });
         return;
       }
       setState(() {
@@ -224,7 +249,10 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
             ProfileScreenHeader(title: 'Moderadores', onBack: handleBack),
             Expanded(
               child: _loading
-                  ? const ProfileState(loading: true)
+                  ? Semantics(
+                      label: 'Carregando moderadores',
+                      child: const ProfileState(loading: true),
+                    )
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
@@ -255,6 +283,7 @@ class _FanClubModeratorsScreenState extends State<FanClubModeratorsScreen> {
                                       moderator: mod,
                                     ),
                                   ),
+                                  // Controles só quando há ação real (dono).
                                   if (isOwner && !mod.isOwner)
                                     TextButton(
                                       onPressed: () =>

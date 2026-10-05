@@ -338,8 +338,12 @@ abstract final class FanClubService {
     int page = 1,
     int pageSize = 20,
   }) async {
-    // QA image-first: fixtures do print (CF-222/229/230). Desligar useFanClubFixtures.
-    if (kUseCfTempMocks && CfTempMocks.useFanClubFixtures) {
+    // QA image-first: fixtures do print (CF-222/229/230).
+    // CF-229: também cobre Felipe/expulso via kUseCf229ExpelledFixtures.
+    if ((kUseCfTempMocks && CfTempMocks.useFanClubFixtures) ||
+        (cf229ExpelledFixturesEnabled() &&
+            cfTempMockFanClubKind(artistUid) ==
+                CfFanClubFixtureKind.expelled)) {
       return cfTempMockArtistFanClubFeed(artistUid, page: page);
     }
     final params = Uri(

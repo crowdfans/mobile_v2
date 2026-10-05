@@ -213,22 +213,27 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
         final following = results[2] as bool;
         final subscribed = results[3] as bool;
         final club = feed?.fanClub;
+        final expelled = club?.viewerIsExpelled == true;
         final fromFeed = [
-          if (club != null)
+          if (club != null && !expelled)
             for (final post in feed?.posts ?? const <FanClubFeedPost>[])
               mapClubPost(post, club),
         ];
         final fromCommunity = [
-          for (final post in community)
-            if (post.targetArtistId == widget.artistId) post.toFeedPost(),
+          if (!expelled)
+            for (final post in community)
+              if (post.targetArtistId == widget.artistId) post.toFeedPost(),
         ];
         final avatar = _avatarUrl.isNotEmpty
             ? _avatarUrl
-            : (useClubFixtures
-                ? cfTempMockFanClubCoverUrl
-                : (fromCommunity.isNotEmpty
-                    ? fromCommunity.first.avatarUri
-                    : ''));
+            : (expelled &&
+                    (useClubFixtures || cf229ExpelledFixturesEnabled())
+                ? cfTempMockFelipeCoverUrl
+                : (useClubFixtures
+                    ? cfTempMockFanClubCoverUrl
+                    : (fromCommunity.isNotEmpty
+                        ? fromCommunity.first.avatarUri
+                        : '')));
         if (!mounted) {
           return;
         }
@@ -236,10 +241,14 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
           _club = club;
           _following = following || (club?.isMember ?? false);
           _subscribed = subscribed;
-          _posts = mergePosts(fromFeed, fromCommunity);
+          // Expulso: print CF-229 não mostra feed — só o banner.
+          _posts = expelled ? <FeedPost>[] : mergePosts(fromFeed, fromCommunity);
           _avatarUrl = avatar;
           _page = 1;
-          _hasMore = (feed?.posts.length ?? 0) >= _pageSize;
+          _hasMore = expelled ? false : (feed?.posts.length ?? 0) >= _pageSize;
+          if (expelled) {
+            _sortPopular = false; // print: Novos selecionado
+          }
           _loading = false;
           _error = null;
         });
@@ -252,6 +261,13 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
       );
       final club = feed?.fanClub ?? _club;
       if (club == null || !mounted) {
+        return;
+      }
+      if (club.viewerIsExpelled) {
+        setState(() {
+          _posts = <FeedPost>[];
+          _hasMore = false;
+        });
         return;
       }
       final mapped = [
@@ -376,14 +392,16 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                 },
               ),
               if (club != null) ...[
-                ListTile(
-                  leading: Icon(Icons.edit_outlined, color: colors.textPrimary),
-                  title: const Text('Publicar no clube'),
-                  onTap: () {
-                    Navigator.of(sheetContext).pop();
-                    handleCompose();
-                  },
-                ),
+                if (!club.viewerIsExpelled)
+                  ListTile(
+                    leading:
+                        Icon(Icons.edit_outlined, color: colors.textPrimary),
+                    title: const Text('Publicar no clube'),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      handleCompose();
+                    },
+                  ),
                 ListTile(
                   leading: Icon(Icons.info_outline, color: colors.textPrimary),
                   title: const Text('Ver mais'),
@@ -506,7 +524,9 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                             itemCount:
                                 1 +
                                 (club == null ? 0 : 3) +
-                                (posts.isEmpty ? 1 : posts.length) +
+                                (posts.isEmpty
+                                    ? (club?.viewerIsExpelled == true ? 0 : 1)
+                                    : posts.length) +
                                 (_loadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
                               if (index == 0) {
@@ -563,55 +583,6 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                       onAbout: handleAbout,
                                       onRules: handleRules,
                                     ),
-                                    if (club.viewerIsExpelled)
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          4,
-                                        ),
-                                        child: FanClubExpelledBanner(
-                                          reason: club.viewerExpulsionReason
-                                                  .trim()
-                                                  .isNotEmpty
-                                              ? club.viewerExpulsionReason
-                                              : (kUseCfTempMocks &&
-                                                      CfTempMocks
-                                                          .useFanClubFixtures
-                                                  ? cfTempMockExpulsionReason
-                                                  : club.viewerExpulsionReason),
-                                          onDefend: () {
-                                            context.push(
-                                              Pages.fanClubDefendReturnOf(
-                                                artistId: widget.artistId,
-                                                name: club.artistName,
-                                                expulsionReason:
-                                                    club.viewerExpulsionReason
-                                                            .trim()
-                                                            .isNotEmpty
-                                                        ? club
-                                                            .viewerExpulsionReason
-                                                        : cfTempMockExpulsionReason,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      )
-                                    else if (club.viewerActiveStrikesCount > 0)
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          8,
-                                          16,
-                                          4,
-                                        ),
-                                        child: FanClubModerationWarningBanner(
-                                          reason: club.viewerLatestStrikeReason,
-                                          remainingChances:
-                                              club.viewerStrikeRemainingChances,
-                                        ),
-                                      ),
                                   ],
                                 );
                               }
@@ -679,57 +650,108 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                 );
                               }
                               if (index == 3) {
-                                return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    16,
-                                    10,
-                                    16,
-                                    8,
-                                  ),
-                                  child: Wrap(
-                                    spacing: 8,
-                                    children: [
-                                      MePostsFilterChip(
-                                        label: 'Todos',
-                                        selected:
-                                            _feedFilter == _ClubFeedFilter.all,
-                                        onPressed: () {
-                                          setState(
-                                            () => _feedFilter =
+                                final expulsionReason =
+                                    club.viewerExpulsionReason.trim().isNotEmpty
+                                    ? club.viewerExpulsionReason
+                                    : (cf229ExpelledFixturesEnabled()
+                                        ? cfTempMockExpulsionReason
+                                        : club.viewerExpulsionReason);
+                                // Print CF-229: banner depois dos chips Todos/Posts/Media.
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        10,
+                                        16,
+                                        8,
+                                      ),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        children: [
+                                          MePostsFilterChip(
+                                            label: 'Todos',
+                                            selected: _feedFilter ==
                                                 _ClubFeedFilter.all,
-                                          );
-                                        },
-                                      ),
-                                      MePostsFilterChip(
-                                        label: 'Posts',
-                                        selected:
-                                            _feedFilter ==
-                                            _ClubFeedFilter.posts,
-                                        onPressed: () {
-                                          setState(
-                                            () => _feedFilter =
+                                            onPressed: () {
+                                              setState(
+                                                () => _feedFilter =
+                                                    _ClubFeedFilter.all,
+                                              );
+                                            },
+                                          ),
+                                          MePostsFilterChip(
+                                            label: 'Posts',
+                                            selected: _feedFilter ==
                                                 _ClubFeedFilter.posts,
-                                          );
-                                        },
-                                      ),
-                                      MePostsFilterChip(
-                                        label: 'Media',
-                                        selected:
-                                            _feedFilter ==
-                                            _ClubFeedFilter.media,
-                                        onPressed: () {
-                                          setState(
-                                            () => _feedFilter =
+                                            onPressed: () {
+                                              setState(
+                                                () => _feedFilter =
+                                                    _ClubFeedFilter.posts,
+                                              );
+                                            },
+                                          ),
+                                          MePostsFilterChip(
+                                            label: 'Media',
+                                            selected: _feedFilter ==
                                                 _ClubFeedFilter.media,
-                                          );
-                                        },
+                                            onPressed: () {
+                                              setState(
+                                                () => _feedFilter =
+                                                    _ClubFeedFilter.media,
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    if (club.viewerIsExpelled)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          4,
+                                          16,
+                                          8,
+                                        ),
+                                        child: FanClubExpelledBanner(
+                                          reason: expulsionReason,
+                                          onDefend: () {
+                                            context.push(
+                                              Pages.fanClubDefendReturnOf(
+                                                artistId: widget.artistId,
+                                                name: club.artistName,
+                                                expulsionReason:
+                                                    expulsionReason,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    else if (club.viewerActiveStrikesCount > 0)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          16,
+                                          4,
+                                          16,
+                                          8,
+                                        ),
+                                        child: FanClubModerationWarningBanner(
+                                          reason:
+                                              club.viewerLatestStrikeReason,
+                                          remainingChances: club
+                                              .viewerStrikeRemainingChances,
+                                        ),
+                                      ),
+                                  ],
                                 );
                               }
                               final postStart = 4;
                               if (posts.isEmpty) {
+                                if (club.viewerIsExpelled) {
+                                  return const SizedBox.shrink();
+                                }
                                 return Padding(
                                   padding: const EdgeInsets.all(24),
                                   child: Text(

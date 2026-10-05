@@ -216,6 +216,22 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
             ),
           );
         }
+        // CF-229: atalho Felipe Rhy (expulso) para QA abrir o print.
+        if (cf229ExpelledFixturesEnabled() &&
+            !merged.any(
+              (artist) =>
+                  cfTempMockFanClubKind(artist.artistUid) ==
+                  CfFanClubFixtureKind.expelled,
+            )) {
+          merged.insert(
+            0,
+            const _ClubArtist(
+              artistUid: cfTempMockFelipeArtistUid,
+              artistName: 'Felipe Rhy',
+              avatarUrl: cfTempMockFelipeCoverUrl,
+            ),
+          );
+        }
         if (!mounted) {
           return;
         }

@@ -72,8 +72,13 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
+<<<<<<< HEAD
   /// **TEMP on** (CF-222 community + CF-223 Ver mais moderadores/candidatura).
   /// Off quando API real bater os prints Enzo / Aline / lista de mods.
+=======
+  /// TEMP ligado p/ CF-222…230 prints (Enzo / mods / banners).
+  /// Lista Moderadores (CF-225) também usa [kUseCf225ModeratorsMocks].
+>>>>>>> origin/prod
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
@@ -524,6 +529,18 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   return samples.take(limit).toList(growable: false);
 }
 
+/// CF-229 — banner expulso (Felipe Rhy) no feed do clube.
+/// TEMP até a conta de QA receber `viewerIsExpelled` + motivo da API.
+/// Complementa [CfTempMocks.useFanClubFixtures] (atalho Clubes + cover).
+const bool kUseCf229ExpelledFixtures = true;
+
+/// Cover do print CF-229 (mic / spotlight).
+const cfTempMockFelipeCoverUrl =
+    'https://images.unsplash.com/photo-1516280440612-596598c2f5a2?auto=format&fit=crop&w=1200&q=80';
+
+/// ArtistUid do print CF-229 para atalho em Clubes.
+const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
+
 /// Motivo de expulsão para Defender retorno (CF-200 / CF-229) quando a API não manda.
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
@@ -531,6 +548,10 @@ const cfTempMockExpulsionReason =
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
+
+/// True quando o mock TEMP do banner expulso (CF-229) está ativo.
+bool cf229ExpelledFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf229ExpelledFixtures;
 
 /// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
 abstract final class Cf199ModerationPanelFixtures {
@@ -871,6 +892,11 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
 /// seletor + contagens/bio/posts quando a conta real ainda está vazia.
 const bool kUseCf187MeProfileMocks = true;
 
+/// CF-225 — lista Moderadores (print Enzo Lima + 3 fãs). TEMP até
+/// `GET …/fanclub` devolver moderadores com nome/handle/avatar do print.
+/// Flag dedicada na tela; [CfTempMocks.useFanClubFixtures] já cobre o feed.
+const bool kUseCf225ModeratorsMocks = true;
+
 /// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
 abstract final class Cf187MeProfileFixtures {
   static const _avatar =
@@ -1109,26 +1135,42 @@ CfFanClubFixtureKind cfTempMockFanClubKind(String artistUid) {
 }
 
 List<FanClubModerator> cfTempMockFanClubModerators() {
+  // Avatares alinhados ao print CF-225 (Aline / Maria / Lari+gato).
   return const [
     FanClubModerator(
       userUid: 'cf-mod-aline',
       handle: 'alineduarte',
       displayName: 'Aline Duarte',
+<<<<<<< HEAD
       photoUrl: CfTempMocks._avatarWoman,
+=======
+      photoUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+>>>>>>> origin/prod
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-maria',
       handle: 'mariaeduarda',
       displayName: 'Maria Eduarda',
+<<<<<<< HEAD
       photoUrl: CfTempMocks._avatarMayra,
+=======
+      photoUrl:
+          'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=100&q=80',
+>>>>>>> origin/prod
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-lari',
       handle: 'larirocha',
       displayName: 'Lari Rocha',
+<<<<<<< HEAD
       photoUrl: CfTempMocks._avatarCamila,
+=======
+      photoUrl:
+          'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=100&q=80',
+>>>>>>> origin/prod
       role: 'moderator',
     ),
   ];
