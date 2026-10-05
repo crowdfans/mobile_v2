@@ -58,53 +58,63 @@ void main() {
       },
     );
 
-    testWidgets('fixture TEMP deep-link vazio → Marinhos 240 / 3 meses', (
-      tester,
-    ) async {
-      expect(CfTempMocks.useMembershipManageFixtures, isTrue);
+    test('helper print Marinhos 240 / 3 meses permanece para testes', () {
+      expect(CfTempMocks.useMembershipManageFixtures, isFalse);
       expect(cfTempMockMembershipManage.artistName, 'Marinhos');
+      expect(cfTempMockMembershipManage.artistHandle, '@marinhos');
       expect(cfTempMockMembershipManage.pricePerMonth, 240);
-
-      final router = GoRouter(
-        initialLocation: Pages.profileMembershipManageOf(
-          artistId: 'mock',
-          artistName: '',
-          pricePerMonth: 0,
-        ),
-        routes: [
-          GoRoute(
-            path: Pages.profileMembershipManage,
-            builder: (context, state) => ProfileMembershipManageScreen(
-              artistId: state.uri.queryParameters['artistId'] ?? '',
-              artistName: state.uri.queryParameters['artistName'] ?? '',
-              artistHandle: state.uri.queryParameters['artistHandle'],
-              pricePerMonth:
-                  int.tryParse(
-                    state.uri.queryParameters['pricePerMonth'] ?? '',
-                  ) ??
-                  0,
-              monthsLabel: state.uri.queryParameters['monthsLabel'],
-            ),
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: buildCrowdFansTheme(Brightness.light),
-          routerConfig: router,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Marinhos'), findsOneWidget);
-      expect(find.text('@marinhos'), findsOneWidget);
-      expect(find.text('240/mês'), findsOneWidget);
-      expect(find.textContaining('3 meses'), findsOneWidget);
+      expect(cfTempMockMembershipManage.monthsLabel, '3 meses');
     });
   });
 
   group('CF-205 red — bloqueio / inválido', () {
+    testWidgets(
+      'deep-link vazio sem TEMP: não inventa Marinhos/240; fallback Artista/100',
+      (tester) async {
+        expect(CfTempMocks.useMembershipManageFixtures, isFalse);
+
+        final router = GoRouter(
+          initialLocation: Pages.profileMembershipManageOf(
+            artistId: 'mock',
+            artistName: '',
+            pricePerMonth: 0,
+          ),
+          routes: [
+            GoRoute(
+              path: Pages.profileMembershipManage,
+              builder: (context, state) => ProfileMembershipManageScreen(
+                artistId: state.uri.queryParameters['artistId'] ?? '',
+                artistName: state.uri.queryParameters['artistName'] ?? '',
+                artistHandle: state.uri.queryParameters['artistHandle'],
+                pricePerMonth:
+                    int.tryParse(
+                      state.uri.queryParameters['pricePerMonth'] ?? '',
+                    ) ??
+                    0,
+                monthsLabel: state.uri.queryParameters['monthsLabel'],
+              ),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp.router(
+            theme: buildCrowdFansTheme(Brightness.light),
+            routerConfig: router,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Marinhos'), findsNothing);
+        expect(find.text('@marinhos'), findsNothing);
+        expect(find.text('240/mês'), findsNothing);
+        expect(find.text('Artista'), findsOneWidget);
+        expect(find.text('100/mês'), findsOneWidget);
+        expect(find.text('Pausar membership'), findsOneWidget);
+        expect(find.text('Cancelar membership'), findsOneWidget);
+      },
+    );
+
     testWidgets('artistId vazio: Confirmar não navega para memberships', (
       tester,
     ) async {
@@ -169,12 +179,13 @@ void main() {
       expect(cancelled.canCancel, isFalse);
     });
 
-    test('pause API path ≠ cancel; Assinar CF-206 fixtures off', () {
+    test('pause API path ≠ cancel; Assinar CF-206 fixtures off; manage demock', () {
       expect(
         Pages.profileMembershipManage,
         '/me/settings/memberships/manage',
       );
       expect(CfTempMocks.useMembershipFixtures, isFalse);
+      expect(CfTempMocks.useMembershipManageFixtures, isFalse);
       expect(
         cfTempMockMembershipManage.artistName,
         isNot(cfTempMockMembershipSummary.artistName),

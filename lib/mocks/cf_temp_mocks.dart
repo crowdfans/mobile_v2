@@ -78,10 +78,10 @@ abstract final class CfTempMocks {
   /// print / CF-207 deep-link ([useMembershipActivationConfirmedFixtures]).
   static const useMembershipFixtures = false;
 
-  /// CF-205 Gerenciar membership — deep-link vazio / preço ≤ 0 usa
-  /// [cfTempMockMembershipManage] (Marinhos / 240 / 3 meses). TEMP até QA
-  /// abrir sempre com params da assinatura real. Não liga Assinar (CF-206).
-  static const useMembershipManageFixtures = true;
+  /// CF-205 Gerenciar membership — **off**: hub/perfil passam params reais
+  /// (nome/preço/meses). Helper [cfTempMockMembershipManage] só para testes
+  /// de print. Não liga Assinar (CF-206) nem confirmação (CF-207).
+  static const useMembershipManageFixtures = false;
 
   /// CF-207 confirmação de ativação — deep-link vazio / preço ≤ 0 usa
   /// [cfTempMockMembershipSummary] (Banda Uelo / 240). TEMP até QA abrir
