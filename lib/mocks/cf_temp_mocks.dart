@@ -1231,8 +1231,18 @@ abstract final class Cf219EditBioMock {
 }
 
 /// Liga dados de demo do CF-195 (Home sem comentários → print populado).
-/// Desligado: comments API real.
-const bool kUseCf195CommentMocks = false;
+/// TEMP até a API Home povoar o mesmo estado do print.
+const bool kUseCf195CommentMocks = true;
+
+/// Print CF-195: só a 1ª thread com respostas começa expandida.
+Set<String> cf195InitialExpandedReplyIds(List<CommentItem> comments) {
+  for (final comment in comments) {
+    if (comment.replies.isNotEmpty) {
+      return {comment.id};
+    }
+  }
+  return {};
+}
 
 /// Dados do print CF-195 (Home — pai + resposta expandida + thread recolhida).
 abstract final class Cf195HomeCommentsMock {
@@ -1246,7 +1256,7 @@ abstract final class Cf195HomeCommentsMock {
       author: 'Rafa Nogueira',
       handle: 'fan/rafanogueira',
       avatarUri: '',
-      minutesAgo: 180,
+      minutesAgo: 120,
       text: 'Esse tipo de conteúdo sempre rende discussão boa.',
       votes: 15,
       parentCommentId: 'cf195-c1',
@@ -1285,13 +1295,23 @@ abstract final class Cf195HomeCommentsMock {
       ),
       CommentItem(
         id: 'cf195-c2',
-        author: 'Camila R.',
-        handle: 'fan/camilar',
+        author: 'Nina Costa',
+        handle: 'fan/ninacosta',
         avatarUri: '',
-        minutesAgo: 120,
-        text: 'Alguém mais ficou com vontade de ver o making of completo?',
-        votes: 48,
+        minutesAgo: 180,
+        text:
+            'Cheguei pelo feed e fiquei pelos comentários. Era exatamente esse efeito que eu queria ver nos testes.',
+        votes: 212,
         replies: [collapsedA, collapsedB],
+      ),
+      CommentItem(
+        id: 'cf195-c3',
+        author: 'Vic Melo',
+        handle: 'fan/vicmelo',
+        avatarUri: '',
+        minutesAgo: 180,
+        text: 'Alguém mais salvou esse post?',
+        votes: 18,
       ),
     ];
   }

@@ -17,13 +17,9 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-<<<<<<< HEAD
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223 Ver mais
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186 + CF-222/223
     expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
-=======
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186 + CF-222/223
->>>>>>> b1e5b27 (CF-186: feed do fã-clube na aba do perfil artista)
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
@@ -38,7 +34,8 @@ void main() {
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isFalse);
-    expect(kUseCf195CommentMocks, isFalse);
+    expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
+
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isFalse);
   });

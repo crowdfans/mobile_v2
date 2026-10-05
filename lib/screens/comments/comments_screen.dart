@@ -154,12 +154,10 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               kUseCf195CommentMocks) {
             _comments = Cf195HomeCommentsMock.comments();
             _hasMore = false;
+            // Print CF-195: só a 1ª thread começa expandida.
             _expandedReplyIds
               ..clear()
-              ..addAll([
-                for (final c in _comments)
-                  if (c.replies.isNotEmpty) c.id,
-              ]);
+              ..addAll(cf195InitialExpandedReplyIds(_comments));
           }
         }
         _loading = false;
@@ -191,10 +189,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
             _hasMore = false;
             _expandedReplyIds
               ..clear()
-              ..addAll([
-                for (final c in _comments)
-                  if (c.replies.isNotEmpty) c.id,
-              ]);
+              ..addAll(cf195InitialExpandedReplyIds(_comments));
             _error = null;
           } else {
             _error = 'Não foi possível carregar os comentários.';
@@ -539,10 +534,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               // Print CF-194: ⋯ ativo (não esmaecido).
               onMenu: handleOpenPostMenu,
             ),
-            if ((widget.postAuthor ?? '').trim().isNotEmpty ||
-                (widget.clubName ?? '').trim().isNotEmpty ||
-                (widget.postText ?? '').trim().isNotEmpty ||
-                widget.postMinutesAgo != null)
+            // Home (CF-195): header do autor + chips — sem card de post.
+            // Fã-clube (CF-194): mantém contexto do clube/post.
+            if (_isFanClubContext &&
+                ((widget.postAuthor ?? '').trim().isNotEmpty ||
+                    (widget.clubName ?? '').trim().isNotEmpty ||
+                    (widget.postText ?? '').trim().isNotEmpty ||
+                    widget.postMinutesAgo != null))
               CommentPostContextHeader(
                 author: widget.postAuthor,
                 handle: widget.postHandle,
@@ -560,7 +558,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 }),
                 onShare: () {},
               )
-            else
+            else if (_isFanClubContext)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Text(
