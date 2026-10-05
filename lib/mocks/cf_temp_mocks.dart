@@ -72,8 +72,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  /// TEMP ligado p/ CF-222…230 prints (Enzo / mods / banners).
-  /// Lista Moderadores (CF-225) também usa [kUseCf225ModeratorsMocks].
+  /// **TEMP on** (CF-222…230 + CF-223 Ver mais). Lista Moderadores também
+  /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-233 carrossel + CF-234 lightbox URIs + CF-235).
