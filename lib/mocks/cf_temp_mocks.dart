@@ -46,9 +46,11 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500. API `…/search/artists/rankings` OK;
-  /// [CF-268] só falta weeksInRanking/peakRank (UI já tolera null).
-  static const useRankingFixtures = false;
+  /// Ranking Top 100/500 — **TEMP on** (CF-189): API lista existe, mas
+  /// tendência histórica / densidade do print ainda não bate (prod mostra
+  /// poucas linhas + 0 membros + tudo neutro). Off quando snapshot histórico
+  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
+  static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
   static const useFanScoreFixtures = false;
@@ -260,24 +262,60 @@ abstract final class CfTempMocks {
   }
 }
 
-/// Linhas de ranking para demo quando `rankArtists` vem vazio (CF-193 / CF-189 / CF-241).
+/// Linhas de ranking equivalentes ao print CF-189 (image.png).
+/// Tendências: up / down / neutral — ícone + semantics, sem colorir neutro.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
 }) {
   final engaged = kind == 'engaged';
   final active = kind == 'active';
+  // Avatares Unsplash — print usa fotos reais; vazio deixa bloco cinza.
+  const avatars = <String>[
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
+  ];
+  String metaFor({
+    required int members,
+    required String membersLabel,
+    required int posts,
+    required int interactions,
+  }) {
+    if (engaged) {
+      final n = interactions;
+      return n == 1 ? '1 interação (7d)' : '$n interações (7d)';
+    }
+    if (active) {
+      return '$posts posts (7d)';
+    }
+    return membersLabel;
+  }
+
   final samples = <ArtistSearchItem>[
     ArtistSearchItem(
       id: 'mock-fc-ludmilla',
       name: 'Ludmilla',
       handle: '@ludmilla',
-      avatarUri: '',
+      avatarUri: avatars[0],
       memberCount: engaged ? 4 : 512000,
-      membersLabel: engaged ? '4 interações (7d)' : '512 mil membros',
-      rankingValueLabel: engaged
-          ? '4 interações (7d)'
-          : (active ? '18 posts (7d)' : '512 mil membros'),
+      membersLabel: metaFor(
+        members: 512000,
+        membersLabel: '512 mil membros',
+        posts: 18,
+        interactions: 4,
+      ),
+      rankingValueLabel: metaFor(
+        members: 512000,
+        membersLabel: '512 mil membros',
+        posts: 18,
+        interactions: 4,
+      ),
       rank: 1,
       trend: 'up',
       rankDelta: 1,
@@ -289,12 +327,20 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       id: 'mock-fc-anitta',
       name: 'Anitta',
       handle: '@anitta',
-      avatarUri: '',
+      avatarUri: avatars[1],
       memberCount: engaged ? 0 : 487000,
-      membersLabel: engaged ? '0 interações (7d)' : '487 mil membros',
-      rankingValueLabel: engaged
-          ? '0 interações (7d)'
-          : (active ? '14 posts (7d)' : '487 mil membros'),
+      membersLabel: metaFor(
+        members: 487000,
+        membersLabel: '487 mil membros',
+        posts: 14,
+        interactions: 0,
+      ),
+      rankingValueLabel: metaFor(
+        members: 487000,
+        membersLabel: '487 mil membros',
+        posts: 14,
+        interactions: 0,
+      ),
       rank: 2,
       trend: 'down',
       rankDelta: 1,
@@ -306,16 +352,24 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       id: 'mock-fc-mayra',
       name: 'Mayra',
       handle: '@mayra',
-      avatarUri: '',
+      avatarUri: avatars[2],
       memberCount: engaged ? 12 : 368000,
-      membersLabel: engaged ? '12 interações (7d)' : '368 mil membros',
-      rankingValueLabel: engaged
-          ? '12 interações (7d)'
-          : (active ? '11 posts (7d)' : '368 mil membros'),
+      membersLabel: metaFor(
+        members: 368000,
+        membersLabel: '368 mil membros',
+        posts: 11,
+        interactions: 12,
+      ),
+      rankingValueLabel: metaFor(
+        members: 368000,
+        membersLabel: '368 mil membros',
+        posts: 11,
+        interactions: 12,
+      ),
       rank: 3,
-      trend: 'up',
-      rankDelta: 2,
-      previousRank: 5,
+      trend: 'neutral',
+      rankDelta: 0,
+      previousRank: 3,
       weeksInRanking: 8,
       peakRank: 2,
     ),
@@ -323,16 +377,24 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       id: 'mock-fc-uelo',
       name: 'Banda Uelo',
       handle: '@bandauelo',
-      avatarUri: '',
+      avatarUri: avatars[3],
       memberCount: engaged ? 7 : 228000,
-      membersLabel: engaged ? '7 interações (7d)' : '228 mil membros',
-      rankingValueLabel: engaged
-          ? '7 interações (7d)'
-          : (active ? '9 posts (7d)' : '228 mil membros'),
+      membersLabel: metaFor(
+        members: 228000,
+        membersLabel: '228 mil membros',
+        posts: 9,
+        interactions: 7,
+      ),
+      rankingValueLabel: metaFor(
+        members: 228000,
+        membersLabel: '228 mil membros',
+        posts: 9,
+        interactions: 7,
+      ),
       rank: 4,
-      trend: 'neutral',
-      rankDelta: 0,
-      previousRank: 4,
+      trend: 'up',
+      rankDelta: 2,
+      previousRank: 6,
       weeksInRanking: 6,
       peakRank: 3,
     ),
@@ -340,63 +402,95 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       id: 'mock-fc-carol',
       name: 'Carol Biazin',
       handle: '@carolbiazin',
-      avatarUri: '',
+      avatarUri: avatars[4],
       memberCount: engaged ? 3 : 196000,
-      membersLabel: engaged ? '3 interações (7d)' : '196 mil membros',
-      rankingValueLabel: engaged
-          ? '3 interações (7d)'
-          : (active ? '7 posts (7d)' : '196 mil membros'),
+      membersLabel: metaFor(
+        members: 196000,
+        membersLabel: '196 mil membros',
+        posts: 7,
+        interactions: 3,
+      ),
+      rankingValueLabel: metaFor(
+        members: 196000,
+        membersLabel: '196 mil membros',
+        posts: 7,
+        interactions: 3,
+      ),
       rank: 5,
-      trend: 'up',
-      rankDelta: 3,
-      previousRank: 8,
+      trend: 'down',
+      rankDelta: 1,
+      previousRank: 4,
       weeksInRanking: 4,
       peakRank: 5,
-    ),
-    ArtistSearchItem(
-      id: 'mock-fc-enzo',
-      name: 'Enzo Lima',
-      handle: '@enzolima',
-      avatarUri: '',
-      memberCount: engaged ? 1 : 11841,
-      membersLabel: engaged ? '1 interação (7d)' : '11.841 membros',
-      rankingValueLabel: engaged
-          ? '1 interação (7d)'
-          : (active ? '5 posts (7d)' : '11.841 membros'),
-      rank: 6,
-      trend: 'down',
-      rankDelta: 2,
-      previousRank: 4,
-      weeksInRanking: 3,
-      peakRank: 4,
     ),
     ArtistSearchItem(
       id: 'mock-fc-marinhos',
       name: 'Marinhos',
       handle: '@marinhos',
-      avatarUri: '',
-      memberCount: engaged ? 9 : 142000,
-      membersLabel: engaged ? '9 interações (7d)' : '142 mil membros',
-      rankingValueLabel: engaged
-          ? '9 interações (7d)'
-          : (active ? '4 posts (7d)' : '142 mil membros'),
-      rank: 7,
+      avatarUri: avatars[5],
+      memberCount: engaged ? 9 : 537,
+      membersLabel: metaFor(
+        members: 537,
+        membersLabel: '537 membros',
+        posts: 4,
+        interactions: 9,
+      ),
+      rankingValueLabel: metaFor(
+        members: 537,
+        membersLabel: '537 membros',
+        posts: 4,
+        interactions: 9,
+      ),
+      rank: 6,
       trend: 'neutral',
       rankDelta: 0,
-      previousRank: 7,
+      previousRank: 6,
       weeksInRanking: 2,
-      peakRank: 7,
+      peakRank: 6,
     ),
     ArtistSearchItem(
-      id: 'mock-fc-kheper',
-      name: 'Kheper',
-      handle: '@kheperrrr',
-      avatarUri: '',
-      memberCount: engaged ? 2 : 121000,
-      membersLabel: engaged ? '2 interações (7d)' : '121 mil membros',
-      rankingValueLabel: engaged
-          ? '2 interações (7d)'
-          : (active ? '3 posts (7d)' : '121 mil membros'),
+      id: 'mock-fc-enzo',
+      name: 'Enzo Lima',
+      handle: '@enzolima',
+      avatarUri: avatars[6],
+      memberCount: engaged ? 1 : 535,
+      membersLabel: metaFor(
+        members: 535,
+        membersLabel: '535 membros',
+        posts: 5,
+        interactions: 1,
+      ),
+      rankingValueLabel: metaFor(
+        members: 535,
+        membersLabel: '535 membros',
+        posts: 5,
+        interactions: 1,
+      ),
+      rank: 7,
+      trend: 'down',
+      rankDelta: 2,
+      previousRank: 5,
+      weeksInRanking: 3,
+      peakRank: 4,
+    ),
+    ArtistSearchItem(
+      id: 'mock-fc-tinn',
+      name: 'TINN',
+      handle: '@tinn',
+      avatarUri: avatars[7],
+      memberCount: engaged ? 2 : 533,
+      membersLabel: metaFor(
+        members: 533,
+        membersLabel: '533 membros',
+        posts: 3,
+        interactions: 2,
+      ),
+      rankingValueLabel: metaFor(
+        members: 533,
+        membersLabel: '533 membros',
+        posts: 3,
+        interactions: 2,
+      ),
       rank: 8,
       trend: 'up',
       rankDelta: 1,

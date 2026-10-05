@@ -81,32 +81,27 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
       _loading = true;
       _error = null;
     });
+    // CF-189: conjunto equivalente ao print (densidade + tendência) enquanto
+    // o snapshot histórico de ranking no backend não entrega up/down reais.
+    if (CfTempMocks.useRankingFixtures) {
+      setState(() {
+        _artists = cfTempMockRankingArtists(
+          kind: _kind,
+          limit: _rankingLimit(_kind).clamp(1, 8),
+        );
+        _error = null;
+        _loading = false;
+      });
+      return;
+    }
     try {
       final data = await SearchService.rankArtists(
         _kind,
         limit: _rankingLimit(_kind),
       );
-      var artists = data.artists;
-      // TEMP: demo do chrome Top 100/500 quando a API ainda não povoa.
-      if (artists.isEmpty && CfTempMocks.useRankingFixtures) {
-        artists = cfTempMockRankingArtists(
-          kind: _kind,
-          limit: _rankingLimit(_kind).clamp(1, 8),
-        );
-      }
-      setState(() => _artists = artists);
+      setState(() => _artists = data.artists);
     } catch (_) {
-      if (CfTempMocks.useRankingFixtures) {
-        setState(() {
-          _artists = cfTempMockRankingArtists(
-            kind: _kind,
-            limit: _rankingLimit(_kind).clamp(1, 8),
-          );
-          _error = null;
-        });
-      } else {
-        setState(() => _error = 'Não foi possível carregar o ranking.');
-      }
+      setState(() => _error = 'Não foi possível carregar o ranking.');
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -210,13 +205,8 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Text(
-                    _rankingSubtitle(_kind),
-                    style: TextStyle(fontSize: 12, color: colors.textTertiary),
-                  ),
-                ),
+                // Print CF-189: sem linha explicativa sob os chips; métrica/
+                // período ficam no Semantics do título e em cada linha.
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.all(16),
