@@ -21,6 +21,7 @@ class CreateMenuItemButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (showDivider)
           Divider(height: 1, thickness: 0.5, indent: 16, color: colors.border),

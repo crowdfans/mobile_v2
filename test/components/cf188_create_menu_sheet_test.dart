@@ -133,11 +133,14 @@ void main() {
       MaterialApp(
         theme: buildCrowdFansTheme(Brightness.light),
         home: Scaffold(
-          body: CreateMenuItemButton(
-            key: const Key('item'),
-            asset: 'assets/icons/Communication/mail-01.svg',
-            label: 'Fan Letter',
-            onPressed: () => tapped = true,
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CreateMenuItemButton(
+              key: const Key('item'),
+              asset: 'assets/icons/Communication/mail-01.svg',
+              label: 'Fan Letter',
+              onPressed: () => tapped = true,
+            ),
           ),
         ),
       ),
@@ -147,7 +150,7 @@ void main() {
     final size = tester.getSize(find.byKey(const Key('item')));
     expect(size.height, greaterThanOrEqualTo(64));
 
-    await tester.tap(find.byKey(const Key('item')));
+    await tester.tap(find.text('Fan Letter'));
     expect(tapped, isTrue);
   });
 }
