@@ -162,8 +162,8 @@ class CommentComposer extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Print CF-194/195: idle = ícone smile no campo (abre GIF).
-                            // Com rascunho/resposta: só o enviar (CF-196).
+                            // Print CF-194/195: idle = smile no campo (abre GIF).
+                            // Print CF-196: resposta/rascunho = só ↑ (sem smile).
                             if (!(canSubmit || replyAuthor != null || editing))
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
@@ -218,8 +218,9 @@ class CommentComposer extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            // Atalho GIF explícito enquanto redige (CF-69).
-                            if (canSubmit || replyAuthor != null || editing)
+                            // CF-69: atalho GIF ao redigir comentário novo.
+                            // Print CF-196 (resposta): sem chip GIF — só ↑.
+                            if ((canSubmit || editing) && replyAuthor == null)
                               Padding(
                                 padding: const EdgeInsets.only(right: 6),
                                 child: Material(
