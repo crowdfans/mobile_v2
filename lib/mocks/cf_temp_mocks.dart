@@ -74,8 +74,9 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  /// **TEMP on** (CF-222…230 + CF-223 Ver mais). Lista Moderadores também
-  /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
+  /// **TEMP on** (CF-186 aba perfil + CF-222…230 + CF-223 Ver mais).
+  /// Lista Moderadores também usa [kUseCf225ModeratorsMocks].
+  /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share sheet print).
@@ -1404,11 +1405,83 @@ List<FanClubModerator> cfTempMockFanClubModerators() {
   ];
 }
 
-/// Feed do fã-clube alinhado aos prints CF-222 / 229 / 230.
+/// CF-186 — aba Fã Clube no perfil do artista (print Ludmilla: Carina + Pedro).
+bool cfTempMockIsLudmillaFanClubTab(String artistUid) {
+  final id = artistUid.trim().toLowerCase();
+  return id.contains('ludmilla') || id == 'mock-fc-ludmilla';
+}
+
+const _cf186AvatarCarina =
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
+const _cf186AvatarPedro =
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80';
+
+List<FanClubFeedPost> cfTempMockLudmillaFanClubTabPosts() {
+  final twoHoursAgo = DateTime.now()
+      .subtract(const Duration(hours: 2))
+      .toIso8601String();
+  return [
+    FanClubFeedPost(
+      postId: 'cf186-carina-video',
+      content:
+          'Trecho curto da reação do setor inteiro quando a intro mudou ao vivo.',
+      createdAt: twoHoursAgo,
+      type: 'video',
+      imageUrl: '',
+      likesCount: 875,
+      commentsCount: 25,
+      sharesCount: 8,
+      authorName: 'Carina Silva',
+      authorHandle: 'fan/carinas',
+      authorAvatarUri: _cf186AvatarCarina,
+    ),
+    FanClubFeedPost(
+      postId: 'cf186-pedro-text',
+      content:
+          'Quem topa grupo só pra trocar conteúdo e organizar presença nos próximos shows?',
+      createdAt: twoHoursAgo,
+      type: 'text',
+      likesCount: 916,
+      commentsCount: 36,
+      sharesCount: 11,
+      authorName: 'Pedro Martins',
+      authorHandle: 'fan/pedrom',
+      authorAvatarUri: _cf186AvatarPedro,
+      membershipMonthsLabel: '6',
+    ),
+  ];
+}
+
+ArtistFanClub _cfTempMockLudmillaFanClubMeta(String artistUid) {
+  return ArtistFanClub(
+    id: 186,
+    name: 'Ludmilla Fã Clube',
+    description: 'Fã clube de Ludmilla',
+    artistUid: artistUid.trim().isEmpty ? 'mock-fc-ludmilla' : artistUid,
+    artistName: 'Ludmilla',
+    isActive: true,
+    memberCount: 18420,
+    isMember: true,
+    moderators: cfTempMockFanClubModerators(),
+  );
+}
+
+/// Feed do fã-clube alinhado aos prints CF-186 / 222 / 229 / 230.
 ArtistFanClubFeed cfTempMockArtistFanClubFeed(
   String artistUid, {
   int page = 1,
 }) {
+  // CF-186: perfil Ludmilla → posts da comunidade do print (não Enzo).
+  if (cfTempMockIsLudmillaFanClubTab(artistUid)) {
+    final club = _cfTempMockLudmillaFanClubMeta(artistUid);
+    if (page > 1) {
+      return ArtistFanClubFeed(fanClub: club, posts: const []);
+    }
+    return ArtistFanClubFeed(
+      fanClub: club,
+      posts: cfTempMockLudmillaFanClubTabPosts(),
+    );
+  }
   if (page > 1) {
     final kind = cfTempMockFanClubKind(artistUid);
     final club = _cfTempMockFanClubMeta(artistUid, kind);
