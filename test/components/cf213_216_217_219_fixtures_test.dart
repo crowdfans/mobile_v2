@@ -20,12 +20,17 @@ void main() {
   });
 
   test('CF-216 fixtures: três sessões do print', () {
+    expect(kUseCf216ConnectedDevicesMocks, isTrue);
     final sessions = Cf216ConnectedDevicesFixtures.sessions();
     expect(sessions.length, 3);
     expect(sessions.first.name, 'iPhone 15 Pro');
     expect(sessions.first.isCurrent, isTrue);
+    expect(sessions.first.platformLine, 'iOS · Crowd Fans App');
+    expect(sessions.first.location, 'São Paulo, Brasil');
     expect(sessions[1].name, 'MacBook Air');
+    expect(sessions[1].isPhone, isFalse);
     expect(sessions[2].name, 'Galaxy S24');
+    expect(sessions[2].location, 'Campinas, Brasil');
   });
 
   test('CF-217/219 fixtures: telefone e bio do print', () {

@@ -6,7 +6,8 @@ void main() {
   test('TEMP mocks: devices+inbox off; packs/Sobre até CF-270/269', () {
     expect(kUseCfTempMocks, isTrue);
 
-    expect(CfTempMocks.useSecuritySettingsFixtures, isFalse); // CF-266
+    expect(CfTempMocks.useSecuritySettingsFixtures, isFalse); // CF-266 API
+    expect(kUseCf216ConnectedDevicesMocks, isTrue); // print CF-216
     expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
     expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269

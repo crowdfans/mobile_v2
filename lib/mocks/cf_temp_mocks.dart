@@ -59,8 +59,9 @@ abstract final class CfTempMocks {
   /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
   static const useNotificationPrefFixtures = false;
 
-  /// Segurança/dispositivos. Off: API real [CF-266] `/me/sessions`.
+  /// Segurança genérica. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.
+  /// Print CF-216 usa [kUseCf216ConnectedDevicesMocks].
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
@@ -743,6 +744,10 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
     'Renovação de membership, promoções e conteúdo exclusivo.',
   ];
 }
+
+/// CF-216 — print YouTrack (3 aparelhos + locais). API CF-266 ainda sem
+/// nome/local ricos do print → TEMP até paridade de dados.
+const bool kUseCf216ConnectedDevicesMocks = true;
 
 /// CF-216 — três sessões do print.
 extension Cf216ConnectedDevicesFixtures on CfTempMocks {

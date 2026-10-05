@@ -79,10 +79,11 @@ class ConnectedDeviceRow extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 2,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.primary,
+                          // Print CF-216: pill lavanda + texto roxo (não sólido).
+                          color: AppPalette.purple100,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: const Text(
@@ -90,7 +91,7 @@ class ConnectedDeviceRow extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: AppPalette.purple700,
                           ),
                         ),
                       ),
