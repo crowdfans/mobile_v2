@@ -40,6 +40,7 @@ void main() {
     expect(kUseCf198HelpMocks, isTrue); // CF-198 Central de ajuda
     expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
+    expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse); // CF-208 API
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
