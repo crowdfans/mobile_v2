@@ -9,6 +9,7 @@ class NovoPostSecretBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
+      key: const Key('novo-post-secret-banner'),
       alignment: Alignment.centerLeft,
       child: DecoratedBox(
         decoration: BoxDecoration(

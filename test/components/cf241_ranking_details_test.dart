@@ -7,8 +7,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('ArtistSearchItem.fromJson (CF-241)', () {
-    test('lê trendDelta e previousRank da API', () {
+  group('ArtistSearchItem.fromJson (CF-241 / CF-268)', () {
+    test('green: lê weeksInRanking + peakRank da API', () {
+      final item = ArtistSearchItem.fromJson({
+        'id': 'a1',
+        'name': 'Ludmilla',
+        'handle': 'ludmilla',
+        'avatarUri': '',
+        'memberCount': 512000,
+        'membersLabel': '512 mil membros',
+        'rank': 1,
+        'trend': 'up',
+        'trendDelta': 1,
+        'previousRank': 2,
+        'weeksInRanking': 11,
+        'peakRank': 1,
+      });
+      expect(item.rankDelta, 1);
+      expect(item.trend, 'up');
+      expect(item.previousRank, 2);
+      expect(item.weeksInRanking, 11);
+      expect(item.peakRank, 1);
+    });
+
+    test('red: campos ausentes → null (sheet mostra —)', () {
       final item = ArtistSearchItem.fromJson({
         'id': 'a1',
         'name': 'Ludmilla',
@@ -21,11 +43,24 @@ void main() {
         'trendDelta': 1,
         'previousRank': 2,
       });
-      expect(item.rankDelta, 1);
-      expect(item.trend, 'up');
-      expect(item.previousRank, 2);
       expect(item.weeksInRanking, isNull);
       expect(item.peakRank, isNull);
+    });
+
+    test('edge: peakRank via alias maxRank; zero inválido no sheet', () {
+      final item = ArtistSearchItem.fromJson({
+        'id': 'a1',
+        'name': 'X',
+        'handle': 'x',
+        'avatarUri': '',
+        'memberCount': 0,
+        'membersLabel': '',
+        'rank': 3,
+        'maxRank': 2,
+        'weeksInRanking': 0,
+      });
+      expect(item.peakRank, 2);
+      expect(item.weeksInRanking, 0);
     });
   });
 
@@ -46,19 +81,17 @@ void main() {
     });
   });
 
-  test('CF-241 fixtures: Ludmilla 11 / 1 / 2 (print sheet)', () {
-    expect(CfTempMocks.useRankingFixtures, isTrue);
+  test('CF-268 demock: ranking fixtures off; amostra print ainda disponível', () {
+    expect(CfTempMocks.useRankingFixtures, isFalse);
     final ludmilla = cfTempMockRankingArtists(kind: 'fan-clubs').first;
     expect(ludmilla.name, 'Ludmilla');
     expect(ludmilla.rank, 1);
-    expect(ludmilla.trend, 'up');
-    expect(ludmilla.membersLabel, '512 mil membros');
     expect(ludmilla.weeksInRanking, 11);
     expect(ludmilla.peakRank, 1);
     expect(ludmilla.previousRank, 2);
   });
 
-  testWidgets('sheet agrupa métricas e separa Reportar; ausente vira —', (
+  testWidgets('red/edge: sheet — quando weeks/peak ausentes; previousRank ok', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -98,10 +131,23 @@ void main() {
     expect(find.byType(SearchArtistRankMetricCard), findsNWidgets(3));
   });
 
-  testWidgets('CF-241 print: sheet Ludmilla com 11 / 1 / 2 + Reportar', (
+  testWidgets('green: sheet Ludmilla com 11 / 1 / 2 + Reportar (DTO API)', (
     tester,
   ) async {
-    final ludmilla = cfTempMockRankingArtists(kind: 'fan-clubs').first;
+    const ludmilla = ArtistSearchItem(
+      id: 'a1',
+      name: 'Ludmilla',
+      handle: 'ludmilla',
+      avatarUri: '',
+      memberCount: 512000,
+      membersLabel: '512 mil membros',
+      rank: 1,
+      trend: 'up',
+      rankDelta: 1,
+      previousRank: 2,
+      weeksInRanking: 11,
+      peakRank: 1,
+    );
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -121,7 +167,6 @@ void main() {
     expect(find.text('Semanas no ranking'), findsOneWidget);
     expect(find.text('11'), findsOneWidget);
     expect(find.text('Posição máxima'), findsOneWidget);
-    // peakRank 1 + badge #1 → dois "1" (badge "#1" é texto '#1', value é '1').
     expect(find.text('1'), findsOneWidget);
     expect(find.text('Semana passada'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);

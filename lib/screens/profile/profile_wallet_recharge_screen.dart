@@ -43,20 +43,6 @@ class _ProfileWalletRechargeScreenState
       _loading = true;
       _error = null;
     });
-    // CF-169: com TEMP ligado, usa catálogo do print sem esperar a API
-    // (prod ainda devolve Starter/Plus/Pro legado).
-    if (kUseCfTempMocks && kUseCf170WalletPackMocks) {
-      final resolved = resolveWalletRechargePacks(const []);
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _packs = resolved;
-        _selectedId = resolved.isEmpty ? null : resolved.first.id;
-        _loading = false;
-      });
-      return;
-    }
     try {
       final packs = await WalletService.listPacks();
       if (!mounted) {
@@ -67,6 +53,9 @@ class _ProfileWalletRechargeScreenState
         _packs = resolved;
         _selectedId = resolved.isEmpty ? null : resolved.first.id;
         _loading = false;
+        _error = resolved.isEmpty
+            ? 'Não foi possível carregar os pacotes.'
+            : null;
       });
     } catch (_) {
       if (!mounted) {

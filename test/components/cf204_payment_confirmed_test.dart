@@ -102,7 +102,7 @@ void main() {
         baseCoins: cfTempMockRechargeConfirmed.baseCoins,
         bonusCoins: cfTempMockRechargeConfirmed.bonusCoins,
         checkoutId: 'chk-print',
-        packId: 'cf170-240',
+        packId: 'pack_240',
       ),
       routes: [
         GoRoute(

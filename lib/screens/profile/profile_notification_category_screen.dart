@@ -42,6 +42,11 @@ class _ProfileNotificationCategoryScreenState
     if (CfTempMocks.useNotificationCategoryPrintFixtures) {
       return true;
     }
+    // CF-208 — Interações (API real preferida; flag dedicada off).
+    if (widget.categoryId == 'interactions' &&
+        CfTempMocks.useInteractionsNotifPrintFixtures) {
+      return true;
+    }
     // CF-209 — Meet & Greet (não liga hub CF-166 / CF-211).
     if (widget.categoryId == 'meet' &&
         CfTempMocks.useMeetGreetNotifPrintFixtures) {
@@ -152,7 +157,7 @@ class _ProfileNotificationCategoryScreenState
         child: Column(
           children: [
             ProfileScreenHeader(
-              title: group?.title ?? 'Notificações',
+              title: group?.headerTitle ?? 'Notificações',
               onBack: () => context.pop(),
             ),
             Expanded(

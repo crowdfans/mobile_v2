@@ -2,7 +2,6 @@ import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_recharge_pack_tile.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
-import 'package:crowdfans/screens/profile/profile_wallet_recharge_screen.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,7 +79,7 @@ void main() {
       expect(style.shape!.resolve({}), isA<StadiumBorder>());
     });
 
-    test('catálogo TEMP do print (não Starter/Plus/Pro da API)', () {
+    test('catálogo print CF-169/170 (não Starter/Plus/Pro)', () {
       final packs = Cf170WalletPackMock.packs();
       expect(packs.map((p) => p.coins).toList(), [120, 240, 600, 1300, 2100, 2800]);
       expect(packs.map((p) => p.priceCents).toList(), [
@@ -91,22 +90,23 @@ void main() {
         14990,
         19999,
       ]);
+      expect(packs.map((p) => p.productId).toList(), [
+        'jam_120',
+        'jam_240',
+        'jam_600',
+        'jam_1300',
+        'jam_2100',
+        'jam_2800',
+      ]);
       expect(packs[1].label, '200 JC + 40 bônus');
       expect(packs.any((p) => p.label.contains('Starter')), isFalse);
       expect(packs.any((p) => p.label.contains('Plus')), isFalse);
       expect(packs.any((p) => p.label.contains('Pro')), isFalse);
     });
 
-    test('resolve ignora catálogo legado da API quando mock TEMP ligado', () {
-      const apiLegacy = [
-        JamCoinPack(
-          id: 'starter',
-          coins: 100,
-          priceCents: 990,
-          label: 'Starter 100',
-        ),
-      ];
-      final resolved = resolveWalletRechargePacks(apiLegacy);
+    test('resolve usa catálogo da API quando TEMP off (CF-270)', () {
+      final apiPrint = Cf170WalletPackMock.packs();
+      final resolved = resolveWalletRechargePacks(apiPrint);
       expect(resolved.map((p) => p.coins).toList(), [
         120,
         240,
@@ -115,6 +115,7 @@ void main() {
         2100,
         2800,
       ]);
+      expect(resolved.first.id, 'pack_120');
       expect(resolved.any((p) => p.id == 'starter'), isFalse);
     });
   });
@@ -218,26 +219,55 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('tela recarga: mock TEMP renderiza print e Próximo escuro', (
+    testWidgets('lista print da API: tiles + Próximo escuro (sem TEMP)', (
       tester,
     ) async {
+      final packs = Cf170WalletPackMock.packs();
       await tester.pumpWidget(
         MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
-          home: const ProfileWalletRechargeScreen(),
+          home: Scaffold(
+            body: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: [
+                      for (final pack in packs)
+                        WalletRechargePackTile(
+                          pack: pack,
+                          selected: pack.coins == 240,
+                          featured: pack.coins == 240,
+                          onPressed: () {},
+                        ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: FilledButton(
+                    onPressed: () {},
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppPalette.platinum900,
+                      foregroundColor: AppPalette.platinum50,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Text('Próximo'),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Recarregar Jam Coins'), findsOneWidget);
-      expect(find.text('Escolha a quantidade'), findsOneWidget);
       expect(find.text('Starter 100'), findsNothing);
       expect(find.text('Plus 500'), findsNothing);
       expect(find.text('Mais pedido'), findsOneWidget);
       expect(find.text('R\$ 49,90'), findsOneWidget);
       expect(find.text('2.100'), findsOneWidget);
 
-      // Último pacote do print fica abaixo da dobra — scroll no ListView.
       await tester.scrollUntilVisible(
         find.text('2.800'),
         80,
@@ -253,6 +283,7 @@ void main() {
         AppPalette.platinum900,
       );
       expect(button.style!.shape!.resolve({}), isA<StadiumBorder>());
+      expect(kUseCf170WalletPackMocks, isFalse);
     });
 
     test('fixtures off devolve catálogo da API sem sobrescrever', () {

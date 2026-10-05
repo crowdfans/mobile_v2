@@ -26,6 +26,7 @@ class NotificationPreferenceGroup {
     required this.items,
     this.navSubtitle,
     this.pageIntro,
+    this.pageTitle,
   });
 
   final String id;
@@ -35,6 +36,11 @@ class NotificationPreferenceGroup {
   final String? navSubtitle;
   /// Texto introdutório da subpágina (CF-208 / CF-209 / CF-211).
   final String? pageIntro;
+  /// Título do header na subpágina quando difere do hub (CF-208).
+  final String? pageTitle;
+
+  /// Título exibido no header da subpágina.
+  String get headerTitle => pageTitle ?? title;
 }
 
 /// Catálogo da tela de preferências (espelho do Expo + hub CF-166).
@@ -63,6 +69,8 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'interactions',
     title: 'Interações com você',
+    // Subpágina CF-208: print capitaliza "Você"; hub CF-166 mantém minúsculo.
+    pageTitle: 'Interações com Você',
     navSubtitle:
         'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
     pageIntro:

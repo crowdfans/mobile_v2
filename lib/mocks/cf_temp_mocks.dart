@@ -61,12 +61,9 @@ const bool kCf191MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 + home Explorar (CF-172/189/193): API lista existe,
-  /// mas tendência histórica / densidade do print ainda não bate. CF-172 usa
-  /// as 3 primeiras linhas em `SearchScreen`; CF-189 a lista Top 500; CF-193
-  /// reordena `engaged` por interações 7d. Off quando snapshot histórico
-  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
-  static const useRankingFixtures = true;
+  /// Ranking Top 100/500 + sheet (CF-172/189/193/241). Off: API CF-268
+  /// entrega `weeksInRanking`/`peakRank` via snapshots semanais.
+  static const useRankingFixtures = false;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
   /// **TEMP on** (CF-201): API existe, mas prod não devolve o ciclo + cards
@@ -134,6 +131,11 @@ abstract final class CfTempMocks {
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
 
+  /// CF-208 Interações com Você — **off**: API real
+  /// `GET/PUT /api/v1/notifications/preferences`. Fixture class ainda espelha
+  /// o print (5 switches off) para testes. Não liga hub CF-166 / CF-209/211/213.
+  static const useInteractionsNotifPrintFixtures = false;
+
   /// CF-209 Meet & Greet — switches do print (convites/lembretes on, resultado off).
   /// TEMP até preferências reais baterem o estado de referência do QA.
   /// Não liga hub CF-166 nem CF-211 (wallet).
@@ -151,8 +153,8 @@ abstract final class CfTempMocks {
 
   /// CF-185 perfil artista Feed — capa + CTA. Flag: [kUseCf185ArtistFeedMocks].
 
-  /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
-  static const useArtistSobreFixtures = true;
+  /// Sobre Spotify/base — off após [CF-269] (campos reais no profile).
+  static const useArtistSobreFixtures = false;
 
   /// Favoritos menu lateral CF-191. **TEMP** até follows/social reais.
   static const useFavoriteArtistsFixtures = true;
@@ -396,15 +398,9 @@ abstract final class CfTempMocks {
   }
 }
 
-/// Linhas de ranking equivalentes ao print CF-189 (image.png).
-/// Tendências: up / down / neutral — ícone + semantics, sem colorir neutro.
-///
-/// CF-241 (sheet ⋮): Ludmilla #1 leva `weeksInRanking: 11`, `peakRank: 1`,
-/// `previousRank: 2` — métricas do print; ausente na API real vira "—" no sheet.
-///
-/// CF-193 (Top 100 Engajados): quando `kind == engaged`, a lista é reordenada
-/// por interações (7d) e as posições refletem essa métrica — sem alterar o
-/// conjunto fan-clubs/Ativos usado por CF-189/241.
+/// Amostra de linhas de ranking (print CF-189/193/241) para testes e, se a
+/// flag [CfTempMocks.useRankingFixtures] estiver on, para UI TEMP.
+/// Com CF-268 a API popula `weeksInRanking`/`peakRank`; flag fica off.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
@@ -2508,9 +2504,8 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-169/170 packs (print recarga + pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
-/// Valores do print YouTrack (exemplos; comerciais ainda TBD).
-const bool kUseCf170WalletPackMocks = true;
+/// CF-169/170 packs — fixture de print (só testes). Catálogo live = API (CF-270).
+const bool kUseCf170WalletPackMocks = false;
 
 /// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
 /// **TEMP** até o gateway real emitir `pending` + `pixCopyPaste` (hoje o
@@ -2537,42 +2532,48 @@ abstract final class Cf171PixCheckoutMock {
   }
 }
 
-/// Pacotes demo CF-169 (lista de recarga) / CF-170 (pagamento; 240 = Mais pedido).
+/// Fixture print CF-169/170 (espelha `GET /api/v1/jam-coin-packs` pós CF-270).
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
       JamCoinPack(
-        id: 'cf169-120',
+        id: 'pack_120',
+        productId: 'jam_120',
         coins: 120,
         priceCents: 990,
         label: '120 JC',
       ),
       JamCoinPack(
-        id: 'cf170-240',
+        id: 'pack_240',
+        productId: 'jam_240',
         coins: 240,
         priceCents: 1990,
         label: '200 JC + 40 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-600',
+        id: 'pack_600',
+        productId: 'jam_600',
         coins: 600,
         priceCents: 4990,
         label: '500 JC + 100 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-1300',
+        id: 'pack_1300',
+        productId: 'jam_1300',
         coins: 1300,
         priceCents: 9990,
         label: '1.000 JC + 300 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-2100',
+        id: 'pack_2100',
+        productId: 'jam_2100',
         coins: 2100,
         priceCents: 14990,
         label: '1.600 JC + 500 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-2800',
+        id: 'pack_2800',
+        productId: 'jam_2800',
         coins: 2800,
         priceCents: 19999,
         label: '2.000 JC + 800 bônus',
@@ -2581,9 +2582,8 @@ abstract final class Cf170WalletPackMock {
   }
 }
 
-/// Resolve catálogo da tela de recarga (CF-169).
-/// Com TEMP ligado, o print prevalece sobre o catálogo legado da API
-/// (Starter/Plus/Pro) — valores comerciais ainda TBD ([CF-270]).
+/// Resolve catálogo da tela de recarga (CF-169/CF-270).
+/// TEMP off: usa o que a API devolve. Não sobrescreve mais Starter/Plus/Pro.
 List<JamCoinPack> resolveWalletRechargePacks(
   List<JamCoinPack> apiPacks, {
   bool? useTempMocks,
@@ -2595,8 +2595,7 @@ List<JamCoinPack> resolveWalletRechargePacks(
   return apiPacks;
 }
 
-/// CF-182 — Sobre do artista (Spotify + base do print Ludmilla).
-/// **TEMP** até [CF-269] expor location/track/listeners/genre/redes na API.
+/// CF-182 — amostra do print Ludmilla (só testes de widget; app usa API CF-269).
 abstract final class Cf182ArtistSobreMock {
   static const location = 'Rio de Janeiro, BR';
   static const trackTitle = 'Maldivas';

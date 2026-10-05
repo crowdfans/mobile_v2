@@ -32,6 +32,17 @@ class Profile {
     this.phone = '',
     this.phoneVerified = false,
     this.stats = const ProfileStats(),
+    this.location = '',
+    this.trackTitle = '',
+    this.playlistSubtitle = '',
+    this.monthlyListeners = '',
+    this.genre = '',
+    this.openSpotifyAlbum = '',
+    this.spotifyProfileUrl = '',
+    this.previewUrl = '',
+    this.previewReady = false,
+    this.instagramHandle = '',
+    this.youtubeHandle = '',
   });
 
   final String userUid;
@@ -46,6 +57,19 @@ class Profile {
   final bool phoneVerified;
   final ProfileStats stats;
 
+  /// CF-269 — aba Sobre (artista). Vazios em fã / sem cadastro.
+  final String location;
+  final String trackTitle;
+  final String playlistSubtitle;
+  final String monthlyListeners;
+  final String genre;
+  final String openSpotifyAlbum;
+  final String spotifyProfileUrl;
+  final String previewUrl;
+  final bool previewReady;
+  final String instagramHandle;
+  final String youtubeHandle;
+
   Profile copyWith({
     String? userUid,
     String? displayName,
@@ -56,6 +80,17 @@ class Profile {
     String? phone,
     bool? phoneVerified,
     ProfileStats? stats,
+    String? location,
+    String? trackTitle,
+    String? playlistSubtitle,
+    String? monthlyListeners,
+    String? genre,
+    String? openSpotifyAlbum,
+    String? spotifyProfileUrl,
+    String? previewUrl,
+    bool? previewReady,
+    String? instagramHandle,
+    String? youtubeHandle,
   }) {
     return Profile(
       userUid: userUid ?? this.userUid,
@@ -67,6 +102,17 @@ class Profile {
       phone: phone ?? this.phone,
       phoneVerified: phoneVerified ?? this.phoneVerified,
       stats: stats ?? this.stats,
+      location: location ?? this.location,
+      trackTitle: trackTitle ?? this.trackTitle,
+      playlistSubtitle: playlistSubtitle ?? this.playlistSubtitle,
+      monthlyListeners: monthlyListeners ?? this.monthlyListeners,
+      genre: genre ?? this.genre,
+      openSpotifyAlbum: openSpotifyAlbum ?? this.openSpotifyAlbum,
+      spotifyProfileUrl: spotifyProfileUrl ?? this.spotifyProfileUrl,
+      previewUrl: previewUrl ?? this.previewUrl,
+      previewReady: previewReady ?? this.previewReady,
+      instagramHandle: instagramHandle ?? this.instagramHandle,
+      youtubeHandle: youtubeHandle ?? this.youtubeHandle,
     );
   }
 
@@ -81,6 +127,17 @@ class Profile {
       phone: json['phone'] as String? ?? '',
       phoneVerified: json['phoneVerified'] == true,
       stats: ProfileStats.fromJson(json['stats'] as Map<String, dynamic>?),
+      location: json['location'] as String? ?? '',
+      trackTitle: json['trackTitle'] as String? ?? '',
+      playlistSubtitle: json['playlistSubtitle'] as String? ?? '',
+      monthlyListeners: json['monthlyListeners'] as String? ?? '',
+      genre: json['genre'] as String? ?? '',
+      openSpotifyAlbum: json['openSpotifyAlbum'] as String? ?? '',
+      spotifyProfileUrl: json['spotifyProfileUrl'] as String? ?? '',
+      previewUrl: json['previewUrl'] as String? ?? '',
+      previewReady: json['previewReady'] == true,
+      instagramHandle: json['instagramHandle'] as String? ?? '',
+      youtubeHandle: json['youtubeHandle'] as String? ?? '',
     );
   }
 }

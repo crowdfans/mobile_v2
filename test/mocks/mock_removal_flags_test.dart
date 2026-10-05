@@ -10,11 +10,11 @@ void main() {
     expect(kUseCf216ConnectedDevicesMocks, isFalse); // CF-266 /me/sessions
     expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
-    expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
-    expect(kUseCf170WalletPackMocks, isTrue); // CF-270
+    expect(CfTempMocks.useArtistSobreFixtures, isFalse); // CF-269
+    expect(kUseCf170WalletPackMocks, isFalse); // CF-270 democked
     expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
-    expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
+    expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(
@@ -40,6 +40,7 @@ void main() {
     expect(kUseCf198HelpMocks, isTrue); // CF-198 Central de ajuda
     expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
+    expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse); // CF-208 API
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
