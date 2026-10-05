@@ -9,6 +9,7 @@ import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
+import 'package:crowdfans/utils/jam_coin_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -77,11 +78,19 @@ class _ProfileWalletPaymentScreenState
     if (!mounted || coins <= 0) {
       return;
     }
+    // Breakdown do print (ex.: 200 JC + 40 bônus) só se bater com o total creditado.
+    final parsed = parseJamCoinBonusLabel(widget.label);
+    final base = parsed?.baseCoins;
+    final bonus = parsed?.bonusCoins;
+    final breakdownMatches =
+        base != null && bonus != null && base + bonus == coins;
     context.go(
       Pages.profileWalletPaymentConfirmedOf(
         coins: coins,
         checkoutId: checkoutId,
         packId: packId ?? widget.packId,
+        baseCoins: breakdownMatches ? base : null,
+        bonusCoins: breakdownMatches ? bonus : null,
       ),
     );
   }

@@ -48,22 +48,30 @@ class WalletPaymentConfirmedPurchaseCard extends StatelessWidget {
           child: Row(
             children: [
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      color: AppPalette.purple50,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppPalette.purple50,
+                          Color(0xFFEDE9FE),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Image.asset(
                         'assets/images/jam-coin.png',
-                        width: 36,
-                        height: 36,
+                        width: 40,
+                        height: 40,
                         excludeFromSemantics: true,
                         errorBuilder: (_, _, _) => const Icon(
                           Icons.monetization_on,
-                          size: 36,
+                          size: 40,
                           color: Color(0xFFF5C451),
                         ),
                       ),
