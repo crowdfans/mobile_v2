@@ -6,16 +6,29 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/user_session_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Dispositivos conectados (CF-216).
 ///
 /// Print YouTrack: contagem, aparelhos, badge "Este dispositivo", tip e CTA
-/// global. Dados ricos do print via TEMP [kUseCf216ConnectedDevicesMocks];
-/// API real [CF-266] `/me/sessions` quando o mock estiver off.
+/// global. Produção: API [CF-266] `/me/sessions` via [UserSessionService].
+/// Fixtures TEMP só se [kUseCf216ConnectedDevicesMocks] estiver on.
 class ProfileConnectedDevicesScreen extends StatefulWidget {
-  const ProfileConnectedDevicesScreen({super.key});
+  const ProfileConnectedDevicesScreen({
+    super.key,
+    @visibleForTesting this.sessionsForTest,
+    @visibleForTesting this.loadErrorForTest,
+  });
+
+  /// Injeta sessões nos testes (green/red/edge) sem HTTP.
+  @visibleForTesting
+  final List<ConnectedDeviceSession>? sessionsForTest;
+
+  /// Simula falha de carga nos testes.
+  @visibleForTesting
+  final String? loadErrorForTest;
 
   @override
   State<ProfileConnectedDevicesScreen> createState() =>
@@ -27,6 +40,7 @@ class _ProfileConnectedDevicesScreenState
   var _sessions = <ConnectedDeviceSession>[];
   var _loading = true;
   var _busy = false;
+  var _localOnly = false;
   String? _error;
 
   bool get _usePrintFixtures =>
@@ -43,11 +57,26 @@ class _ProfileConnectedDevicesScreenState
       _loading = true;
       _error = null;
     });
+    if (widget.sessionsForTest != null || widget.loadErrorForTest != null) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _localOnly = true;
+        _sessions = List<ConnectedDeviceSession>.of(
+          widget.sessionsForTest ?? const [],
+        );
+        _error = widget.loadErrorForTest;
+        _loading = false;
+      });
+      return;
+    }
     if (_usePrintFixtures) {
       if (!mounted) {
         return;
       }
       setState(() {
+        _localOnly = true;
         _sessions = Cf216ConnectedDevicesFixtures.sessions();
         _loading = false;
       });
@@ -60,6 +89,7 @@ class _ProfileConnectedDevicesScreenState
         return;
       }
       setState(() {
+        _localOnly = false;
         _sessions = sessions;
         _loading = false;
       });
@@ -84,8 +114,7 @@ class _ProfileConnectedDevicesScreenState
     if (!ok) {
       return;
     }
-    if (_usePrintFixtures) {
-      // TEMP: falha não se aplica — mantém lista local do print.
+    if (_localOnly) {
       setState(() {
         _sessions = [
           for (final item in _sessions)
@@ -124,7 +153,7 @@ class _ProfileConnectedDevicesScreenState
     if (!ok) {
       return;
     }
-    if (_usePrintFixtures) {
+    if (_localOnly) {
       setState(() {
         _sessions = [
           for (final item in _sessions)

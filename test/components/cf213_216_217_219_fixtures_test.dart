@@ -19,8 +19,8 @@ void main() {
     expect(Cf213NotificationPrefFixtures.artistSubtitles.length, 3);
   });
 
-  test('CF-216 fixtures: três sessões do print', () {
-    expect(kUseCf216ConnectedDevicesMocks, isTrue);
+  test('CF-216 fixtures: três sessões do print (helpers; flag off)', () {
+    expect(kUseCf216ConnectedDevicesMocks, isFalse);
     final sessions = Cf216ConnectedDevicesFixtures.sessions();
     expect(sessions.length, 3);
     expect(sessions.first.name, 'iPhone 15 Pro');
@@ -33,8 +33,8 @@ void main() {
     expect(sessions[2].location, 'Campinas, Brasil');
   });
 
-  test('CF-217/219 fixtures: telefone e bio do print', () {
-    expect(Cf217ChangePhoneMock.currentPhoneLabel, '(11) 98765-4321');
+  test('CF-219 fixtures: bio do print', () {
+    // CF-217 demock: telefone vem de GET /profile + Firebase (sem Cf217ChangePhoneMock).
     expect(Cf219EditBioMock.bio.length, 56);
   });
 }
