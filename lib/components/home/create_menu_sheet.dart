@@ -45,6 +45,12 @@ class CreateMenuSheet extends ConsumerWidget {
     context.push(Pages.fanLetterGallery);
   }
 
+  /// CF-130 Patrol: `nav-create` → `create-menu-my-posts`.
+  void handleMyPosts(BuildContext context) {
+    onClose();
+    context.push(Pages.myPosts);
+  }
+
   void handleLive(BuildContext context) {
     onClose();
     context.push(Pages.liveUnavailable);
@@ -112,6 +118,13 @@ class CreateMenuSheet extends ConsumerWidget {
                               onPressed: () => handleFanClubPost(context),
                               showDivider: true,
                             ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-my-posts'),
+                              asset: 'assets/icons/Layout/list.svg',
+                              label: 'Meus posts',
+                              onPressed: () => handleMyPosts(context),
+                              showDivider: true,
+                            ),
                           ]
                         : [
                             CreateMenuItemButton(
@@ -126,6 +139,13 @@ class CreateMenuSheet extends ConsumerWidget {
                                   'assets/icons/Communication/message-heart-circle.svg',
                               label: 'Post Fã Clube',
                               onPressed: () => handleFanClubPost(context),
+                              showDivider: true,
+                            ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-my-posts'),
+                              asset: 'assets/icons/Layout/list.svg',
+                              label: 'Meus posts',
+                              onPressed: () => handleMyPosts(context),
                               showDivider: true,
                             ),
                           ],

@@ -79,8 +79,8 @@ Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
 | Ticket | Arquivo | Credenciais |
 |---|---|---|
 | CF-128 | `e2e_artist_post_fan_comment_test.dart` | artista + fã |
-| CF-129 | `e2e_superfan_vote_club_logout_test.dart` + `test/components/cf129_superfan_vote_club_logout_test.dart` | fã (+ `E2E_ARTIST_UID` recomendado); green/red/edge |
-| CF-130 | `e2e_artist_edit_delete_post_test.dart` | artista |
+| CF-129 | `e2e_superfan_vote_club_logout_test.dart` | fã (+ `E2E_ARTIST_UID` recomendado) |
+| CF-130 | `e2e_artist_edit_delete_post_test.dart` | artista | green: editar+apagar via `create-menu-my-posts`; red: login inválido / cancelar delete; edge: texto 280 |
 
 Helpers: `integration_test/helpers/e2e_env.dart`, `e2e_auth.dart`.
 
