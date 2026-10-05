@@ -13,6 +13,7 @@
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
+// CF-176: menu ⋯ do post (home) — ícones/rótulos/destaques do print.
 // CF-185: perfil artista Feed — capa + CTA Seguir/Membership♪/Membership✓.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
@@ -95,7 +96,7 @@ abstract final class CfTempMocks {
   /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share).
+  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share + CF-176 menu ⋯).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
@@ -1715,10 +1716,34 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
-/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175).
+/// CF-176 — menu ⋯ do post (home). TEMP até o feed real expor post com artista
+/// para abrir `PostOptionsSheet` igual ao print (atalhos + share + lista + Reportar).
+const bool kUseCf176PostOptionsMocks = true;
+
+/// Post dedicado do print CF-176 (Carol) — abre o menu de gerenciamento via ⋯.
+FeedPost cfTempMockCf176MenuPost() {
+  return const FeedPost(
+    id: 'cf176-menu-post',
+    type: PostType.text,
+    author: 'Carol Biazin',
+    artistId: 'mock-fc-carol',
+    handle: '@carolbiazin',
+    rank: '#12',
+    minutesAgo: 22,
+    avatarUri: '',
+    text:
+        'Obrigada por cada mensagem depois do último post. Vocês deixam tudo mais leve aqui.',
+    votes: 98,
+    comments: 12,
+    shares: 4,
+  );
+}
+
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175 / 176).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
 /// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
+/// CF-176: Carol texto — tap ⋯ → `PostOptionsSheet` (gestão, não share).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return [
@@ -1758,6 +1783,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       exclusiveLocked: true,
     ),
     cfTempMockCf236SharePost(),
+    if (kUseCfTempMocks && kUseCf176PostOptionsMocks) cfTempMockCf176MenuPost(),
     const FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,

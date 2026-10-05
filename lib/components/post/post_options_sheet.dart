@@ -264,6 +264,9 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
               PostOptionsShareAction(
                 label: 'Copiar Link',
                 icon: Icons.link,
+                // Print CF-176: ícone + rótulo roxos (destaque do atalho).
+                iconColor: AppPalette.purple500,
+                labelColor: AppPalette.purple500,
                 onPressed: () {
                   handleCopy(context);
                 },
