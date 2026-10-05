@@ -107,7 +107,7 @@ abstract final class CfTempMocks {
 
   /// Home feed — **off**: `GET /api/v1/home` real (seed/prod não-vazio).
   /// Helpers `cfTempMockHomeFeedPosts` ficam para testes print CF-175/232…236.
-  /// CF-176 menu ⋯ ainda usa [kUseCf176PostOptionsMocks] nos testes.
+  /// CF-176 demock: [kUseCf176PostOptionsMocks] off; helper só testes.
   static const useHomeFeedFixtures = false;
 
   /// Busca artistas (CF-240) — **off**: `GET /api/v1/search/artists`.
@@ -1908,11 +1908,11 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
-/// CF-176 — menu ⋯ do post (home). TEMP até o feed real expor post com artista
-/// para abrir `PostOptionsSheet` igual ao print (atalhos + share + lista + Reportar).
-const bool kUseCf176PostOptionsMocks = true;
+/// CF-176 — menu ⋯ do post (home). Democked: feed real (`GET /home`) +
+/// `PostOptionsSheet` igual ao print. Helper [cfTempMockCf176MenuPost] só testes.
+const bool kUseCf176PostOptionsMocks = false;
 
-/// Post dedicado do print CF-176 (Carol) — abre o menu de gerenciamento via ⋯.
+/// Post dedicado do print CF-176 (Carol) — sample de testes green/print.
 FeedPost cfTempMockCf176MenuPost() {
   return const FeedPost(
     id: 'cf176-menu-post',
@@ -1935,7 +1935,7 @@ FeedPost cfTempMockCf176MenuPost() {
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
 /// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
-/// CF-176: Carol texto — tap ⋯ → `PostOptionsSheet` (gestão, não share).
+/// CF-176 demock: Carol não é injetada no feed helper (flag off).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return [

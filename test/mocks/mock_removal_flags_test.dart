@@ -33,7 +33,7 @@ void main() {
     expect(kUseCf230WarningFixtures, isFalse); // CF-230 demock
     expect(CfTempMocks.useModerationPanelFixtures, isFalse); // CF-199 demock
     expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
-    expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
+    expect(kUseCf176PostOptionsMocks, isFalse); // CF-176 demock menu ⋯
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse); // CF-240 demock
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse); // CF-184/239 demock

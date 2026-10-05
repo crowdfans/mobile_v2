@@ -37,15 +37,21 @@ Future<void> _pumpOptions(
 }
 
 void main() {
-  group('CF-176 green — print menu home ⋯', () {
-    test('fixture TEMP: post do menu no home feed', () {
-      expect(kUseCf176PostOptionsMocks, isTrue);
+  group('CF-176 demock — green', () {
+    test('flag off; helper print permanece p/ testes', () {
+      expect(kUseCfTempMocks, isTrue);
+      expect(kUseCf176PostOptionsMocks, isFalse);
+      expect(CfTempMocks.useHomeFeedFixtures, isFalse);
+
       final post = cfTempMockCf176MenuPost();
       expect(post.id, 'cf176-menu-post');
-      expect(post.author, isNotEmpty);
+      expect(post.author, 'Carol Biazin');
       expect(post.artistId, isNotEmpty);
+      expect(post.handle, '@carolbiazin');
+
+      // Demock: Carol não é injetada no feed helper TEMP.
       final feed = cfTempMockHomeFeedPosts();
-      expect(feed.any((p) => p.id == 'cf176-menu-post'), isTrue);
+      expect(feed.any((p) => p.id == 'cf176-menu-post'), isFalse);
     });
 
     testWidgets('rótulos completos, atalhos, share tiles e Reportar', (
@@ -92,9 +98,34 @@ void main() {
       expect(share.iconColor, AppPalette.purple500);
       expect(share.labelColor, AppPalette.purple500);
     });
+
+    testWidgets('post real (sem id mock) abre o mesmo chrome do print', (
+      tester,
+    ) async {
+      const realPost = FeedPost(
+        id: 'api-post-42',
+        type: PostType.text,
+        author: 'Mayra',
+        artistId: 'artist-mayra',
+        handle: '@mayra',
+        minutesAgo: 5,
+        avatarUri: '',
+        text: 'Post real do feed',
+        votes: 10,
+        comments: 2,
+        shares: 1,
+      );
+      await _pumpOptions(tester, post: realPost);
+
+      expect(find.byKey(const Key('post-options-sheet')), findsOneWidget);
+      expect(find.text('Ver Fã Clube do Artista'), findsOneWidget);
+      expect(find.text('Salvar Post nas Memórias'), findsOneWidget);
+      expect(find.text('Copiar Link'), findsOneWidget);
+      expect(find.text('Reportar'), findsOneWidget);
+    });
   });
 
-  group('CF-176 red — rótulos curtos / menus irmãos', () {
+  group('CF-176 demock — red', () {
     testWidgets('sem rótulos encurtados do app antigo', (tester) async {
       await _pumpOptions(tester, post: cfTempMockCf176MenuPost());
 
@@ -118,9 +149,17 @@ void main() {
       expect(find.byKey(const Key('post-share-sheet')), findsNothing);
       expect(find.byIcon(Icons.ios_share), findsNothing);
     });
+
+    test('flag off não deixa helper vazio/quebrado', () {
+      expect(kUseCf176PostOptionsMocks, isFalse);
+      final post = cfTempMockCf176MenuPost();
+      expect(post.id, isNotEmpty);
+      expect(post.artistId, isNotEmpty);
+      expect(post.author, isNotEmpty);
+    });
   });
 
-  group('CF-176 edge — vazio / cancelar / sem artista', () {
+  group('CF-176 demock — edge', () {
     testWidgets('post null ainda monta chrome sem crash', (tester) async {
       await _pumpOptions(tester, post: null);
       expect(find.byKey(const Key('post-options-sheet')), findsOneWidget);
@@ -135,7 +174,6 @@ void main() {
         post: cfTempMockCf176MenuPost(),
         onClose: () => closed = true,
       );
-      // Backdrop close is wired via shell; call onClose diretamente.
       final sheet = tester.widget<PostOptionsSheet>(
         find.byType(PostOptionsSheet),
       );
@@ -143,11 +181,25 @@ void main() {
       expect(closed, isTrue);
     });
 
-    test('fixture flag documentada no mock_removal', () {
-      expect(kUseCfTempMocks, isTrue);
-      expect(kUseCf176PostOptionsMocks, isTrue);
-      // Home democked; menu ⋯ print ainda via kUseCf176PostOptionsMocks.
-      expect(CfTempMocks.useHomeFeedFixtures, isFalse);
+    testWidgets('post sem artistId ainda mostra lista + Reportar', (
+      tester,
+    ) async {
+      const orphan = FeedPost(
+        id: 'orphan-1',
+        type: PostType.text,
+        author: 'Sem artista',
+        handle: '@orphan',
+        minutesAgo: 1,
+        avatarUri: '',
+        text: 'sem artistId',
+        votes: 0,
+        comments: 0,
+        shares: 0,
+      );
+      await _pumpOptions(tester, post: orphan);
+      expect(find.text('Deixar de seguir'), findsOneWidget);
+      expect(find.text('Favoritar Artista'), findsOneWidget);
+      expect(find.text('Reportar'), findsOneWidget);
     });
   });
 }
