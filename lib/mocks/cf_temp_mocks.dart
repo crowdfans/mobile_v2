@@ -109,10 +109,10 @@ abstract final class CfTempMocks {
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
-  /// Busca artistas “L” (CF-240) — **TEMP on** até
-  /// `GET /api/v1/search/artists` devolver Ludmilla…Carol Biazin.
-  /// Não altera blocos/cards do ranking (CF-172).
-  static const useSearchArtistsFixtures = true;
+  /// Busca artistas (CF-240) — **off**: `GET /api/v1/search/artists`.
+  /// Helpers [_cf240SearchArtistsPrint] / [cfTempMockSearchArtists] ficam
+  /// só para testes de print. Não altera ranking (CF-172).
+  static const useSearchArtistsFixtures = false;
 
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
@@ -161,8 +161,10 @@ abstract final class CfTempMocks {
   /// Sobre Spotify/base — off após [CF-269] (campos reais no profile).
   static const useArtistSobreFixtures = false;
 
-  /// Favoritos menu lateral CF-191. **TEMP** até follows/social reais.
-  static const useFavoriteArtistsFixtures = true;
+  /// Favoritos menu lateral CF-191 — **off**: favorites locais
+  /// ([SidebarArtistsStore]) + “Seus Artistas” via follows (`GET /api/v1/follows`)
+  /// / home. Helpers de print ficam para testes.
+  static const useFavoriteArtistsFixtures = false;
 
   /// CF-191 — artistas do print (Favoritos + Seus Artistas).
   static List<HomeFollowedArtist> sidebarFollowedArtists({
