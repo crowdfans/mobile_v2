@@ -1,6 +1,6 @@
 import 'package:crowdfans/components/profile/security_change_phone_card.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
+import 'package:crowdfans/models/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,7 +21,19 @@ void main() {
     expect(tapped, isTrue);
   });
 
-  test('CF-217 fixture telefone do print', () {
-    expect(Cf217ChangePhoneMock.currentPhoneLabel, '(11) 98765-4321');
+  // CF-217 demock: telefone atual vem da API/Firebase, não de Cf217ChangePhoneMock.
+  test('CF-217/CF-271 telefone atual via Profile API', () {
+    final profile = Profile.fromJson({
+      'userUid': 'u1',
+      'displayName': 'Fan',
+      'name': 'fan',
+      'description': '',
+      'photoUrl': '',
+      'isArtist': false,
+      'phone': '+5511987654321',
+      'phoneVerified': true,
+    });
+    expect(profile.phone, '+5511987654321');
+    expect(profile.phoneVerified, isTrue);
   });
 }

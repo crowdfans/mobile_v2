@@ -32,6 +32,12 @@ PostType resolveCreatePostType({required bool hasMedia}) {
   return hasMedia ? PostType.image : PostType.text;
 }
 
+/// Publicar só com texto e/ou mídia, até 280 caracteres (CF-128).
+bool canPublishCreatePost({required String text, required bool hasMedia}) {
+  final trimmed = text.trim();
+  return (trimmed.isNotEmpty || hasMedia) && text.length <= 280;
+}
+
 class _CreatePostScreenState extends State<CreatePostScreen> {
   var _text = '';
   String? _selectedImageUri;
@@ -51,7 +57,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       _selectedImageUri != null && _selectedImageUri!.isNotEmpty;
 
   bool get _canPublish =>
-      (_text.trim().isNotEmpty || _hasMedia) && _text.length <= 280;
+      canPublishCreatePost(text: _text, hasMedia: _hasMedia);
 
   @override
   void initState() {

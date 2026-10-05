@@ -11,7 +11,8 @@
 // CF-171: checkout PIX pendente (etapas 01/02/03 + código).
 // CF-181: grade Cartas no perfil do artista.
 // CF-187: Meu Perfil preenchido (seletor + stats/bio/posts do print).
-// CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
+// CF-213/216/219: notif artistas, dispositivos, bio.
+// CF-217 telefone: demock (API CF-271 PUT /profile + Firebase).
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
 // CF-176: menu ⋯ do post (home) — ícones/rótulos/destaques do print.
@@ -98,7 +99,7 @@ abstract final class CfTempMocks {
 
   /// Segurança genérica. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.
-  /// Print CF-216 usa [kUseCf216ConnectedDevicesMocks].
+  /// CF-216 print fixtures: [kUseCf216ConnectedDevicesMocks] (off = API).
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
@@ -138,6 +139,11 @@ abstract final class CfTempMocks {
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
 
+  /// CF-208 Interações com Você — **off**: API real
+  /// `GET/PUT /api/v1/notifications/preferences`. Fixture class ainda espelha
+  /// o print (5 switches off) para testes. Não liga hub CF-166 / CF-209/211/213.
+  static const useInteractionsNotifPrintFixtures = false;
+
   /// CF-209 Meet & Greet — switches do print (convites/lembretes on, resultado off).
   /// TEMP até preferências reais baterem o estado de referência do QA.
   /// Não liga hub CF-166 nem CF-211 (wallet).
@@ -155,8 +161,8 @@ abstract final class CfTempMocks {
 
   /// CF-185 perfil artista Feed — capa + CTA. Flag: [kUseCf185ArtistFeedMocks].
 
-  /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
-  static const useArtistSobreFixtures = true;
+  /// Sobre Spotify/base — off após [CF-269] (campos reais no profile).
+  static const useArtistSobreFixtures = false;
 
   /// Favoritos menu lateral CF-191. **TEMP** até follows/social reais.
   static const useFavoriteArtistsFixtures = true;
@@ -1379,9 +1385,9 @@ abstract final class Cf187MeProfileFixtures {
   }
 }
 
-/// CF-216 — print YouTrack (3 aparelhos + locais). API CF-266 ainda sem
-/// nome/local ricos do print → TEMP até paridade de dados.
-const bool kUseCf216ConnectedDevicesMocks = true;
+/// CF-216 — fixtures do print (3 aparelhos). **Off:** API CF-266
+/// `GET/POST/DELETE /api/v1/me/sessions` (FE: [UserSessionService]).
+const bool kUseCf216ConnectedDevicesMocks = false;
 
 /// CF-216 — três sessões do print.
 extension Cf216ConnectedDevicesFixtures on CfTempMocks {
@@ -1416,11 +1422,6 @@ extension Cf216ConnectedDevicesFixtures on CfTempMocks {
       ),
     ];
   }
-}
-
-/// CF-217 — telefone atual do print.
-abstract final class Cf217ChangePhoneMock {
-  static const currentPhoneLabel = '(11) 98765-4321';
 }
 
 /// CF-219 — bio do print (contador 56).
@@ -2604,8 +2605,7 @@ List<JamCoinPack> resolveWalletRechargePacks(
   return apiPacks;
 }
 
-/// CF-182 — Sobre do artista (Spotify + base do print Ludmilla).
-/// **TEMP** até [CF-269] expor location/track/listeners/genre/redes na API.
+/// CF-182 — amostra do print Ludmilla (só testes de widget; app usa API CF-269).
 abstract final class Cf182ArtistSobreMock {
   static const location = 'Rio de Janeiro, BR';
   static const trackTitle = 'Maldivas';

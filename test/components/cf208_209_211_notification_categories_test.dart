@@ -7,6 +7,7 @@ void main() {
   test('CF-208 interações: intro + 5 rótulos do print', () {
     final group = notificationGroupById('interactions')!;
     expect(group.pageIntro, contains('interações pessoais'));
+    expect(group.headerTitle, 'Interações com Você');
     expect(group.items.length, 5);
     expect(group.items.map((item) => item.title).toList(), [
       'Artista curtiu seu comentário',
