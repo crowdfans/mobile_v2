@@ -47,9 +47,9 @@ void main() {
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
-    expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
-    expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
-    expect(kUseCf196CommentMocks, isTrue); // CF-196 reply+teclado
+    expect(kUseCf194CommentMocks, isFalse); // CF-194 demock — comments API
+    expect(kUseCf195CommentMocks, isFalse); // CF-195 demock — Home comments API
+    expect(kUseCf196CommentMocks, isFalse); // CF-196 demock — reply+teclado real
     expect(kUseCf197GifMocks, isTrue); // CF-197 seletor GIF TEMP
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada

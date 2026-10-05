@@ -1000,9 +1000,9 @@ FanScoreData cfTempMockFanScoreData() {
 }
 
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
-/// **TEMP on** até `GET /api/v1/posts/:postId/comments` devolver threads
-/// equivalentes aos prints (Fê + Nina, Ver/Ocultar respostas).
-const bool kUseCf194CommentMocks = true;
+/// **Off:** `GET /api/v1/posts/:postId/comments` (replies aninhadas) — fixtures
+/// ficam só para testes de print.
+const bool kUseCf194CommentMocks = false;
 
 /// Dados do print CF-194 (recolhido = image1 / expandido = image.png).
 abstract final class Cf194FanClubCommentsMock {
@@ -1424,8 +1424,8 @@ abstract final class Cf219EditBioMock {
 }
 
 /// Liga dados de demo do CF-195 (Home sem comentários → print populado).
-/// TEMP até a API Home povoar o mesmo estado do print.
-const bool kUseCf195CommentMocks = true;
+/// **Off:** comments API real; fixtures só para testes de print.
+const bool kUseCf195CommentMocks = false;
 
 /// Liga fixtures do seletor de GIF (CF-197) — evita Tenor/API key em QA.
 /// Desligar quando `TENOR_API_KEY` de prod estiver estável no app.
@@ -1608,10 +1608,10 @@ abstract final class Cf195HomeCommentsMock {
   }
 }
 
-/// Liga demo CF-196 (resposta + teclado). **TEMP on** até comments API +
-/// compositor nativo cobrirem banner/prefill/insets do print sem fixtures.
+/// Liga demo CF-196 (resposta + teclado). **Off:** compositor nativo cobre
+/// banner/prefill/insets; helpers ficam para testes green/red/edge.
 /// Não altera listas CF-194/195 — só metadados do compositor de resposta.
-const bool kUseCf196CommentMocks = true;
+const bool kUseCf196CommentMocks = false;
 
 /// Print CF-196: Respondendo a Rafa + `fan/rafanogueira` + teclado.
 abstract final class Cf196CommentReplyMock {
