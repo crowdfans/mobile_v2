@@ -46,7 +46,7 @@ void main() {
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock
-    expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
+    expect(kUseCf185ArtistFeedMocks, isFalse); // CF-185 demock capa/CTA Feed
     expect(kUseCf194CommentMocks, isFalse); // CF-194 demock — comments API
     expect(kUseCf195CommentMocks, isFalse); // CF-195 demock — Home comments API
     expect(kUseCf196CommentMocks, isFalse); // CF-196 demock — reply+teclado real
