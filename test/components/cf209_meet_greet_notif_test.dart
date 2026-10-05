@@ -142,8 +142,8 @@ void main() {
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse);
     expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse);
-    expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue);
-    expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
+    expect(CfTempMocks.useMembershipNotifPrintFixtures, isFalse); // CF-211 demock
+    expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse); // CF-213 demock
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
   });
 

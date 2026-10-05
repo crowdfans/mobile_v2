@@ -148,9 +148,11 @@ abstract final class CfTempMocks {
   /// Não liga hub CF-166 nem CF-211 (wallet).
   static const useMeetGreetNotifPrintFixtures = false;
 
-  /// CF-211 Membership e Jam Coins — switches do print (renovação/saldo on, promo off).
-  /// TEMP até preferências reais baterem o estado de referência do QA.
-  static const useMembershipNotifPrintFixtures = true;
+  /// CF-211 Membership e Jam Coins — **off**: API real
+  /// `GET/PUT /api/v1/notifications/preferences`. Fixture class ainda espelha
+  /// o print (renovação/saldo on, promo off) para testes. Não liga hub CF-166
+  /// nem CF-208/209/213.
+  static const useMembershipNotifPrintFixtures = false;
 
   /// Hub Seu Perfil — `GET /api/v1/profile`.
   static const useProfileAccountFixtures = false;
