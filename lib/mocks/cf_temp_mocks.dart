@@ -75,8 +75,9 @@ abstract final class CfTempMocks {
   /// TEMP ligado p/ CF-222 print (Enzo / Aline carousel); API real sem dados do print.
   static const useFanClubFixtures = true;
 
-  /// Home feed — `GET /api/v1/home`.
-  /// TEMP: on para CF-234 (lightbox 1/3 via carrossel) + CF-232/235 prints.
+  /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
+  /// CF-232/233 no mesmo fixture). Off quando `GET /api/v1/home` devolver
+  /// posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
   /// Busca artistas — `GET /api/v1/search/artists`.
@@ -1246,9 +1247,30 @@ List<String> cfTempMockCf234LightboxUris() {
 }
 
 /// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return const [
+    FeedPost(
+      id: 'cf235-mayra-exclusive',
+      type: PostType.video,
+      author: 'Mayra',
+      artistId: 'mock-fc-mayra',
+      handle: '@mayra',
+      rank: '#3',
+      minutesAgo: 60,
+      avatarUri: '',
+      text:
+          'Versão acústica gravada no camarim. Agora finalmente posso subir isso aqui.',
+      votes: 201,
+      comments: 21,
+      shares: 11,
+      isExclusive: true,
+      exclusiveLocked: false,
+      videoDuration: '00:00',
+      videoUri: '',
+      videoThumbnailUri: '',
+    ),
     FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
@@ -1284,26 +1306,6 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       // Beach-first = print CF-233; cervo fica no meio — CF-234 usa
       // [cfTempMockCf234LightboxUris] (deer-first) no widget test.
       carouselUris: [_cfCarouselBeach, _cfCarouselDeer, _cfCarouselCity],
-    ),
-    FeedPost(
-      id: 'cf235-mayra-exclusive',
-      type: PostType.video,
-      author: 'Mayra',
-      artistId: 'mock-fc-mayra',
-      handle: '@mayra',
-      rank: '#3',
-      minutesAgo: 60,
-      avatarUri: '',
-      text:
-          'Versão acústica gravada no camarim. Agora finalmente posso subir isso aqui.',
-      votes: 201,
-      comments: 21,
-      shares: 11,
-      isExclusive: true,
-      exclusiveLocked: false,
-      videoDuration: '00:00',
-      videoUri: '',
-      videoThumbnailUri: '',
     ),
     FeedPost(
       id: 'cf232-carol-text',
