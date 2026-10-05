@@ -22,7 +22,7 @@ void main() {
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isFalse);
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
-    expect(CfTempMocks.useModerationPanelFixtures, isFalse);
+    expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);

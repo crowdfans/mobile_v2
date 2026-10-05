@@ -233,11 +233,29 @@ class _FanClubModerationScreenState extends State<FanClubModerationScreen> {
     }
   }
 
+  bool get _usingCf199Fixtures =>
+      kUseCfTempMocks && CfTempMocks.useModerationPanelFixtures;
+
+  /// Aceitar/Recusar em fixture TEMP: atualiza contadores localmente (sem API).
+  void applyLocalAppealDecision(FanClubAppeal appeal) {
+    setState(() {
+      _appeals = [
+        for (final item in _appeals)
+          if (item.appealId != appeal.appealId) item,
+      ];
+      _actingAppealId = null;
+    });
+  }
+
   Future<void> handleApproveAppeal(FanClubAppeal appeal) async {
     if (_actingAppealId != null) {
       return;
     }
     setState(() => _actingAppealId = appeal.appealId);
+    if (_usingCf199Fixtures && appeal.appealId.startsWith('cf199-')) {
+      applyLocalAppealDecision(appeal);
+      return;
+    }
     try {
       await FanClubService.approveFanClubAppeal(
         widget.artistId,
@@ -264,6 +282,10 @@ class _FanClubModerationScreenState extends State<FanClubModerationScreen> {
       return;
     }
     setState(() => _actingAppealId = appeal.appealId);
+    if (_usingCf199Fixtures && appeal.appealId.startsWith('cf199-')) {
+      applyLocalAppealDecision(appeal);
+      return;
+    }
     try {
       await FanClubService.rejectFanClubAppeal(
         widget.artistId,
