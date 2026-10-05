@@ -5,7 +5,7 @@
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
-// CF-197: seletor de GIF (featured / busca / vazio; erro sem API key).
+// CF-197: seletor de GIF (Tenor real; fixtures só testes; erro sem API key).
 // CF-198: Central de ajuda — demock (HelpContent oficial; flags off).
 // CF-178: feed Postagens dos Fã Clubes.
 // CF-171: checkout PIX pendente (etapas 01/02/03 + código).
@@ -1418,9 +1418,10 @@ abstract final class Cf219EditBioMock {
 /// **Off:** comments API real; fixtures só para testes de print.
 const bool kUseCf195CommentMocks = false;
 
-/// Liga fixtures do seletor de GIF (CF-197) — evita Tenor/API key em QA.
-/// Desligar quando `TENOR_API_KEY` de prod estiver estável no app.
-const bool kUseCf197GifMocks = true;
+/// Liga fixtures do seletor de GIF (CF-197) — só para testes de print.
+/// **Off:** Tenor real quando `TENOR_API_KEY` presente; sem chave / falha →
+/// erro recuperável (nunca sheet em branco).
+const bool kUseCf197GifMocks = false;
 
 /// GIFs demo do sheet Escolher GIF (featured / busca / vazio).
 abstract final class Cf197GifFixtures {
