@@ -68,7 +68,13 @@ abstract final class CfTempMocks {
   static const useMembershipFixtures = false;
 
   /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
+  /// Genérico off: CF-213 usa [useArtistsNotifPrintFixtures].
   static const useNotificationPrefFixtures = false;
+
+  /// CF-213 Artistas e Fã Clubes — tipos off + Mayra/Laís/Marinhos do print.
+  /// TEMP até preferências/follows reais baterem o estado de referência do QA.
+  /// Não liga hub CF-166 nem CF-209/211.
+  static const useArtistsNotifPrintFixtures = true;
 
   /// Segurança genérica. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.

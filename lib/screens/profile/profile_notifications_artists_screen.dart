@@ -1,5 +1,7 @@
+import 'package:crowdfans/components/profile/notification_preference_error_banner.dart';
 import 'package:crowdfans/components/profile/notification_preference_row.dart';
 import 'package:crowdfans/components/profile/notification_preference_section.dart';
+import 'package:crowdfans/components/profile/notification_quiet_mode_note.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -10,7 +12,7 @@ import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Subpágina Notificações → Artistas e Fã Clubes (dois níveis visuais).
+/// Subpágina Notificações → Artistas e Fã Clubes (dois níveis visuais — CF-213).
 class ProfileNotificationsArtistsScreen extends StatefulWidget {
   const ProfileNotificationsArtistsScreen({super.key});
 
@@ -25,8 +27,13 @@ class _ProfileNotificationsArtistsScreenState
   var _artistAlerts = <String, bool>{};
   var _artists = <ArtistFollow>[];
   var _loading = true;
+  var _loaded = false;
   var _saving = false;
   String? _error;
+
+  /// Fixtures do print CF-213 — não liga hub CF-166 nem CF-209/211.
+  bool get _usePrintFixtures =>
+      kUseCfTempMocks && CfTempMocks.useArtistsNotifPrintFixtures;
 
   static const _alertTypes = <NotificationPreferenceItem>[
     NotificationPreferenceItem(
@@ -71,47 +78,47 @@ class _ProfileNotificationsArtistsScreenState
           await NotificationPreferencesService.getNotificationPreferences();
       var artists = await FollowService.listFollows();
       artists = [for (final a in artists) if (a.isFollowing) a];
-      if (artists.isEmpty &&
-          kUseCfTempMocks &&
-          CfTempMocks.useNotificationPrefFixtures) {
+      if (artists.isEmpty && _usePrintFixtures) {
         artists = Cf213NotificationPrefFixtures.followedArtists();
       }
       final artistAlerts = await NotificationArtistAlertsStore.load();
-      final usePrintDefaults = kUseCfTempMocks &&
-          CfTempMocks.useNotificationPrefFixtures;
       if (!mounted) {
         return;
       }
       setState(() {
-        _preferences = usePrintDefaults
+        _preferences = _usePrintFixtures
             ? Cf213NotificationPrefFixtures.alertTypeDefaultsOff()
             : prefs;
         _artists = artists;
         _artistAlerts = {
           for (final a in _artists)
-            a.artistUid: usePrintDefaults
+            a.artistUid: _usePrintFixtures
                 ? false
                 : (artistAlerts[a.artistUid] ?? true),
         };
         _loading = false;
+        _loaded = true;
+        _error = null;
       });
     } catch (error) {
       if (!mounted) {
         return;
       }
-      if (kUseCfTempMocks && CfTempMocks.useNotificationPrefFixtures) {
+      if (_usePrintFixtures) {
         final artists = Cf213NotificationPrefFixtures.followedArtists();
         setState(() {
           _preferences = Cf213NotificationPrefFixtures.alertTypeDefaultsOff();
           _artists = artists;
           _artistAlerts = {for (final a in artists) a.artistUid: false};
           _loading = false;
+          _loaded = true;
           _error = null;
         });
         return;
       }
       setState(() {
         _loading = false;
+        _loaded = false;
         _error = error.toString();
       });
     }
@@ -134,15 +141,15 @@ class _ProfileNotificationsArtistsScreenState
         return;
       }
       setState(() {
-        _preferences = saved;
+        _preferences = _usePrintFixtures ? {...saved, key: value} : saved;
         _saving = false;
       });
     } catch (error) {
       if (!mounted) {
         return;
       }
-      // Com fixtures: mantém o estado local e não reverte (API pode falhar).
-      if (kUseCfTempMocks && CfTempMocks.useNotificationPrefFixtures) {
+      // Com fixtures: mantém o estado local (API pode falhar no demo).
+      if (_usePrintFixtures) {
         setState(() {
           _saving = false;
         });
@@ -151,7 +158,8 @@ class _ProfileNotificationsArtistsScreenState
       setState(() {
         _preferences = previous;
         _saving = false;
-        _error = error.toString();
+        _error =
+            'Não foi possível salvar. As preferências voltaram ao estado anterior.';
       });
     }
   }
@@ -185,14 +193,23 @@ class _ProfileNotificationsArtistsScreenState
             Expanded(
               child: _loading
                   ? const ProfileState(loading: true)
+                  : !_loaded
+                  ? ProfileState(
+                      title: 'Não foi possível carregar',
+                      message: _error ??
+                          'Tente novamente para ver e ajustar as preferências.',
+                      actionLabel: 'Tentar de novo',
+                      onAction: handleLoad,
+                    )
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
                       children: [
                         if (_error != null) ...[
-                          Text(
-                            _error!,
-                            style: TextStyle(color: colors.danger, fontSize: 13),
-                          ),
+                          NotificationPreferenceErrorBanner(message: _error!),
+                          const SizedBox(height: 16),
+                        ],
+                        if (quiet) ...[
+                          const NotificationQuietModeNote(),
                           const SizedBox(height: 16),
                         ],
                         Text(
