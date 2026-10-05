@@ -30,61 +30,67 @@ class InformationDocumentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            height: 1.25,
-            color: colors.textPrimary,
-          ),
-        ),
-        if (lastUpdated != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            lastUpdated!,
-            style: TextStyle(fontSize: 13, color: colors.textTertiary),
-          ),
-        ],
-        const SizedBox(height: 12),
-        Text(
-          intro,
-          style: TextStyle(
-            fontSize: 14,
-            height: 1.55,
-            color: colors.textSecondary,
-          ),
-        ),
-        for (final section in sections) ...[
-          const SizedBox(height: 22),
+    // CF-214: texto selecionável + títulos semânticos (print + A11Y-01).
+    return SelectionArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Semantics(
             header: true,
             child: Text(
-              section.title,
+              title,
               style: TextStyle(
-                fontSize: 17,
+                fontSize: 24,
                 fontWeight: FontWeight.w800,
-                height: 1.35,
+                height: 1.25,
                 color: colors.textPrimary,
               ),
             ),
           ),
-          for (final paragraph in section.paragraphs) ...[
-            const SizedBox(height: 10),
+          if (lastUpdated != null) ...[
+            const SizedBox(height: 8),
             Text(
-              paragraph,
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.55,
-                color: colors.textSecondary,
-              ),
+              lastUpdated!,
+              style: TextStyle(fontSize: 13, color: colors.textTertiary),
             ),
           ],
+          const SizedBox(height: 12),
+          Text(
+            intro,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.55,
+              color: colors.textSecondary,
+            ),
+          ),
+          for (final section in sections) ...[
+            const SizedBox(height: 22),
+            Semantics(
+              header: true,
+              child: Text(
+                section.title,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  height: 1.35,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ),
+            for (final paragraph in section.paragraphs) ...[
+              const SizedBox(height: 10),
+              Text(
+                paragraph,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.55,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ],
+          ],
         ],
-      ],
+      ),
     );
   }
 }
