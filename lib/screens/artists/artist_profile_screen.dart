@@ -646,10 +646,25 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             genre: useSobreFixtures
                 ? Cf182ArtistSobreMock.genre
                 : 'Não informado',
+            playlistName: useSobreFixtures
+                ? Cf182ArtistSobreMock.trackTitle
+                : null,
+            openSpotifyAlbum: useSobreFixtures
+                ? Cf182ArtistSobreMock.openSpotifyAlbum
+                : null,
             onOpenSpotify: useSobreFixtures ? () {} : null,
           ),
           const SizedBox(height: 14),
-          const ArtistProfileSocialLinksCard(),
+          ArtistProfileSocialLinksCard(
+            instagramHandle: useSobreFixtures
+                ? Cf182ArtistSobreMock.instagramHandle
+                : '',
+            youtubeHandle: useSobreFixtures
+                ? Cf182ArtistSobreMock.youtubeHandle
+                : '',
+            onInstagram: useSobreFixtures ? () {} : null,
+            onYoutube: useSobreFixtures ? () {} : null,
+          ),
         ],
       );
     }

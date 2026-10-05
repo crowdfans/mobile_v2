@@ -2407,13 +2407,17 @@ abstract final class Cf170WalletPackMock {
   }
 }
 
-/// CF-182 — Sobre do artista (Spotify + base do print).
+/// CF-182 — Sobre do artista (Spotify + base do print Ludmilla).
+/// **TEMP** até [CF-269] expor location/track/listeners/genre/redes na API.
 abstract final class Cf182ArtistSobreMock {
   static const location = 'Rio de Janeiro, BR';
   static const trackTitle = 'Maldivas';
   static const playlistSubtitle = 'Playlist em destaque';
-  static const monthlyListeners = '12,4 mi';
-  static const genre = 'Funk / Pop';
+  static const monthlyListeners = '8,9 mi ouvintes';
+  static const genre = 'Pop e R&B';
+  static const openSpotifyAlbum = 'Numanice #3';
+  static const instagramHandle = '@ludmilla';
+  static const youtubeHandle = 'Ludmilla';
 }
 
 /// CF-198 — Central de ajuda (print image.png).
