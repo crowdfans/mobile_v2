@@ -12,11 +12,20 @@ import 'package:crowdfans/services/profile_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// FanScore público por handle (mock Fanscore).
+/// FanScore — ciclo + busca + cards com Insights no mesmo card (CF-201).
+///
+/// Usado no perfil público e nas Configurações (via [ProfileFanScoreScreen]).
 class FanScoreScreen extends StatefulWidget {
-  const FanScoreScreen({super.key, required this.fanHandle});
+  const FanScoreScreen({
+    super.key,
+    required this.fanHandle,
+    this.backFallback,
+  });
 
   final String fanHandle;
+
+  /// Destino se não houver rota para `pop` (settings → Configurações).
+  final String? backFallback;
 
   @override
   State<FanScoreScreen> createState() => _FanScoreScreenState();
@@ -55,23 +64,30 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
       _error = null;
     });
     try {
+      // TEMP CF-201: fixtures do print (ciclo + Ultimate expandido) até a API
+      // devolver dados equivalentes.
+      if (CfTempMocks.useFanScoreFixtures && kUseCfTempMocks) {
+        final mock = cfTempMockFanScoreData();
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _data = mock;
+          _loading = false;
+          _error = null;
+          _expandedArtistId ??= mock.entries.first.artistId;
+        });
+        return;
+      }
       final data = await ProfileService.getFanScore(handle);
       if (!mounted) {
         return;
       }
-      var resolved = data;
-      // TEMP: demo do print CF-201 quando a API ainda não povoa.
-      if ((resolved.entries.isEmpty || resolved.cycleDetails == null) &&
-          CfTempMocks.useFanScoreFixtures &&
-          kUseCfTempMocks) {
-        resolved = cfTempMockFanScoreData();
-      }
       setState(() {
-        _data = resolved;
+        _data = data;
         _loading = false;
-        // Print: primeiro card expandido com grade de métricas.
-        if (_expandedArtistId == null && resolved.entries.isNotEmpty) {
-          _expandedArtistId = resolved.entries.first.artistId;
+        if (_expandedArtistId == null && data.entries.isNotEmpty) {
+          _expandedArtistId = data.entries.first.artistId;
         }
       });
     } catch (_) {
@@ -101,7 +117,7 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
       context.pop();
       return;
     }
-    context.go(Pages.me);
+    context.go(widget.backFallback ?? Pages.me);
   }
 
   void handleToggleInsights(String artistId) {
