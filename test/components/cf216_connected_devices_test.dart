@@ -6,7 +6,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+Widget _wrapDevices({
+  List<ConnectedDeviceSession>? sessions,
+  String? loadError,
+}) {
+  final router = GoRouter(
+    initialLocation: '/devices',
+    routes: [
+      GoRoute(
+        path: '/devices',
+        builder: (context, state) => ProfileConnectedDevicesScreen(
+          sessionsForTest: sessions,
+          loadErrorForTest: loadError,
+        ),
+      ),
+    ],
+  );
+  return MaterialApp.router(
+    theme: buildCrowdFansTheme(Brightness.light),
+    routerConfig: router,
+  );
+}
+
 void main() {
+  test('CF-216: mock off — API CF-266', () {
+    expect(kUseCfTempMocks, isTrue);
+    expect(kUseCf216ConnectedDevicesMocks, isFalse);
+  });
+
   testWidgets('CF-216 linha Este dispositivo sem Desconectar', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -43,26 +70,9 @@ void main() {
     expect(style.color, AppPalette.purple700);
   });
 
-  testWidgets('CF-216 tela bate com print (3 sessões + tip + CTA)', (
-    tester,
-  ) async {
-    expect(kUseCf216ConnectedDevicesMocks, isTrue);
-
-    final router = GoRouter(
-      initialLocation: '/devices',
-      routes: [
-        GoRoute(
-          path: '/devices',
-          builder: (context, state) => const ProfileConnectedDevicesScreen(),
-        ),
-      ],
-    );
-
+  testWidgets('CF-216 green: lista povoada + tip + CTA', (tester) async {
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: buildCrowdFansTheme(Brightness.light),
-        routerConfig: router,
-      ),
+      _wrapDevices(sessions: Cf216ConnectedDevicesFixtures.sessions()),
     );
     await tester.pumpAndSettle();
 
@@ -102,30 +112,49 @@ void main() {
     expect(find.text('Desconectar todos menos este'), findsOneWidget);
   });
 
-  testWidgets('CF-216 CTA todos menos este preserva sessão atual', (
+  testWidgets('CF-216 red: lista vazia + CTA desabilitado', (tester) async {
+    await tester.pumpWidget(_wrapDevices(sessions: const []));
+    await tester.pumpAndSettle();
+
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('dispositivos conectados'), findsOneWidget);
+    expect(
+      find.textContaining('Nenhuma sessão ativa encontrada'),
+      findsOneWidget,
+    );
+    expect(find.text('iPhone 15 Pro'), findsNothing);
+    final cta = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Desconectar todos menos este'),
+    );
+    expect(cta.onPressed, isNull);
+  });
+
+  testWidgets('CF-216 red: erro de carga permanece visível', (tester) async {
+    await tester.pumpWidget(
+      _wrapDevices(
+        sessions: const [],
+        loadError: 'Falha ao carregar sessões',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Falha ao carregar sessões'), findsOneWidget);
+    expect(
+      find.textContaining('Nenhuma sessão ativa encontrada'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('CF-216 edge: CTA todos menos este preserva sessão atual', (
     tester,
   ) async {
-    final router = GoRouter(
-      initialLocation: '/devices',
-      routes: [
-        GoRoute(
-          path: '/devices',
-          builder: (context, state) => const ProfileConnectedDevicesScreen(),
-        ),
-      ],
-    );
-
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: buildCrowdFansTheme(Brightness.light),
-        routerConfig: router,
-      ),
+      _wrapDevices(sessions: Cf216ConnectedDevicesFixtures.sessions()),
     );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Desconectar todos menos este'));
     await tester.pumpAndSettle();
-    // Confirma no AppAlert.
     await tester.tap(find.text('Desconectar').last);
     await tester.pumpAndSettle();
 

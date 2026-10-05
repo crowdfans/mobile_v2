@@ -7,7 +7,7 @@ void main() {
     expect(kUseCfTempMocks, isTrue);
 
     expect(CfTempMocks.useSecuritySettingsFixtures, isFalse); // CF-266 API
-    expect(kUseCf216ConnectedDevicesMocks, isTrue); // print CF-216
+    expect(kUseCf216ConnectedDevicesMocks, isFalse); // CF-266 /me/sessions
     expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
     expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
