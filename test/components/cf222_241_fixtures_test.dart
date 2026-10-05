@@ -32,13 +32,14 @@ void main() {
     final posts = cfTempMockHomeFeedPosts();
     expect(posts.any((p) => p.author == 'Banda Uelo' && p.type == PostType.video),
         isTrue);
-    expect(
-      posts.any(
-        (p) =>
-            p.type == PostType.carousel && p.carouselUris.length >= 3,
-      ),
-      isTrue,
-    );
+    final carousel = posts.firstWhere((p) => p.id == 'cf233-ponzanelli-carousel');
+    expect(carousel.type, PostType.carousel);
+    expect(carousel.author, 'Ponzanelli');
+    expect(carousel.handle, '@ponzanelli');
+    expect(carousel.carouselUris.length, greaterThanOrEqualTo(3));
+    expect(carousel.votes, 240);
+    expect(carousel.comments, 36);
+    expect(carousel.shares, 7);
     final exclusive = posts.firstWhere((p) => p.isExclusive);
     expect(exclusive.author, 'Mayra');
     expect(exclusive.exclusiveLocked, isFalse);

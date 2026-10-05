@@ -2,7 +2,7 @@ import 'package:crowdfans/components/post/post_media_lightbox.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Carrossel do feed: proporção 1:1, clipping e pista da próxima foto.
+/// Carrossel do feed: proporção 1:1, clipping e pista das vizinhas (CF-233).
 class PostCarousel extends StatefulWidget {
   const PostCarousel({super.key, required this.uris});
 
@@ -24,7 +24,8 @@ class _PostCarouselState extends State<PostCarousel> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(viewportFraction: 0.92);
+    // Fração < 1 + padEnds: peeks laterais no meio do carrossel (print CF-233).
+    _controller = PageController(viewportFraction: 0.86);
   }
 
   @override
@@ -61,22 +62,21 @@ class _PostCarouselState extends State<PostCarousel> {
       );
     }
     return AspectRatio(
+      key: const Key('post-carousel'),
       aspectRatio: 1,
       child: Stack(
         children: [
           NotificationListener<ScrollNotification>(
-            // Horizontal page gestos não precisam bloquear scroll vertical do feed.
+            // Gesto horizontal não deve bloquear o scroll vertical do feed.
             onNotification: (_) => false,
             child: PageView.builder(
               controller: _controller,
-              padEnds: false,
+              padEnds: true,
               itemCount: slides.length,
               onPageChanged: (index) => setState(() => _index = index),
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: EdgeInsets.only(
-                    right: index == slides.length - 1 ? 0 : 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
                   child: Semantics(
                     image: true,
                     label: 'Imagem ${index + 1} de ${slides.length}',
@@ -114,6 +114,7 @@ class _PostCarouselState extends State<PostCarousel> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 child: Text(
+                  key: const Key('post-carousel-counter'),
                   '${_index + 1}/${slides.length}',
                   style: const TextStyle(
                     color: Colors.white,
@@ -129,6 +130,7 @@ class _PostCarouselState extends State<PostCarousel> {
             right: 0,
             bottom: 10,
             child: Row(
+              key: const Key('post-carousel-dots'),
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 for (var i = 0; i < slides.length; i++)

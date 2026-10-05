@@ -19,7 +19,7 @@ void main() {
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/226 print
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-234/235 TEMP
+    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235 feed print
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-239
