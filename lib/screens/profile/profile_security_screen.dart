@@ -126,6 +126,7 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                     title: 'Trocar telefone',
                     subtitle:
                         'Atualize o número usado em verificações de segurança.',
+                    // CF-217: página dedicada — NUNCA hub com abas.
                     onTap: () => context.push(Pages.profileChangePhone),
                   ),
                   SecurityAccessNavRow(
