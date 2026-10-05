@@ -22,6 +22,8 @@ abstract final class ApiUrls {
   static const subscriptions = '/api/v1/subscriptions';
   static const subscriptionCheck = '/api/v1/subscriptions/:artistUid/check';
   static const subscriptionCancel = '/api/v1/subscriptions/:artistUid';
+  /// Pausar membership (CF-205) — mantém benefícios do fã-clube.
+  static const subscriptionPause = '/api/v1/subscriptions/:artistUid/pause';
   static const notificationPreferences = '/api/v1/notifications/preferences';
   static const notifications = '/api/v1/notifications';
   static const notificationDeviceTokens = '/api/v1/notifications/device-tokens';

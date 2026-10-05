@@ -64,6 +64,13 @@ abstract final class SubscriptionService {
     );
   }
 
+  static Future<void> pauseSubscription(String artistUid) async {
+    await HttpService.request<dynamic>(
+      ApiUrls.withParams(ApiUrls.subscriptionPause, {'artistUid': artistUid}),
+      method: Method.post,
+    );
+  }
+
   static Future<void> cancelSubscription(String artistUid) async {
     await HttpService.request<dynamic>(
       ApiUrls.withParams(ApiUrls.subscriptionCancel, {'artistUid': artistUid}),

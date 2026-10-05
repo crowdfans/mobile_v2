@@ -178,6 +178,7 @@ class _ProfileMembershipsScreenState
     final cards = overview?.cards ?? const <MembershipCard>[];
     final active = [for (final item in cards) if (item.isActiveStatus) item];
     final late = [for (final item in cards) if (item.isLate) item];
+    final paused = [for (final item in cards) if (item.isPaused) item];
     final cancelled = [for (final item in cards) if (item.isCancelled) item];
     final catalog =
         overview?.catalog.where((item) => !item.isCurrentMember).toList() ??
@@ -325,6 +326,11 @@ class _ProfileMembershipsScreenState
                             ..._cards(late, allowCancel: true, catalog: false),
                           ],
                         ],
+                        if (_filter == _MembershipFilter.all &&
+                            paused.isNotEmpty) ...[
+                          _sectionTitle('Pausados', colors),
+                          ..._cards(paused, allowCancel: true, catalog: false),
+                        ],
                         if (_filter == _MembershipFilter.all ||
                             _filter == _MembershipFilter.cancelled) ...[
                           if (cancelled.isNotEmpty) ...[
@@ -340,6 +346,7 @@ class _ProfileMembershipsScreenState
                         if (_filter == _MembershipFilter.all &&
                             active.isEmpty &&
                             late.isEmpty &&
+                            paused.isEmpty &&
                             cancelled.isEmpty)
                           const Padding(
                             padding: EdgeInsets.only(bottom: 12),
