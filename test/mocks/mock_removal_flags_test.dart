@@ -17,6 +17,7 @@ void main() {
     expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
+    expect(CfTempMocks.useMembershipManageFixtures, isTrue); // CF-205 print
     expect(
       CfTempMocks.useMembershipActivationConfirmedFixtures,
       isTrue,

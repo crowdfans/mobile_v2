@@ -48,10 +48,12 @@ class MembershipCard {
 
   bool get isCancelled => normalizedStatus == 'cancelled';
 
+  bool get isPaused => normalizedStatus == 'paused';
+
   bool get isLate =>
       normalizedStatus == 'late' || normalizedStatus == 'past_due';
 
-  bool get isActiveStatus => !isCancelled && !isLate;
+  bool get isActiveStatus => !isCancelled && !isLate && !isPaused;
 
   bool get canCancel {
     final id = artistId?.trim() ?? '';
