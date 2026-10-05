@@ -10,10 +10,15 @@ import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _harness({required bool expanded, required String draft}) {
+Widget _harness({
+  required bool expandedFirst,
+  required String draft,
+  bool expandSecond = false,
+}) {
   final comments = Cf194FanClubCommentsMock.comments();
   final root = comments.first;
   final reply = root.replies.first;
+  final second = comments[1];
   return MaterialApp(
     theme: buildCrowdFansTheme(Brightness.light),
     home: Scaffold(
@@ -66,7 +71,7 @@ Widget _harness({required bool expanded, required String draft}) {
                     onDelete: () {},
                     onVoteApplied: (_) {},
                   ),
-                  if (expanded)
+                  if (expandedFirst)
                     CommentRow(
                       comment: reply,
                       isOwn: false,
@@ -81,7 +86,37 @@ Widget _harness({required bool expanded, required String draft}) {
                     ),
                   CommentRepliesToggle(
                     replyCount: root.replies.length,
-                    expanded: expanded,
+                    expanded: expandedFirst,
+                    onToggle: () {},
+                  ),
+                  CommentRow(
+                    comment: second,
+                    isOwn: false,
+                    isReply: false,
+                    onOpenProfile: () {},
+                    onReply: () {},
+                    onReport: () {},
+                    onEdit: () {},
+                    onDelete: () {},
+                    onVoteApplied: (_) {},
+                  ),
+                  if (expandSecond)
+                    for (final nested in second.replies)
+                      CommentRow(
+                        comment: nested,
+                        isOwn: false,
+                        isReply: true,
+                        replyToHandle: second.handle,
+                        onOpenProfile: () {},
+                        onReply: () {},
+                        onReport: () {},
+                        onEdit: () {},
+                        onDelete: () {},
+                        onVoteApplied: (_) {},
+                      ),
+                  CommentRepliesToggle(
+                    replyCount: second.replies.length,
+                    expanded: expandSecond,
                     onToggle: () {},
                   ),
                 ],
@@ -108,11 +143,27 @@ Widget _harness({required bool expanded, required String draft}) {
 }
 
 void main() {
+  test('CF-194 fixtures batem o print (Fê+Nina, tempos, votos)', () {
+    expect(kUseCf194CommentMocks, isTrue);
+    final comments = Cf194FanClubCommentsMock.comments();
+    expect(comments, hasLength(2));
+    expect(comments.first.author, 'Fê Andrade');
+    expect(comments.first.votes, 229);
+    expect(comments.first.replies, hasLength(1));
+    expect(comments.first.replies.first.author, 'Rafa Nogueira');
+    expect(comments.first.replies.first.minutesAgo, 120);
+    expect(comments[1].author, 'Nina Costa');
+    expect(comments[1].votes, 212);
+    expect(comments[1].replies, hasLength(2));
+    expect(Cf194FanClubCommentsMock.postVotes, 1039);
+    expect(Cf194FanClubCommentsMock.postShares, 20);
+  });
+
   testWidgets('CF-194 recolhido: contexto do clube e Ver respostas', (
     tester,
   ) async {
     const draft = 'rascunho preservado';
-    await tester.pumpWidget(_harness(expanded: false, draft: draft));
+    await tester.pumpWidget(_harness(expandedFirst: false, draft: draft));
     await tester.pump();
 
     expect(find.text('Felipe Rhy'), findsOneWidget);
@@ -125,20 +176,23 @@ void main() {
     expect(find.text('Comentários'), findsOneWidget);
     expect(find.text('Populares'), findsOneWidget);
     expect(find.text('Fê Andrade'), findsOneWidget);
-    expect(find.text('Responder'), findsOneWidget);
+    expect(find.text('Nina Costa'), findsOneWidget);
+    expect(find.text('Responder'), findsNWidgets(2));
     expect(find.text('Ver 1 respostas'), findsOneWidget);
+    expect(find.text('Ver 2 respostas'), findsOneWidget);
     expect(find.text('Rafa Nogueira'), findsNothing);
     expect(find.text('Resposta'), findsNothing);
     expect(find.text('Adicione um comentário...'), findsOneWidget);
-    expect(find.byKey(const Key('comment-gif')), findsOneWidget);
-    // Idle com rascunho: send aparece; emoji permanece no campo.
+    // Com rascunho: enviar + chip GIF (smile idle fica só com campo vazio).
+    expect(find.byKey(const Key('comment-gif')), findsNothing);
+    expect(find.byKey(const Key('comment-gif-chip')), findsOneWidget);
     expect(find.byKey(const Key('comment-submit')), findsOneWidget);
   });
 
   testWidgets('CF-194 idle vazio: só emoji no campo, sem enviar', (
     tester,
   ) async {
-    await tester.pumpWidget(_harness(expanded: false, draft: ''));
+    await tester.pumpWidget(_harness(expandedFirst: false, draft: ''));
     await tester.pump();
 
     expect(find.byKey(const Key('comment-gif')), findsOneWidget);
@@ -149,7 +203,7 @@ void main() {
     tester,
   ) async {
     const draft = 'rascunho preservado';
-    await tester.pumpWidget(_harness(expanded: true, draft: draft));
+    await tester.pumpWidget(_harness(expandedFirst: true, draft: draft));
     await tester.pump();
     await tester.ensureVisible(find.text('Ocultar respostas'));
     await tester.pump();
@@ -157,7 +211,9 @@ void main() {
     expect(find.text('Ocultar respostas'), findsOneWidget);
     expect(find.text('Rafa Nogueira'), findsOneWidget);
     expect(find.textContaining('fan/feandrade'), findsWidgets);
-    expect(find.text('Responder'), findsNWidgets(2));
+    expect(find.text('Responder'), findsNWidgets(3));
     expect(find.text('Resposta'), findsNothing);
+    expect(find.text('Ver 2 respostas'), findsOneWidget);
+    expect(find.text('Nina Costa'), findsOneWidget);
   });
 }

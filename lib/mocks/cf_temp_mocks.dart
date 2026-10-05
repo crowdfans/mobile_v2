@@ -842,10 +842,11 @@ FanScoreData cfTempMockFanScoreData() {
 }
 
 /// Liga dados de demo do CF-194 (lista vazia/erro no fã-clube → print populado).
-/// Desligado: `GET /api/v1/posts/:postId/comments`.
-const bool kUseCf194CommentMocks = false;
+/// **TEMP on** até `GET /api/v1/posts/:postId/comments` devolver threads
+/// equivalentes aos prints (Fê + Nina, Ver/Ocultar respostas).
+const bool kUseCf194CommentMocks = true;
 
-/// Dados do print CF-194 (recolhido / expandido).
+/// Dados do print CF-194 (recolhido = image1 / expandido = image.png).
 abstract final class Cf194FanClubCommentsMock {
   static const postAuthor = 'Felipe Rhy';
   static const postHandle = 'fan/thiagok';
@@ -857,6 +858,7 @@ abstract final class Cf194FanClubCommentsMock {
   static const postShares = 20;
 
   static const parentHandle = 'fan/feandrade';
+  static const ninaHandle = 'fan/ninacosta';
 
   static List<CommentItem> comments() {
     final reply = CommentItem(
@@ -864,10 +866,30 @@ abstract final class Cf194FanClubCommentsMock {
       author: 'Rafa Nogueira',
       handle: 'fan/rafanogueira',
       avatarUri: '',
-      minutesAgo: 180,
+      minutesAgo: 120,
       text: 'Esse tipo de conteúdo sempre rende discussão boa.',
       votes: 15,
       parentCommentId: 'cf194-c1',
+    );
+    final ninaReplyA = CommentItem(
+      id: 'cf194-reply-2a',
+      author: 'Lia Costa',
+      handle: 'fan/liacosta',
+      avatarUri: '',
+      minutesAgo: 150,
+      text: 'Exato — o feed trouxe e o fio manteve.',
+      votes: 6,
+      parentCommentId: 'cf194-c2',
+    );
+    final ninaReplyB = CommentItem(
+      id: 'cf194-reply-2b',
+      author: 'Bruno M.',
+      handle: 'fan/brunom',
+      avatarUri: '',
+      minutesAgo: 90,
+      text: 'Salvei esse thread inteiro.',
+      votes: 3,
+      parentCommentId: 'cf194-c2',
     );
     return [
       CommentItem(
@@ -880,6 +902,17 @@ abstract final class Cf194FanClubCommentsMock {
             'Quero mais posts de bastidor assim. Dá vontade de salvar tudo e mandar no grupo do fandom.',
         votes: 229,
         replies: [reply],
+      ),
+      CommentItem(
+        id: 'cf194-c2',
+        author: 'Nina Costa',
+        handle: ninaHandle,
+        avatarUri: '',
+        minutesAgo: 180,
+        text:
+            'Cheguei pelo feed e fiquei pelos comentários. Era exatamente esse efeito que eu queria ver nos testes.',
+        votes: 212,
+        replies: [ninaReplyA, ninaReplyB],
       ),
     ];
   }
