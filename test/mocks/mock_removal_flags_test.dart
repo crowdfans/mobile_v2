@@ -18,6 +18,8 @@ void main() {
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223 Ver mais
+    expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
+    expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
