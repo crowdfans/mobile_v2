@@ -106,9 +106,10 @@ abstract final class CfTempMocks {
   /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share + CF-176 menu ⋯).
-  /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
-  static const useHomeFeedFixtures = true;
+  /// Home feed — **off**: `GET /api/v1/home` real (seed/prod não-vazio).
+  /// Helpers `cfTempMockHomeFeedPosts` ficam para testes print CF-175/232…236.
+  /// CF-176 menu ⋯ ainda usa [kUseCf176PostOptionsMocks] nos testes.
+  static const useHomeFeedFixtures = false;
 
   /// Busca artistas (CF-240) — **off**: `GET /api/v1/search/artists`.
   /// Helpers [_cf240SearchArtistsPrint] / [cfTempMockSearchArtists] ficam

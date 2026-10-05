@@ -146,8 +146,8 @@ void main() {
     test('fixture flag documentada no mock_removal', () {
       expect(kUseCfTempMocks, isTrue);
       expect(kUseCf176PostOptionsMocks, isTrue);
-      // Home fixtures ligadas para o post aparecer no feed (⋯).
-      expect(CfTempMocks.useHomeFeedFixtures, isTrue);
+      // Home democked; menu ⋯ print ainda via kUseCf176PostOptionsMocks.
+      expect(CfTempMocks.useHomeFeedFixtures, isFalse);
     });
   });
 }

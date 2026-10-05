@@ -31,7 +31,7 @@ void main() {
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-175/176/232/233/234/235/236
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse); // CF-240 demock
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP

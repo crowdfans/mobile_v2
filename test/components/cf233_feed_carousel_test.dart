@@ -3,7 +3,6 @@ import 'package:crowdfans/components/post/post_media.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
-import 'package:crowdfans/services/home_feed_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -66,9 +65,9 @@ void main() {
     expect(find.byKey(const Key('post-carousel')), findsOneWidget);
   });
 
-  test('CF-233: HomeFeedService devolve fixture com carrossel', () async {
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue);
-    final dto = await HomeFeedService.load(page: 1);
+  test('CF-233: amostra print carrossel ainda disponível (fixtures off)', () {
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
+    final dto = cfTempMockHomeFeedDto(page: 1);
     final carousel = dto.feedPosts.firstWhere(
       (p) => p.id == 'cf233-ponzanelli-carousel',
     );

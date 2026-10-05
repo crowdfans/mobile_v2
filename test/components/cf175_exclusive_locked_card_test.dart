@@ -90,8 +90,8 @@ void main() {
     },
   );
 
-  test('CF-175 green: fixture Kheper bloqueado no home feed (mocks ON)', () {
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue);
+  test('CF-175 green: fixture Kheper bloqueado (amostra print; demock off)', () {
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     final posts = cfTempMockHomeFeedPosts();
     final locked = posts.firstWhere((p) => p.id == 'cf175-kheper-locked');
     expect(locked.author, 'Kheper');
