@@ -43,6 +43,20 @@ bool hasUnlockedMembershipStatus(String? status) {
       normalized == 'ativa';
 }
 
+/// CF-272: acesso base ao Fã Clube = follow OU membership; expulsão bloqueia.
+/// Perks (exclusivo, candidatura) continuam em [canAccessExclusivePost] / isMember.
+bool canAccessFanClubBase({
+  required bool isFollowing,
+  required bool isMember,
+  required bool isExpelled,
+  bool isOwner = false,
+}) {
+  if (isExpelled) {
+    return false;
+  }
+  return isOwner || isFollowing || isMember;
+}
+
 bool canAccessExclusivePost(FeedPost post, ExclusiveAccessContext context) {
   if (!isExclusivePost(post)) {
     return true;

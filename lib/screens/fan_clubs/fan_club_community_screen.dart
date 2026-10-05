@@ -15,6 +15,7 @@ import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/sidebar_artists_store.dart';
+import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   var _loading = true;
   var _loadingMore = false;
   var _following = false;
+  var _subscribed = false;
   var _favorite = false;
   var _searchOpen = false;
   var _searchQuery = '';
@@ -192,10 +194,15 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
           CommunityService.getCommunityPosts(page: 1, pageSize: 50),
           FollowService.checkFollow(widget.artistId)
               .then((value) => value, onError: (_) => false),
+          SubscriptionService.checkSubscription(widget.artistId).then(
+            (value) => value.isSubscribed,
+            onError: (_) => false,
+          ),
         ]);
         final feed = results[0] as ArtistFanClubFeed?;
         final community = results[1] as List<CommunityPost>;
         final following = results[2] as bool;
+        final subscribed = results[3] as bool;
         final club = feed?.fanClub;
         final fromFeed = [
           if (club != null)
@@ -215,6 +222,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
         setState(() {
           _club = club;
           _following = following || (club?.isMember ?? false);
+          _subscribed = subscribed;
           _posts = mergePosts(fromFeed, fromCommunity);
           _avatarUrl = avatar;
           _page = 1;
@@ -741,7 +749,17 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                   clubName: club.artistName,
                                   canAccessExclusive: canAccessExclusivePost(
                                     post,
-                                    const ExclusiveAccessContext(),
+                                    ExclusiveAccessContext(
+                                      subscribedArtistUids: {
+                                        if (_subscribed) widget.artistId,
+                                      },
+                                      subscribedArtistNames: {
+                                        if (_subscribed)
+                                          normalizeExclusiveIdentity(
+                                            club.artistName,
+                                          ),
+                                      },
+                                    ),
                                   ),
                                   onVoteApplied: handleVoteApplied,
                                   onPressOptions: () {

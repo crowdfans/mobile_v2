@@ -12,6 +12,7 @@ import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
+import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -55,6 +56,15 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   var _searchQuery = '';
   var _showScrollToTop = false;
   String? _error;
+  var _subscribedUids = <String>{};
+  var _subscribedNames = <String>{};
+
+  ExclusiveAccessContext exclusiveAccessContext() {
+    return ExclusiveAccessContext(
+      subscribedArtistUids: _subscribedUids,
+      subscribedArtistNames: _subscribedNames,
+    );
+  }
 
   bool isMediaPost(CommunityPost post) {
     final type = post.type.toLowerCase();
@@ -170,8 +180,15 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
             ? Cf178FanClubsFeedMock.posts()
             : posts;
         final merged = <_ClubArtist>[];
+        final subscribedUids = <String>{};
+        final subscribedNames = <String>{};
         for (final item in subs) {
           if (item.isActive && item.artistUid.trim().isNotEmpty) {
+            subscribedUids.add(item.artistUid);
+            final nameKey = normalizeExclusiveIdentity(item.artistName);
+            if (nameKey.isNotEmpty) {
+              subscribedNames.add(nameKey);
+            }
             merged.add(
               _ClubArtist(
                 artistUid: item.artistUid,
@@ -200,6 +217,8 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
         }
         setState(() {
           _artists = merged;
+          _subscribedUids = subscribedUids;
+          _subscribedNames = subscribedNames;
           _posts = feedPosts;
           _page = 1;
           _hasMore = posts.length >= _pageSize;
@@ -464,7 +483,10 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                                 final post = posts[index].toFeedPost();
                                 return FeedItem(
                                   post: post,
-                                  canAccessExclusive: false,
+                                  canAccessExclusive: canAccessExclusivePost(
+                                    post,
+                                    exclusiveAccessContext(),
+                                  ),
                                   onVoteApplied: handleVoteApplied,
                                 );
                               },
