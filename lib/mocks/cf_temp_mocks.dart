@@ -87,8 +87,10 @@ abstract final class CfTempMocks {
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
 
-  /// Exclusivo perfil — subscriptions/check + posts reais.
-  static const useArtistExclusiveFixtures = false;
+  /// CF-239 Exclusivo liberado (perfil Ludmilla assinante) — TEMP até
+  /// subscriptions/check + posts exclusivos reais baterem o print.
+  /// Não altera o caminho bloqueado (CF-184 teaser).
+  static const useArtistExclusiveFixtures = true;
 
   /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
   /// Expulsos 1 (Anna Lu / Vic Melo) igual ao print. APIs de appeals/strikes/
