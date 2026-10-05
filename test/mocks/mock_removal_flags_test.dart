@@ -17,7 +17,8 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223 Ver mais
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223/227 Ver mais + menu
+    expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
