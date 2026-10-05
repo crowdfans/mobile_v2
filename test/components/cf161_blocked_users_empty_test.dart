@@ -34,8 +34,20 @@ void main() {
     );
     expect(find.text('Bloqueados'), findsNothing);
     expect(find.text('Ninguém bloqueado'), findsNothing);
+    expect(
+      find.text('Quem você bloquear deixa de aparecer no feed.'),
+      findsNothing,
+    );
 
     final state = tester.widget<ProfileState>(find.byType(ProfileState));
     expect(state.align, TextAlign.left);
+
+    final align = tester.widget<Align>(
+      find.descendant(
+        of: find.byType(BlockedUsersEmptyState),
+        matching: find.byType(Align),
+      ),
+    );
+    expect(align.alignment, Alignment.centerLeft);
   });
 }
