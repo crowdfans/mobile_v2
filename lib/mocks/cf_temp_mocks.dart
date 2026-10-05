@@ -116,8 +116,9 @@ abstract final class CfTempMocks {
   /// só para testes de print. Não altera ranking (CF-172).
   static const useSearchArtistsFixtures = false;
 
-  /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
-  static const useFanClubSelectorFixtures = true;
+  /// Seletor fã-clube compose (CF-237) — **off**: `GET /follows` +
+  /// subscriptions. Helper [cfTempMockFanClubSelectorArtists] só para testes.
+  static const useFanClubSelectorFixtures = false;
 
   /// CF-239/184 Exclusivo perfil — democked: `GET …/subscriptions/:uid/check`
   /// + posts reais. Helpers Ludmilla/Kheper ficam só para testes de anatomia.

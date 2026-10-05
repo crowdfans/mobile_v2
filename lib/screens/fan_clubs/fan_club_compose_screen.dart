@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
+import 'package:crowdfans/components/fan_club/fan_club_compose_candidates.dart';
 import 'package:crowdfans/components/fan_club/fan_club_selector_dropdown.dart';
 import 'package:crowdfans/components/fan_club/fan_club_selector_field.dart';
 import 'package:crowdfans/components/post/novo_post_composer_body.dart';
@@ -107,31 +108,20 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
       try {
         follows = await FollowService.listFollows();
       } catch (_) {}
-      final merged = <String, FanClubComposeArtist>{};
-      for (final row in subs.where((item) => item.isActive)) {
-        merged[row.artistUid] = FanClubComposeArtist(
-          id: row.artistUid,
-          name: row.artistName,
-        );
-      }
-      for (final follow in follows) {
-        merged.putIfAbsent(
-          follow.artistUid,
-          () => FanClubComposeArtist(
-            id: follow.artistUid,
-            name: follow.artistName,
-            avatarUrl: follow.avatarUrl,
-          ),
-        );
-      }
       if (!mounted) {
         return;
       }
-      // CF-237: fixtures do print têm prioridade enquanto a flag TEMP estiver on.
-      final candidates =
-          kUseCfTempMocks && CfTempMocks.useFanClubSelectorFixtures
-          ? cfTempMockFanClubSelectorArtists()
-          : merged.values.toList();
+      // CF-237 demock: seletor = follows ∪ subscriptions. Fixtures só se
+      // a API vier vazia e a flag TEMP ainda estiver ligada.
+      var candidates = mergeFanClubComposeCandidates(
+        subscriptions: subs,
+        follows: follows,
+      );
+      if (candidates.isEmpty &&
+          kUseCfTempMocks &&
+          CfTempMocks.useFanClubSelectorFixtures) {
+        candidates = cfTempMockFanClubSelectorArtists();
+      }
       setState(() {
         _candidates = candidates;
         _loadingArtists = false;
