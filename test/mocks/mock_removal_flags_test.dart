@@ -53,5 +53,6 @@ void main() {
     expect(kUseCf197GifMocks, isTrue); // CF-197 seletor GIF TEMP
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isFalse); // CF-181 demock — fan-letters API
+    expect(kUseCf187MeProfileMocks, isFalse); // CF-187 demock Meu Perfil API
   });
 }

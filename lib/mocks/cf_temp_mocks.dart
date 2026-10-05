@@ -1286,9 +1286,10 @@ abstract final class Cf185ArtistFeedFixtures {
   }
 }
 
-/// CF-187 — Meu Perfil preenchido (print image.png). TEMP para homologar
-/// seletor + contagens/bio/posts quando a conta real ainda está vazia.
-const bool kUseCf187MeProfileMocks = true;
+/// CF-187 — Meu Perfil preenchido (print image.png).
+/// **Off:** API real `GET /profile` + overview/posts/follows (seed QA).
+/// Fixtures [Cf187MeProfileFixtures] ficam só para testes/print.
+const bool kUseCf187MeProfileMocks = false;
 
 /// CF-225 — lista Moderadores (print Enzo Lima + 3 fãs). TEMP até
 /// `GET …/fanclub` devolver moderadores com nome/handle/avatar do print.
