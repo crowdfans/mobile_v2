@@ -43,6 +43,7 @@ import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
+import 'package:crowdfans/utils/comment_thread_rules.dart';
 import 'package:flutter/material.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
@@ -1628,14 +1629,8 @@ abstract final class Cf196CommentReplyMock {
 
   /// Prefill `fan/...` no campo (print image.png).
   static String mentionDraft(String? handle) {
-    final raw = (handle ?? '').trim();
-    if (raw.isEmpty) {
-      return '';
-    }
-    if (raw.startsWith('fan/') || raw.startsWith('@')) {
-      return '$raw ';
-    }
-    return 'fan/$raw ';
+    // Fonte única: [CommentThreadRules.mentionDraft] (CF-69).
+    return CommentThreadRules.mentionDraft(handle);
   }
 }
 

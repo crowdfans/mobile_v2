@@ -17,6 +17,7 @@ import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
 import 'package:crowdfans/utils/app_alert.dart';
+import 'package:crowdfans/utils/comment_thread_rules.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -350,9 +351,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     });
   }
 
-  /// Prefill `fan/...` no compositor (print CF-196).
+  /// Prefill `fan/...` no compositor (print CF-69 / CF-196).
   String replyMentionDraft(String? handle) {
-    return Cf196CommentReplyMock.mentionDraft(handle);
+    return CommentThreadRules.mentionDraft(handle);
   }
 
   void handleStartReply({
@@ -361,11 +362,23 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     required String bannerHandle,
   }) {
     setState(() {
-      _replyTo = parent;
+      // Instagram: [parent] já é o raiz da thread (CF-69).
+      _replyTo = CommentThreadRules.replyParent(root: parent, tapped: parent);
       _replyBannerAuthor = bannerAuthor;
       _replyBannerHandle = bannerHandle;
       _editing = null;
       _draft = replyMentionDraft(bannerHandle);
+      _composerNonce++;
+    });
+  }
+
+  void handleCancelReply() {
+    setState(() {
+      _replyTo = null;
+      _replyBannerAuthor = null;
+      _replyBannerHandle = null;
+      _draft = '';
+      _selectedGifUrl = null;
       _composerNonce++;
     });
   }
@@ -384,8 +397,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
 
   Future<void> handleSubmit() async {
     final content = _draft.trim();
-    if (content.isEmpty &&
-        (_selectedGifUrl == null || _selectedGifUrl!.isEmpty)) {
+    final gifUrl = (_selectedGifUrl ?? '').trim();
+    final gifOrNull = gifUrl.isEmpty ? null : gifUrl;
+    if (!CommentThreadRules.canSubmit(draft: content, gifUrl: gifOrNull)) {
       await AppAlert.show(
         context,
         title: 'Comentário',
@@ -399,7 +413,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         final updated = await CommentService.updateComment(
           commentId: _editing!.id,
           content: content,
-          gifUrl: _selectedGifUrl,
+          gifUrl: gifOrNull,
         );
         setState(() {
           _comments = _mapComments(
@@ -419,7 +433,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         final created = await CommentService.createComment(
           postId: widget.postId,
           content: content,
-          gifUrl: _selectedGifUrl,
+          gifUrl: gifOrNull,
           parentCommentId: _replyTo?.id,
         );
         setState(() {
@@ -516,19 +530,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   }
 
   List<CommentItem> visibleComments() {
-    final list = [..._comments];
-    if (_sortPopular) {
-      list.sort((a, b) {
-        final byVotes = b.votes.compareTo(a.votes);
-        if (byVotes != 0) {
-          return byVotes;
-        }
-        return a.minutesAgo.compareTo(b.minutesAgo);
-      });
-    } else {
-      list.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
-    }
-    return list;
+    return CommentThreadRules.sorted(_comments, popular: _sortPopular);
   }
 
   void handleVoteApplied(String commentId, VoteResult result) {
@@ -803,11 +805,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 _selectedGifUrl = null;
                 _composerNonce++;
               }),
-              onCancelReply: () => setState(() {
-                _replyTo = null;
-                _replyBannerAuthor = null;
-                _replyBannerHandle = null;
-              }),
+                              onCancelReply: handleCancelReply,
               onRemoveGif: () => setState(() => _selectedGifUrl = null),
               onPickGif: () {
                 setState(() => _gifPickerOpen = true);
