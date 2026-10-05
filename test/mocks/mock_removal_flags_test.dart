@@ -15,7 +15,7 @@ void main() {
     expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
     expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
-    expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
+    expect(CfTempMocks.useFanScoreFixtures, isFalse); // CF-201 demock Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useMembershipManageFixtures, isTrue); // CF-205 print
     expect(
