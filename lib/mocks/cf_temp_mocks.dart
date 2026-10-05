@@ -2276,8 +2276,8 @@ abstract final class Cf178FanClubsFeedMock {
 }
 
 /// Liga grade demo CF-181 (Cartas vazias → print povoado).
-/// Off só com `GET /api/v1/fan-letters/artist/:artistId` equivalente ao print.
-const bool kUseCf181CartasMocks = true;
+/// Desligado: `GET /api/v1/fan-letters/artist/:artistId` (API real; vazio = empty PT).
+const bool kUseCf181CartasMocks = false;
 
 /// Cartas do print CF-181 (image4/image5 — autoria topo + grade 3 colunas).
 abstract final class Cf181CartasMock {
