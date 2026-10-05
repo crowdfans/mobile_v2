@@ -19,8 +19,8 @@ void main() {
     expect(Cf213NotificationPrefFixtures.artistSubtitles.length, 3);
   });
 
-  test('CF-216 fixtures: três sessões do print', () {
-    expect(kUseCf216ConnectedDevicesMocks, isTrue);
+  test('CF-216 fixtures: três sessões do print (helpers; flag off)', () {
+    expect(kUseCf216ConnectedDevicesMocks, isFalse);
     final sessions = Cf216ConnectedDevicesFixtures.sessions();
     expect(sessions.length, 3);
     expect(sessions.first.name, 'iPhone 15 Pro');

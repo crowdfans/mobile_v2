@@ -93,7 +93,7 @@ abstract final class CfTempMocks {
 
   /// Segurança genérica. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.
-  /// Print CF-216 usa [kUseCf216ConnectedDevicesMocks].
+  /// CF-216 print fixtures: [kUseCf216ConnectedDevicesMocks] (off = API).
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
@@ -1374,9 +1374,9 @@ abstract final class Cf187MeProfileFixtures {
   }
 }
 
-/// CF-216 — print YouTrack (3 aparelhos + locais). API CF-266 ainda sem
-/// nome/local ricos do print → TEMP até paridade de dados.
-const bool kUseCf216ConnectedDevicesMocks = true;
+/// CF-216 — fixtures do print (3 aparelhos). **Off:** API CF-266
+/// `GET/POST/DELETE /api/v1/me/sessions` (FE: [UserSessionService]).
+const bool kUseCf216ConnectedDevicesMocks = false;
 
 /// CF-216 — três sessões do print.
 extension Cf216ConnectedDevicesFixtures on CfTempMocks {
