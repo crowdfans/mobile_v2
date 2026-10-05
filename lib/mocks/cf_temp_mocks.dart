@@ -61,12 +61,9 @@ const bool kCf191MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 + home Explorar (CF-172/189/193): API lista existe,
-  /// mas tendência histórica / densidade do print ainda não bate. CF-172 usa
-  /// as 3 primeiras linhas em `SearchScreen`; CF-189 a lista Top 500; CF-193
-  /// reordena `engaged` por interações 7d. Off quando snapshot histórico
-  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
-  static const useRankingFixtures = true;
+  /// Ranking Top 100/500 + sheet (CF-172/189/193/241). Off: API CF-268
+  /// entrega `weeksInRanking`/`peakRank` via snapshots semanais.
+  static const useRankingFixtures = false;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
   /// **TEMP on** (CF-201): API existe, mas prod não devolve o ciclo + cards
@@ -401,15 +398,9 @@ abstract final class CfTempMocks {
   }
 }
 
-/// Linhas de ranking equivalentes ao print CF-189 (image.png).
-/// Tendências: up / down / neutral — ícone + semantics, sem colorir neutro.
-///
-/// CF-241 (sheet ⋮): Ludmilla #1 leva `weeksInRanking: 11`, `peakRank: 1`,
-/// `previousRank: 2` — métricas do print; ausente na API real vira "—" no sheet.
-///
-/// CF-193 (Top 100 Engajados): quando `kind == engaged`, a lista é reordenada
-/// por interações (7d) e as posições refletem essa métrica — sem alterar o
-/// conjunto fan-clubs/Ativos usado por CF-189/241.
+/// Amostra de linhas de ranking (print CF-189/193/241) para testes e, se a
+/// flag [CfTempMocks.useRankingFixtures] estiver on, para UI TEMP.
+/// Com CF-268 a API popula `weeksInRanking`/`peakRank`; flag fica off.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,

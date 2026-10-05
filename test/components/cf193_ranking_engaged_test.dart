@@ -16,8 +16,9 @@ Widget _wrap(Widget child) {
 void main() {
   // --- GREEN: print / sucesso (métrica + período + layout) ---
 
-  test('CF-193 green: fixtures Engajados ordenado por interações (7d)', () {
-    expect(CfTempMocks.useRankingFixtures, isTrue);
+  test('CF-193 green: amostra Engajados ordenado por interações (7d)', () {
+    // CF-268: flag off — amostra ainda valida a ordenação do print.
+    expect(CfTempMocks.useRankingFixtures, isFalse);
     final rows = cfTempMockRankingArtists(kind: 'engaged', limit: 8);
     expect(rows.length, 8);
 
@@ -62,7 +63,7 @@ void main() {
     expect(rankingLimitForKind('engaged'), 100);
   });
 
-  testWidgets('CF-193 green: tela Top 100 · Engajados + #1 = Mayra/12', (
+  testWidgets('CF-193 green: tela Top 100 · Engajados chrome (lista via API)', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -84,14 +85,8 @@ void main() {
     expect(find.text('Crescente'), findsOneWidget);
     expect(find.text('Decrescente'), findsOneWidget);
 
-    // Lista: #1 = mais interações (Mayra / 12).
-    expect(find.text('Mayra'), findsOneWidget);
-    expect(find.text('12 interações (7d)'), findsOneWidget);
-
-    // Layout print: # à esquerda do avatar.
-    final badge = tester.getTopLeft(find.text('#1'));
-    final clip = tester.getTopLeft(find.byType(ClipRRect).first);
-    expect(badge.dx, lessThan(clip.dx));
+    // CF-268 fixtures off: lista vem da API — não assertar Mayra TEMP.
+    // Layout print (# à esquerda) coberto pelo row widget test abaixo / CF-172.
 
     // Sem subtítulo visual (chrome CF-189); métrica no Semantics do título.
     expect(
@@ -256,14 +251,12 @@ void main() {
     expect(find.text('Nenhum artista neste ranking ainda.'), findsNothing);
   });
 
-  test('CF-193 edge: fixtures ranking ON até snapshot histórico', () {
-    // Flag const: Engajados ainda depende de fixtures (tendência/densidade).
-    // Off só quando BACKEND_TODO ranking + dados reais ≈ print.
-    expect(CfTempMocks.useRankingFixtures, isTrue);
+  test('CF-193 edge: fixtures ranking OFF após CF-268', () {
+    expect(CfTempMocks.useRankingFixtures, isFalse);
     // Chrome helpers continuam corretos sem depender do flag (API path).
     expect(rankingMetricHintForKind('engaged'), 'interações (7d)');
     expect(rankingLimitForKind('engaged'), 100);
-    // Fan-clubs fixtures intactas (CF-189) — Engajados só reordena engaged.
+    // Amostra fan-clubs intacta para asserts de print (CF-189).
     final fanClubs = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 3);
     expect(fanClubs.first.name, 'Ludmilla');
     expect(fanClubs.first.membersLabel, '512 mil membros');

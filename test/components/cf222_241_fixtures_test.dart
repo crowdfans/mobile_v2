@@ -50,7 +50,8 @@ void main() {
     expect(sharePrint.shares, 3);
   });
 
-  test('CF-237 selector + CF-240 search L + CF-241 Ludmilla ranking', () {
+  test('CF-237 selector + CF-240 search L + CF-241 Ludmilla sample (fixtures off)', () {
+    expect(CfTempMocks.useRankingFixtures, isFalse);
     final clubs = cfTempMockFanClubSelectorArtists();
     expect(clubs.map((c) => c.name).toList(), [
       'Mayra',

@@ -19,7 +19,7 @@ void main() {
 >>>>>>> origin/prod
     expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
-    expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
+    expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(
