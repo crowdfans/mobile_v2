@@ -10,13 +10,8 @@ void main() {
     expect(kUseCf216ConnectedDevicesMocks, isFalse); // CF-266 /me/sessions
     expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
-<<<<<<< HEAD
-    expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
-    expect(kUseCf170WalletPackMocks, isFalse); // CF-270 democked
-=======
     expect(CfTempMocks.useArtistSobreFixtures, isFalse); // CF-269
-    expect(kUseCf170WalletPackMocks, isTrue); // CF-270
->>>>>>> origin/prod
+    expect(kUseCf170WalletPackMocks, isFalse); // CF-270 democked
     expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
     expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
