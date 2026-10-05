@@ -10,7 +10,7 @@ void main() {
     expect(kUseCf216ConnectedDevicesMocks, isFalse); // CF-266 /me/sessions
     expect(kUseCf190NotificationMocks, isFalse); // CF-267
 
-    expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
+    expect(CfTempMocks.useArtistSobreFixtures, isFalse); // CF-269
     expect(kUseCf170WalletPackMocks, isTrue); // CF-270
     expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 

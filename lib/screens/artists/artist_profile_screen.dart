@@ -15,6 +15,7 @@ import 'package:crowdfans/components/profile/artist_profile_social_links_card.da
 import 'package:crowdfans/components/profile/artist_profile_spotify_card.dart';
 import 'package:crowdfans/components/profile/artist_profile_stat_tile.dart';
 import 'package:crowdfans/components/profile/artist_sobre_base.dart';
+import 'package:crowdfans/components/profile/artist_sobre_links.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -587,13 +588,20 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     }
 
     if (_tab == 'sobre') {
-      final bio = _profile?.description.trim().isNotEmpty == true
-          ? _profile!.description
+      final profile = _profile;
+      final bio = profile?.description.trim().isNotEmpty == true
+          ? profile!.description
           : 'Este artista ainda não escreveu uma bio.';
-      final useSobreFixtures =
-          kUseCfTempMocks && CfTempMocks.useArtistSobreFixtures;
-      final baseLocation =
-          useSobreFixtures ? Cf182ArtistSobreMock.location : null;
+      final trackTitle = (profile?.trackTitle ?? '').trim();
+      final playlistSubtitle = (profile?.playlistSubtitle ?? '').trim();
+      final album = (profile?.openSpotifyAlbum ?? '').trim();
+      final spotifyUrl = (profile?.spotifyProfileUrl ?? '').trim();
+      final previewReady =
+          profile?.previewReady == true && trackTitle.isNotEmpty;
+      final ig = (profile?.instagramHandle ?? '').trim();
+      final yt = (profile?.youtubeHandle ?? '').trim();
+      final igUrl = instagramProfileUrl(ig);
+      final ytUrl = youtubeProfileUrl(yt);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -620,7 +628,7 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
               Expanded(
                 child: ArtistProfileStatTile(
                   label: 'Base',
-                  value: artistSobreBaseLabel(baseLocation),
+                  value: artistSobreBaseLabel(profile?.location),
                 ),
               ),
               const SizedBox(width: 10),
@@ -635,35 +643,30 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           const SizedBox(height: 14),
           ArtistProfileSpotifyCard(
             artistName: name,
-            title: useSobreFixtures ? Cf182ArtistSobreMock.trackTitle : null,
-            subtitle: useSobreFixtures
-                ? Cf182ArtistSobreMock.playlistSubtitle
-                : 'Playlist em destaque',
-            previewReady: useSobreFixtures,
-            monthlyListeners: useSobreFixtures
-                ? Cf182ArtistSobreMock.monthlyListeners
-                : 'Não informado',
-            genre: useSobreFixtures
-                ? Cf182ArtistSobreMock.genre
-                : 'Não informado',
-            playlistName: useSobreFixtures
-                ? Cf182ArtistSobreMock.trackTitle
-                : null,
-            openSpotifyAlbum: useSobreFixtures
-                ? Cf182ArtistSobreMock.openSpotifyAlbum
-                : null,
-            onOpenSpotify: useSobreFixtures ? () {} : null,
+            title: trackTitle.isEmpty ? null : trackTitle,
+            subtitle: playlistSubtitle.isEmpty
+                ? 'Playlist em destaque'
+                : playlistSubtitle,
+            previewReady: previewReady,
+            monthlyListeners:
+                artistSobreMetricLabel(profile?.monthlyListeners),
+            genre: artistSobreMetricLabel(profile?.genre),
+            playlistName: trackTitle.isEmpty ? null : trackTitle,
+            openSpotifyAlbum: album.isEmpty ? null : album,
+            onOpenSpotify: spotifyUrl.isEmpty
+                ? null
+                : () => openExternalProfileUrl(spotifyUrl),
           ),
           const SizedBox(height: 14),
           ArtistProfileSocialLinksCard(
-            instagramHandle: useSobreFixtures
-                ? Cf182ArtistSobreMock.instagramHandle
-                : '',
-            youtubeHandle: useSobreFixtures
-                ? Cf182ArtistSobreMock.youtubeHandle
-                : '',
-            onInstagram: useSobreFixtures ? () {} : null,
-            onYoutube: useSobreFixtures ? () {} : null,
+            instagramHandle: ig,
+            youtubeHandle: yt,
+            onInstagram: igUrl == null
+                ? null
+                : () => openExternalProfileUrl(igUrl),
+            onYoutube: ytUrl == null
+                ? null
+                : () => openExternalProfileUrl(ytUrl),
           ),
         ],
       );

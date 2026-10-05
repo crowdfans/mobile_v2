@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('CF-182 green — print Ludmilla Sobre', () {
-    test('fixture Spotify/base/redes igual ao print', () {
-      expect(CfTempMocks.useArtistSobreFixtures, isTrue);
+    test('amostra print Spotify/base/redes; fixture TEMP off (CF-269)', () {
+      expect(CfTempMocks.useArtistSobreFixtures, isFalse);
       expect(Cf182ArtistSobreMock.location, 'Rio de Janeiro, BR');
       expect(Cf182ArtistSobreMock.trackTitle, 'Maldivas');
       expect(Cf182ArtistSobreMock.playlistSubtitle, 'Playlist em destaque');
