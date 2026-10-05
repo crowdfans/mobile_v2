@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// Lightbox preto com Fechar acessível, índice e zoom (ou só pan se reduzir movimento).
+///
+/// Print CF-234: fundo preto, **Fechar** no topo direito (área segura),
+/// indicador `n/m` no rodapé central — texto branco sem pill, mídia com
+/// [BoxFit.contain] (sem esticar).
 class PostMediaLightbox extends StatefulWidget {
   const PostMediaLightbox({
     super.key,
@@ -60,6 +64,10 @@ class _PostMediaLightboxState extends State<PostMediaLightbox> {
     Navigator.of(context).pop();
   }
 
+  static const _controlShadow = [
+    Shadow(color: Colors.black87, blurRadius: 10, offset: Offset(0, 1)),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
@@ -103,7 +111,7 @@ class _PostMediaLightboxState extends State<PostMediaLightbox> {
             },
           ),
           Positioned(
-            top: topInset + 4,
+            top: topInset + 8,
             left: 8,
             right: 8,
             child: Row(
@@ -116,17 +124,21 @@ class _PostMediaLightboxState extends State<PostMediaLightbox> {
                     onPressed: handleClose,
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.black.withValues(alpha: 0.45),
+                      backgroundColor: Colors.transparent,
+                      minimumSize: const Size(48, 44),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
+                        horizontal: 12,
                         vertical: 8,
                       ),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: const Text(
                       'Fechar',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        shadows: _controlShadow,
                       ),
                     ),
                   ),
@@ -137,25 +149,18 @@ class _PostMediaLightboxState extends State<PostMediaLightbox> {
           Positioned(
             left: 0,
             right: 0,
-            bottom: bottomInset + 20,
+            bottom: bottomInset + 24,
             child: Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.55),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
-                  ),
-                  child: Text(
-                    '${_index + 1}/${widget.uris.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+              child: Semantics(
+                liveRegion: true,
+                label: 'Imagem ${_index + 1} de ${widget.uris.length}',
+                child: Text(
+                  '${_index + 1}/${widget.uris.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    shadows: _controlShadow,
                   ),
                 ),
               ),

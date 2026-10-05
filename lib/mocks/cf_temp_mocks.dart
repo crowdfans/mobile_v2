@@ -72,7 +72,8 @@ abstract final class CfTempMocks {
   static const useFanClubFixtures = false;
 
   /// Home feed — `GET /api/v1/home`.
-  static const useHomeFeedFixtures = false;
+  /// TEMP: on para CF-234 (lightbox 1/3 via carrossel) + CF-232/235 prints.
+  static const useHomeFeedFixtures = true;
 
   /// Busca artistas — `GET /api/v1/search/artists`.
   static const useSearchArtistsFixtures = false;
@@ -1226,7 +1227,13 @@ const cfTempMockModerationCandidate = (
   photoUrl: '',
 );
 
+/// URIs do visualizador CF-234 (print: cervo como `1/3`).
+List<String> cfTempMockCf234LightboxUris() {
+  return const [_cfCarouselDeer, _cfCarouselBeach, _cfCarouselCity];
+}
+
 /// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return const [
     FeedPost(
@@ -1261,6 +1268,8 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       comments: 31,
       shares: 5,
       imageUri: _cfCarouselBeach,
+      // Beach-first = print CF-233; cervo fica no meio — CF-234 usa
+      // [cfTempMockCf234LightboxUris] (deer-first) no widget test.
       carouselUris: [_cfCarouselBeach, _cfCarouselDeer, _cfCarouselCity],
     ),
     FeedPost(

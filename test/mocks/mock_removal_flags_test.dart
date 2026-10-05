@@ -18,7 +18,7 @@ void main() {
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isFalse);
-    expect(CfTempMocks.useHomeFeedFixtures, isFalse);
+    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-234 lightbox via feed
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isFalse);
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
