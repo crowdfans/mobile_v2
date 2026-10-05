@@ -16,6 +16,7 @@ import 'package:crowdfans/components/profile/profile_identity_block.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/fan_profile.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/profile.dart';
@@ -75,6 +76,17 @@ class _MeScreenState extends ConsumerState<MeScreen> {
     return name.isEmpty ? 'Artista' : name;
   }
 
+  /// CF-187: TEMP perfil preenchido do print quando a flag está ligada.
+  bool get useCf187FilledMeProfile =>
+      kUseCfTempMocks && kUseCf187MeProfileMocks;
+
+  Profile? fanDisplayProfile(Profile? sessionProfile) {
+    if (useCf187FilledMeProfile) {
+      return Cf187MeProfileFixtures.profile;
+    }
+    return sessionProfile;
+  }
+
   bool isMediaPost(FeedPost post) {
     return post.type == PostType.image ||
         post.type == PostType.carousel ||
@@ -124,6 +136,18 @@ class _MeScreenState extends ConsumerState<MeScreen> {
 
   Future<void> handleLoad() async {
     final profile = ref.read(authSessionProvider).profile;
+    // CF-187 cobre só Meu Perfil Superfã — não mexe no Me artista.
+    if (useCf187FilledMeProfile && profile?.isArtist != true) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _posts = Cf187MeProfileFixtures.posts();
+        _artists = Cf187MeProfileFixtures.followedArtists();
+        _loading = false;
+      });
+      return;
+    }
     if (profile == null || profile.userUid.isEmpty) {
       setState(() => _loading = false);
       return;
@@ -404,7 +428,11 @@ class _MeScreenState extends ConsumerState<MeScreen> {
     AppColors colors,
     Profile? profile,
   ) {
+    final display = fanDisplayProfile(profile);
     final posts = visibleFanPosts();
+    // Print CF-187: Editar → chips → seletor (sem faixa horizontal de artistas).
+    final showFollowedStrip =
+        !useCf187FilledMeProfile && _artists.isNotEmpty && display != null;
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -417,61 +445,64 @@ class _MeScreenState extends ConsumerState<MeScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             children: [
               MeProfileToolbar(
-                handle: profile?.name ?? '',
+                handle: display?.name ?? profile?.name ?? '',
                 onJams: () => context.push(Pages.profileWallet),
                 onSettings: () => context.push(Pages.profileSettings),
               ),
               const SizedBox(height: 4),
-              if (profile == null)
+              if (display == null)
                 const ProfileState(
                   title: 'Perfil',
                   message: 'Perfil ainda não carregou.',
                 )
               else ...[
                 ProfileIdentityBlock(
-                  profile: profile,
-                  onArtistsTap: () => handleOpenArtists(profile),
+                  profile: display,
+                  onArtistsTap: () => handleOpenArtists(display),
                 ),
                 const SizedBox(height: 18),
                 MeProfileActionsRow(
                   onEditProfile: () => context.push(Pages.profileAccount),
                 ),
-                if (_artists.isNotEmpty) ...[
+                if (showFollowedStrip) ...[
                   const SizedBox(height: 20),
                   MeFollowedArtistsSection(
                     artists: _artists,
-                    onSeeAll: () => handleOpenArtists(profile),
+                    onSeeAll: () => handleOpenArtists(display),
                     onPressArtist: handleOpenArtist,
                   ),
                 ],
               ],
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  MePostsFilterChip(
-                    label: 'Todos',
-                    selected: _filter == _MePostsFilter.all,
-                    onPressed: () {
-                      setState(() => _filter = _MePostsFilter.all);
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  MePostsFilterChip(
-                    label: 'Posts',
-                    selected: _filter == _MePostsFilter.posts,
-                    onPressed: () {
-                      setState(() => _filter = _MePostsFilter.posts);
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  MePostsFilterChip(
-                    label: 'Media',
-                    selected: _filter == _MePostsFilter.media,
-                    onPressed: () {
-                      setState(() => _filter = _MePostsFilter.media);
-                    },
-                  ),
-                ],
+              Semantics(
+                label: 'Filtros de publicações',
+                child: Row(
+                  children: [
+                    MePostsFilterChip(
+                      label: 'Todos',
+                      selected: _filter == _MePostsFilter.all,
+                      onPressed: () {
+                        setState(() => _filter = _MePostsFilter.all);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    MePostsFilterChip(
+                      label: 'Posts',
+                      selected: _filter == _MePostsFilter.posts,
+                      onPressed: () {
+                        setState(() => _filter = _MePostsFilter.posts);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    MePostsFilterChip(
+                      label: 'Media',
+                      selected: _filter == _MePostsFilter.media,
+                      onPressed: () {
+                        setState(() => _filter = _MePostsFilter.media);
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               MeFanClubFilterField(
