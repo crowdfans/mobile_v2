@@ -357,82 +357,91 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
     final profile = ref.watch(authSessionProvider).profile;
     final avatarUrl = profile?.photoUrl ?? '';
     final remaining = _maxCharacters - _text.length;
+    // CF-179: lift do Column inteiro (header + campo + toolbar) acima do
+    // teclado — evita overflow do flex quando a barra sozinha soma viewInsets.
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final bottomPad = keyboardInset > 0 ? keyboardInset : safeBottom;
 
     return Scaffold(
       backgroundColor: colors.background,
-      // CF-179: teclado via AnimatedPadding na toolbar (não encolher body).
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         bottom: false,
-        child: Column(
-          children: [
-            NovoPostHeader(
-              subtitle: 'Fã Clube',
-              canSubmit: _canPublish,
-              publishing: _publishing,
-              onCancel: handleCancel,
-              onPublish: handlePublish,
-              showSecretToggle: true,
-              isSecretMode: _isSecretMode,
-              onToggleSecret: handleToggleSecret,
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                children: [
-                  if (_isSecretMode) ...[
-                    const NovoPostSecretBanner(),
-                    const SizedBox(height: 12),
-                  ],
-                  if (_loadingArtists && !_lockedArtist)
-                    const ProfileState(loading: true)
-                  else if (!_lockedArtist &&
-                      _candidates.isEmpty &&
-                      _selected == null)
-                    const ProfileState(
-                      title: 'Nenhum clube',
-                      message: 'Siga um artista para publicar no fã clube.',
-                    )
-                  else ...[
-                    FanClubSelectorField(
-                      selected: _selected,
-                      expanded: _clubSelectorOpen,
-                      enabled: !_lockedArtist,
-                      onPressed: handleToggleClubSelector,
-                    ),
-                    if (_clubSelectorOpen) ...[
-                      const SizedBox(height: 8),
-                      FanClubSelectorDropdown(
-                        artists: _candidates,
-                        selectedId: _selected?.id,
-                        onSelect: handleSelectArtist,
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: bottomPad),
+          child: Column(
+            children: [
+              NovoPostHeader(
+                subtitle: 'Fã Clube',
+                canSubmit: _canPublish,
+                publishing: _publishing,
+                onCancel: handleCancel,
+                onPublish: handlePublish,
+                showSecretToggle: true,
+                isSecretMode: _isSecretMode,
+                onToggleSecret: handleToggleSecret,
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    if (_isSecretMode) ...[
+                      const NovoPostSecretBanner(),
+                      const SizedBox(height: 12),
+                    ],
+                    if (_loadingArtists && !_lockedArtist)
+                      const ProfileState(loading: true)
+                    else if (!_lockedArtist &&
+                        _candidates.isEmpty &&
+                        _selected == null)
+                      const ProfileState(
+                        title: 'Nenhum clube',
+                        message: 'Siga um artista para publicar no fã clube.',
+                      )
+                    else ...[
+                      FanClubSelectorField(
+                        selected: _selected,
+                        expanded: _clubSelectorOpen,
+                        enabled: !_lockedArtist,
+                        onPressed: handleToggleClubSelector,
+                      ),
+                      if (_clubSelectorOpen) ...[
+                        const SizedBox(height: 8),
+                        FanClubSelectorDropdown(
+                          artists: _candidates,
+                          selectedId: _selected?.id,
+                          onSelect: handleSelectArtist,
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      NovoPostComposerBody(
+                        avatarUrl: avatarUrl,
+                        controller: _textController,
+                        focusNode: _focusNode,
+                        onChanged: handleTextChange,
+                        onFocus: handleComposerFocus,
+                        imageBytes: _imageBytes,
+                        imageUrl: _imageUri,
+                        isVideo: (_imageMime ?? '').startsWith('video/'),
+                        onRemoveImage: _hasMedia ? handleRemoveImage : null,
                       ),
                     ],
-                    const SizedBox(height: 24),
-                    NovoPostComposerBody(
-                      avatarUrl: avatarUrl,
-                      controller: _textController,
-                      focusNode: _focusNode,
-                      onChanged: handleTextChange,
-                      onFocus: handleComposerFocus,
-                      imageBytes: _imageBytes,
-                      imageUrl: _imageUri,
-                      isVideo: (_imageMime ?? '').startsWith('video/'),
-                      onRemoveImage: _hasMedia ? handleRemoveImage : null,
-                    ),
                   ],
-                ],
+                ),
               ),
-            ),
-            NovoPostMediaToolbar(
-              remainingCharacters: remaining,
-              onPickGallery: handlePickFromGallery,
-              onTakePhoto: handleTakePhoto,
-              onPickVideo: handlePickVideo,
-            ),
-          ],
+              NovoPostMediaToolbar(
+                remainingCharacters: remaining,
+                onPickGallery: handlePickFromGallery,
+                onTakePhoto: handleTakePhoto,
+                onPickVideo: handlePickVideo,
+              ),
+            ],
+          ),
         ),
       ),
     );

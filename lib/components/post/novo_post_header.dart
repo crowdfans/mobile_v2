@@ -61,16 +61,24 @@ class NovoPostHeader extends StatelessWidget {
                 children: [
                   Text(
                     'Novo post',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
+                      height: 1.2,
                       fontWeight: FontWeight.w600,
                       color: colors.textPrimary,
                     ),
                   ),
                   Text(
                     subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
+                      height: 1.2,
                       color: colors.textSecondary,
                     ),
                   ),
