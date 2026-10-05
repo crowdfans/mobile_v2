@@ -72,13 +72,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-<<<<<<< HEAD
-  /// **TEMP on** (CF-222 community + CF-223 Ver mais moderadores/candidatura).
-  /// Off quando API real bater os prints Enzo / Aline / lista de mods.
-=======
-  /// TEMP ligado p/ CF-222…230 prints (Enzo / mods / banners).
-  /// Lista Moderadores (CF-225) também usa [kUseCf225ModeratorsMocks].
->>>>>>> origin/prod
+  /// **TEMP on** (CF-222…230 + CF-223 Ver mais). Lista Moderadores também
+  /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
@@ -1141,36 +1136,24 @@ List<FanClubModerator> cfTempMockFanClubModerators() {
       userUid: 'cf-mod-aline',
       handle: 'alineduarte',
       displayName: 'Aline Duarte',
-<<<<<<< HEAD
-      photoUrl: CfTempMocks._avatarWoman,
-=======
       photoUrl:
           'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
->>>>>>> origin/prod
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-maria',
       handle: 'mariaeduarda',
       displayName: 'Maria Eduarda',
-<<<<<<< HEAD
-      photoUrl: CfTempMocks._avatarMayra,
-=======
       photoUrl:
           'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=100&q=80',
->>>>>>> origin/prod
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-lari',
       handle: 'larirocha',
       displayName: 'Lari Rocha',
-<<<<<<< HEAD
-      photoUrl: CfTempMocks._avatarCamila,
-=======
       photoUrl:
           'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=100&q=80',
->>>>>>> origin/prod
       role: 'moderator',
     ),
   ];
