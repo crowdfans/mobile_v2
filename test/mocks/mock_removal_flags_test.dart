@@ -34,6 +34,9 @@ void main() {
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-184/239
     expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
+    expect(CfTempMocks.useHelpFixtures, isTrue); // CF-198 print
+    expect(kUseCf198HelpMocks, isTrue); // CF-198 Central de ajuda
+    expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
