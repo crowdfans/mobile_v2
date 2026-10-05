@@ -90,8 +90,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
       _loading = true;
       _error = null;
     });
-    // CF-189: conjunto equivalente ao print (densidade + tendência) enquanto
-    // o snapshot histórico de ranking no backend não entrega up/down reais.
+    // TEMP ranking: só se a flag ainda estiver on (CF-268 demock = off).
     if (CfTempMocks.useRankingFixtures) {
       setState(() {
         _artists = cfTempMockRankingArtists(
