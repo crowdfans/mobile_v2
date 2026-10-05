@@ -23,55 +23,64 @@ class FanClubSelectorField extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final artist = selected;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: const Key('novo-post-club-selector'),
-        onTap: enabled ? onPressed : null,
-        borderRadius: BorderRadius.circular(16),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.border),
-          ),
-          child: SizedBox(
-            height: 62,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Row(
-                children: [
-                  if (artist != null && artist.avatarUrl.trim().isNotEmpty) ...[
-                    PostAvatar(url: artist.avatarUrl, size: 28),
-                    const SizedBox(width: 10),
-                  ],
-                  Expanded(
-                    child: Text(
-                      artist?.name ?? 'Selecionar Fã Clube',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: artist == null
-                            ? colors.textTertiary
-                            : colors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  if (enabled)
-                    AnimatedRotation(
-                      turns: expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 160),
-                      child: SvgPicture.asset(
-                        'assets/icons/arrows/chevron-down.svg',
-                        width: 18,
-                        height: 18,
-                        colorFilter: ColorFilter.mode(
-                          colors.textTertiary,
-                          BlendMode.srcIn,
+    final label = artist?.name ?? 'Selecionar Fã Clube';
+    return Semantics(
+      button: true,
+      expanded: expanded,
+      label: artist == null
+          ? 'Selecionar Fã Clube'
+          : 'Fã clube selecionado: ${artist.name}',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: const Key('novo-post-club-selector'),
+          onTap: enabled ? onPressed : null,
+          borderRadius: BorderRadius.circular(16),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border),
+            ),
+            child: SizedBox(
+              height: 62,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Row(
+                  children: [
+                    if (artist != null &&
+                        artist.avatarUrl.trim().isNotEmpty) ...[
+                      PostAvatar(url: artist.avatarUrl, size: 28),
+                      const SizedBox(width: 10),
+                    ],
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: artist == null
+                              ? colors.textTertiary
+                              : colors.textPrimary,
                         ),
                       ),
                     ),
-                ],
+                    if (enabled)
+                      AnimatedRotation(
+                        turns: expanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 160),
+                        child: SvgPicture.asset(
+                          'assets/icons/arrows/chevron-down.svg',
+                          width: 18,
+                          height: 18,
+                          colorFilter: ColorFilter.mode(
+                            colors.textTertiary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

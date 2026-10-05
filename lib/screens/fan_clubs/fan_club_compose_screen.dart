@@ -127,12 +127,11 @@ class _FanClubComposeScreenState extends ConsumerState<FanClubComposeScreen> {
       if (!mounted) {
         return;
       }
-      var candidates = merged.values.toList();
-      if (candidates.isEmpty &&
-          kUseCfTempMocks &&
-          CfTempMocks.useFanClubSelectorFixtures) {
-        candidates = cfTempMockFanClubSelectorArtists();
-      }
+      // CF-237: fixtures do print têm prioridade enquanto a flag TEMP estiver on.
+      final candidates =
+          kUseCfTempMocks && CfTempMocks.useFanClubSelectorFixtures
+          ? cfTempMockFanClubSelectorArtists()
+          : merged.values.toList();
       setState(() {
         _candidates = candidates;
         _loadingArtists = false;

@@ -19,35 +19,43 @@ class FanClubSelectorOptionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return InkWell(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Row(
-          children: [
-            PostAvatar(url: artist.avatarUrl, size: 36),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                artist.name,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: artist.name,
+      child: InkWell(
+        onTap: onPressed,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              children: [
+                PostAvatar(url: artist.avatarUrl, size: 36),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    artist.name,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textPrimary,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: selected ? colors.primary : colors.border,
-                  width: selected ? 6 : 1.5,
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: selected ? colors.primary : colors.border,
+                      width: selected ? 6 : 1.5,
+                    ),
+                  ),
+                  child: const SizedBox(width: 20, height: 20),
                 ),
-              ),
-              child: const SizedBox(width: 20, height: 20),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
