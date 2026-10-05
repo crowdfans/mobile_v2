@@ -101,10 +101,9 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  /// **TEMP on** (CF-186 aba perfil + CF-222…230 + CF-223 Ver mais + CF-227 menu).
-  /// Lista Moderadores também usa [kUseCf225ModeratorsMocks].
-  /// Off quando API real bater os prints.
-  static const useFanClubFixtures = true;
+  /// Off: API real + ensure/seed (demock CF-222…230 / CF-186).
+  /// Lista Moderadores: [kUseCf225ModeratorsMocks] também off.
+  static const useFanClubFixtures = false;
 
   /// Home feed — **off**: `GET /api/v1/home` real (seed/prod não-vazio).
   /// Helpers `cfTempMockHomeFeedPosts` ficam para testes print CF-175/232…236.
@@ -123,11 +122,9 @@ abstract final class CfTempMocks {
   /// + posts reais. Helpers Ludmilla/Kheper ficam só para testes de anatomia.
   static const useArtistExclusiveFixtures = false;
 
-  /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
-  /// Expulsos 1 (Anna Lu / Vic Melo) igual ao print. APIs de appeals/strikes/
-  /// expulsions existem, mas sem dados de QA o painel fica vazio. Off quando
-  /// seed/prod tiver fila real equivalente à referência.
-  static const useModerationPanelFixtures = true;
+  /// Painel moderação (CF-199) — Off: APIs appeals/strikes/expulsions reais
+  /// (demock pack fã-clube). Empty = sem fila pendente (ok).
+  static const useModerationPanelFixtures = false;
 
   /// CF-198 Central de ajuda — **off**: conteúdo oficial em
   /// `lib/content/help_content.dart` (sem CMS). Flag dedicada:
@@ -692,10 +689,9 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   return ordered.take(limit).toList(growable: false);
 }
 
-/// CF-229 — banner expulso (Felipe Rhy) no feed do clube.
-/// TEMP até a conta de QA receber `viewerIsExpelled` + motivo da API.
-/// Complementa [CfTempMocks.useFanClubFixtures] (atalho Clubes + cover).
-const bool kUseCf229ExpelledFixtures = true;
+/// CF-229 — banner expulso. Off: API `viewerIsExpelled` + motivo (demock).
+/// Helpers de print (Felipe) ficam para testes unitários.
+const bool kUseCf229ExpelledFixtures = false;
 
 /// Cover do print CF-229 (mic / spotlight).
 const cfTempMockFelipeCoverUrl =
@@ -708,10 +704,8 @@ const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
 
-/// CF-200 — tela Defender retorno (motivo rosado + campo 24–420).
-/// TEMP até a API sempre enviar `viewerExpulsionReason` e o submit real
-/// funcionar na conta de QA. Não altera flags CF-229/CF-230.
-const bool kUseCf200DefendReturnFixtures = true;
+/// CF-200 — tela Defender retorno. Off: API `viewerExpulsionReason` + appeals.
+const bool kUseCf200DefendReturnFixtures = false;
 
 /// True quando o mock TEMP da tela Defender retorno (CF-200) está ativo.
 bool cf200DefendReturnFixturesEnabled() =>
@@ -725,15 +719,11 @@ const cfTempMockStrikeReason =
 bool cf229ExpelledFixturesEnabled() =>
     kUseCfTempMocks && kUseCf229ExpelledFixtures;
 
-/// CF-230 — banner aviso (Laís Costa) no feed do clube.
-/// TEMP até a conta de QA receber strikes + motivo + chances da API.
-/// Não altera o caminho expulso (CF-229).
-const bool kUseCf230WarningFixtures = true;
+/// CF-230 — banner aviso. Off: API strikes + motivo + chances (demock).
+const bool kUseCf230WarningFixtures = false;
 
-/// CF-227 — menu do post no fã-clube (print Lari Rocha / Laís Costa).
-/// TEMP até o feed real do clube expor o post do print; reutiliza a variante
-/// warning ([cfTempMockLaisArtistUid]) e o atalho Clubes do CF-230.
-const bool kUseCf227FanClubPostMenuFixtures = true;
+/// CF-227 — menu do post no fã-clube. Off: menu real da tela (demock pack).
+const bool kUseCf227FanClubPostMenuFixtures = false;
 
 /// Cover do print CF-230 (Laís Costa).
 const cfTempMockLaisCoverUrl =
@@ -1291,14 +1281,11 @@ abstract final class Cf185ArtistFeedFixtures {
 /// Fixtures [Cf187MeProfileFixtures] ficam só para testes/print.
 const bool kUseCf187MeProfileMocks = false;
 
-/// CF-225 — lista Moderadores (print Enzo Lima + 3 fãs). TEMP até
-/// `GET …/fanclub` devolver moderadores com nome/handle/avatar do print.
-/// Flag dedicada na tela; [CfTempMocks.useFanClubFixtures] já cobre o feed.
-const bool kUseCf225ModeratorsMocks = true;
+/// CF-225 — lista Moderadores. Off: `moderators` embutidos no GET fanclub.
+const bool kUseCf225ModeratorsMocks = false;
 
-/// CF-224 — Solicitar moderação (candidato Aline + limites 24/420). TEMP
-/// até o perfil real bater o print; não altera CF-225 lista / CF-199 painel.
-const bool kUseCf224RequestModerationMocks = true;
+/// CF-224 — Solicitar moderação. Off: POST moderator-requests API real.
+const bool kUseCf224RequestModerationMocks = false;
 
 /// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
 abstract final class Cf187MeProfileFixtures {

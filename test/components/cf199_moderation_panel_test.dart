@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CF-199 fixtures on + contagens Contestações 2 / Avisos 2 / Expulsos 1', () {
-    expect(CfTempMocks.useModerationPanelFixtures, isTrue);
+    expect(CfTempMocks.useModerationPanelFixtures, isFalse);
     expect(Cf199ModerationPanelFixtures.appeals(), hasLength(2));
     expect(Cf199ModerationPanelFixtures.strikes(), hasLength(2));
     expect(Cf199ModerationPanelFixtures.expulsions(), hasLength(1));

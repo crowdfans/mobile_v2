@@ -29,8 +29,8 @@ void main() {
   });
 
   test('CF-229 fixtures: Felipe expulso sem posts + flag dedicada', () async {
-    expect(kUseCf229ExpelledFixtures, isTrue);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // pack CF-222…230 on prod
+    expect(kUseCf229ExpelledFixtures, isFalse);
+    expect(CfTempMocks.useFanClubFixtures, isFalse); // demock pack CF-222…230
     expect(cfTempMockFanClubKind(cfTempMockFelipeArtistUid),
         CfFanClubFixtureKind.expelled);
 

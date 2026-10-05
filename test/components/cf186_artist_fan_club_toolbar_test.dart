@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CF-186 Ludmilla fixtures: Carina vídeo + Pedro texto', () {
     expect(kUseCfTempMocks, isTrue);
-    expect(CfTempMocks.useFanClubFixtures, isTrue);
+    expect(CfTempMocks.useFanClubFixtures, isFalse);
     expect(cfTempMockIsLudmillaFanClubTab('mock-fc-ludmilla'), isTrue);
     expect(cfTempMockIsLudmillaFanClubTab('other-artist'), isFalse);
 

@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 void main() {
   test('CF-223 fixtures: 3 moderadores do print Enzo + candidatura liberada', () {
     expect(kUseCfTempMocks, isTrue);
-    expect(CfTempMocks.useFanClubFixtures, isTrue);
+    expect(CfTempMocks.useFanClubFixtures, isFalse);
 
     final club = cfTempMockArtistFanClubFeed('mock-fc-enzo').fanClub;
     expect(club.artistName, 'Enzo Lima');
@@ -79,7 +79,7 @@ void main() {
   testWidgets(
     'CF-223 Ver mais: lista resumida, Ver todos e candidatura (sem apelação)',
     (tester) async {
-      expect(CfTempMocks.useFanClubFixtures, isTrue);
+      expect(CfTempMocks.useFanClubFixtures, isFalse);
 
       final router = GoRouter(
         initialLocation: '/about',

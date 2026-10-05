@@ -34,7 +34,7 @@ void main() {
   group('CF-273 green', () {
     test('fixture elegível: Aline + limites 24/420 alinhados ao server', () {
       expect(kUseCfTempMocks, isTrue);
-      expect(kUseCf224RequestModerationMocks, isTrue);
+      expect(kUseCf224RequestModerationMocks, isFalse);
       expect(cfTempMockModerationCandidate.displayName, 'Aline Duarte');
       expect(cfTempMockModerationCandidate.handle, 'fan/alineduarte');
       expect(cfTempMockModerationCandidate.photoUrl, isNotEmpty);
