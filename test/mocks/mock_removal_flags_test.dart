@@ -17,6 +17,7 @@ void main() {
     expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
+    expect(CfTempMocks.useMembershipManageFixtures, isTrue); // CF-205 print
     expect(
       CfTempMocks.useMembershipActivationConfirmedFixtures,
       isTrue,
