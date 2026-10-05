@@ -36,6 +36,9 @@ class MembershipArtistCard extends StatelessWidget {
     if (item.isLate) {
       return colors.danger;
     }
+    if (item.isPaused) {
+      return colors.primary;
+    }
     if (item.isCancelled) {
       return colors.textTertiary;
     }

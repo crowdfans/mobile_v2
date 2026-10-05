@@ -11,6 +11,19 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+/// Normaliza rótulo de vínculo para o texto do print ("3 meses").
+String membershipManageMonthsLabel(String? raw) {
+  var value = (raw ?? '').trim();
+  if (value.isEmpty) {
+    return '';
+  }
+  const suffix = ' consecutivos';
+  if (value.toLowerCase().endsWith(suffix)) {
+    value = value.substring(0, value.length - suffix.length).trim();
+  }
+  return value;
+}
+
 /// Gerenciar membership — Pausar ou Cancelar com consequências legíveis (CF-205).
 class ProfileMembershipManageScreen extends StatefulWidget {
   const ProfileMembershipManageScreen({
@@ -52,19 +65,14 @@ class _ProfileMembershipManageScreenState
     if (_busy || widget.artistId.trim().isEmpty) {
       return;
     }
-    if (_selected == MembershipManageAction.pause) {
-      await AppAlert.show(
-        context,
-        title: 'Pausar membership',
-        message:
-            'A pausa ainda não está disponível no serviço. Você pode Cancelar para encerrar a assinatura agora, ou manter ativa e voltar depois.',
-      );
-      return;
-    }
 
     setState(() => _busy = true);
     try {
-      await SubscriptionService.cancelSubscription(widget.artistId);
+      if (_selected == MembershipManageAction.pause) {
+        await SubscriptionService.pauseSubscription(widget.artistId);
+      } else {
+        await SubscriptionService.cancelSubscription(widget.artistId);
+      }
       if (!mounted) {
         return;
       }
@@ -95,7 +103,7 @@ class _ProfileMembershipManageScreenState
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final useMock = CfTempMocks.useMembershipFixtures &&
+    final useMock = CfTempMocks.useMembershipManageFixtures &&
         kUseCfTempMocks &&
         (widget.artistName.trim().isEmpty || widget.pricePerMonth <= 0);
     final name = useMock
@@ -111,7 +119,7 @@ class _ProfileMembershipManageScreenState
         : (widget.pricePerMonth > 0 ? widget.pricePerMonth : 100);
     final months = useMock
         ? cfTempMockMembershipManage.monthsLabel
-        : (widget.monthsLabel ?? '').trim();
+        : membershipManageMonthsLabel(widget.monthsLabel);
     final contextLine = months.isNotEmpty
         ? 'Seu vínculo atual está em $months. Você pode pausar para voltar depois ou cancelar de vez.'
         : 'Você pode pausar para voltar depois ou cancelar de vez.';
