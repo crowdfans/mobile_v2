@@ -1121,9 +1121,10 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
 }
 
 /// CF-185 — Perfil artista Feed (prints capa + Seguir / Membership♪ / ✓).
-/// TEMP até photoUrl/membros/follow reais baterem a referência. Não altera
+/// Democked: cover/CTA/feed usam profile + follows + subscription check +
+/// posts reais. Fixtures ficam só para testes/print samples. Não altera
 /// a aba Fã Clube (CF-186).
-const bool kUseCf185ArtistFeedMocks = true;
+const bool kUseCf185ArtistFeedMocks = false;
 
 /// Fixture do print CF-185 (capa fotográfica + estados de CTA separados).
 final class Cf185ArtistFeedFixture {
