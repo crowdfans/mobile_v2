@@ -523,6 +523,18 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   return samples.take(limit).toList(growable: false);
 }
 
+/// CF-229 — banner expulso (Felipe Rhy) no feed do clube.
+/// TEMP até a conta de QA receber `viewerIsExpelled` + motivo da API.
+/// Complementa [CfTempMocks.useFanClubFixtures] (atalho Clubes + cover).
+const bool kUseCf229ExpelledFixtures = true;
+
+/// Cover do print CF-229 (mic / spotlight).
+const cfTempMockFelipeCoverUrl =
+    'https://images.unsplash.com/photo-1516280440612-596598c2f5a2?auto=format&fit=crop&w=1200&q=80';
+
+/// ArtistUid do print CF-229 para atalho em Clubes.
+const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
+
 /// Motivo de expulsão para Defender retorno (CF-200 / CF-229) quando a API não manda.
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
@@ -530,6 +542,10 @@ const cfTempMockExpulsionReason =
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
+
+/// True quando o mock TEMP do banner expulso (CF-229) está ativo.
+bool cf229ExpelledFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf229ExpelledFixtures;
 
 /// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
 abstract final class Cf199ModerationPanelFixtures {
