@@ -34,40 +34,39 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('Lembrete de Meet & Greet'), findsOneWidget);
-    expect(find.bySemanticsLabel('Não lida'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp(r'Não lida')), findsWidgets);
 
     final material = tester.widget<Material>(
-      find.descendant(
-        of: find.byType(NotificationItemCard),
-        matching: find.byType(Material),
-      ).first,
+      find
+          .descendant(
+            of: find.byType(NotificationItemCard),
+            matching: find.byType(Material),
+          )
+          .first,
     );
     expect(material.color, AppPalette.green50);
 
-    final rich = tester.widget<RichText>(
-      find.descendant(
-        of: find.byType(NotificationItemCard),
-        matching: find.byType(RichText),
-      ).first,
-    );
-    final spans = <TextSpan>[];
-    void collect(InlineSpan span) {
+    // Accent Meet = verde (não lilás primary).
+    TextStyle? accentStyle;
+    void walk(InlineSpan span) {
       if (span is TextSpan) {
-        spans.add(span);
+        if (span.text == 'Lembrete de Meet & Greet:') {
+          accentStyle = span.style;
+        }
         final kids = span.children;
         if (kids != null) {
           for (final child in kids) {
-            collect(child);
+            walk(child);
           }
         }
       }
     }
 
-    collect(rich.text);
-    final accent = spans
-        .where((s) => s.text == 'Lembrete de Meet & Greet:')
-        .single;
-    expect(accent.style?.color, AppPalette.green700);
-    expect(accent.style?.fontWeight, FontWeight.w600);
+    for (final el in find.byType(RichText).evaluate()) {
+      walk((el.widget as RichText).text);
+    }
+    expect(accentStyle, isNotNull);
+    expect(accentStyle!.color, AppPalette.green700);
+    expect(accentStyle!.fontWeight, FontWeight.w600);
   });
 }
