@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 /// Setas de upvote/downvote reutilizáveis (post ou comentário).
 ///
-/// CF-131: pill compacta — neutro cinza, upvote verde, downvote vermelho.
+/// CF-131: pill compacta — neutro cinza; upvote: seta↑+contagem verdes
+/// (↓ cinza); downvote: seta↓+contagem vermelhas (↑ cinza). Separador vertical.
 class VoteControlBar extends StatefulWidget {
   const VoteControlBar({
     super.key,
@@ -32,7 +33,7 @@ class _VoteControlBarState extends State<VoteControlBar> {
       _optimisticMyVote ?? VoteService.normalizeVoteState(widget.myVote);
   int get _voteCount => _optimisticVotes ?? widget.votes;
 
-  Color _accentFor(int voteState) {
+  Color _borderFor(int voteState) {
     if (voteState == 1) {
       return AppPalette.green500;
     }
@@ -42,12 +43,20 @@ class _VoteControlBarState extends State<VoteControlBar> {
     return AppPalette.platinum300;
   }
 
-  Color _labelFor(int voteState) {
+  Color _countFor(int voteState) {
     if (voteState == 1) {
       return AppPalette.green500;
     }
     if (voteState == -1) {
       return AppPalette.red500;
+    }
+    return AppPalette.platinum500;
+  }
+
+  /// Só a seta ativa recebe a cor do estado; a outra fica cinza (print CF-131).
+  Color _chevronFor({required int voteState, required int direction}) {
+    if (voteState == direction) {
+      return direction == 1 ? AppPalette.green500 : AppPalette.red500;
     }
     return AppPalette.platinum500;
   }
@@ -91,11 +100,12 @@ class _VoteControlBarState extends State<VoteControlBar> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = _accentFor(_voteState);
-    final label = _labelFor(_voteState);
+    final voteState = _voteState;
+    final border = _borderFor(voteState);
+    final countColor = _countFor(voteState);
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: Border.all(color: accent, width: 1),
+        border: Border.all(color: border, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: SizedBox(
@@ -106,7 +116,7 @@ class _VoteControlBarState extends State<VoteControlBar> {
             _VoteChevron(
               key: const Key('vote-up'),
               icon: Icons.keyboard_arrow_up,
-              color: label,
+              color: _chevronFor(voteState: voteState, direction: 1),
               onTap: () => handleVote(1),
             ),
             Padding(
@@ -118,14 +128,19 @@ class _VoteControlBarState extends State<VoteControlBar> {
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   height: 1,
-                  color: label,
+                  color: countColor,
                 ),
               ),
+            ),
+            const ColoredBox(
+              key: Key('vote-divider'),
+              color: AppPalette.platinum200,
+              child: SizedBox(width: 1, height: 14),
             ),
             _VoteChevron(
               key: const Key('vote-down'),
               icon: Icons.keyboard_arrow_down,
-              color: label,
+              color: _chevronFor(voteState: voteState, direction: -1),
               onTap: () => handleVote(-1),
             ),
           ],
