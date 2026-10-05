@@ -214,6 +214,12 @@ void main() {
         isNull,
       );
     });
+
+    test('canSubmit nega draft/GIF só whitespace', () {
+      expect(commentCanSubmit(draft: '', gifUrl: null), isFalse);
+      expect(commentCanSubmit(draft: '   ', gifUrl: ''), isFalse);
+      expect(commentCanSubmit(draft: '', gifUrl: '   '), isFalse);
+    });
   });
 
   group('CF-69 edge', () {
@@ -266,6 +272,53 @@ void main() {
       expect(find.byKey(const Key('comment-gif-chip')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    test('cancelar resposta limpa draft e GIF', () {
+      final reset = commentCancelReplyComposerState();
+      expect(reset.draft, '');
+      expect(reset.gifUrl, isNull);
+    });
+
+    test('canSubmit aceita só GIF ou só texto', () {
+      expect(
+        commentCanSubmit(draft: '', gifUrl: 'https://giphy.test/x'),
+        isTrue,
+      );
+      expect(commentCanSubmit(draft: 'oi', gifUrl: null), isTrue);
+    });
+
+    testWidgets(
+      '✕ cancelar resposta dispara onCancel e some o banner',
+      (tester) async {
+        var cancelled = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildCrowdFansTheme(Brightness.light),
+            home: Scaffold(
+              body: CommentComposer(
+                draft: 'fan/rafanogueira ',
+                replyAuthor: 'Rafa Nogueira',
+                replyHandle: 'fan/rafanogueira',
+                editing: false,
+                selectedGifUrl: null,
+                submitting: false,
+                onDraftChanged: (_) {},
+                onCancelEdit: () {},
+                onCancelReply: () => cancelled = true,
+                onRemoveGif: () {},
+                onPickGif: () {},
+                onSubmit: () {},
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(find.textContaining('Respondendo a'), findsOneWidget);
+        await tester.tap(find.byTooltip('Cancelar resposta'));
+        await tester.pump();
+        expect(cancelled, isTrue);
+      },
+    );
 
     testWidgets('zero votos / reply count zero: Responder ainda visível', (
       tester,

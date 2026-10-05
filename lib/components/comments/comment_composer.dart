@@ -40,7 +40,7 @@ class CommentComposer extends StatelessWidget {
     final colors = CrowdFansTheme.of(context);
     final canSubmit =
         !submitting &&
-        (draft.trim().isNotEmpty || (selectedGifUrl ?? '').isNotEmpty);
+        (draft.trim().isNotEmpty || (selectedGifUrl ?? '').trim().isNotEmpty);
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final safeBottom = MediaQuery.paddingOf(context).bottom;
     final bottomPad = keyboardInset > 0 ? keyboardInset : safeBottom;

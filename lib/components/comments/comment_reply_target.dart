@@ -15,3 +15,14 @@ String? commentApiParentId({
   final id = replyToRoot?.id.trim() ?? '';
   return id.isEmpty ? null : id;
 }
+
+/// Texto ou GIF — whitespace não conta (submit bloqueado + alerta na tela).
+bool commentCanSubmit({required String draft, String? gifUrl}) {
+  final gif = (gifUrl ?? '').trim();
+  return draft.trim().isNotEmpty || gif.isNotEmpty;
+}
+
+/// Após cancelar resposta: limpa mention/draft/GIF (não deixa rascunho órfão).
+({String draft, String? gifUrl}) commentCancelReplyComposerState() {
+  return (draft: '', gifUrl: null);
+}

@@ -387,8 +387,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
 
   Future<void> handleSubmit() async {
     final content = _draft.trim();
-    if (content.isEmpty &&
-        (_selectedGifUrl == null || _selectedGifUrl!.isEmpty)) {
+    final gifUrl = (_selectedGifUrl ?? '').trim();
+    final gifOrNull = gifUrl.isEmpty ? null : gifUrl;
+    if (!commentCanSubmit(draft: content, gifUrl: gifOrNull)) {
       await AppAlert.show(
         context,
         title: 'Comentário',
@@ -402,7 +403,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         final updated = await CommentService.updateComment(
           commentId: _editing!.id,
           content: content,
-          gifUrl: _selectedGifUrl,
+          gifUrl: gifOrNull,
         );
         setState(() {
           _comments = _mapComments(
@@ -422,7 +423,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         final created = await CommentService.createComment(
           postId: widget.postId,
           content: content,
-          gifUrl: _selectedGifUrl,
+          gifUrl: gifOrNull,
           parentCommentId: commentApiParentId(replyToRoot: _replyTo),
         );
         setState(() {
@@ -807,9 +808,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 _composerNonce++;
               }),
               onCancelReply: () => setState(() {
+                final reset = commentCancelReplyComposerState();
                 _replyTo = null;
                 _replyBannerAuthor = null;
                 _replyBannerHandle = null;
+                _draft = reset.draft;
+                _selectedGifUrl = reset.gifUrl;
+                _composerNonce++;
               }),
               onRemoveGif: () => setState(() => _selectedGifUrl = null),
               onPickGif: () {
