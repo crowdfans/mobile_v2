@@ -20,8 +20,9 @@ class MeProfileActionsRow extends StatelessWidget {
         key: const Key('profile-edit'),
         onPressed: onEditProfile,
         style: OutlinedButton.styleFrom(
+          // Print CF-187: borda escura neutra (não roxa / não platinum200).
           foregroundColor: colors.textPrimary,
-          side: BorderSide(color: colors.border, width: 1.2),
+          side: BorderSide(color: AppPalette.platinum800, width: 1.2),
           shape: const StadiumBorder(),
           textStyle: const TextStyle(
             fontSize: 16,

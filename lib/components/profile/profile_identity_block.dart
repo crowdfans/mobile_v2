@@ -3,6 +3,19 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:flutter/material.dart';
 
+/// Contagem do Meu Perfil no formato pt-BR (`1180` → `1.180`).
+String formatProfileCount(int value) {
+  final digits = value.abs().toString();
+  final buffer = StringBuffer();
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) {
+      buffer.write('.');
+    }
+    buffer.write(digits[i]);
+  }
+  return value < 0 ? '-$buffer' : '$buffer';
+}
+
 /// Identidade + stats do perfil na aba Eu (avatar quadrado arredondado).
 class ProfileIdentityBlock extends StatelessWidget {
   const ProfileIdentityBlock({
@@ -18,7 +31,9 @@ class ProfileIdentityBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final clean = profile.name.trim().replaceAll(RegExp(r'^@'), '');
-    final handle = clean.isEmpty ? '' : 'fan/$clean';
+    final handle = clean.isEmpty
+        ? ''
+        : (clean.startsWith('fan/') ? clean : 'fan/$clean');
     final url = profile.photoUrl.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,23 +41,27 @@ class ProfileIdentityBlock extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: url.isEmpty
-                  ? ColoredBox(
-                      color: colors.surfaceAlt,
-                      child: const SizedBox(width: 88, height: 88),
-                    )
-                  : Image.network(
-                      url,
-                      width: 88,
-                      height: 88,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => ColoredBox(
+            Semantics(
+              label: 'Foto de perfil',
+              image: true,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: url.isEmpty
+                    ? ColoredBox(
                         color: colors.surfaceAlt,
                         child: const SizedBox(width: 88, height: 88),
+                      )
+                    : Image.network(
+                        url,
+                        width: 88,
+                        height: 88,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => ColoredBox(
+                          color: colors.surfaceAlt,
+                          child: const SizedBox(width: 88, height: 88),
+                        ),
                       ),
-                    ),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -70,16 +89,16 @@ class ProfileIdentityBlock extends StatelessWidget {
                   Row(
                     children: [
                       ProfileStatCell(
-                        value: '${profile.stats.postsCount}',
+                        value: formatProfileCount(profile.stats.postsCount),
                         label: 'Posts',
                       ),
                       ProfileStatCell(
-                        value: '${profile.stats.cartasCount}',
+                        value: formatProfileCount(profile.stats.cartasCount),
                         label: 'Cartas',
                         divider: true,
                       ),
                       ProfileStatCell(
-                        value: '${profile.stats.artistasCount}',
+                        value: formatProfileCount(profile.stats.artistasCount),
                         label: 'Artistas',
                         divider: true,
                         onTap: onArtistsTap,

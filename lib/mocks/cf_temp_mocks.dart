@@ -7,6 +7,7 @@
 // CF-195: comentários Home — respostas expandidas.
 // CF-178: feed Postagens dos Fã Clubes.
 // CF-181: grade Cartas no perfil do artista.
+// CF-187: Meu Perfil preenchido (seletor + stats/bio/posts do print).
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
@@ -18,6 +19,7 @@
 
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
+import 'package:crowdfans/models/fan_profile.dart';
 import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
@@ -89,6 +91,9 @@ abstract final class CfTempMocks {
 
   /// Hub Seu Perfil — `GET /api/v1/profile`.
   static const useProfileAccountFixtures = false;
+
+  /// CF-187 Meu Perfil preenchido — TEMP até conta real bater o print.
+  /// Flag dedicada: [kUseCf187MeProfileMocks].
 
   /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
   static const useArtistSobreFixtures = true;
@@ -839,6 +844,91 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
     'Lembretes de Meet, destaques e novidades do fã clube.',
     'Renovação de membership, promoções e conteúdo exclusivo.',
   ];
+}
+
+/// CF-187 — Meu Perfil preenchido (print image.png). TEMP para homologar
+/// seletor + contagens/bio/posts quando a conta real ainda está vazia.
+const bool kUseCf187MeProfileMocks = true;
+
+/// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
+abstract final class Cf187MeProfileFixtures {
+  static const _avatar =
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80';
+
+  static const Profile profile = Profile(
+    userUid: 'cf187-aline',
+    displayName: 'Aline Duarte',
+    name: 'alineduarte',
+    description:
+        'Gosto muito di rock e pop, se vouse gosta tambem vamos ser amigass... Agora nao me venha com sertanejo, asho insuportavel rs',
+    photoUrl: _avatar,
+    isArtist: false,
+    stats: ProfileStats(
+      postsCount: 1180,
+      cartasCount: 124,
+      artistasCount: 8,
+    ),
+  );
+
+  static List<FollowedArtist> followedArtists() {
+    return const [
+      FollowedArtist(
+        id: 'mock-fc-mayra',
+        label: 'Mayra',
+        memberCount: '12840',
+        avatarUri: '',
+      ),
+      FollowedArtist(
+        id: 'mock-fc-lais',
+        label: 'Laís Costa',
+        memberCount: '8225',
+        avatarUri: '',
+      ),
+      FollowedArtist(
+        id: 'mock-fc-marinhos',
+        label: 'Marinhos',
+        memberCount: '5400',
+        avatarUri: '',
+      ),
+    ];
+  }
+
+  static List<FeedPost> posts() {
+    return const [
+      FeedPost(
+        id: 'cf187-post-mutirao',
+        type: PostType.text,
+        author: 'Aline Duarte',
+        artistId: 'mock-fc-mayra',
+        handle: 'fan/alineduarte',
+        minutesAgo: 6,
+        avatarUri: _avatar,
+        text:
+            'Thread oficial do mutirão de engajamento — quem puder comentar e compartilhar já ajuda o ranking da semana.',
+        votes: 96,
+        comments: 14,
+        shares: 5,
+        isSecret: true,
+        membershipBadges: [MembershipBadgeInfo(label: '3')],
+      ),
+      FeedPost(
+        id: 'cf187-post-backstage',
+        type: PostType.text,
+        author: 'Aline Duarte',
+        artistId: 'mock-fc-lais',
+        handle: 'fan/alineduarte',
+        minutesAgo: 11,
+        avatarUri: _avatar,
+        text:
+            'Fotinho do backstage depois do soundcheck. Sem sertanejo no setlist, graças a deus.',
+        votes: 96,
+        comments: 14,
+        shares: 5,
+        isSecret: true,
+        membershipBadges: [MembershipBadgeInfo(label: '3')],
+      ),
+    ];
+  }
 }
 
 /// CF-216 — print YouTrack (3 aparelhos + locais). API CF-266 ainda sem
