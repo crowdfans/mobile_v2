@@ -1425,6 +1425,32 @@ abstract final class Cf195HomeCommentsMock {
   }
 }
 
+/// Liga demo CF-196 (resposta + teclado). **TEMP on** até comments API +
+/// compositor nativo cobrirem banner/prefill/insets do print sem fixtures.
+/// Não altera listas CF-194/195 — só metadados do compositor de resposta.
+const bool kUseCf196CommentMocks = true;
+
+/// Print CF-196: Respondendo a Rafa + `fan/rafanogueira` + teclado.
+abstract final class Cf196CommentReplyMock {
+  static const replyAuthor = 'Rafa Nogueira';
+  static const replyHandle = 'fan/rafanogueira';
+
+  /// Inset aproximado do teclado iOS nos anexos (compositor acima).
+  static const keyboardInset = 280.0;
+
+  /// Prefill `fan/...` no campo (print image.png).
+  static String mentionDraft(String? handle) {
+    final raw = (handle ?? '').trim();
+    if (raw.isEmpty) {
+      return '';
+    }
+    if (raw.startsWith('fan/') || raw.startsWith('@')) {
+      return '$raw ';
+    }
+    return 'fan/$raw ';
+  }
+}
+
 // --- CF-222…230 fã-clube / CF-232…241 feed-busca ---
 
 const _cfCarouselBeach =

@@ -269,14 +269,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
 
   /// Prefill `fan/...` no compositor (print CF-196).
   String replyMentionDraft(String? handle) {
-    final raw = (handle ?? '').trim();
-    if (raw.isEmpty) {
-      return '';
-    }
-    if (raw.startsWith('fan/') || raw.startsWith('@')) {
-      return '$raw ';
-    }
-    return 'fan/$raw ';
+    return Cf196CommentReplyMock.mentionDraft(handle);
   }
 
   void handleStartReply({
