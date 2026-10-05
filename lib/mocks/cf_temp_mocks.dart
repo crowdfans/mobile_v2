@@ -89,6 +89,10 @@ abstract final class CfTempMocks {
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
 
+  /// CF-211 Membership e Jam Coins — switches do print (renovação/saldo on, promo off).
+  /// TEMP até preferências reais baterem o estado de referência do QA.
+  static const useMembershipNotifPrintFixtures = true;
+
   /// Hub Seu Perfil — `GET /api/v1/profile`.
   static const useProfileAccountFixtures = false;
 
