@@ -1,9 +1,9 @@
+import 'package:crowdfans/components/post/post_video_preview_chrome.dart';
+import 'package:crowdfans/components/post/post_video_ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-enum _VideoUiState { idle, loading, ready, buffering, error }
-
-/// Prévia de vídeo no feed com estados loaded / buffering / erro.
+/// Prévia de vídeo no feed com estados loaded / buffering / erro (CF-232).
 class PostVideoPreview extends StatefulWidget {
   const PostVideoPreview({
     super.key,
@@ -22,7 +22,7 @@ class PostVideoPreview extends StatefulWidget {
 
 class _PostVideoPreviewState extends State<PostVideoPreview> {
   VideoPlayerController? _controller;
-  var _state = _VideoUiState.idle;
+  var _state = PostVideoUiState.idle;
   var _muted = true;
   String? _errorMessage;
 
@@ -43,33 +43,33 @@ class _PostVideoPreviewState extends State<PostVideoPreview> {
     }
     if (c.value.hasError) {
       setState(() {
-        _state = _VideoUiState.error;
+        _state = PostVideoUiState.error;
         _errorMessage = 'Não foi possível reproduzir o vídeo.';
       });
       return;
     }
     if (c.value.isBuffering && c.value.isPlaying) {
-      if (_state != _VideoUiState.buffering) {
-        setState(() => _state = _VideoUiState.buffering);
+      if (_state != PostVideoUiState.buffering) {
+        setState(() => _state = PostVideoUiState.buffering);
       }
       return;
     }
-    if (c.value.isInitialized && _state == _VideoUiState.buffering) {
-      setState(() => _state = _VideoUiState.ready);
+    if (c.value.isInitialized && _state == PostVideoUiState.buffering) {
+      setState(() => _state = PostVideoUiState.ready);
     }
   }
 
   Future<void> handleTogglePlay() async {
     if (_video.isEmpty) {
       setState(() {
-        _state = _VideoUiState.error;
+        _state = PostVideoUiState.error;
         _errorMessage = 'Vídeo indisponível.';
       });
       return;
     }
     if (_controller == null) {
       setState(() {
-        _state = _VideoUiState.loading;
+        _state = PostVideoUiState.loading;
         _errorMessage = null;
       });
       final controller = VideoPlayerController.networkUrl(Uri.parse(_video));
@@ -82,14 +82,14 @@ class _PostVideoPreviewState extends State<PostVideoPreview> {
         if (!mounted) {
           return;
         }
-        setState(() => _state = _VideoUiState.ready);
+        setState(() => _state = PostVideoUiState.ready);
         await controller.play();
       } catch (_) {
         if (!mounted) {
           return;
         }
         setState(() {
-          _state = _VideoUiState.error;
+          _state = PostVideoUiState.error;
           _errorMessage = 'Falha ao carregar o vídeo.';
         });
       }
@@ -101,10 +101,10 @@ class _PostVideoPreviewState extends State<PostVideoPreview> {
     }
     if (c.value.isPlaying) {
       await c.pause();
-      setState(() => _state = _VideoUiState.ready);
+      setState(() => _state = PostVideoUiState.ready);
     } else {
       await c.play();
-      setState(() => _state = _VideoUiState.ready);
+      setState(() => _state = PostVideoUiState.ready);
     }
   }
 
@@ -135,158 +135,50 @@ class _PostVideoPreviewState extends State<PostVideoPreview> {
     return raw.isEmpty ? '00:00' : raw;
   }
 
+  Widget _buildMediaChild() {
+    if (_controller != null &&
+        _controller!.value.isInitialized &&
+        _state != PostVideoUiState.error) {
+      return FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: _controller!.value.size.width,
+          height: _controller!.value.size.height,
+          child: VideoPlayer(_controller!),
+        ),
+      );
+    }
+    if (_thumb.isNotEmpty) {
+      return Image.network(
+        _thumb,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => const ColoredBox(color: Colors.black),
+      );
+    }
+    return const ColoredBox(color: Colors.black);
+  }
+
   @override
   Widget build(BuildContext context) {
     final playing = _controller?.value.isPlaying == true;
-    return AspectRatio(
-      aspectRatio: 1,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (_controller != null &&
-                _controller!.value.isInitialized &&
-                _state != _VideoUiState.error)
-              FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _controller!.value.size.width,
-                  height: _controller!.value.size.height,
-                  child: VideoPlayer(_controller!),
-                ),
-              )
-            else if (_thumb.isNotEmpty)
-              Image.network(
-                _thumb,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => const ColoredBox(color: Colors.black),
-              )
-            else
-              const ColoredBox(color: Colors.black),
-            if (_state == _VideoUiState.loading ||
-                _state == _VideoUiState.buffering)
-              const ColoredBox(
-                color: Color(0x66000000),
-                child: Center(
-                  child: SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            if (_state == _VideoUiState.error)
-              ColoredBox(
-                color: const Color(0x99000000),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.play_disabled_rounded,
-                          size: 40,
-                          color: Colors.white70,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _errorMessage ?? 'Erro no vídeo',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: handleTogglePlay,
-                          child: const Text(
-                            'Tentar de novo',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            if (_state != _VideoUiState.error &&
-                _state != _VideoUiState.loading &&
-                _state != _VideoUiState.buffering)
-              Center(
-                child: Material(
-                  color: const Color(0x8C000000),
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: handleTogglePlay,
-                    child: SizedBox(
-                      width: 52,
-                      height: 52,
-                      child: Icon(
-                        playing
-                            ? Icons.pause_rounded
-                            : Icons.play_disabled_rounded,
-                        size: 32,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            Positioned(
-              top: 10,
-              right: 10,
-              child: Material(
-                color: const Color(0x80000000),
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: handleToggleMute,
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: Icon(
-                      _muted
-                          ? Icons.volume_off_rounded
-                          : Icons.volume_up_rounded,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0x8C000000),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  child: Text(
-                    durationLabel(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+    return Semantics(
+      key: const Key('post-video'),
+      label: switch (_state) {
+        PostVideoUiState.idle || PostVideoUiState.ready =>
+          playing ? 'Vídeo em reprodução' : 'Vídeo pronto',
+        PostVideoUiState.loading => 'Vídeo carregando',
+        PostVideoUiState.buffering => 'Vídeo buffering',
+        PostVideoUiState.error => 'Vídeo com erro',
+      },
+      child: PostVideoPreviewChrome(
+        state: _state,
+        muted: _muted,
+        playing: playing,
+        durationLabel: durationLabel(),
+        errorMessage: _errorMessage,
+        onTogglePlay: handleTogglePlay,
+        onToggleMute: handleToggleMute,
+        mediaChild: _buildMediaChild(),
       ),
     );
   }
