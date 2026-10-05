@@ -69,7 +69,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  static const useFanClubFixtures = false;
+  /// TEMP ligado p/ CF-222 print (Enzo / Aline carousel); API real sem dados do print.
+  static const useFanClubFixtures = true;
 
   /// Home feed — `GET /api/v1/home`.
   static const useHomeFeedFixtures = false;
@@ -1066,6 +1067,10 @@ const _cfCarouselSnake =
     'https://images.unsplash.com/photo-1531386450450-969f935bd522?auto=format&fit=crop&w=800&q=80';
 const _cfCarouselMerch =
     'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80';
+
+/// Cover do print CF-222 (cadeira / interior).
+const cfTempMockFanClubCoverUrl =
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80';
 
 enum CfFanClubFixtureKind { community, expelled, warning }
 
