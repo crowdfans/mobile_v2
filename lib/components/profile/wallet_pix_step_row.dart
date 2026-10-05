@@ -23,18 +23,18 @@ class WalletPixStepRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 40,
+          width: 44,
           child: Text(
             number,
             style: TextStyle(
-              fontSize: 26,
-              height: 1.1,
+              fontSize: 28,
+              height: 1.05,
               fontWeight: FontWeight.w900,
               color: colors.textPrimary,
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
