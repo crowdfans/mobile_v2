@@ -47,8 +47,8 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
     await prefs.setBool(_loginAlertsKey, value);
   }
 
-  void handleToggleTwoFactor(bool value) {
-    // Sem endpoint completo: não simular proteção ativa.
+  void handleToggleTwoFactor(bool _) {
+    // Sem endpoint completo: não simular proteção ativa (critério CF-215).
     setState(() {
       _twoFactor = false;
       _twoFactorReady = false;
@@ -86,13 +86,14 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                       color: colors.textTertiary,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   SecurityProtectionToggleRow(
                     title: 'Autenticação em dois fatores',
                     subtitle: 'Exigir código adicional ao entrar na conta.',
                     value: _twoFactor && _twoFactorReady,
                     onChanged: handleToggleTwoFactor,
                   ),
-                  Divider(height: 1, color: colors.border),
+                  Divider(height: 1, thickness: 0.5, color: colors.border),
                   SecurityProtectionToggleRow(
                     title: 'Alertas de novo login',
                     subtitle:
