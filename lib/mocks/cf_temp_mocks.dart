@@ -51,11 +51,11 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 + home Explorar (CF-172/189): API lista existe, mas
-  /// tendência histórica / densidade do print ainda não bate (prod mostra
-  /// poucas linhas + 0 membros + tudo neutro). CF-172 usa as 3 primeiras
-  /// linhas em `SearchScreen`; CF-189 a lista completa. Off quando snapshot
-  /// histórico ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
+  /// Ranking Top 100/500 + home Explorar (CF-172/189/193): API lista existe,
+  /// mas tendência histórica / densidade do print ainda não bate. CF-172 usa
+  /// as 3 primeiras linhas em `SearchScreen`; CF-189 a lista Top 500; CF-193
+  /// reordena `engaged` por interações 7d. Off quando snapshot histórico
+  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
   static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
@@ -301,6 +301,10 @@ abstract final class CfTempMocks {
 ///
 /// CF-241 (sheet ⋮): Ludmilla #1 leva `weeksInRanking: 11`, `peakRank: 1`,
 /// `previousRank: 2` — métricas do print; ausente na API real vira "—" no sheet.
+///
+/// CF-193 (Top 100 Engajados): quando `kind == engaged`, a lista é reordenada
+/// por interações (7d) e as posições refletem essa métrica — sem alterar o
+/// conjunto fan-clubs/Ativos usado por CF-189/241.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
@@ -333,6 +337,18 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
     }
     return membersLabel;
   }
+
+  // Interações 7d por id — CF-193: ordenação do Top 100 Engajados.
+  const engagedInteractions = <String, int>{
+    'mock-fc-ludmilla': 4,
+    'mock-fc-anitta': 0,
+    'mock-fc-mayra': 12,
+    'mock-fc-uelo': 7,
+    'mock-fc-carol': 3,
+    'mock-fc-marinhos': 9,
+    'mock-fc-enzo': 1,
+    'mock-fc-tinn': 2,
+  };
 
   final samples = <ArtistSearchItem>[
     // CF-241 print: sheet Ludmilla — semanas 11 / máx 1 / semana passada 2.
@@ -537,10 +553,39 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
       peakRank: 8,
     ),
   ];
-  if (limit >= samples.length) {
-    return List<ArtistSearchItem>.from(samples);
+
+  var ordered = samples;
+  if (engaged) {
+    final byInteractions = [...samples]
+      ..sort((a, b) {
+        final ia = engagedInteractions[a.id] ?? 0;
+        final ib = engagedInteractions[b.id] ?? 0;
+        return ib.compareTo(ia);
+      });
+    ordered = [
+      for (var i = 0; i < byInteractions.length; i++)
+        ArtistSearchItem(
+          id: byInteractions[i].id,
+          name: byInteractions[i].name,
+          handle: byInteractions[i].handle,
+          avatarUri: byInteractions[i].avatarUri,
+          memberCount: byInteractions[i].memberCount,
+          membersLabel: byInteractions[i].membersLabel,
+          rankingValueLabel: byInteractions[i].rankingValueLabel,
+          rank: i + 1,
+          trend: byInteractions[i].trend,
+          rankDelta: byInteractions[i].rankDelta,
+          previousRank: byInteractions[i].previousRank,
+          weeksInRanking: byInteractions[i].weeksInRanking,
+          peakRank: byInteractions[i].peakRank,
+        ),
+    ];
   }
-  return samples.take(limit).toList(growable: false);
+
+  if (limit >= ordered.length) {
+    return List<ArtistSearchItem>.from(ordered);
+  }
+  return ordered.take(limit).toList(growable: false);
 }
 
 /// CF-229 — banner expulso (Felipe Rhy) no feed do clube.
