@@ -12,8 +12,9 @@ void main() {
     expect(posts.last.type, 'carousel');
   });
 
-  test('CF-181 mock cartas: print image4/image5 (nomes + stickers)', () {
-    expect(kUseCf181CartasMocks, isTrue);
+  test('CF-181 fixture cartas: print image4/image5 (nomes + stickers)', () {
+    // Flag off em prod; fixture permanece para regressão de print.
+    expect(kUseCf181CartasMocks, isFalse);
     final letters = Cf181CartasMock.letters(artistId: 'artist-1');
     expect(letters, hasLength(9));
     expect(

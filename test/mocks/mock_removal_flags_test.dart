@@ -52,6 +52,6 @@ void main() {
     expect(kUseCf196CommentMocks, isFalse); // CF-196 demock — reply+teclado real
     expect(kUseCf197GifMocks, isTrue); // CF-197 seletor GIF TEMP
     expect(kUseCf178FanClubsFeedMocks, isFalse);
-    expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
+    expect(kUseCf181CartasMocks, isFalse); // CF-181 demock — fan-letters API
   });
 }
