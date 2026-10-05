@@ -157,6 +157,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (artistId.isEmpty) {
       return;
     }
+    // CF-265: dispensar o menu antes de navegar (back/X/barreira + destino).
+    handleCloseSidebar();
     SidebarArtistsStore.recordVisit(artist);
     context.push(Pages.artistProfileOf(artistId));
   }
