@@ -130,7 +130,7 @@ void main() {
   test('CF-208 flag não liga hub CF-166 nem CF-209/211/213', () {
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse);
-    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue);
+    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse);
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);

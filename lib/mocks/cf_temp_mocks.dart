@@ -140,10 +140,11 @@ abstract final class CfTempMocks {
   /// o print (5 switches off) para testes. Não liga hub CF-166 / CF-209/211/213.
   static const useInteractionsNotifPrintFixtures = false;
 
-  /// CF-209 Meet & Greet — switches do print (convites/lembretes on, resultado off).
-  /// TEMP até preferências reais baterem o estado de referência do QA.
+  /// CF-209 Meet & Greet — **off**: API real
+  /// `GET/PUT /api/v1/notifications/preferences`. Defaults do app batem o print
+  /// (convites/lembretes on, resultado off). Fixture class só para testes.
   /// Não liga hub CF-166 nem CF-211 (wallet).
-  static const useMeetGreetNotifPrintFixtures = true;
+  static const useMeetGreetNotifPrintFixtures = false;
 
   /// CF-211 Membership e Jam Coins — switches do print (renovação/saldo on, promo off).
   /// TEMP até preferências reais baterem o estado de referência do QA.

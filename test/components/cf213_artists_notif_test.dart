@@ -56,7 +56,7 @@ void main() {
 
   test('CF-213 green: flags CF-209/211/166 hub intactas', () {
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
-    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue);
+    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
   });
