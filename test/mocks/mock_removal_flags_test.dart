@@ -42,7 +42,7 @@ void main() {
     expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse); // CF-208 API
-    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
+    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock

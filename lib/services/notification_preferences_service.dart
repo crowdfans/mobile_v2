@@ -63,7 +63,8 @@ const notificationPreferenceDefaults = <String, bool>{
   NotificationPreferenceKeys.artistHighlights: true,
   NotificationPreferenceKeys.meetInvites: true,
   NotificationPreferenceKeys.meetReminders: true,
-  NotificationPreferenceKeys.meetResults: true,
+  // CF-209 print: resultado/encerramento off por padrão (sem TEMP).
+  NotificationPreferenceKeys.meetResults: false,
   NotificationPreferenceKeys.membershipRenewals: true,
   NotificationPreferenceKeys.jamCoinsPromos: true,
   NotificationPreferenceKeys.jamCoinsBalance: true,
