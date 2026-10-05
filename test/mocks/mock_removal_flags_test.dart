@@ -12,6 +12,7 @@ void main() {
 
     expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
     expect(kUseCf170WalletPackMocks, isTrue); // CF-270
+    expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
     expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights

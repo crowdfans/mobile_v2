@@ -6,6 +6,7 @@
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
 // CF-178: feed Postagens dos Fã Clubes.
+// CF-171: checkout PIX pendente (etapas 01/02/03 + código).
 // CF-181: grade Cartas no perfil do artista.
 // CF-187: Meu Perfil preenchido (seletor + stats/bio/posts do print).
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
@@ -2278,6 +2279,31 @@ abstract final class Cf181CartasMock {
 
 /// CF-170 packs (print Pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
 const bool kUseCf170WalletPackMocks = true;
+
+/// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
+/// **TEMP** até o gateway real emitir `pending` + `pixCopyPaste` (hoje o
+/// sandbox costuma devolver `paid` e pular a tela de instruções).
+const bool kUseCf171PixCheckoutMocks = true;
+
+/// Recibo demo CF-171 (código PIX + status pending, sem mensagem técnica).
+abstract final class Cf171PixCheckoutMock {
+  static const pixCopyPaste =
+      '00020126580014BR.GOV.BCB.PIX0136123e4567-e12b-12d1-a456-426614174000520400005303986540519.905802BR5925CrowdFans Pagamentos6009SAO PAULO62070503***6304ABCD';
+
+  static WalletCheckoutResult pending({
+    required String packId,
+    int coins = 240,
+  }) {
+    return WalletCheckoutResult(
+      checkoutId: 'cf171-pix-mock',
+      packId: packId,
+      coins: coins,
+      status: 'pending',
+      provider: 'pix',
+      pixCopyPaste: pixCopyPaste,
+    );
+  }
+}
 
 /// Pacotes demo: CF-169 lista de recarga; `cf170-240` = print CF-170 pagamento.
 abstract final class Cf170WalletPackMock {

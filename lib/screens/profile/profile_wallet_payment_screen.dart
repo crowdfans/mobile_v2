@@ -8,6 +8,7 @@ import 'package:crowdfans/components/profile/wallet_payment_summary_card.dart';
 import 'package:crowdfans/components/profile/wallet_pix_code_panel.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:crowdfans/utils/jam_coin_label.dart';
@@ -142,7 +143,13 @@ class _ProfileWalletPaymentScreenState
     }
     setState(() => _busy = true);
     try {
-      final result = await WalletService.checkout(widget.packId);
+      // CF-171: mock pending+PIX evita skip da tela quando sandbox devolve paid.
+      final result = kUseCfTempMocks && kUseCf171PixCheckoutMocks
+          ? Cf171PixCheckoutMock.pending(
+              packId: widget.packId,
+              coins: int.tryParse(widget.coins ?? '') ?? 240,
+            )
+          : await WalletService.checkout(widget.packId);
       if (!mounted) {
         return;
       }
@@ -175,13 +182,7 @@ class _ProfileWalletPaymentScreenState
       walletUserFacingMessage(_receipt?.message);
 
   /// Validade do código PIX (referência CF-171).
-  String _pixValidityLabel() {
-    final brasilia = DateTime.now().toUtc().subtract(const Duration(hours: 3));
-    final until = brasilia.add(const Duration(minutes: 30));
-    final hour = until.hour.toString().padLeft(2, '0');
-    final minute = until.minute.toString().padLeft(2, '0');
-    return 'Este código é válido até hoje, $hour:$minute - Horário de Brasília.';
-  }
+  String _pixValidityLabel() => walletPixValidityLabel();
 
   Future<void> handleCopyPix() async {
     final pix = _receipt?.pixCopyPaste?.trim() ?? '';
