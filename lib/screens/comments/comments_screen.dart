@@ -12,6 +12,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/comment_gif_service.dart';
 import 'package:crowdfans/services/comment_service.dart';
+import 'package:crowdfans/services/post_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -86,24 +87,54 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   /// Quando o TEMP CF-194 preenche a lista, o header também usa o print.
   var _usingCf194Mocks = false;
 
+  /// CF-174: hidrata autor/texto via API quando a rota veio sem query.
+  String? _hydratedAuthor;
+  String? _hydratedHandle;
+  String? _hydratedText;
+  String? _hydratedAvatarUrl;
+  int? _hydratedMinutesAgo;
+
   bool get _isFanClubContext => (widget.clubName ?? '').trim().isNotEmpty;
 
   String? get _displayAuthor =>
-      _usingCf194Mocks ? Cf194FanClubCommentsMock.postAuthor : widget.postAuthor;
+      _usingCf194Mocks
+          ? Cf194FanClubCommentsMock.postAuthor
+          : _firstNonEmpty(widget.postAuthor, _hydratedAuthor);
   String? get _displayHandle =>
-      _usingCf194Mocks ? Cf194FanClubCommentsMock.postHandle : widget.postHandle;
+      _usingCf194Mocks
+          ? Cf194FanClubCommentsMock.postHandle
+          : _firstNonEmpty(widget.postHandle, _hydratedHandle);
   String? get _displayText =>
-      _usingCf194Mocks ? Cf194FanClubCommentsMock.postText : widget.postText;
+      _usingCf194Mocks
+          ? Cf194FanClubCommentsMock.postText
+          : _firstNonEmpty(widget.postText, _hydratedText);
+  String? get _displayAvatarUrl =>
+      _firstNonEmpty(widget.postAvatarUrl, _hydratedAvatarUrl);
   String? get _displayClubName =>
       _usingCf194Mocks ? Cf194FanClubCommentsMock.clubName : widget.clubName;
   int? get _displayMinutesAgo => _usingCf194Mocks
       ? Cf194FanClubCommentsMock.postMinutesAgo
-      : widget.postMinutesAgo;
+      : (widget.postMinutesAgo ?? _hydratedMinutesAgo);
+
+  bool get _hasPostIdentity {
+    return (_displayAuthor ?? '').trim().isNotEmpty ||
+        (_displayHandle ?? '').trim().isNotEmpty;
+  }
+
+  static String? _firstNonEmpty(String? primary, String? fallback) {
+    final a = (primary ?? '').trim();
+    if (a.isNotEmpty) {
+      return a;
+    }
+    final b = (fallback ?? '').trim();
+    return b.isEmpty ? null : b;
+  }
 
   @override
   void initState() {
     super.initState();
     handleLoad();
+    handleHydratePostContext();
   }
 
   @override
@@ -221,6 +252,56 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       if (mounted) {
         setState(() => _loadingMore = false);
       }
+    }
+  }
+
+  /// CF-174: prefere API real quando a navegação não trouxe autor/texto.
+  Future<void> handleHydratePostContext() async {
+    final needsAuthor = (widget.postAuthor ?? '').trim().isEmpty;
+    final needsText = (widget.postText ?? '').trim().isEmpty;
+    final needsTime = widget.postMinutesAgo == null;
+    if (widget.postId.isEmpty || (!needsAuthor && !needsText && !needsTime)) {
+      return;
+    }
+    try {
+      final post = await PostService.getPostById(widget.postId);
+      if (!mounted) {
+        return;
+      }
+      String? author;
+      String? handle;
+      String? avatar;
+      if (needsAuthor && post.userId.trim().isNotEmpty) {
+        try {
+          final profile = await ProfileService.getProfileByUserUid(post.userId);
+          author = profile.displayName.trim().isEmpty
+              ? profile.name
+              : profile.displayName;
+          handle = profile.name.trim().isEmpty ? null : profile.name;
+          avatar = profile.photoUrl.trim().isEmpty ? null : profile.photoUrl;
+        } catch (_) {
+          // Sem perfil: ainda aplica texto/tempo do post.
+        }
+      }
+      final created = DateTime.tryParse(post.createdAt);
+      final minutes = created == null
+          ? null
+          : DateTime.now().difference(created).inMinutes.clamp(0, 999999);
+      setState(() {
+        if (needsAuthor) {
+          _hydratedAuthor = author;
+          _hydratedHandle = handle;
+          _hydratedAvatarUrl = avatar;
+        }
+        if (needsText && post.text.trim().isNotEmpty) {
+          _hydratedText = post.text.trim();
+        }
+        if (needsTime && minutes != null) {
+          _hydratedMinutesAgo = minutes;
+        }
+      });
+    } catch (_) {
+      // Deep link sem post: UI cai no fallback "Comentários".
     }
   }
 
@@ -534,24 +615,22 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               },
               author: _displayAuthor,
               handle: _displayHandle,
-              avatarUrl: widget.postAvatarUrl,
+              avatarUrl: _displayAvatarUrl,
               clubAvatarUrl: widget.clubAvatarUrl,
               clubName: _displayClubName,
               // Print CF-194: ⋯ ativo (não esmaecido).
               onMenu: handleOpenPostMenu,
             ),
-            // Home (CF-195): header do autor + chips — sem card de post.
-            // Fã-clube (CF-194): mantém contexto do clube/post (print).
+            // CF-174: título "Comentários" (Home e fã-clube).
+            // Fã-clube (CF-194): contexto do post acima do título.
+            // Home (CF-195): sem card de post — só o título da seção.
             if (_isFanClubContext &&
                 ((_displayAuthor ?? '').trim().isNotEmpty ||
                     (_displayClubName ?? '').trim().isNotEmpty ||
                     (_displayText ?? '').trim().isNotEmpty ||
                     _displayMinutesAgo != null))
               CommentPostContextHeader(
-                author: _displayAuthor,
-                handle: _displayHandle,
                 text: _displayText,
-                clubName: _displayClubName,
                 minutesAgo: _displayMinutesAgo,
                 votes: _postVotes,
                 myVote: _postMyVote,
@@ -564,7 +643,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 }),
                 onShare: () {},
               )
-            else if (_isFanClubContext)
+            else if (_hasPostIdentity || _isFanClubContext)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: Text(

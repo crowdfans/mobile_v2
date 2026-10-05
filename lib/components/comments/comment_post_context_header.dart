@@ -5,17 +5,14 @@ import 'package:crowdfans/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Contexto do post no topo da tela de comentários (Home e fã-clube).
+/// Contexto do post no topo da tela de comentários (fã-clube / Reddit-X).
 ///
-/// CF-194: tempo + texto + votos/compartilhar; título "Comentários" abaixo.
-/// Autor/handle ficam no [CommentThreadHeader] (print).
+/// CF-174 / CF-194: tempo + texto + votos/compartilhar; título "Comentários"
+/// abaixo. Autor/handle ficam no [CommentThreadHeader] (print).
 class CommentPostContextHeader extends StatelessWidget {
   const CommentPostContextHeader({
     super.key,
-    this.author,
-    this.handle,
     this.text,
-    this.clubName,
     this.minutesAgo,
     this.votes = 0,
     this.myVote = 0,
@@ -25,10 +22,7 @@ class CommentPostContextHeader extends StatelessWidget {
     this.onShare,
   });
 
-  final String? author;
-  final String? handle;
   final String? text;
-  final String? clubName;
   final int? minutesAgo;
   final int votes;
   final int myVote;
@@ -41,29 +35,11 @@ class CommentPostContextHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final body = (text ?? '').trim();
-    final showLegacyAuthor =
-        (author ?? '').trim().isNotEmpty && minutesAgo == null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showLegacyAuthor) ...[
-            Text(
-              author!.trim(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
-            ),
-            if ((handle ?? '').trim().isNotEmpty)
-              Text(
-                handle!,
-                style: TextStyle(fontSize: 13, color: colors.textTertiary),
-              ),
-            const SizedBox(height: 8),
-          ],
           if (minutesAgo != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
