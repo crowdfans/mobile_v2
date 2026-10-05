@@ -81,8 +81,10 @@ abstract final class CfTempMocks {
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
-  /// Busca artistas — `GET /api/v1/search/artists`.
-  static const useSearchArtistsFixtures = false;
+  /// Busca artistas “L” (CF-240) — **TEMP on** até
+  /// `GET /api/v1/search/artists` devolver Ludmilla…Carol Biazin.
+  /// Não altera blocos/cards do ranking (CF-172).
+  static const useSearchArtistsFixtures = true;
 
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
@@ -1517,13 +1519,64 @@ List<FeedPost> cfTempMockLudmillaExclusivePosts() {
   ];
 }
 
-/// Busca artistas “L” (CF-240).
+/// Resultados print CF-240 (Buscar artistas · query “L”).
+List<ArtistSearchItem> _cf240SearchArtistsPrint() {
+  return const [
+    ArtistSearchItem(
+      id: 'mock-search-ludmilla',
+      name: 'Ludmilla',
+      handle: '@ludmilla',
+      avatarUri: '',
+      memberCount: 512000,
+      membersLabel: '512 mil membros',
+      rank: 1,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-anitta',
+      name: 'Anitta',
+      handle: '@anitta',
+      avatarUri: '',
+      memberCount: 487000,
+      membersLabel: '487 mil membros',
+      rank: 2,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-mayra',
+      name: 'Mayra',
+      handle: '@mayra',
+      avatarUri: '',
+      memberCount: 368000,
+      membersLabel: '368 mil membros',
+      rank: 3,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-uelo',
+      name: 'Banda Uelo',
+      handle: '@bandauelo',
+      avatarUri: '',
+      memberCount: 228000,
+      membersLabel: '228 mil membros',
+      rank: 4,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-carol',
+      name: 'Carol Biazin',
+      handle: '@carolbiazin',
+      avatarUri: '',
+      memberCount: 196000,
+      membersLabel: '196 mil membros',
+      rank: 5,
+    ),
+  ];
+}
+
+/// Busca artistas “L” (CF-240). Lista própria — não reusa ranking (CF-172/241).
 List<ArtistSearchItem>? cfTempMockSearchArtists(String query) {
   final q = query.trim().toLowerCase();
   if (q.isEmpty) {
     return null;
   }
-  final all = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 5);
+  final all = _cf240SearchArtistsPrint();
   if (q == 'l') {
     return all;
   }
