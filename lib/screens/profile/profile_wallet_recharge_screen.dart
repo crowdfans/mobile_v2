@@ -43,15 +43,26 @@ class _ProfileWalletRechargeScreenState
       _loading = true;
       _error = null;
     });
+    // CF-169: com TEMP ligado, usa catálogo do print sem esperar a API
+    // (prod ainda devolve Starter/Plus/Pro legado).
+    if (kUseCfTempMocks && kUseCf170WalletPackMocks) {
+      final resolved = resolveWalletRechargePacks(const []);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _packs = resolved;
+        _selectedId = resolved.isEmpty ? null : resolved.first.id;
+        _loading = false;
+      });
+      return;
+    }
     try {
       final packs = await WalletService.listPacks();
       if (!mounted) {
         return;
       }
-      final resolved =
-          packs.isEmpty && kUseCfTempMocks && kUseCf170WalletPackMocks
-          ? Cf170WalletPackMock.packs()
-          : packs;
+      final resolved = resolveWalletRechargePacks(packs);
       setState(() {
         _packs = resolved;
         _selectedId = resolved.isEmpty ? null : resolved.first.id;
@@ -61,16 +72,11 @@ class _ProfileWalletRechargeScreenState
       if (!mounted) {
         return;
       }
-      final fallback = kUseCfTempMocks && kUseCf170WalletPackMocks
-          ? Cf170WalletPackMock.packs()
-          : <JamCoinPack>[];
       setState(() {
-        _packs = fallback;
-        _selectedId = fallback.isEmpty ? null : fallback.first.id;
+        _packs = const [];
+        _selectedId = null;
         _loading = false;
-        _error = fallback.isEmpty
-            ? 'Não foi possível carregar os pacotes.'
-            : null;
+        _error = 'Não foi possível carregar os pacotes.';
       });
     }
   }

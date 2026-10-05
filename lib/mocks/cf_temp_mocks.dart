@@ -2512,7 +2512,8 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-170 packs (print Pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
+/// CF-169/170 packs (print recarga + pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
+/// Valores do print YouTrack (exemplos; comerciais ainda TBD).
 const bool kUseCf170WalletPackMocks = true;
 
 /// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
@@ -2540,7 +2541,7 @@ abstract final class Cf171PixCheckoutMock {
   }
 }
 
-/// Pacotes demo: CF-169 lista de recarga; `cf170-240` = print CF-170 pagamento.
+/// Pacotes demo CF-169 (lista de recarga) / CF-170 (pagamento; 240 = Mais pedido).
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
@@ -2559,29 +2560,43 @@ abstract final class Cf170WalletPackMock {
       JamCoinPack(
         id: 'cf169-600',
         coins: 600,
-        priceCents: 4490,
+        priceCents: 4990,
         label: '500 JC + 100 bônus',
       ),
       JamCoinPack(
         id: 'cf169-1300',
         coins: 1300,
-        priceCents: 8990,
+        priceCents: 9990,
         label: '1.000 JC + 300 bônus',
       ),
       JamCoinPack(
         id: 'cf169-2100',
         coins: 2100,
-        priceCents: 12990,
+        priceCents: 14990,
         label: '1.600 JC + 500 bônus',
       ),
       JamCoinPack(
         id: 'cf169-2800',
         coins: 2800,
-        priceCents: 15990,
+        priceCents: 19999,
         label: '2.000 JC + 800 bônus',
       ),
     ];
   }
+}
+
+/// Resolve catálogo da tela de recarga (CF-169).
+/// Com TEMP ligado, o print prevalece sobre o catálogo legado da API
+/// (Starter/Plus/Pro) — valores comerciais ainda TBD ([CF-270]).
+List<JamCoinPack> resolveWalletRechargePacks(
+  List<JamCoinPack> apiPacks, {
+  bool? useTempMocks,
+}) {
+  final useMocks = useTempMocks ?? (kUseCfTempMocks && kUseCf170WalletPackMocks);
+  if (useMocks) {
+    return Cf170WalletPackMock.packs();
+  }
+  return apiPacks;
 }
 
 /// CF-182 — Sobre do artista (Spotify + base do print Ludmilla).
