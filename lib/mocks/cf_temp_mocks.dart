@@ -76,9 +76,8 @@ abstract final class CfTempMocks {
   /// Lista Moderadores (CF-225) também usa [kUseCf225ModeratorsMocks].
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
-  /// CF-232/233 no mesmo fixture). Off quando `GET /api/v1/home` devolver
-  /// posts equivalentes aos prints.
+  /// Home feed — **TEMP on** (CF-233 carrossel + CF-234 lightbox URIs + CF-235).
+  /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
   /// Busca artistas — `GET /api/v1/search/artists`.
@@ -1104,6 +1103,12 @@ const _cfCarouselSnake =
     'https://images.unsplash.com/photo-1531386450450-969f935bd522?auto=format&fit=crop&w=800&q=80';
 const _cfCarouselMerch =
     'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80';
+/// Print CF-233 slide 1 — silhuetas em quadra / golden hour.
+const _cfCarouselCourtSunset =
+    'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80';
+/// Print CF-233 slide 2 — praia com guarda-sóis.
+const _cfCarouselBeachUmbrellas =
+    'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=800&q=80';
 
 /// Cover do print CF-222 (cadeira / interior).
 const cfTempMockFanClubCoverUrl =
@@ -1330,13 +1335,17 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       avatarUri: '',
       text:
           'Momentos do backstage que normalmente não entram em lugar nenhum. Agora entraram.',
-      votes: 227,
-      comments: 31,
-      shares: 5,
-      imageUri: _cfCarouselBeach,
-      // Beach-first = print CF-233; cervo fica no meio — CF-234 usa
-      // [cfTempMockCf234LightboxUris] (deer-first) no widget test.
-      carouselUris: [_cfCarouselBeach, _cfCarouselDeer, _cfCarouselCity],
+      votes: 240,
+      comments: 36,
+      shares: 7,
+      imageUri: _cfCarouselCourtSunset,
+      // Print CF-233 (quadra → guarda-sóis → deer). Lightbox CF-234 usa
+      // [cfTempMockCf234LightboxUris] (deer-first) nos testes próprios.
+      carouselUris: [
+        _cfCarouselCourtSunset,
+        _cfCarouselBeachUmbrellas,
+        _cfCarouselDeer,
+      ],
     ),
     FeedPost(
       id: 'cf232-carol-text',
