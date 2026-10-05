@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Banner ilustrado Membership Fan com CTA (CF-167 / CF-168).
+/// Banner ilustrado Membership Fan com CTA (CF-167).
+///
+/// Proporção alinhada à arte oficial (`Banner-Membership.png`) para não
+/// cortar o mascote como em 16:9. CF-168 usa `WalletMembershipBanner`.
 class MembershipProTeaser extends StatelessWidget {
   const MembershipProTeaser({
     super.key,
@@ -10,6 +13,9 @@ class MembershipProTeaser extends StatelessWidget {
 
   final VoidCallback onPressed;
   final String ctaLabel;
+
+  /// Largura/altura do asset aprovado (344×235).
+  static const aspectRatio = 344 / 235;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,7 @@ class MembershipProTeaser extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: aspectRatio,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -43,7 +49,7 @@ class MembershipProTeaser extends StatelessWidget {
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom: 14,
+                  bottom: 16,
                   child: Center(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -59,13 +65,13 @@ class MembershipProTeaser extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
+                          horizontal: 22,
+                          vertical: 12,
                         ),
                         child: Text(
                           ctaLabel,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF111827),
                           ),
