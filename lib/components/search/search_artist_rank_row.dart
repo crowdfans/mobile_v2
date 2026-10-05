@@ -159,7 +159,8 @@ class SearchArtistRankRow extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      // Print CF-189: densidade compacta entre linhas.
+      padding: const EdgeInsets.only(bottom: 8),
       child: Semantics(
         button: true,
         label: semanticsLabel,
