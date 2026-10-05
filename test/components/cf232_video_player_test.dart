@@ -5,7 +5,6 @@ import 'package:crowdfans/components/post/post_video_ui_state.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
-import 'package:crowdfans/services/home_feed_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,7 +17,7 @@ Widget _wrap(Widget child) {
 
 void main() {
   test('CF-232 fixture: Banda Uelo vídeo público (print)', () {
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue);
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     final post = cfTempMockHomeFeedPosts().firstWhere(
       (p) => p.id == 'cf232-uelo-video',
     );
@@ -35,8 +34,8 @@ void main() {
     expect((post.videoUri ?? '').isEmpty, isTrue);
   });
 
-  test('CF-232: HomeFeedService devolve fixture Uelo', () async {
-    final dto = await HomeFeedService.load(page: 1);
+  test('CF-232: amostra print Uelo ainda disponível (fixtures off)', () {
+    final dto = cfTempMockHomeFeedDto(page: 1);
     expect(
       dto.feedPosts.any((p) => p.id == 'cf232-uelo-video'),
       isTrue,

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CF-235 fixture: Mayra exclusivo desbloqueado no home feed', () {
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue);
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     final posts = cfTempMockHomeFeedPosts();
     final exclusive = posts.firstWhere((p) => p.id == 'cf235-mayra-exclusive');
     expect(exclusive.author, 'Mayra');

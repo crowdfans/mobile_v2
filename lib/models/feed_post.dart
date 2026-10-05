@@ -154,9 +154,16 @@ class FeedPost {
   }
 
   factory FeedPost.fromJson(Map<String, dynamic> json) {
+    final type = postTypeFrom(json['type'] as String?);
+    final imageUri = json['imageUri'] as String?;
+    // BE guarda vídeo em `imageUrl`/`imageUri` quando `videoUri` não vem no DTO.
+    final rawVideoUri = json['videoUri'] as String?;
+    final videoUri = (rawVideoUri ?? '').trim().isNotEmpty
+        ? rawVideoUri
+        : (type == PostType.video ? imageUri : null);
     return FeedPost(
       id: json['id'] as String? ?? '',
-      type: postTypeFrom(json['type'] as String?),
+      type: type,
       author: json['author'] as String? ?? '',
       artistId: json['artistId'] as String?,
       handle: json['handle'] as String? ?? '',
@@ -164,13 +171,13 @@ class FeedPost {
       minutesAgo: (json['minutesAgo'] as num?)?.toInt() ?? 0,
       avatarUri: json['avatarUri'] as String? ?? '',
       text: json['text'] as String? ?? '',
-      imageUri: json['imageUri'] as String?,
+      imageUri: imageUri,
       carouselUris: [
         for (final item in json['carouselUris'] as List? ?? const [])
           item.toString(),
       ],
       videoThumbnailUri: json['videoThumbnailUri'] as String?,
-      videoUri: json['videoUri'] as String?,
+      videoUri: videoUri,
       videoDuration: json['videoDuration'] as String?,
       membershipTitle: json['membershipTitle'] as String?,
       isExclusive: json['isExclusive'] == true,

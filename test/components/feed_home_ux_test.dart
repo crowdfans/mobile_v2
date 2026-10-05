@@ -14,7 +14,6 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
-import 'package:crowdfans/services/home_feed_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -329,10 +328,10 @@ void main() {
     });
 
     test(
-      'HomeFeedService: fixtures ON cobrem print (GET /home real quando off)',
-      () async {
-        expect(CfTempMocks.useHomeFeedFixtures, isTrue);
-        final dto = await HomeFeedService.load(page: 1);
+      'Home feed demock: fixtures OFF; amostra print ainda coberta',
+      () {
+        expect(CfTempMocks.useHomeFeedFixtures, isFalse);
+        final dto = cfTempMockHomeFeedDto(page: 1);
         expect(dto.feedPosts, isNotEmpty);
       },
     );
