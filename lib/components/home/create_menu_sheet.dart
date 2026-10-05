@@ -64,69 +64,77 @@ class CreateMenuSheet extends ConsumerWidget {
     return BottomSheetShell(
       visible: visible,
       onClose: onClose,
-      // Cobre a barra inferior (print Criar): ações com área de toque
-      // independente da Navigation Bar e respiro de área segura.
+      // CF-188: cobre a barra inferior (print referência); ações com área
+      // de toque independente da Navigation Bar e respiro de área segura.
       coverNavigation: true,
       bottomOffset: createMenuSheetExtraBottom(bottomInset),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: ColoredBox(
-              color: colors.surfaceAlt,
-              child: Column(
-                children: isArtist
-                    ? [
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-live'),
-                          asset: 'assets/icons/Media & devices/signal-01.svg',
-                          label: 'Live',
-                          onPressed: () => handleLive(context),
-                        ),
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-meet'),
-                          asset: 'assets/icons/Communication/phone.svg',
-                          label: 'Meet & Greet',
-                          onPressed: () => handleMeet(context),
-                          showDivider: true,
-                        ),
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-create-post'),
-                          asset: 'assets/icons/General/edit-03.svg',
-                          label: 'Post para Home',
-                          onPressed: () => handleCreatePost(context),
-                          showDivider: true,
-                        ),
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-fan-club-post'),
-                          asset:
-                              'assets/icons/Communication/message-heart-circle.svg',
-                          label: 'Post Fã Clube',
-                          onPressed: () => handleFanClubPost(context),
-                          showDivider: true,
-                        ),
-                      ]
-                    : [
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-fan-letters'),
-                          asset: 'assets/icons/Communication/mail-01.svg',
-                          label: 'Fan Letter',
-                          onPressed: () => handleFanLetters(context),
-                        ),
-                        CreateMenuItemButton(
-                          key: const Key('create-menu-fan-club-post'),
-                          asset:
-                              'assets/icons/Communication/message-heart-circle.svg',
-                          label: 'Post Fã Clube',
-                          onPressed: () => handleFanClubPost(context),
-                          showDivider: true,
-                        ),
-                      ],
+      child: Semantics(
+        container: true,
+        label: 'Seletor de publicação',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Rolagem garante última ação alcançável com fonte ampliada.
+            SingleChildScrollView(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ColoredBox(
+                  color: colors.surfaceAlt,
+                  child: Column(
+                    children: isArtist
+                        ? [
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-live'),
+                              asset:
+                                  'assets/icons/Media & devices/signal-01.svg',
+                              label: 'Live',
+                              onPressed: () => handleLive(context),
+                            ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-meet'),
+                              asset: 'assets/icons/Communication/phone.svg',
+                              label: 'Meet & Greet',
+                              onPressed: () => handleMeet(context),
+                              showDivider: true,
+                            ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-create-post'),
+                              asset: 'assets/icons/General/edit-03.svg',
+                              label: 'Post para Home',
+                              onPressed: () => handleCreatePost(context),
+                              showDivider: true,
+                            ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-fan-club-post'),
+                              asset:
+                                  'assets/icons/Communication/message-heart-circle.svg',
+                              label: 'Post Fã Clube',
+                              onPressed: () => handleFanClubPost(context),
+                              showDivider: true,
+                            ),
+                          ]
+                        : [
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-fan-letters'),
+                              asset: 'assets/icons/Communication/mail-01.svg',
+                              label: 'Fan Letter',
+                              onPressed: () => handleFanLetters(context),
+                            ),
+                            CreateMenuItemButton(
+                              key: const Key('create-menu-fan-club-post'),
+                              asset:
+                                  'assets/icons/Communication/message-heart-circle.svg',
+                              label: 'Post Fã Clube',
+                              onPressed: () => handleFanClubPost(context),
+                              showDivider: true,
+                            ),
+                          ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -134,6 +142,6 @@ class CreateMenuSheet extends ConsumerWidget {
 
 /// Respiro extra sob as ações além do padding de área segura do shell.
 double createMenuSheetExtraBottom(double safeBottom) {
-  // Garante ≥16px de folga após o safe area (fonte ampliada / home indicator).
-  return safeBottom >= 16 ? 12 : 20;
+  // CF-188: ≥16px de folga após safe area (home indicator / texto ampliado).
+  return safeBottom >= 16 ? 16 : 24;
 }

@@ -136,7 +136,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Fan Letter'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('nav-create')));
+    // CF-188: sheet cobre a nav — fechar pelo overlay, não pelo (+) coberto.
+    await tester.tapAt(const Offset(20, 20));
     await tester.pumpAndSettle();
     expect(find.text('Fan Letter'), findsNothing);
   });

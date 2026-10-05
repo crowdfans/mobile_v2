@@ -21,36 +21,45 @@ class CreateMenuItemButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (showDivider)
           Divider(height: 1, thickness: 0.5, indent: 16, color: colors.border),
         InkWell(
           onTap: onPressed,
-          child: SizedBox(
-            height: 56,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  SvgPicture.asset(
-                    asset,
-                    width: 22,
-                    height: 22,
-                    colorFilter: ColorFilter.mode(colors.icon, BlendMode.srcIn),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 16,
-                        height: 20 / 16,
-                        fontWeight: FontWeight.w500,
-                        color: colors.textPrimary,
+          child: Semantics(
+            button: true,
+            label: label,
+            child: SizedBox(
+              // CF-188: alvo de toque ≥64px, independente da bottom nav.
+              height: 64,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      asset,
+                      width: 22,
+                      height: 22,
+                      colorFilter:
+                          ColorFilter.mode(colors.icon, BlendMode.srcIn),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          height: 20 / 16,
+                          fontWeight: FontWeight.w500,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
