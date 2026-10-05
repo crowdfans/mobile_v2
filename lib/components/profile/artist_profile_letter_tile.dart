@@ -1,6 +1,7 @@
 import 'package:crowdfans/components/fan_letter/fan_letter_background_chip.dart';
 import 'package:crowdfans/components/fan_letter/fan_letter_canvas_preview.dart';
 import 'package:crowdfans/components/post/post_avatar.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/fan_letter_service.dart';
 import 'package:flutter/material.dart';
 
@@ -41,12 +42,20 @@ class ArtistProfileLetterTile extends StatelessWidget {
     return luminance > 0.45 ? const Color(0xFF1C1C1E) : Colors.white;
   }
 
+  List<FanLetterPlacedSticker> _stickers() {
+    if (!kUseCfTempMocks || !kUseCf181CartasMocks) {
+      return const [];
+    }
+    return Cf181CartasMock.stickersFor(letter.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasImage = (letter.imageUri ?? '').trim().isNotEmpty;
     final author = authorLabel();
     final pos = position;
     final fg = authorForeground();
+    final stickers = _stickers();
     return Semantics(
       label: [
         if (pos != null && pos > 0) 'Carta $pos',
@@ -67,7 +76,7 @@ class ArtistProfileLetterTile extends StatelessWidget {
                         return FanLetterCanvasPreview(
                           preset: _preset,
                           bodyText: letter.bodyText ?? '',
-                          stickers: const [],
+                          stickers: stickers,
                           strokes: const [],
                           compact: true,
                         );
@@ -76,7 +85,7 @@ class ArtistProfileLetterTile extends StatelessWidget {
                   : FanLetterCanvasPreview(
                       preset: _preset,
                       bodyText: letter.bodyText ?? '',
-                      stickers: const [],
+                      stickers: stickers,
                       strokes: const [],
                       compact: true,
                     ),

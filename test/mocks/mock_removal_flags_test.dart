@@ -17,7 +17,8 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186 + CF-222/223
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186/222/223/227
+    expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
     expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
@@ -37,6 +38,6 @@ void main() {
     expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
 
     expect(kUseCf178FanClubsFeedMocks, isFalse);
-    expect(kUseCf181CartasMocks, isFalse);
+    expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
   });
 }
