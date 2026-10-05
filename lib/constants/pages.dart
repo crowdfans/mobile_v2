@@ -493,6 +493,7 @@ abstract final class Pages {
       '/me/settings/notifications/artists';
   static const profileSecurity = '/me/settings/security';
   static const profileSecurityCredentials = '/me/settings/security/credentials';
+  static const profileChangePassword = '/me/settings/security/password';
   static const profileChangeEmail = '/me/settings/security/email';
   static const profileChangePhone = '/me/settings/security/phone';
   static const profileConnectedDevices = '/me/settings/security/devices';
@@ -565,6 +566,8 @@ abstract final class Pages {
     '/pages/profile/settings/ProfileSecurityScreen': profileSecurity,
     '/pages/profile/settings/ProfileSecurityCredentialsScreen':
         profileSecurityCredentials,
+    '/pages/profile/settings/ProfileChangePasswordScreen':
+        profileChangePassword,
     '/pages/profile/settings/ProfileChangeEmailScreen': profileChangeEmail,
     '/pages/profile/settings/ProfileChangePhoneScreen': profileChangePhone,
     '/pages/profile/settings/ProfileConnectedDevicesScreen':

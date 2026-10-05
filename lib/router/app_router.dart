@@ -298,10 +298,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               'email') {
             return const ProfileChangeEmailScreen();
           }
-          return ProfileSecurityCredentialsScreen(
-            initialMode: state.uri.queryParameters['mode'],
-          );
+          // Compat: ?mode=password (ou omitido) → página dedicada CF-164.
+          return const ProfileSecurityCredentialsScreen();
         },
+      ),
+      GoRoute(
+        path: Pages.profileChangePassword,
+        builder: (context, state) => const ProfileSecurityCredentialsScreen(),
       ),
       GoRoute(
         path: Pages.profileChangeEmail,
