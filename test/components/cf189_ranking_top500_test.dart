@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CF-189 fixtures: print Top 500 Brasil (8 linhas + tendências)', () {
-    expect(CfTempMocks.useRankingFixtures, isTrue);
+  test('CF-189 amostra print Top 500 Brasil (8 linhas + tendências)', () {
+    expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268
     final rows = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 8);
     expect(rows.length, 8);
     expect(rows.map((r) => r.name).toList(), [
@@ -79,7 +79,7 @@ void main() {
         home: const SearchRankingScreen(kind: 'fan-clubs'),
       ),
     );
-    await tester.pump(); // initState → handleLoad fixtures
+    await tester.pump();
     await tester.pump();
 
     expect(
@@ -97,9 +97,6 @@ void main() {
       find.text('Artistas com mais seguidores / assinantes'),
       findsNothing,
     );
-    expect(find.text('Ludmilla'), findsOneWidget);
-    expect(find.text('TINN'), findsOneWidget);
-    expect(find.text('#1'), findsOneWidget);
-    expect(find.text('#8'), findsOneWidget);
+    // Fixtures off (CF-268): lista vem da API — não assertar Ludmilla TEMP.
   });
 }
