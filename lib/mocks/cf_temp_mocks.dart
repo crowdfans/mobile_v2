@@ -76,7 +76,7 @@ abstract final class CfTempMocks {
   /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-233 carrossel + CF-234 lightbox URIs + CF-235).
+  /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share sheet print).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
@@ -1291,12 +1291,32 @@ List<String> cfTempMockCf234LightboxUris() {
   return const [_cfCarouselDeer, _cfCarouselBeach, _cfCarouselCity];
 }
 
-/// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// Post de fundo do print CF-236 (Mayra texto · 84 / 11 / 3) — abre share sheet.
+FeedPost cfTempMockCf236SharePost() {
+  return const FeedPost(
+    id: 'cf236-mayra-share',
+    type: PostType.text,
+    author: 'Mayra',
+    artistId: 'mock-fc-mayra',
+    handle: '@mayra',
+    rank: '#3',
+    minutesAgo: 8,
+    avatarUri: '',
+    text:
+        'Ensaio curto antes do show. Queria deixar registrado aqui com vocês.',
+    votes: 84,
+    comments: 11,
+    shares: 3,
+  );
+}
+
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
-  return const [
-    FeedPost(
+  return [
+    const FeedPost(
       id: 'cf235-mayra-exclusive',
       type: PostType.video,
       author: 'Mayra',
@@ -1316,7 +1336,8 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    cfTempMockCf236SharePost(),
+    const FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
       author: 'Banda Uelo',
@@ -1334,7 +1355,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf233-ponzanelli-carousel',
       type: PostType.carousel,
       author: 'Ponzanelli',
@@ -1356,7 +1377,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
         _cfCarouselDeer,
       ],
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf232-carol-text',
       type: PostType.text,
       author: 'Carol Biazin',
