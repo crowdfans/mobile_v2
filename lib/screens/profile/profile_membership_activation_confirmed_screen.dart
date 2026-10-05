@@ -4,13 +4,13 @@ import 'package:crowdfans/components/profile/membership_activation_confirmed_car
 import 'package:crowdfans/components/profile/membership_activation_confirmed_info_note.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Confirmação de membership ativa — só após assinatura confirmada (CF-207).
 ///
 /// Tela puramente apresentacional: reabrir a rota não cobra de novo.
+/// Valores vêm da rota (Assinar ou deep-link seeded); não inventa o print.
 class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
   const ProfileMembershipActivationConfirmedScreen({
     super.key,
@@ -36,23 +36,13 @@ class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    // Só fixtures dedicadas CF-207 (ou membership global). Não depende de
-    // Assinar CF-206 — useMembershipFixtures permanece off.
-    final useMock =
-        (CfTempMocks.useMembershipActivationConfirmedFixtures ||
-            CfTempMocks.useMembershipFixtures) &&
-        kUseCfTempMocks &&
-        (artistName.trim().isEmpty || pricePerMonth <= 0);
-    final name = useMock
-        ? cfTempMockMembershipSummary.artistName
-        : (artistName.trim().isEmpty ? 'o artista' : artistName.trim());
-    final handle =
-        useMock ? cfTempMockMembershipSummary.artistHandle : artistHandle;
-    final price = useMock
-        ? cfTempMockMembershipSummary.pricePerMonth
-        : (pricePerMonth > 0 ? pricePerMonth : 100);
+    // Params da rota apenas — demock CF-207. Empty soft fallback (nunca blank);
+    // QA abre via Assinar ou deep-link seeded com artistName/pricePerMonth.
+    final name =
+        artistName.trim().isEmpty ? 'o artista' : artistName.trim();
+    final price = pricePerMonth > 0 ? pricePerMonth : 100;
     final period =
-        useMock ? cfTempMockMembershipSummary.periodLabel : periodLabel;
+        periodLabel.trim().isEmpty ? '1 mês' : periodLabel.trim();
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -105,7 +95,7 @@ class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
                     const SizedBox(height: 28),
                     MembershipActivationConfirmedCard(
                       artistName: name,
-                      artistHandle: handle,
+                      artistHandle: artistHandle,
                       artistAvatarUrl: artistAvatarUrl,
                       pricePerMonth: price,
                       periodLabel: period,

@@ -314,6 +314,9 @@ abstract final class Pages {
   }
 
   /// Confirmação de membership ativa (após assinatura confirmada).
+  ///
+  /// QA/deep-link: passar sempre [artistName] + [pricePerMonth] (seeded).
+  /// Deep-link vazio não inventa print — use Assinar ou este helper com params.
   static String profileMembershipActivationConfirmedOf({
     required String artistName,
     required int pricePerMonth,
