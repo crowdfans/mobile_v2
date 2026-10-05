@@ -23,7 +23,7 @@ void main() {
       isTrue,
     ); // CF-207 print
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue); // CF-213
+    expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse); // CF-213 demock
     expect(CfTempMocks.useFanClubFixtures, isFalse); // demock CF-222…230
     expect(kUseCf200DefendReturnFixtures, isFalse); // CF-200 demock
     expect(kUseCf227FanClubPostMenuFixtures, isFalse); // CF-227 demock
