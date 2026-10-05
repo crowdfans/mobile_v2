@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CF-199 fixtures: Contestações 2 / Avisos 2 / Expulsos 1', () {
+    expect(CfTempMocks.useModerationPanelFixtures, isTrue);
     final appeals = Cf199ModerationPanelFixtures.appeals();
     final strikes = Cf199ModerationPanelFixtures.strikes();
     final expulsions = Cf199ModerationPanelFixtures.expulsions();

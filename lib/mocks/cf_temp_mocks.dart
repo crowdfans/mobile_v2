@@ -89,8 +89,11 @@ abstract final class CfTempMocks {
   /// Exclusivo perfil — subscriptions/check + posts reais.
   static const useArtistExclusiveFixtures = false;
 
-  /// Painel moderação — appeals/strikes/expulsions APIs.
-  static const useModerationPanelFixtures = false;
+  /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
+  /// Expulsos 1 (Anna Lu / Vic Melo) igual ao print. APIs de appeals/strikes/
+  /// expulsions existem, mas sem dados de QA o painel fica vazio. Off quando
+  /// seed/prod tiver fila real equivalente à referência.
+  static const useModerationPanelFixtures = true;
 
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
