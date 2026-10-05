@@ -22,8 +22,8 @@ void main() {
     trend: 'up',
   );
 
-  test('CF-172 fixtures: preview home = 3 linhas do print', () {
-    expect(CfTempMocks.useRankingFixtures, isTrue);
+  test('CF-172 amostra: preview home = 3 linhas do print', () {
+    expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268
     final rows = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 3);
     expect(rows.map((r) => r.name).toList(), ['Ludmilla', 'Anitta', 'Mayra']);
     expect(rows.map((r) => r.trend).toList(), ['up', 'down', 'neutral']);
@@ -54,7 +54,7 @@ void main() {
     expect(clip.dx, lessThan(badge.dx));
   });
 
-  testWidgets('CF-172 home: artistas antes dos atalhos fotográficos + lupa', (
+  testWidgets('CF-172 home: atalhos fotográficos + lupa (lista via API)', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -76,19 +76,10 @@ void main() {
       findsWidgets,
     );
 
-    expect(find.text('Ludmilla'), findsOneWidget);
-    expect(find.text('Anitta'), findsOneWidget);
-    expect(find.text('Mayra'), findsOneWidget);
     expect(find.byType(SearchDiscoveryTile), findsNWidgets(2));
     expect(find.text('Top 100\nEngajados'), findsOneWidget);
     expect(find.text('Top 500\nAtivos'), findsOneWidget);
-
-    final artistY = tester.getTopLeft(find.text('Ludmilla')).dy;
-    final tileY = tester.getTopLeft(find.text('Top 100\nEngajados')).dy;
-    expect(artistY, lessThan(tileY));
-
-    // Home usa avatarLeading (foto antes do #), não a linha tipada CF-240.
-    expect(find.byType(SearchArtistRankRow), findsNWidgets(3));
+    // Fixtures off (CF-268): preview de ranking vem da API — sem Ludmilla TEMP.
   });
 
   testWidgets('CF-193: # e tendência à esquerda do avatar (print Top 100)', (
@@ -112,11 +103,9 @@ void main() {
 
     expect(find.text('#3'), findsOneWidget);
     expect(find.text('Mayra'), findsOneWidget);
-    // Print: badge à esquerda do avatar.
     final badge = tester.getTopLeft(find.text('#3'));
     final clip = tester.getTopLeft(find.byType(ClipRRect).first);
     expect(badge.dx, lessThan(clip.dx));
-    // Sem rótulo textual de tendência na linha (só o círculo).
     expect(find.text('subiu'), findsNothing);
     expect(find.text('estável'), findsNothing);
   });
