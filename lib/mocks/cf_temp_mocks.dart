@@ -71,8 +71,10 @@ abstract final class CfTempMocks {
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
   static const useFanClubFixtures = false;
 
-  /// Home feed — `GET /api/v1/home`.
-  static const useHomeFeedFixtures = false;
+  /// Home feed — **TEMP on** (CF-235): print Mayra exclusivo desbloqueado
+  /// (e CF-232/233 no mesmo fixture). Off quando `GET /api/v1/home` devolver
+  /// posts exclusivos desbloqueados equivalentes ao print.
+  static const useHomeFeedFixtures = true;
 
   /// Busca artistas — `GET /api/v1/search/artists`.
   static const useSearchArtistsFixtures = false;
@@ -1227,8 +1229,29 @@ const cfTempMockModerationCandidate = (
 );
 
 /// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return const [
+    FeedPost(
+      id: 'cf235-mayra-exclusive',
+      type: PostType.video,
+      author: 'Mayra',
+      artistId: 'mock-fc-mayra',
+      handle: '@mayra',
+      rank: '#3',
+      minutesAgo: 60,
+      avatarUri: '',
+      text:
+          'Versão acústica gravada no camarim. Agora finalmente posso subir isso aqui.',
+      votes: 201,
+      comments: 21,
+      shares: 11,
+      isExclusive: true,
+      exclusiveLocked: false,
+      videoDuration: '00:00',
+      videoUri: '',
+      videoThumbnailUri: '',
+    ),
     FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
@@ -1262,26 +1285,6 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       shares: 5,
       imageUri: _cfCarouselBeach,
       carouselUris: [_cfCarouselBeach, _cfCarouselDeer, _cfCarouselCity],
-    ),
-    FeedPost(
-      id: 'cf235-mayra-exclusive',
-      type: PostType.video,
-      author: 'Mayra',
-      artistId: 'mock-fc-mayra',
-      handle: '@mayra',
-      rank: '#3',
-      minutesAgo: 60,
-      avatarUri: '',
-      text:
-          'Versão acústica gravada no camarim. Agora finalmente posso subir isso aqui.',
-      votes: 201,
-      comments: 21,
-      shares: 11,
-      isExclusive: true,
-      exclusiveLocked: false,
-      videoDuration: '00:00',
-      videoUri: '',
-      videoThumbnailUri: '',
     ),
     FeedPost(
       id: 'cf232-carol-text',
