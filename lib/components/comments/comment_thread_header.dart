@@ -124,7 +124,15 @@ class CommentThreadHeader extends StatelessWidget {
             key: const Key('comment-thread-menu'),
             onPressed: onMenu,
             tooltip: 'Opções do post',
-            icon: Icon(Icons.more_horiz, color: colors.textPrimary),
+            icon: SvgPicture.asset(
+              'assets/icons/General/dots-horizontal.svg',
+              width: 22,
+              height: 22,
+              colorFilter: ColorFilter.mode(
+                colors.textPrimary,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ],
       ),

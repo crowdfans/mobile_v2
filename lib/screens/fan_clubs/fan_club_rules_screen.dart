@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Diretrizes estáticas da comunidade (sem API).
+///
+/// Hierarquia do print CF-226: título do app bar, headline, intro, autoria
+/// em duas linhas e regras numeradas com divisores.
 class FanClubRulesScreen extends StatelessWidget {
   const FanClubRulesScreen({super.key});
 
@@ -30,56 +33,61 @@ class FanClubRulesScreen extends StatelessWidget {
               onBack: () => handleBack(context),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
-                children: [
-                  Text(
-                    'Diretrizes da Comunidade',
-                    style: TextStyle(
-                      fontSize: 26,
-                      height: 1.25,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
+              child: SelectionArea(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
+                  children: [
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        'Diretrizes da Comunidade',
+                        style: TextStyle(
+                          fontSize: 26,
+                          height: 1.25,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Na Crowd Fans, a música aproxima pessoas. Este é um espaço '
-                    'para viver a relação entre artistas e fãs de um jeito mais '
-                    'próximo, mais verdadeiro e mais humano.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.5,
-                      color: colors.textSecondary,
+                    const SizedBox(height: 12),
+                    Text(
+                      'Na Crowd Fans, a música aproxima pessoas. Este é um espaço '
+                      'para viver a relação entre artistas e fãs de um jeito mais '
+                      'próximo, mais verdadeiro e mais humano.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.5,
+                        color: colors.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Equipe Crowd Fans',
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.4,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+                    const SizedBox(height: 16),
+                    Text(
+                      'Equipe Crowd Fans',
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Feito de fã pra fã. <3',
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                      color: colors.textSecondary,
+                    const SizedBox(height: 2),
+                    Text(
+                      'Feito de fã pra fã. <3',
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  for (var i = 0; i < fanClubRulesSections.length; i++)
-                    FanClubRulesSectionView(
-                      section: fanClubRulesSections[i],
-                      showDivider: i < fanClubRulesSections.length - 1,
-                    ),
-                ],
+                    const SizedBox(height: 8),
+                    for (var i = 0; i < fanClubRulesSections.length; i++)
+                      FanClubRulesSectionView(
+                        section: fanClubRulesSections[i],
+                        showDivider: i < fanClubRulesSections.length - 1,
+                      ),
+                  ],
+                ),
               ),
             ),
           ],

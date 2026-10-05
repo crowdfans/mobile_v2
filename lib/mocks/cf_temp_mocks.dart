@@ -55,7 +55,10 @@ abstract final class CfTempMocks {
   static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
-  static const useFanScoreFixtures = false;
+  /// **TEMP on** (CF-201): API existe, mas prod não devolve o ciclo + cards
+  /// Ultimate/Super do print (Insights expandido). Off quando o endpoint
+  /// popular dados equivalentes ao print.
+  static const useFanScoreFixtures = true;
 
   /// Membership / recarga — subscriptions + wallet APIs.
   static const useMembershipFixtures = false;
@@ -69,7 +72,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  static const useFanClubFixtures = false;
+  /// TEMP ligado p/ CF-222 print (Enzo / Aline carousel); API real sem dados do print.
+  static const useFanClubFixtures = true;
 
   /// Home feed — `GET /api/v1/home`.
   static const useHomeFeedFixtures = false;
@@ -677,32 +681,33 @@ const cfTempMockFanScoreHowItWorksFactorsBody =
 /// FanScore demo do print CF-201 (ciclo + cards Ultimate/Super).
 /// CF-202 reutiliza [cycleDetails.endLabel] no rodapé “Como funciona”.
 FanScoreData cfTempMockFanScoreData() {
+  // Print: badge Ultimate lilás claro + texto roxo escuro; Super dourado.
   const ultimate = FanScoreTier(
     id: 'ultimate',
     label: 'Ultimate Fan',
     minScore: 900,
-    gradient: ['#EDE9FE', '#DDD6FE'],
-    badgeGradient: ['#A78BFA', '#7C3AED'],
-    badgeText: '#FFFFFF',
+    gradient: ['#EDE9FE', '#E9D5FF'],
+    badgeGradient: ['#DDD6FE', '#C4B5FD'],
+    badgeText: '#4C1D95',
     border: '#C4B5FD',
   );
   const superFan = FanScoreTier(
     id: 'super',
     label: 'Super Fan',
     minScore: 500,
-    gradient: ['#FFEDD5', '#FED7AA'],
-    badgeGradient: ['#FB923C', '#EA580C'],
+    gradient: ['#FFF7E0', '#FFE8B0'],
+    badgeGradient: ['#FDC55F', '#F5B942'],
     badgeText: '#FFFFFF',
-    border: '#FDBA74',
+    border: '#F6D58A',
   );
   const superFanAlt = FanScoreTier(
     id: 'super',
     label: 'Super Fan',
     minScore: 500,
-    gradient: ['#FEF9C3', '#FDE68A'],
-    badgeGradient: ['#FB923C', '#EA580C'],
+    gradient: ['#FFF8E7', '#FFE9B5'],
+    badgeGradient: ['#FDC55F', '#F5B942'],
     badgeText: '#FFFFFF',
-    border: '#FCD34D',
+    border: '#F6D58A',
   );
   return const FanScoreData(
     cycleDetails: FanScoreCycleDetails(
@@ -1073,6 +1078,10 @@ const _cfCarouselSnake =
     'https://images.unsplash.com/photo-1531386450450-969f935bd522?auto=format&fit=crop&w=800&q=80';
 const _cfCarouselMerch =
     'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80';
+
+/// Cover do print CF-222 (cadeira / interior).
+const cfTempMockFanClubCoverUrl =
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80';
 
 enum CfFanClubFixtureKind { community, expelled, warning }
 

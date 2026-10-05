@@ -226,7 +226,17 @@ class _MeetLobbyScreenState extends State<MeetLobbyScreen> {
     if (artistUid.isEmpty) {
       return;
     }
-    context.push(Pages.artistProfileOf(artistUid));
+    final name = (_snapshot?.artistName.trim().isNotEmpty == true)
+        ? _snapshot!.artistName.trim()
+        : (widget.artistName ?? '').trim();
+    // CF-206: revisão/aceite antes da cobrança (não só o perfil do artista).
+    context.push(
+      Pages.profileMembershipSubscribeOf(
+        artistId: artistUid,
+        artistName: name.isEmpty ? 'Artista' : name,
+        pricePerMonth: 100,
+      ),
+    );
   }
 
   @override
