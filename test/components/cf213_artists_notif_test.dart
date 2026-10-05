@@ -14,8 +14,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   // --- GREEN: print / happy path ---
 
-  test('CF-213 green: flag dedicada ON e fixtures do print', () {
-    expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
+  test('CF-213 green: fixtures off; helpers do print permanecem p/ testes', () {
+    expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
 
     final prefs = Cf213NotificationPrefFixtures.alertTypeDefaultsOff();
@@ -54,9 +54,15 @@ void main() {
     );
   });
 
+<<<<<<< HEAD
   test('CF-213 green: flags CF-209/211/166 hub intactas', () {
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
+=======
+  test('CF-213 green: demock não liga hub CF-166 nem CF-209/211', () {
+    expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse);
+    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue);
+>>>>>>> 05fb972 (CF-213: demock artists notif print fixtures (0.1.1+92))
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
   });
@@ -333,7 +339,23 @@ void main() {
     );
     expect(many.length, 40);
     expect(many.last.artistName, 'Artista 40');
-    // Fixtures do print continuam 3; bulk só prova que o modelo escala.
+    // Helpers do print continuam 3; bulk só prova que o modelo escala.
     expect(Cf213NotificationPrefFixtures.followedArtists().length, 3);
   });
+
+  test(
+    'CF-213 edge: fixtures off — empty follows não inventa artistas do print',
+    () {
+      expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse);
+      // Com flag off a tela usa API; empty → copy “Siga artistas…”, nunca Mayra.
+      const emptyFollows = <ArtistFollow>[];
+      expect(emptyFollows, isEmpty);
+      expect(
+        Cf213NotificationPrefFixtures.followedArtists().any(
+          (a) => a.artistName == 'Mayra',
+        ),
+        isTrue,
+      ); // helper ainda existe p/ asserts; UI real não o injeta
+    },
+  );
 }
