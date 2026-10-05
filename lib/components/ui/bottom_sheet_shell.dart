@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 ///
 /// Por padrão usa o [Overlay] raiz para ficar **acima** da bottom nav.
 /// O menu (+) ([coverNavigation] = false) continua no Stack do shell, sob a nav.
+///
+/// CF-158: o painel usa [Semantics] com `scopesRoute` + `explicitChildNodes`
+/// para não disparar o assert do Flutter ao abrir sheet sobre o shell.
 class BottomSheetShell extends StatefulWidget {
   const BottomSheetShell({
     super.key,
@@ -119,7 +122,7 @@ class _BottomSheetShellState extends State<BottomSheetShell>
   }
 
   Widget _buildSheet(BuildContext hostContext) {
-    final colors = CrowdFansTheme.of(this.context);
+    final colors = CrowdFansTheme.of(context);
     final bottom = MediaQuery.paddingOf(hostContext).bottom;
     final slide = Tween<Offset>(
       begin: const Offset(0, 1),
@@ -143,32 +146,40 @@ class _BottomSheetShellState extends State<BottomSheetShell>
             position: slide,
             child: GestureDetector(
               onTap: () {},
-              child: Material(
-                color: colors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    8,
-                    16,
-                    (bottom < 24 ? 24 : bottom) + widget.bottomOffset,
+              // CF-158: scopesRoute no Overlay exige explicitChildNodes
+              // (assert Flutter object.dart ~4948 / crash report gus).
+              child: Semantics(
+                container: true,
+                scopesRoute: true,
+                namesRoute: true,
+                explicitChildNodes: true,
+                child: Material(
+                  color: colors.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 4,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: colors.border,
-                          borderRadius: BorderRadius.circular(999),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      8,
+                      16,
+                      (bottom < 24 ? 24 : bottom) + widget.bottomOffset,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: colors.border,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
                         ),
-                      ),
-                      widget.child,
-                    ],
+                        widget.child,
+                      ],
+                    ),
                   ),
                 ),
               ),

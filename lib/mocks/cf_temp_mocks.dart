@@ -5,12 +5,15 @@
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
+// CF-198: Central de ajuda (hierarquia + acessos rápidos + FAQ).
 // CF-178: feed Postagens dos Fã Clubes.
+// CF-171: checkout PIX pendente (etapas 01/02/03 + código).
 // CF-181: grade Cartas no perfil do artista.
 // CF-187: Meu Perfil preenchido (seletor + stats/bio/posts do print).
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
+// CF-176: menu ⋯ do post (home) — ícones/rótulos/destaques do print.
 // CF-185: perfil artista Feed — capa + CTA Seguir/Membership♪/Membership✓.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
@@ -65,10 +68,22 @@ abstract final class CfTempMocks {
   static const useFanScoreFixtures = true;
 
   /// Membership / recarga — subscriptions + wallet APIs.
+  /// Off: Assinar (CF-206) e hub usam API real; não ligar para print CF-207.
   static const useMembershipFixtures = false;
 
+  /// CF-207 confirmação de ativação — deep-link vazio / preço ≤ 0 usa
+  /// [cfTempMockMembershipSummary] (Banda Uelo / 240). TEMP até QA abrir
+  /// sempre com params da assinatura real. Não liga Assinar (CF-206).
+  static const useMembershipActivationConfirmedFixtures = true;
+
   /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
+  /// Genérico off: CF-213 usa [useArtistsNotifPrintFixtures].
   static const useNotificationPrefFixtures = false;
+
+  /// CF-213 Artistas e Fã Clubes — tipos off + Mayra/Laís/Marinhos do print.
+  /// TEMP até preferências/follows reais baterem o estado de referência do QA.
+  /// Não liga hub CF-166 nem CF-209/211.
+  static const useArtistsNotifPrintFixtures = true;
 
   /// Segurança genérica. Off: API real [CF-266] `/me/sessions`.
   /// Telefone/bio: screens usam perfil/Firebase, não este flag.
@@ -81,7 +96,7 @@ abstract final class CfTempMocks {
   /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share sheet print).
+  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share + CF-176 menu ⋯).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
@@ -103,6 +118,11 @@ abstract final class CfTempMocks {
   /// expulsions existem, mas sem dados de QA o painel fica vazio. Off quando
   /// seed/prod tiver fila real equivalente à referência.
   static const useModerationPanelFixtures = true;
+
+  /// CF-198 Central de ajuda — **TEMP on**: copy do print (hero, acessos
+  /// rápidos, FAQ Conta e perfil já aberta). Off quando CMS/API de ajuda
+  /// entregar o mesmo conteúdo. Flag dedicada: [kUseCf198HelpMocks].
+  static const useHelpFixtures = true;
 
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
@@ -604,6 +624,15 @@ const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
 
+/// CF-200 — tela Defender retorno (motivo rosado + campo 24–420).
+/// TEMP até a API sempre enviar `viewerExpulsionReason` e o submit real
+/// funcionar na conta de QA. Não altera flags CF-229/CF-230.
+const bool kUseCf200DefendReturnFixtures = true;
+
+/// True quando o mock TEMP da tela Defender retorno (CF-200) está ativo.
+bool cf200DefendReturnFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf200DefendReturnFixtures;
+
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
@@ -751,7 +780,8 @@ abstract final class Cf162ProfileAccountFixtures {
   );
 }
 
-/// Resumo de membership para telas de confirmação (CF-204…207).
+/// Resumo de membership para Assinar (CF-206) e confirmação (CF-207).
+/// CF-207 deep-link vazio: [CfTempMocks.useMembershipActivationConfirmedFixtures].
 const cfTempMockMembershipSummary = (
   artistName: 'Banda Uelo',
   artistHandle: '@bandauelo',
@@ -1402,6 +1432,32 @@ abstract final class Cf195HomeCommentsMock {
   }
 }
 
+/// Liga demo CF-196 (resposta + teclado). **TEMP on** até comments API +
+/// compositor nativo cobrirem banner/prefill/insets do print sem fixtures.
+/// Não altera listas CF-194/195 — só metadados do compositor de resposta.
+const bool kUseCf196CommentMocks = true;
+
+/// Print CF-196: Respondendo a Rafa + `fan/rafanogueira` + teclado.
+abstract final class Cf196CommentReplyMock {
+  static const replyAuthor = 'Rafa Nogueira';
+  static const replyHandle = 'fan/rafanogueira';
+
+  /// Inset aproximado do teclado iOS nos anexos (compositor acima).
+  static const keyboardInset = 280.0;
+
+  /// Prefill `fan/...` no campo (print image.png).
+  static String mentionDraft(String? handle) {
+    final raw = (handle ?? '').trim();
+    if (raw.isEmpty) {
+      return '';
+    }
+    if (raw.startsWith('fan/') || raw.startsWith('@')) {
+      return '$raw ';
+    }
+    return 'fan/$raw ';
+  }
+}
+
 // --- CF-222…230 fã-clube / CF-232…241 feed-busca ---
 
 const _cfCarouselBeach =
@@ -1686,9 +1742,34 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
-/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
+/// CF-176 — menu ⋯ do post (home). TEMP até o feed real expor post com artista
+/// para abrir `PostOptionsSheet` igual ao print (atalhos + share + lista + Reportar).
+const bool kUseCf176PostOptionsMocks = true;
+
+/// Post dedicado do print CF-176 (Carol) — abre o menu de gerenciamento via ⋯.
+FeedPost cfTempMockCf176MenuPost() {
+  return const FeedPost(
+    id: 'cf176-menu-post',
+    type: PostType.text,
+    author: 'Carol Biazin',
+    artistId: 'mock-fc-carol',
+    handle: '@carolbiazin',
+    rank: '#12',
+    minutesAgo: 22,
+    avatarUri: '',
+    text:
+        'Obrigada por cada mensagem depois do último post. Vocês deixam tudo mais leve aqui.',
+    votes: 98,
+    comments: 12,
+    shares: 4,
+  );
+}
+
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175 / 176).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
+/// CF-176: Carol texto — tap ⋯ → `PostOptionsSheet` (gestão, não share).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
   return [
@@ -1712,7 +1793,23 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
+    const FeedPost(
+      id: 'cf175-kheper-locked',
+      type: PostType.text,
+      author: 'Kheper',
+      artistId: 'mock-fc-kheper',
+      handle: '@kheperrrr',
+      minutesAgo: 19,
+      avatarUri: '',
+      text: '',
+      votes: 110,
+      comments: 21,
+      shares: 7,
+      isExclusive: true,
+      exclusiveLocked: true,
+    ),
     cfTempMockCf236SharePost(),
+    if (kUseCfTempMocks && kUseCf176PostOptionsMocks) cfTempMockCf176MenuPost(),
     const FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
@@ -2238,10 +2335,35 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-170 packs. **TEMP** até [CF-270] (catálogo + RevenueCat alinhados ao print).
+/// CF-170 packs (print Pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
 const bool kUseCf170WalletPackMocks = true;
 
-/// Pacotes demo CF-169/170 (print de recarga; 240 = CF-170 pagamento).
+/// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
+/// **TEMP** até o gateway real emitir `pending` + `pixCopyPaste` (hoje o
+/// sandbox costuma devolver `paid` e pular a tela de instruções).
+const bool kUseCf171PixCheckoutMocks = true;
+
+/// Recibo demo CF-171 (código PIX + status pending, sem mensagem técnica).
+abstract final class Cf171PixCheckoutMock {
+  static const pixCopyPaste =
+      '00020126580014BR.GOV.BCB.PIX0136123e4567-e12b-12d1-a456-426614174000520400005303986540519.905802BR5925CrowdFans Pagamentos6009SAO PAULO62070503***6304ABCD';
+
+  static WalletCheckoutResult pending({
+    required String packId,
+    int coins = 240,
+  }) {
+    return WalletCheckoutResult(
+      checkoutId: 'cf171-pix-mock',
+      packId: packId,
+      coins: coins,
+      status: 'pending',
+      provider: 'pix',
+      pixCopyPaste: pixCopyPaste,
+    );
+  }
+}
+
+/// Pacotes demo: CF-169 lista de recarga; `cf170-240` = print CF-170 pagamento.
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
@@ -2296,4 +2418,127 @@ abstract final class Cf182ArtistSobreMock {
   static const openSpotifyAlbum = 'Numanice #3';
   static const instagramHandle = '@ludmilla';
   static const youtubeHandle = 'Ludmilla';
+}
+
+/// CF-198 — Central de ajuda (print image.png).
+/// TEMP até CMS/API de ajuda; desligar [kUseCf198HelpMocks] / [useHelpFixtures].
+const bool kUseCf198HelpMocks = true;
+
+/// CF-198 — força lista vazia (empty/red path do print).
+const bool kCf198MockEmpty = false;
+
+/// True quando o mock TEMP da Central de ajuda (CF-198) está ativo.
+bool cf198HelpFixturesEnabled() =>
+    kUseCfTempMocks &&
+    CfTempMocks.useHelpFixtures &&
+    kUseCf198HelpMocks &&
+    !kCf198MockEmpty;
+
+/// Item de acesso rápido da Ajuda (print CF-198).
+typedef Cf198QuickAccess = ({String title, String subtitle, String destination});
+
+/// Seção FAQ da Ajuda (perguntas já abertas — sem accordion).
+typedef Cf198FaqSection = ({String title, List<(String, String)> items});
+
+/// Fixtures do print CF-198 — Central de ajuda.
+abstract final class Cf198HelpFixtures {
+  static const headerTitle = 'Ajuda';
+  static const heroTitle = 'Central de ajuda';
+  static const intro =
+      'Reunimos aqui as respostas mais importantes do produto atual, com foco em conta, memberships, artistas, moderação, notificações e segurança.';
+  static const quickAccessSectionTitle = 'Acessos rápidos';
+  static const supportLabel = 'Falar com o suporte';
+  static const supportSemantics = 'Falar com o suporte por e-mail';
+  static const supportEmail = 'mailto:support@crowdfans.app';
+
+  /// Quatro acessos rápidos do print (título + subtítulo + destino lógico).
+  static List<Cf198QuickAccess> quickAccess() {
+    if (kCf198MockEmpty) return const [];
+    return const [
+      (
+        title: 'Segurança e Login',
+        subtitle:
+            'Troca de senha, e-mail, telefone e dispositivos conectados.',
+        destination: 'profileSecurity',
+      ),
+      (
+        title: 'Meus Memberships',
+        subtitle: 'Ver status, gerenciar e revisar suas assinaturas.',
+        destination: 'profileMemberships',
+      ),
+      (
+        title: 'Termos de Uso',
+        subtitle: 'Regras gerais de participação e uso da plataforma.',
+        destination: 'profileInformationTerms',
+      ),
+      (
+        title: 'Política de Privacidade',
+        subtitle: 'Como usamos dados de cadastro, segurança e interação.',
+        destination: 'profileInformationPrivacy',
+      ),
+    ];
+  }
+
+  /// Seções FAQ do print; primeira ("Conta e perfil") já expandida na captura.
+  static List<Cf198FaqSection> faqSections() {
+    if (kCf198MockEmpty) return const [];
+    return const [
+      (
+        title: 'Conta e perfil',
+        items: [
+          (
+            'Como crio uma conta de fã?',
+            'O cadastro é guiado em etapas dentro do app. Hoje a jornada passa por nome, username, e-mail, senha, foto de perfil, aceite dos termos e validação por OTP. Conexões sociais podem aparecer na interface, mas a disponibilidade real depende da configuração ativa do serviço.',
+          ),
+          (
+            'Como funciona a entrada de artistas?',
+            'Perfis de artistas podem existir antes da entrada oficial. A jornada de artista exige dados cadastrais adicionais e revisão quando aplicável. O app só confirma a identidade oficial quando o backend valida o perfil.',
+          ),
+          (
+            'Como altero meus dados?',
+            'Em Seu perfil você atualiza nome, username, bio e foto. Senha, e-mail, telefone e dispositivos ficam em Segurança e Login.',
+          ),
+        ],
+      ),
+      (
+        title: 'Memberships e Jam Coins',
+        items: [
+          (
+            'Onde acompanho memberships e Fan Score?',
+            'Memberships e Fan Score ficam nas configurações e usam os dados retornados pela API do seu perfil. Status, pausa e cancelamento só mudam após confirmação do backend.',
+          ),
+          (
+            'Como recarrego Jam Coins?',
+            'Abra a Carteira, escolha um valor, conclua o pagamento e aguarde a confirmação. O saldo só aumenta depois que o crédito é confirmado.',
+          ),
+        ],
+      ),
+      (
+        title: 'Comunidades e moderação',
+        items: [
+          (
+            'Como funciona a moderação do fã-clube?',
+            'Donos e moderadores podem registrar avisos, expulsões e revisar contestações. Cada ação mostra motivo e consequência antes da confirmação.',
+          ),
+          (
+            'Fui expulso. Posso voltar?',
+            'Quando disponível, use Defender meu retorno no Sobre do fã-clube. A moderação analisa a defesa na fila de Contestações.',
+          ),
+        ],
+      ),
+      (
+        title: 'Notificações e suporte',
+        items: [
+          (
+            'Como controlo notificações?',
+            'Em Notificações você ajusta categorias como artistas, interações, Meet & Greet e memberships. Preferências são salvas no perfil.',
+          ),
+          (
+            'Uma função aparece indisponível. Por quê?',
+            'Recursos que dependem do backend ou ainda não estão liberados ficam identificados. Nenhuma ação fictícia é apresentada como concluída.',
+          ),
+        ],
+      ),
+    ];
+  }
 }

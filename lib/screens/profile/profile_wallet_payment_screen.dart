@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/profile/wallet_payment_method_tabs.dart';
@@ -7,14 +8,16 @@ import 'package:crowdfans/components/profile/wallet_payment_summary_card.dart';
 import 'package:crowdfans/components/profile/wallet_pix_code_panel.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/wallet_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:crowdfans/utils/jam_coin_label.dart';
+import 'package:crowdfans/utils/wallet_user_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-/// Pagamento do pacote (sandbox PIX até RevenueCat).
+/// Pagamento do pacote (PIX; cartão via loja depois).
 class ProfileWalletPaymentScreen extends StatefulWidget {
   const ProfileWalletPaymentScreen({
     super.key,
@@ -140,7 +143,13 @@ class _ProfileWalletPaymentScreenState
     }
     setState(() => _busy = true);
     try {
-      final result = await WalletService.checkout(widget.packId);
+      // CF-171: mock pending+PIX evita skip da tela quando sandbox devolve paid.
+      final result = kUseCfTempMocks && kUseCf171PixCheckoutMocks
+          ? Cf171PixCheckoutMock.pending(
+              packId: widget.packId,
+              coins: int.tryParse(widget.coins ?? '') ?? 240,
+            )
+          : await WalletService.checkout(widget.packId);
       if (!mounted) {
         return;
       }
@@ -169,28 +178,11 @@ class _ProfileWalletPaymentScreenState
   }
 
   /// Omite mensagens internas (sandbox / RevenueCat / CF-*).
-  String? get _receiptUserMessage {
-    final raw = _receipt?.message?.trim();
-    if (raw == null || raw.isEmpty) {
-      return null;
-    }
-    final lower = raw.toLowerCase();
-    if (lower.contains('sandbox') ||
-        lower.contains('revenuecat') ||
-        RegExp(r'\bcf-\d+', caseSensitive: false).hasMatch(raw)) {
-      return null;
-    }
-    return raw;
-  }
+  String? get _receiptUserMessage =>
+      walletUserFacingMessage(_receipt?.message);
 
   /// Validade do código PIX (referência CF-171).
-  String _pixValidityLabel() {
-    final brasilia = DateTime.now().toUtc().subtract(const Duration(hours: 3));
-    final until = brasilia.add(const Duration(minutes: 30));
-    final hour = until.hour.toString().padLeft(2, '0');
-    final minute = until.minute.toString().padLeft(2, '0');
-    return 'Este código é válido até hoje, $hour:$minute - Horário de Brasília.';
-  }
+  String _pixValidityLabel() => walletPixValidityLabel();
 
   Future<void> handleCopyPix() async {
     final pix = _receipt?.pixCopyPaste?.trim() ?? '';
@@ -340,32 +332,14 @@ class _ProfileWalletPaymentScreenState
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              // Referência CF-171: botão escuro com cantos suaves (não pílula roxa).
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: FilledButton(
-                  onPressed: _busy
-                      ? null
-                      : (hasPix ? handleCopyPix : handleCheckout),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppPalette.platinum900,
-                    foregroundColor: AppPalette.platinum50,
-                    disabledBackgroundColor:
-                        AppPalette.platinum900.withValues(alpha: 0.4),
-                    // Print CF-170: botão escuro em pílula.
-                    shape: const StadiumBorder(),
-                  ),
-                  child: Text(
-                    hasPix
-                        ? 'Copiar Código PIX'
-                        : (_busy ? 'Gerando...' : 'Próximo'),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+              // Print CF-170: botão escuro em pílula (não roxo).
+              child: AppButton(
+                label: hasPix
+                    ? 'Copiar Código PIX'
+                    : (_busy ? 'Gerando...' : 'Próximo'),
+                variant: AppButtonVariant.dark,
+                disabled: _busy,
+                onPressed: hasPix ? handleCopyPix : handleCheckout,
               ),
             ),
           ],

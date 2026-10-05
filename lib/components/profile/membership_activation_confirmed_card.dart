@@ -42,7 +42,13 @@ class MembershipActivationConfirmedCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: colors.textPrimary.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -97,6 +103,8 @@ class MembershipActivationConfirmedCard extends StatelessWidget {
                             children: [
                               Text(
                                 artistName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
@@ -106,6 +114,8 @@ class MembershipActivationConfirmedCard extends StatelessWidget {
                               if (handle.isNotEmpty)
                                 Text(
                                   handle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: colors.textSecondary,
@@ -132,7 +142,8 @@ class MembershipActivationConfirmedCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '$pricePerMonth/mês',
+                          // Print CF-207: "240 /mês" (espaço antes da barra).
+                          '$pricePerMonth /mês',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,

@@ -229,11 +229,10 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
     return BottomSheetShell(
       visible: widget.visible,
       onClose: widget.onClose,
+      // Rota Semantics no BottomSheetShell (CF-158 scopesRoute assert).
       child: Semantics(
         key: const Key('post-options-sheet'),
-        scopesRoute: true,
-        namesRoute: true,
-        explicitChildNodes: true,
+        container: true,
         label: 'Opções do post',
         child: Column(
           children: [
@@ -265,6 +264,9 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
               PostOptionsShareAction(
                 label: 'Copiar Link',
                 icon: Icons.link,
+                // Print CF-176: ícone + rótulo roxos (destaque do atalho).
+                iconColor: AppPalette.purple500,
+                labelColor: AppPalette.purple500,
                 onPressed: () {
                   handleCopy(context);
                 },

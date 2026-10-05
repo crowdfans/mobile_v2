@@ -12,22 +12,33 @@ void main() {
 
     expect(CfTempMocks.useArtistSobreFixtures, isTrue); // CF-269
     expect(kUseCf170WalletPackMocks, isTrue); // CF-270
+    expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
 
     expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
+    expect(
+      CfTempMocks.useMembershipActivationConfirmedFixtures,
+      isTrue,
+    ); // CF-207 print
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
+    expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue); // CF-213
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186/222/223/227
+    expect(kUseCf200DefendReturnFixtures, isTrue); // CF-200 Defender retorno
     expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
     expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
+    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-175/176/232/233/234/235/236
+    expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
     expect(CfTempMocks.useSearchArtistsFixtures, isTrue); // CF-240 TEMP
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-184/239
     expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
+    expect(CfTempMocks.useHelpFixtures, isTrue); // CF-198 print
+    expect(kUseCf198HelpMocks, isTrue); // CF-198 Central de ajuda
+    expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
@@ -36,6 +47,7 @@ void main() {
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
     expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
+    expect(kUseCf196CommentMocks, isTrue); // CF-196 reply+teclado
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
   });

@@ -36,7 +36,11 @@ class ProfileMembershipActivationConfirmedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final useMock = CfTempMocks.useMembershipFixtures &&
+    // Só fixtures dedicadas CF-207 (ou membership global). Não depende de
+    // Assinar CF-206 — useMembershipFixtures permanece off.
+    final useMock =
+        (CfTempMocks.useMembershipActivationConfirmedFixtures ||
+            CfTempMocks.useMembershipFixtures) &&
         kUseCfTempMocks &&
         (artistName.trim().isEmpty || pricePerMonth <= 0);
     final name = useMock
