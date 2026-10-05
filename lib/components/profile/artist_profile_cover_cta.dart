@@ -45,11 +45,16 @@ class ArtistProfileCoverCta extends StatelessWidget {
           ),
         ),
       ),
+      // Print CF-185 image2: gradiente bordo → laranja → ouro (não âmbar “Seguindo”).
       ArtistProfileCoverCtaKind.membershipSubscribe => _pill(
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFFB45309), Color(0xFF1C1C1E)],
+          colors: [
+            Color(0xFF7C2D12),
+            Color(0xFFEA580C),
+            Color(0xFFF5C451),
+          ],
         ),
         onPressed: onPressed,
         child: Row(
@@ -61,7 +66,7 @@ class ArtistProfileCoverCta extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFFF5C451),
+                color: Colors.white,
               ),
             ),
             const SizedBox(width: 6),
@@ -70,7 +75,7 @@ class ArtistProfileCoverCta extends StatelessWidget {
               width: 16,
               height: 16,
               colorFilter: const ColorFilter.mode(
-                Color(0xFFF5C451),
+                Colors.white,
                 BlendMode.srcIn,
               ),
             ),

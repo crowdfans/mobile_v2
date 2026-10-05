@@ -11,6 +11,7 @@
 // CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
+// CF-185: perfil artista Feed — capa + CTA Seguir/Membership♪/Membership✓.
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
@@ -118,6 +119,8 @@ abstract final class CfTempMocks {
 
   /// CF-187 Meu Perfil preenchido — TEMP até conta real bater o print.
   /// Flag dedicada: [kUseCf187MeProfileMocks].
+
+  /// CF-185 perfil artista Feed — capa + CTA. Flag: [kUseCf185ArtistFeedMocks].
 
   /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
   static const useArtistSobreFixtures = true;
@@ -922,6 +925,172 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
   ];
 }
 
+/// CF-185 — Perfil artista Feed (prints capa + Seguir / Membership♪ / ✓).
+/// TEMP até photoUrl/membros/follow reais baterem a referência. Não altera
+/// a aba Fã Clube (CF-186).
+const bool kUseCf185ArtistFeedMocks = true;
+
+/// Fixture do print CF-185 (capa fotográfica + estados de CTA separados).
+final class Cf185ArtistFeedFixture {
+  const Cf185ArtistFeedFixture({
+    required this.displayName,
+    required this.handle,
+    required this.coverUrl,
+    required this.memberCount,
+    required this.rank,
+    required this.feedPosts,
+    this.following,
+    this.subscribed,
+  });
+
+  final String displayName;
+  final String handle;
+  final String coverUrl;
+  final int memberCount;
+  final int rank;
+  final List<FeedPost> feedPosts;
+
+  /// null = não sobrescrever follow da API / outros mocks.
+  final bool? following;
+
+  /// null = não sobrescrever assinatura (ex.: CF-239 Ludmilla).
+  final bool? subscribed;
+}
+
+/// Prints CF-185: Ludmilla (+capa), Laís (+Seguir→Membership♪), Mayra (✓).
+abstract final class Cf185ArtistFeedFixtures {
+  static const _coverStage =
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80';
+  static const _coverMic =
+      'https://images.unsplash.com/photo-1516280440612-596598c2f5a2?auto=format&fit=crop&w=1200&q=80';
+  static const _aerialCity =
+      'https://images.unsplash.com/photo-1477959858617-67f85b34b5df?auto=format&fit=crop&w=800&q=80';
+
+  static Cf185ArtistFeedFixture? resolve(String artistId, String? name) {
+    final id = artistId.trim().toLowerCase();
+    final n = (name ?? '').trim().toLowerCase();
+    if (id.contains('ludmilla') ||
+        id == 'mock-fc-ludmilla' ||
+        n.contains('ludmilla')) {
+      return ludmilla();
+    }
+    if (id.contains('lais') ||
+        id.contains('laís') ||
+        id == 'mock-fc-lais' ||
+        n.contains('laís') ||
+        n.contains('lais')) {
+      return lais();
+    }
+    if (id.contains('mayra') || id == 'mock-fc-mayra' || n.contains('mayra')) {
+      return mayra();
+    }
+    return null;
+  }
+
+  /// image.png — capa foto + membros; CTA Seguir fica nos testes / Laís.
+  /// Não força follow/sub (CF-239 pode marcar Ludmilla assinante).
+  static Cf185ArtistFeedFixture ludmilla() {
+    return const Cf185ArtistFeedFixture(
+      displayName: 'Ludmilla',
+      handle: '@ludmilla',
+      coverUrl: _coverStage,
+      memberCount: 512000,
+      rank: 2,
+      feedPosts: [
+        FeedPost(
+          id: 'cf185-lud-feed-1',
+          type: PostType.image,
+          author: 'Ludmilla',
+          artistId: 'mock-fc-ludmilla',
+          handle: '@ludmilla',
+          minutesAgo: 25,
+          avatarUri: _coverStage,
+          text:
+              'Hoje foi estúdio, prova de look e conversa longa com a equipe. Resolvi largar tudo aqui.',
+          votes: 123,
+          comments: 26,
+          shares: 9,
+          imageUri: _cfCarouselDeer,
+        ),
+      ],
+    );
+  }
+
+  /// image1 (+ Seguir) → tap → image2 (Membership ♪).
+  static Cf185ArtistFeedFixture lais() {
+    return const Cf185ArtistFeedFixture(
+      displayName: 'Laís Costa',
+      handle: '@laiscosta',
+      coverUrl: _coverMic,
+      memberCount: 215,
+      rank: 4,
+      following: false,
+      subscribed: false,
+      feedPosts: [
+        FeedPost(
+          id: 'cf185-lais-feed-1',
+          type: PostType.carousel,
+          author: 'Laís Costa',
+          artistId: 'mock-fc-lais',
+          handle: '@laiscosta',
+          minutesAgo: 51,
+          avatarUri: _coverMic,
+          text:
+              'Dump de backstage, café e conversa. O tipo de sequência que eu amo guardar.',
+          votes: 96,
+          comments: 14,
+          shares: 5,
+          imageUri: _aerialCity,
+          carouselUris: [_aerialCity, _cfCarouselCity],
+        ),
+      ],
+    );
+  }
+
+  /// image3 — Membership ✓.
+  static Cf185ArtistFeedFixture mayra() {
+    return const Cf185ArtistFeedFixture(
+      displayName: 'Mayra',
+      handle: '@mayra',
+      coverUrl: _coverMic,
+      memberCount: 368000,
+      rank: 3,
+      following: true,
+      subscribed: true,
+      feedPosts: [
+        FeedPost(
+          id: 'cf185-mayra-feed-1',
+          type: PostType.text,
+          author: 'Mayra',
+          artistId: 'mock-fc-mayra',
+          handle: '@mayra',
+          minutesAgo: 8,
+          avatarUri: _coverMic,
+          text:
+              'Cada vez que vocês puxam teoria nova eu volto pro bloco de notas. Já tem música nascendo daí.',
+          votes: 84,
+          comments: 11,
+          shares: 3,
+        ),
+        FeedPost(
+          id: 'cf185-mayra-feed-2',
+          type: PostType.text,
+          author: 'Mayra',
+          artistId: 'mock-fc-mayra',
+          handle: '@mayra',
+          minutesAgo: 120,
+          avatarUri: _coverMic,
+          text:
+              'Dia de foto, roteiro, reunião e muita vontade de postar tudo de uma vez',
+          votes: 41,
+          comments: 6,
+          shares: 2,
+        ),
+      ],
+    );
+  }
+}
+
 /// CF-187 — Meu Perfil preenchido (print image.png). TEMP para homologar
 /// seletor + contagens/bio/posts quando a conta real ainda está vazia.
 const bool kUseCf187MeProfileMocks = true;
@@ -930,6 +1099,10 @@ const bool kUseCf187MeProfileMocks = true;
 /// `GET …/fanclub` devolver moderadores com nome/handle/avatar do print.
 /// Flag dedicada na tela; [CfTempMocks.useFanClubFixtures] já cobre o feed.
 const bool kUseCf225ModeratorsMocks = true;
+
+/// CF-224 — Solicitar moderação (candidato Aline + limites 24/420). TEMP
+/// até o perfil real bater o print; não altera CF-225 lista / CF-199 painel.
+const bool kUseCf224RequestModerationMocks = true;
 
 /// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
 abstract final class Cf187MeProfileFixtures {
@@ -1313,7 +1486,8 @@ ArtistFanClub _cfTempMockFanClubMeta(
 const cfTempMockModerationCandidate = (
   displayName: 'Aline Duarte',
   handle: 'fan/alineduarte',
-  photoUrl: '',
+  photoUrl:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
 );
 
 /// URIs do visualizador CF-234 (print: cervo como `1/3`).
