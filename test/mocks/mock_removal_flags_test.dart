@@ -24,6 +24,7 @@ void main() {
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
     expect(CfTempMocks.useModerationPanelFixtures, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
+    expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
     expect(kUseCf194CommentMocks, isFalse);
