@@ -214,6 +214,7 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
         final subscribed = results[3] as bool;
         final club = feed?.fanClub;
         final expelled = club?.viewerIsExpelled == true;
+        final warned = (club?.viewerActiveStrikesCount ?? 0) > 0;
         final fromFeed = [
           if (club != null && !expelled)
             for (final post in feed?.posts ?? const <FanClubFeedPost>[])
@@ -229,11 +230,14 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
             : (expelled &&
                     (useClubFixtures || cf229ExpelledFixturesEnabled())
                 ? cfTempMockFelipeCoverUrl
-                : (useClubFixtures
-                    ? cfTempMockFanClubCoverUrl
-                    : (fromCommunity.isNotEmpty
-                        ? fromCommunity.first.avatarUri
-                        : '')));
+                : (warned &&
+                        (useClubFixtures || cf230WarningFixturesEnabled())
+                    ? cfTempMockLaisCoverUrl
+                    : (useClubFixtures
+                        ? cfTempMockFanClubCoverUrl
+                        : (fromCommunity.isNotEmpty
+                            ? fromCommunity.first.avatarUri
+                            : ''))));
         if (!mounted) {
           return;
         }
@@ -248,6 +252,8 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
           _hasMore = expelled ? false : (feed?.posts.length ?? 0) >= _pageSize;
           if (expelled) {
             _sortPopular = false; // print: Novos selecionado
+          } else if (warned) {
+            _sortPopular = false; // print CF-230: Novos selecionado
           }
           _loading = false;
           _error = null;
@@ -738,10 +744,26 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
                                           8,
                                         ),
                                         child: FanClubModerationWarningBanner(
-                                          reason:
-                                              club.viewerLatestStrikeReason,
+                                          reason: () {
+                                            final raw = club
+                                                .viewerLatestStrikeReason
+                                                .trim();
+                                            if (raw.isNotEmpty) {
+                                              return raw;
+                                            }
+                                            return cf230WarningFixturesEnabled()
+                                                ? cfTempMockStrikeReason
+                                                : raw;
+                                          }(),
                                           remainingChances: club
-                                              .viewerStrikeRemainingChances,
+                                                      .viewerStrikeRemainingChances >
+                                                  0
+                                              ? club
+                                                    .viewerStrikeRemainingChances
+                                              : (cf230WarningFixturesEnabled()
+                                                    ? 2
+                                                    : club
+                                                          .viewerStrikeRemainingChances),
                                         ),
                                       ),
                                   ],

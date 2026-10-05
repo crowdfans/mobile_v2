@@ -339,11 +339,15 @@ abstract final class FanClubService {
     int pageSize = 20,
   }) async {
     // QA image-first: fixtures do print (CF-222/229/230).
-    // CF-229: também cobre Felipe/expulso via kUseCf229ExpelledFixtures.
+    // CF-229: Felipe/expulso via kUseCf229ExpelledFixtures.
+    // CF-230: Laís/aviso via kUseCf230WarningFixtures (sem alterar expulso).
     if ((kUseCfTempMocks && CfTempMocks.useFanClubFixtures) ||
         (cf229ExpelledFixturesEnabled() &&
             cfTempMockFanClubKind(artistUid) ==
-                CfFanClubFixtureKind.expelled)) {
+                CfFanClubFixtureKind.expelled) ||
+        (cf230WarningFixturesEnabled() &&
+            cfTempMockFanClubKind(artistUid) ==
+                CfFanClubFixtureKind.warning)) {
       return cfTempMockArtistFanClubFeed(artistUid, page: page);
     }
     final params = Uri(

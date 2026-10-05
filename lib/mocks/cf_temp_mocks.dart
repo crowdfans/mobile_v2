@@ -561,6 +561,26 @@ const cfTempMockStrikeReason =
 bool cf229ExpelledFixturesEnabled() =>
     kUseCfTempMocks && kUseCf229ExpelledFixtures;
 
+/// CF-230 — banner aviso (Laís Costa) no feed do clube.
+/// TEMP até a conta de QA receber strikes + motivo + chances da API.
+/// Não altera o caminho expulso (CF-229).
+const bool kUseCf230WarningFixtures = true;
+
+/// Cover do print CF-230 (Laís Costa).
+const cfTempMockLaisCoverUrl =
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80';
+
+/// ArtistUid do print CF-230 para atalho em Clubes.
+const cfTempMockLaisArtistUid = 'mock-fc-lais';
+
+/// Avatar do post Lari Rocha no print CF-230.
+const cfTempMockLariAvatarUrl =
+    'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=80';
+
+/// True quando o mock TEMP do banner de aviso (CF-230) está ativo.
+bool cf230WarningFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf230WarningFixtures;
+
 /// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
 abstract final class Cf199ModerationPanelFixtures {
   static const _avatarAnna =
@@ -1227,7 +1247,7 @@ ArtistFanClubFeed cfTempMockArtistFanClubFeed(
         sharesCount: 5,
         authorName: 'Lari Rocha',
         authorHandle: 'fan/larirocha',
-        authorAvatarUri: '',
+        authorAvatarUri: cfTempMockLariAvatarUrl,
         membershipMonthsLabel: '1',
       ),
     ],
@@ -1267,9 +1287,9 @@ ArtistFanClub _cfTempMockFanClubMeta(
     ),
     CfFanClubFixtureKind.warning => ArtistFanClub(
       id: 230,
-      name: 'Laís Costa Fã Clube',
+      name: 'Laís Costa',
       description: 'Fã clube de Laís Costa',
-      artistUid: artistUid.trim().isEmpty ? 'mock-fc-lais' : artistUid,
+      artistUid: artistUid.trim().isEmpty ? cfTempMockLaisArtistUid : artistUid,
       artistName: 'Laís Costa',
       isActive: true,
       memberCount: 8225,
