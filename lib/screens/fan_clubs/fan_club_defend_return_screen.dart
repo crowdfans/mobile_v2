@@ -41,7 +41,7 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
     _reason = widget.expulsionReason;
     if ((_reason ?? '').trim().isEmpty) {
       // TEMP: demo do card rosado do print enquanto a API não manda motivo.
-      if (CfTempMocks.useFanClubFixtures) {
+      if (CfTempMocks.useFanClubFixtures || cf229ExpelledFixturesEnabled()) {
         _reason = cfTempMockExpulsionReason;
       }
       handleLoadReason();
@@ -64,7 +64,8 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
       setState(() {
         if (apiReason.isNotEmpty) {
           _reason = apiReason;
-        } else if (CfTempMocks.useFanClubFixtures &&
+        } else if ((CfTempMocks.useFanClubFixtures ||
+                cf229ExpelledFixturesEnabled()) &&
             (_reason ?? '').trim().isEmpty) {
           _reason = cfTempMockExpulsionReason;
         }
@@ -73,7 +74,8 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
       if (!mounted) {
         return;
       }
-      if (CfTempMocks.useFanClubFixtures && (_reason ?? '').trim().isEmpty) {
+      if ((CfTempMocks.useFanClubFixtures || cf229ExpelledFixturesEnabled()) &&
+          (_reason ?? '').trim().isEmpty) {
         setState(() => _reason = cfTempMockExpulsionReason);
       }
     }

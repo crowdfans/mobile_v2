@@ -17,7 +17,8 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-226 print Regras
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/226 print
+    expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-234/235 TEMP
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
