@@ -191,35 +191,40 @@ class _ProfileMembershipsScreenState
           children: [
             SizedBox(
               height: 56,
-              child: Row(
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  ToolbarBackButton(onPressed: () => context.pop()),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/Shapes/star-01.svg',
-                          width: 18,
-                          height: 18,
-                          colorFilter: ColorFilter.mode(
-                            colors.textPrimary,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Meus Memberships',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ToolbarBackButton(onPressed: () => context.pop()),
                   ),
-                  MembershipBalancePill(balance: balance),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/Shapes/star-01.svg',
+                        width: 18,
+                        height: 18,
+                        colorFilter: ColorFilter.mode(
+                          colors.textPrimary,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Meus Memberships',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: MembershipBalancePill(balance: balance),
+                  ),
                 ],
               ),
             ),
