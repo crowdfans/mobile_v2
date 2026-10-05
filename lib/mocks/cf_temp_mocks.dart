@@ -1709,7 +1709,6 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
-<<<<<<< HEAD
 /// CF-176 — menu ⋯ do post (home). TEMP até o feed real expor post com artista
 /// para abrir `PostOptionsSheet` igual ao print (atalhos + share + lista + Reportar).
 const bool kUseCf176PostOptionsMocks = true;
@@ -1733,10 +1732,7 @@ FeedPost cfTempMockCf176MenuPost() {
   );
 }
 
-/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
-=======
-/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175).
->>>>>>> origin/prod
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175 / 176).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
 /// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
