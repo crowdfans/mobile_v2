@@ -16,21 +16,38 @@ import 'package:go_router/go_router.dart';
 class ProfileSettingsScreen extends ConsumerStatefulWidget {
   const ProfileSettingsScreen({super.key});
 
+  /// Chave de [PageStorage] da lista — testes e restauração de scroll (CF-259).
+  static const scrollStorageKey = PageStorageKey<String>('profile-settings');
+
   @override
   ConsumerState<ProfileSettingsScreen> createState() =>
       _ProfileSettingsScreenState();
 }
 
 class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
-  static const _scrollStorageKey = PageStorageKey<String>('profile-settings');
-
   final _scrollController = ScrollController();
   var _openingRoute = false;
+  double? _savedScrollOffset;
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _captureScrollOffset() {
+    if (_scrollController.hasClients) {
+      _savedScrollOffset = _scrollController.offset;
+    }
+  }
+
+  void _restoreScrollOffset() {
+    final target = _savedScrollOffset;
+    if (target == null || !_scrollController.hasClients) {
+      return;
+    }
+    final max = _scrollController.position.maxScrollExtent;
+    _scrollController.jumpTo(target.clamp(0.0, max));
   }
 
   Future<void> handleLogout() async {
@@ -58,12 +75,19 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
         ModalRoute.of(context)?.isCurrent == true) {
       return;
     }
+    _captureScrollOffset();
     _openingRoute = true;
     try {
       await context.push(location);
     } finally {
       if (mounted) {
         _openingRoute = false;
+        // Restaura após o pop (push completa quando a rota filha fecha).
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _restoreScrollOffset();
+          }
+        });
       }
     }
   }
@@ -220,7 +244,7 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
             ),
             Expanded(
               child: ListView(
-                key: _scrollStorageKey,
+                key: ProfileSettingsScreen.scrollStorageKey,
                 controller: _scrollController,
                 children: [
                   if (isArtist)
