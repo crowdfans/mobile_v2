@@ -5,6 +5,19 @@ import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:flutter/material.dart';
 
+/// Username no copy “Assine o membership de …” (print CF-175).
+/// Remove `@` e prefixo `artist/` — o app antigo mostrava `artist/gusart`.
+String exclusiveMembershipUsername(String handle) {
+  var value = handle.trim();
+  if (value.isEmpty) {
+    return 'artista';
+  }
+  value = value.replaceFirst(RegExp(r'^@'), '');
+  value = value.replaceFirst(RegExp(r'^artist/', caseSensitive: false), '');
+  value = value.trim();
+  return value.isEmpty ? 'artista' : value;
+}
+
 /// Card para posts exclusivos com indicação visual de bloqueio.
 class ExclusiveFeedCard extends StatelessWidget {
   const ExclusiveFeedCard({
@@ -30,8 +43,9 @@ class ExclusiveFeedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedUsername = post.handle.replaceFirst(RegExp(r'^@'), '');
+    final resolvedUsername = exclusiveMembershipUsername(post.handle);
     if (!unlocked) {
+      // CF-175: sem tint lilás externo — só o card interno de bloqueio.
       return PostCard(
         post: post,
         hideRank: true,

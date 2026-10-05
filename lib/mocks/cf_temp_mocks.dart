@@ -1708,8 +1708,9 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
-/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
@@ -1733,6 +1734,21 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoDuration: '00:00',
       videoUri: '',
       videoThumbnailUri: '',
+    ),
+    const FeedPost(
+      id: 'cf175-kheper-locked',
+      type: PostType.text,
+      author: 'Kheper',
+      artistId: 'mock-fc-kheper',
+      handle: '@kheperrrr',
+      minutesAgo: 19,
+      avatarUri: '',
+      text: '',
+      votes: 110,
+      comments: 21,
+      shares: 7,
+      isExclusive: true,
+      exclusiveLocked: true,
     ),
     cfTempMockCf236SharePost(),
     const FeedPost(
