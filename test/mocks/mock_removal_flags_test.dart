@@ -23,6 +23,7 @@ void main() {
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue); // CF-213
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186/222/223/227
+    expect(kUseCf200DefendReturnFixtures, isTrue); // CF-200 Defender retorno
     expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
     expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
