@@ -43,7 +43,7 @@ void main() {
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
-    expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
+    expect(CfTempMocks.useFavoriteArtistsFixtures, isTrue); // CF-191 print sidebar
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
     expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
