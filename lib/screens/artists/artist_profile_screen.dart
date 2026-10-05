@@ -118,21 +118,44 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
     final minutes = created == null
         ? 0
         : DateTime.now().difference(created).inMinutes.clamp(0, 999999);
+    // CF-186: autor do post da comunidade (não o artista do clube).
+    final authorName = (post.authorName ?? '').trim().isNotEmpty
+        ? post.authorName!.trim()
+        : club.artistName;
+    final handleRaw = (post.authorHandle ?? '').trim();
+    final handle = handleRaw.isNotEmpty
+        ? handleRaw
+        : club.artistName.toLowerCase().replaceAll(RegExp(r'\s+'), '');
+    final carousel = post.carouselUris;
+    final image = post.imageUrl ?? (carousel.isNotEmpty ? carousel.first : null);
+    final resolvedType = postTypeFrom(post.type);
+    final type = carousel.length > 1
+        ? PostType.carousel
+        : (resolvedType == PostType.unknown && image != null
+            ? PostType.image
+            : resolvedType);
+    final months = (post.membershipMonthsLabel ?? '').trim();
     return FeedPost(
       id: post.postId,
-      type: postTypeFrom(post.type),
-      author: club.artistName,
+      type: type,
+      author: authorName,
       artistId: club.artistUid,
-      handle: club.artistName.toLowerCase().replaceAll(RegExp(r'\s+'), ''),
+      handle: handle,
       minutesAgo: minutes,
-      avatarUri: avatarUrl(),
+      avatarUri: (post.authorAvatarUri ?? '').trim().isNotEmpty
+          ? post.authorAvatarUri!.trim()
+          : avatarUrl(),
       text: post.content.isEmpty ? (post.title ?? '') : post.content,
-      imageUri: post.imageUrl,
+      imageUri: image,
+      carouselUris: carousel,
       votes: post.likesCount,
       comments: post.commentsCount,
-      shares: 0,
+      shares: post.sharesCount,
       isExclusive: post.isExclusive,
       exclusiveLocked: post.isExclusive,
+      membershipBadges: months.isEmpty
+          ? const []
+          : [MembershipBadgeInfo(label: months)],
     );
   }
 
