@@ -2513,9 +2513,8 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-169/170 packs (print recarga + pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
-/// Valores do print YouTrack (exemplos; comerciais ainda TBD).
-const bool kUseCf170WalletPackMocks = true;
+/// CF-169/170 packs — fixture de print (só testes). Catálogo live = API (CF-270).
+const bool kUseCf170WalletPackMocks = false;
 
 /// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
 /// **TEMP** até o gateway real emitir `pending` + `pixCopyPaste` (hoje o
@@ -2542,42 +2541,48 @@ abstract final class Cf171PixCheckoutMock {
   }
 }
 
-/// Pacotes demo CF-169 (lista de recarga) / CF-170 (pagamento; 240 = Mais pedido).
+/// Fixture print CF-169/170 (espelha `GET /api/v1/jam-coin-packs` pós CF-270).
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
       JamCoinPack(
-        id: 'cf169-120',
+        id: 'pack_120',
+        productId: 'jam_120',
         coins: 120,
         priceCents: 990,
         label: '120 JC',
       ),
       JamCoinPack(
-        id: 'cf170-240',
+        id: 'pack_240',
+        productId: 'jam_240',
         coins: 240,
         priceCents: 1990,
         label: '200 JC + 40 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-600',
+        id: 'pack_600',
+        productId: 'jam_600',
         coins: 600,
         priceCents: 4990,
         label: '500 JC + 100 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-1300',
+        id: 'pack_1300',
+        productId: 'jam_1300',
         coins: 1300,
         priceCents: 9990,
         label: '1.000 JC + 300 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-2100',
+        id: 'pack_2100',
+        productId: 'jam_2100',
         coins: 2100,
         priceCents: 14990,
         label: '1.600 JC + 500 bônus',
       ),
       JamCoinPack(
-        id: 'cf169-2800',
+        id: 'pack_2800',
+        productId: 'jam_2800',
         coins: 2800,
         priceCents: 19999,
         label: '2.000 JC + 800 bônus',
@@ -2586,9 +2591,8 @@ abstract final class Cf170WalletPackMock {
   }
 }
 
-/// Resolve catálogo da tela de recarga (CF-169).
-/// Com TEMP ligado, o print prevalece sobre o catálogo legado da API
-/// (Starter/Plus/Pro) — valores comerciais ainda TBD ([CF-270]).
+/// Resolve catálogo da tela de recarga (CF-169/CF-270).
+/// TEMP off: usa o que a API devolve. Não sobrescreve mais Starter/Plus/Pro.
 List<JamCoinPack> resolveWalletRechargePacks(
   List<JamCoinPack> apiPacks, {
   bool? useTempMocks,

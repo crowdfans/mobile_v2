@@ -16,7 +16,7 @@ void main() {
     'CF-170 green: tela Pagamento com moeda dourada, botão escuro e sem sandbox',
     (tester) async {
       final pack = Cf170WalletPackMock.packs().firstWhere(
-        (p) => p.id == 'cf170-240',
+        (p) => p.id == 'pack_240',
       );
 
       await tester.pumpWidget(
@@ -142,7 +142,7 @@ void main() {
             body: WalletPixReceipt(
               receipt: const WalletCheckoutResult(
                 checkoutId: 'chk-1',
-                packId: 'cf170-240',
+                packId: 'pack_240',
                 coins: 240,
                 status: 'paid',
                 provider: 'pix',
@@ -177,7 +177,7 @@ void main() {
         MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
           home: const ProfileWalletPaymentScreen(
-            packId: 'cf170-240',
+            packId: 'pack_240',
             label: '200 JC + 40 bônus',
             coins: '240',
             priceCents: 1990,
@@ -211,7 +211,7 @@ void main() {
         MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
           home: const ProfileWalletPaymentScreen(
-            packId: 'cf170-240',
+            packId: 'pack_240',
             label: longLabel,
             coins: '240',
             priceCents: 1990,
@@ -226,7 +226,7 @@ void main() {
         walletUserFacingMessage('PIX gerado para esse pacote.'),
         'PIX gerado para esse pacote.',
       );
-      expect(kUseCf170WalletPackMocks, isTrue);
+      expect(kUseCf170WalletPackMocks, isFalse);
       expect(
         Cf170WalletPackMock.packs().any((p) => p.coins == 240),
         isTrue,
