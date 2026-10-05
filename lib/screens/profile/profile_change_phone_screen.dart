@@ -10,7 +10,8 @@ import 'package:crowdfans/utils/phone_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Trocar telefone de recuperação (CF-217 / CF-271 sync backend).
+/// Trocar telefone — página dedicada (CF-217). Layout = print YouTrack.
+/// Sem abas / sem hub Segurança e login embutido.
 class ProfileChangePhoneScreen extends StatefulWidget {
   const ProfileChangePhoneScreen({super.key});
 
@@ -51,12 +52,17 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
       }
       setState(() => _backendPhone = profile.phone.trim());
     } catch (_) {
-      // Firebase permanece como fallback de exibição.
+      // Firebase / backend permanecem como fallback de exibição.
     }
   }
 
   String get _currentPhoneLabel {
-    final raw = FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
+    String raw = '';
+    try {
+      raw = FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
+    } catch (_) {
+      // Testes / Firebase ainda não inicializado.
+    }
     final source = raw.isNotEmpty ? raw : _backendPhone;
     if (source.isEmpty) {
       return 'não informado';
@@ -113,8 +119,10 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
         if (!mounted) {
           return;
         }
-        final e164 =
-            FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
+        String e164 = '';
+        try {
+          e164 = FirebaseService.auth.currentUser?.phoneNumber?.trim() ?? '';
+        } catch (_) {}
         setState(() {
           _awaitingOtp = false;
           _otp = '';
@@ -168,89 +176,96 @@ class _ProfileChangePhoneScreenState extends State<ProfileChangePhoneScreen> {
               onBack: () => context.pop(),
             ),
             Expanded(
-              child: ListView(
-                key: ValueKey(_formNonce),
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                children: [
-                  Text(
-                    'Atualize o telefone de recuperação',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: ListView(
+                  key: ValueKey(_formNonce),
+                  // Espaçamento generoso = REFERÊNCIA CF-217 (não o hub).
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    Text(
+                      'Atualize o telefone de recuperação',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
+                        color: colors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Usaremos esse número para OTPs, confirmação de login e '
-                    'recuperação de acesso quando necessário.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.45,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Telefone atual: $_currentPhoneLabel',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: colors.textTertiary,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  if (!_awaitingOtp) ...[
-                    AppTextField(
-                      key: ValueKey('pw-$_formNonce'),
-                      label: 'Senha atual',
-                      hint: 'Digite sua senha atual',
-                      obscureText: true,
-                      onChanged: (value) {
-                        setState(() {
-                          _currentPassword = value;
-                          _error = null;
-                        });
-                      },
+                    const SizedBox(height: 12),
+                    Text(
+                      'Usaremos esse número para OTPs, confirmação de login e '
+                      'recuperação de acesso quando necessário.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.45,
+                        color: colors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    AppTextField(
-                      key: ValueKey('phone-$_formNonce'),
-                      label: 'Novo telefone',
-                      hint: '(11) 99999-9999',
-                      keyboardType: TextInputType.phone,
-                      initialValue: _phoneController.text,
-                      onChanged: handlePhoneChanged,
+                    Text(
+                      'Telefone atual: $_currentPhoneLabel',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textTertiary,
+                      ),
                     ),
-                  ] else ...[
-                    AppTextField(
-                      key: ValueKey('otp-$_formNonce'),
-                      label: 'Código SMS',
-                      hint: '6 dígitos',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          _otp = value;
-                          _error = null;
-                        });
-                      },
-                    ),
+                    const SizedBox(height: 32),
+                    if (!_awaitingOtp) ...[
+                      AppTextField(
+                        key: ValueKey('pw-$_formNonce'),
+                        label: 'Senha atual',
+                        hint: 'Digite sua senha atual',
+                        obscureText: true,
+                        // Print CF-217: campo sem ícone de olho.
+                        showObscureToggle: false,
+                        onChanged: (value) {
+                          setState(() {
+                            _currentPassword = value;
+                            _error = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      AppTextField(
+                        key: ValueKey('phone-$_formNonce'),
+                        label: 'Novo telefone',
+                        hint: '(11) 99999-9999',
+                        keyboardType: TextInputType.phone,
+                        initialValue: _phoneController.text,
+                        onChanged: handlePhoneChanged,
+                      ),
+                    ] else ...[
+                      AppTextField(
+                        key: ValueKey('otp-$_formNonce'),
+                        label: 'Código SMS',
+                        hint: '6 dígitos',
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            _otp = value;
+                            _error = null;
+                          });
+                        },
+                      ),
+                    ],
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      AccountFeedbackBanner(message: _error!, success: false),
+                    ],
+                    if (_success != null) ...[
+                      const SizedBox(height: 16),
+                      AccountFeedbackBanner(message: _success!, success: true),
+                    ],
                   ],
-                  if (_error != null) ...[
-                    const SizedBox(height: 16),
-                    AccountFeedbackBanner(message: _error!, success: false),
-                  ],
-                  if (_success != null) ...[
-                    const SizedBox(height: 16),
-                    AccountFeedbackBanner(message: _success!, success: true),
-                  ],
-                ],
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: AppButton(
                 label: _submitting
                     ? 'Aguarde...'
