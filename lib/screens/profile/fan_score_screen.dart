@@ -20,12 +20,20 @@ class FanScoreScreen extends StatefulWidget {
     super.key,
     required this.fanHandle,
     this.backFallback,
+    this.dataForTest,
+    this.loadErrorForTest,
   });
 
   final String fanHandle;
 
   /// Destino se não houver rota para `pop` (settings → Configurações).
   final String? backFallback;
+
+  /// Injeta payload nos testes (green/red/edge) sem HTTP.
+  final FanScoreData? dataForTest;
+
+  /// Força erro de carga nos testes sem HTTP.
+  final String? loadErrorForTest;
 
   @override
   State<FanScoreScreen> createState() => _FanScoreScreenState();
@@ -63,9 +71,30 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
       _loading = true;
       _error = null;
     });
+
+    // Test hooks: nunca tela em branco (lista, empty ou erro).
+    if (widget.loadErrorForTest != null) {
+      setState(() {
+        _data = null;
+        _loading = false;
+        _error = widget.loadErrorForTest;
+      });
+      return;
+    }
+    if (widget.dataForTest != null) {
+      final data = widget.dataForTest!;
+      setState(() {
+        _data = data;
+        _loading = false;
+        if (_expandedArtistId == null && data.entries.isNotEmpty) {
+          _expandedArtistId = data.entries.first.artistId;
+        }
+      });
+      return;
+    }
+
     try {
-      // TEMP CF-201: fixtures do print (ciclo + Ultimate expandido) até a API
-      // devolver dados equivalentes.
+      // TEMP CF-201: fixtures do print só se a flag ainda estiver ligada.
       if (CfTempMocks.useFanScoreFixtures && kUseCfTempMocks) {
         final mock = cfTempMockFanScoreData();
         if (!mounted) {
@@ -202,7 +231,7 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
                         if (_error == null && entries.isEmpty)
                           Text(
                             _search.trim().isEmpty
-                                ? 'Sem scores ainda. Assine artistas para começar a pontuar.'
+                                ? 'Sem scores ainda. Siga ou assine artistas para começar a pontuar.'
                                 : 'Nenhum artista encontrado para essa busca.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -210,7 +239,7 @@ class _FanScoreScreenState extends State<FanScoreScreen> {
                               color: colors.textSecondary,
                             ),
                           )
-                        else
+                        else if (_error == null)
                           for (final entry in entries) ...[
                             FanScoreArtistCard(
                               entry: entry,

@@ -68,10 +68,9 @@ abstract final class CfTempMocks {
   static const useRankingFixtures = false;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
-  /// **TEMP on** (CF-201): API existe, mas prod não devolve o ciclo + cards
-  /// Ultimate/Super do print (Insights expandido). Off quando o endpoint
-  /// popular dados equivalentes ao print.
-  static const useFanScoreFixtures = true;
+  /// Off (CF-201 demock): API real com ciclo + Insights. Helper
+  /// [cfTempMockFanScoreData] permanece só para testes green/print.
+  static const useFanScoreFixtures = false;
 
   /// Membership / recarga — subscriptions + wallet APIs.
   /// Off: Assinar (CF-206) e hub usam API real; não ligar para print CF-207.
