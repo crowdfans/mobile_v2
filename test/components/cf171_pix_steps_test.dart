@@ -58,7 +58,7 @@ void main() {
       );
 
       expect(kUseCfTempMocks && kUseCf171PixCheckoutMocks, isTrue);
-      final mock = Cf171PixCheckoutMock.pending(packId: 'cf170-240');
+      final mock = Cf171PixCheckoutMock.pending(packId: 'pack_240');
       expect(mock.status, 'pending');
       expect(mock.pixCopyPaste, isNotEmpty);
       expect(mock.message, isNull);
