@@ -3,12 +3,17 @@ import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/user_session_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Dispositivos conectados (CF-216) — lista real via CF-266 `/me/sessions`.
+/// Dispositivos conectados (CF-216).
+///
+/// Print YouTrack: contagem, aparelhos, badge "Este dispositivo", tip e CTA
+/// global. Dados ricos do print via TEMP [kUseCf216ConnectedDevicesMocks];
+/// API real [CF-266] `/me/sessions` quando o mock estiver off.
 class ProfileConnectedDevicesScreen extends StatefulWidget {
   const ProfileConnectedDevicesScreen({super.key});
 
@@ -24,6 +29,9 @@ class _ProfileConnectedDevicesScreenState
   var _busy = false;
   String? _error;
 
+  bool get _usePrintFixtures =>
+      kUseCfTempMocks && kUseCf216ConnectedDevicesMocks;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +43,16 @@ class _ProfileConnectedDevicesScreenState
       _loading = true;
       _error = null;
     });
+    if (_usePrintFixtures) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _sessions = Cf216ConnectedDevicesFixtures.sessions();
+        _loading = false;
+      });
+      return;
+    }
     try {
       await UserSessionService.syncCurrentSession();
       final sessions = await UserSessionService.listSessions();
@@ -66,6 +84,16 @@ class _ProfileConnectedDevicesScreenState
     if (!ok) {
       return;
     }
+    if (_usePrintFixtures) {
+      // TEMP: falha não se aplica — mantém lista local do print.
+      setState(() {
+        _sessions = [
+          for (final item in _sessions)
+            if (item.id != session.id) item,
+        ];
+      });
+      return;
+    }
     setState(() => _busy = true);
     try {
       await UserSessionService.revokeSession(session.id);
@@ -74,6 +102,7 @@ class _ProfileConnectedDevicesScreenState
       if (!mounted) {
         return;
       }
+      // Critério CF-216: falha mantém sessão listada.
       setState(() {
         _busy = false;
         _error = error.toString();
@@ -93,6 +122,15 @@ class _ProfileConnectedDevicesScreenState
       confirmLabel: 'Desconectar',
     );
     if (!ok) {
+      return;
+    }
+    if (_usePrintFixtures) {
+      setState(() {
+        _sessions = [
+          for (final item in _sessions)
+            if (item.isCurrent) item,
+        ];
+      });
       return;
     }
     setState(() => _busy = true);
@@ -162,28 +200,29 @@ class _ProfileConnectedDevicesScreenState
                           ),
                         ],
                         const SizedBox(height: 16),
-                        Text.rich(
-                          TextSpan(
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: colors.textPrimary,
+                        // Print: número grande + rótulo (widgets separados).
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              '$count',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
+                              ),
                             ),
-                            children: [
-                              TextSpan(
-                                text: '$count',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'dispositivo${count == 1 ? '' : 's'} conectado${count == 1 ? '' : 's'}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: colors.textPrimary,
                               ),
-                              TextSpan(
-                                text:
-                                    ' dispositivo${count == 1 ? '' : 's'} conectado${count == 1 ? '' : 's'}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         if (_sessions.isEmpty)
