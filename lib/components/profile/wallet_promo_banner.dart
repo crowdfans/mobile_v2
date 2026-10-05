@@ -8,12 +8,18 @@ class WalletPromoBanner extends StatelessWidget {
     required this.onRecharge,
   });
 
-  /// Mantido para compatibilidade; a arte já traz o prazo visual.
+  /// Prazo real da oferta (ex.: `Termina em 16/06 16:28:17`).
   final String countdown;
   final VoidCallback onRecharge;
 
   @override
   Widget build(BuildContext context) {
+    final endsLabel = countdown.trim().isEmpty
+        ? ''
+        : (countdown.startsWith('Termina')
+              ? countdown
+              : 'Termina em $countdown');
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -42,6 +48,36 @@ class WalletPromoBanner extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (endsLabel.isNotEmpty)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xE6FFD54F),
+                            Color(0x00FFD54F),
+                          ],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 18),
+                        child: Text(
+                          endsLabel,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 Positioned(
                   left: 0,
                   right: 0,

@@ -32,6 +32,16 @@ DateTime nextSundayEnd() {
   );
 }
 
+/// Prazo absoluto no formato do print CF-168 (`Termina em 16/06 16:28:17`).
+String formatOfferEndsLabel(DateTime target) {
+  final day = target.day.toString().padLeft(2, '0');
+  final month = target.month.toString().padLeft(2, '0');
+  final hour = target.hour.toString().padLeft(2, '0');
+  final minute = target.minute.toString().padLeft(2, '0');
+  final second = target.second.toString().padLeft(2, '0');
+  return 'Termina em $day/$month $hour:$minute:$second';
+}
+
 String formatCountdown(DateTime target) {
   final remaining = target.difference(DateTime.now());
   if (remaining.isNegative) {
@@ -58,7 +68,7 @@ class _ProfileWalletScreenState extends ConsumerState<ProfileWalletScreen> {
   EarningsSnapshot? _earnings;
   var _loading = true;
   String? _error;
-  var _countdown = formatCountdown(nextSundayEnd());
+  var _countdown = formatOfferEndsLabel(nextSundayEnd());
   Timer? _countdownTimer;
   VoidCallback? _unsubscribeWs;
 
@@ -71,7 +81,7 @@ class _ProfileWalletScreenState extends ConsumerState<ProfileWalletScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _countdown = formatCountdown(nextSundayEnd()));
+      setState(() => _countdown = formatOfferEndsLabel(nextSundayEnd()));
     });
   }
 

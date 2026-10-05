@@ -35,23 +35,40 @@ class WalletScanEarnRow extends StatelessWidget {
                   ),
                 ),
               ),
-              Image.asset(
-                'assets/images/jam-coin.png',
-                width: 22,
-                height: 22,
-                errorBuilder: (_, _, _) => const Icon(
-                  Icons.monetization_on,
-                  size: 22,
-                  color: Color(0xFFF5C451),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0B8),
+                  borderRadius: BorderRadius.circular(999),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                bonusLabel,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/images/jam-coin.png',
+                        width: 20,
+                        height: 20,
+                        errorBuilder: (_, _, _) => const Icon(
+                          Icons.monetization_on,
+                          size: 20,
+                          color: Color(0xFFF5C451),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        bonusLabel,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
