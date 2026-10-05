@@ -13,6 +13,7 @@ class PostOptionsShareAction extends StatelessWidget {
     this.icon,
     this.asset,
     this.iconColor,
+    this.labelColor,
   });
 
   final String label;
@@ -20,6 +21,7 @@ class PostOptionsShareAction extends StatelessWidget {
   final IconData? icon;
   final String? asset;
   final Color? iconColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class PostOptionsShareAction extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
+                      color: labelColor ?? colors.textPrimary,
                     ),
                   ),
                 ],
