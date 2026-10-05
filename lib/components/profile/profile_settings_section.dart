@@ -20,7 +20,10 @@ class ProfileSettingItem {
   final bool danger;
 }
 
-/// Bloco de itens no hub de settings (prints CF-108).
+/// Bloco de itens no hub de settings (prints CF-108 / CF-160).
+///
+/// CF-160: títulos sobre o fundo da tela (sem faixa preenchida); respiro entre
+/// opções; grupos separados por faixa discreta `surfaceAlt`.
 class ProfileSettingsSection extends StatelessWidget {
   const ProfileSettingsSection({
     super.key,
@@ -33,25 +36,32 @@ class ProfileSettingsSection extends StatelessWidget {
   final List<ProfileSettingItem> items;
   final bool showDivider;
 
+  /// Altura da linha (ícone + nome + seta) — pitch com [itemGap] ≈ print.
+  static const double rowHeight = 64;
+
+  /// Respiro vertical entre opções (print LEFT ~84–92 de pitch).
+  static const double itemGap = 16;
+
+  /// Faixa discreta entre grupos.
+  static const double groupDividerHeight = 12;
+
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ColoredBox(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTertiary,
-                ),
+        // Título no fundo da tela — sem ColoredBox/surfaceAlt (CF-160).
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.textTertiary,
               ),
             ),
           ),
@@ -63,11 +73,9 @@ class ProfileSettingsSection extends StatelessWidget {
                 : Key('settings-item-${items[index].id}'),
             onTap: items[index].onTap,
             child: SizedBox(
-              height: 60,
+              height: rowHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   children: [
                     SvgPicture.asset(
@@ -83,6 +91,8 @@ class ProfileSettingsSection extends StatelessWidget {
                     Expanded(
                       child: Text(
                         items[index].label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -108,14 +118,14 @@ class ProfileSettingsSection extends StatelessWidget {
               ),
             ),
           ),
-          if (index < items.length - 1) const SizedBox(height: 8),
+          if (index < items.length - 1) const SizedBox(height: itemGap),
         ],
         if (showDivider)
           ColoredBox(
             color: colors.surfaceAlt,
             child: const SizedBox(
               width: double.infinity,
-              height: 8,
+              height: groupDividerHeight,
             ),
           ),
       ],
