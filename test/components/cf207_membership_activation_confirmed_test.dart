@@ -67,60 +67,66 @@ void main() {
       },
     );
 
-    testWidgets('print TEMP Banda Uelo 240 /mês e Fechar → memberships', (
-      tester,
-    ) async {
-      expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isTrue);
-      expect(cfTempMockMembershipSummary.pricePerMonth, 240);
-      expect(cfTempMockMembershipSummary.artistName, 'Banda Uelo');
+    testWidgets(
+      'deep-link seeded (print helper) Banda Uelo 240 /mês e Fechar → memberships',
+      (tester) async {
+        expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isFalse);
+        expect(cfTempMockMembershipSummary.pricePerMonth, 240);
+        expect(cfTempMockMembershipSummary.artistName, 'Banda Uelo');
 
-      final router = GoRouter(
-        initialLocation: Pages.profileMembershipActivationConfirmedOf(
-          artistName: '',
-          pricePerMonth: 0,
-        ),
-        routes: [
-          GoRoute(
-            path: Pages.profileMembershipActivationConfirmed,
-            builder: (context, state) => ProfileMembershipActivationConfirmedScreen(
-              artistName: state.uri.queryParameters['artistName'] ?? '',
-              pricePerMonth:
-                  int.tryParse(
-                    state.uri.queryParameters['pricePerMonth'] ?? '',
-                  ) ??
-                  0,
-              artistHandle: state.uri.queryParameters['artistHandle'],
-              periodLabel:
-                  state.uri.queryParameters['periodLabel'] ?? '1 mês',
+        final router = GoRouter(
+          initialLocation: Pages.profileMembershipActivationConfirmedOf(
+            artistName: cfTempMockMembershipSummary.artistName,
+            artistHandle: cfTempMockMembershipSummary.artistHandle,
+            artistId: cfTempMockMembershipSummary.artistId,
+            pricePerMonth: cfTempMockMembershipSummary.pricePerMonth,
+            periodLabel: cfTempMockMembershipSummary.periodLabel,
+          ),
+          routes: [
+            GoRoute(
+              path: Pages.profileMembershipActivationConfirmed,
+              builder: (context, state) =>
+                  ProfileMembershipActivationConfirmedScreen(
+                artistName: state.uri.queryParameters['artistName'] ?? '',
+                pricePerMonth:
+                    int.tryParse(
+                      state.uri.queryParameters['pricePerMonth'] ?? '',
+                    ) ??
+                    0,
+                artistId: state.uri.queryParameters['artistId'],
+                artistHandle: state.uri.queryParameters['artistHandle'],
+                periodLabel:
+                    state.uri.queryParameters['periodLabel'] ?? '1 mês',
+              ),
             ),
+            GoRoute(
+              path: Pages.profileMemberships,
+              builder: (context, state) =>
+                  const Scaffold(body: Text('meus-memberships')),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp.router(
+            theme: buildCrowdFansTheme(Brightness.light),
+            routerConfig: router,
           ),
-          GoRoute(
-            path: Pages.profileMemberships,
-            builder: (context, state) =>
-                const Scaffold(body: Text('meus-memberships')),
-          ),
-        ],
-      );
+        );
+        await tester.pumpAndSettle();
 
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: buildCrowdFansTheme(Brightness.light),
-          routerConfig: router,
-        ),
-      );
-      await tester.pumpAndSettle();
+        expect(find.text('Membership ativo'), findsOneWidget);
+        expect(find.text('Oficialmente do bando!'), findsOneWidget);
+        expect(find.textContaining('Banda Uelo'), findsWidgets);
+        expect(find.text('@bandauelo'), findsOneWidget);
+        expect(find.text('240 /mês'), findsOneWidget);
+        expect(find.text('1 mês'), findsOneWidget);
 
-      expect(find.text('Membership ativo'), findsOneWidget);
-      expect(find.text('Oficialmente do bando!'), findsOneWidget);
-      expect(find.textContaining('Banda Uelo'), findsWidgets);
-      expect(find.text('@bandauelo'), findsOneWidget);
-      expect(find.text('240 /mês'), findsOneWidget);
-      expect(find.text('1 mês'), findsOneWidget);
-
-      await tester.tap(find.text('Fechar'));
-      await tester.pumpAndSettle();
-      expect(find.text('meus-memberships'), findsOneWidget);
-    });
+        await tester.tap(find.text('Fechar'));
+        await tester.pumpAndSettle();
+        expect(find.text('meus-memberships'), findsOneWidget);
+      },
+    );
 
     testWidgets('Confetti excluída da semântica (A11Y-01)', (tester) async {
       await tester.pumpWidget(
@@ -188,11 +194,54 @@ void main() {
       expect(find.textContaining('Banda Uelo'), findsNothing);
     });
 
+    testWidgets(
+      'deep-link vazio não inventa Banda Uelo/240 (fixtures off)',
+      (tester) async {
+        expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isFalse);
+
+        final router = GoRouter(
+          initialLocation: Pages.profileMembershipActivationConfirmedOf(
+            artistName: '',
+            pricePerMonth: 0,
+          ),
+          routes: [
+            GoRoute(
+              path: Pages.profileMembershipActivationConfirmed,
+              builder: (context, state) =>
+                  ProfileMembershipActivationConfirmedScreen(
+                artistName: state.uri.queryParameters['artistName'] ?? '',
+                pricePerMonth:
+                    int.tryParse(
+                      state.uri.queryParameters['pricePerMonth'] ?? '',
+                    ) ??
+                    0,
+              ),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp.router(
+            theme: buildCrowdFansTheme(Brightness.light),
+            routerConfig: router,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Oficialmente do bando!'), findsOneWidget);
+        expect(find.textContaining('o artista'), findsWidgets);
+        expect(find.text('100 /mês'), findsOneWidget);
+        expect(find.textContaining('Banda Uelo'), findsNothing);
+        expect(find.text('240 /mês'), findsNothing);
+        expect(find.text('@bandauelo'), findsNothing);
+      },
+    );
+
     test(
-      'flag CF-207 não liga Assinar/hub memberships (useMembershipFixtures off)',
+      'flag CF-207 off; Assinar/hub memberships permanece off',
       () {
         expect(CfTempMocks.useMembershipFixtures, isFalse);
-        expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isTrue);
+        expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isFalse);
       },
     );
   });
@@ -267,5 +316,22 @@ void main() {
       expect(find.text('Oficialmente do bando!'), findsOneWidget);
       expect(find.text('Assinar'), findsNothing);
     });
+
+    test(
+      'helper print permanece disponível para deep-link seeded (fixtures off)',
+      () {
+        expect(CfTempMocks.useMembershipActivationConfirmedFixtures, isFalse);
+        expect(cfTempMockMembershipSummary.artistName, 'Banda Uelo');
+        expect(cfTempMockMembershipSummary.pricePerMonth, 240);
+        final seeded = Pages.profileMembershipActivationConfirmedOf(
+          artistName: cfTempMockMembershipSummary.artistName,
+          pricePerMonth: cfTempMockMembershipSummary.pricePerMonth,
+          artistHandle: cfTempMockMembershipSummary.artistHandle,
+        );
+        expect(seeded, contains('artistName=Banda+Uelo'));
+        expect(seeded, contains('pricePerMonth=240'));
+        expect(seeded, contains('artistHandle'));
+      },
+    );
   });
 }

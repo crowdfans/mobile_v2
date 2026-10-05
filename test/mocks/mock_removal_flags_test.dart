@@ -20,8 +20,8 @@ void main() {
     expect(CfTempMocks.useMembershipManageFixtures, isFalse); // CF-205 demock
     expect(
       CfTempMocks.useMembershipActivationConfirmedFixtures,
-      isTrue,
-    ); // CF-207 print
+      isFalse,
+    ); // CF-207 demock — seeded deep-link / Assinar
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse); // CF-213 demock
     expect(CfTempMocks.useFanClubFixtures, isFalse); // demock CF-222…230

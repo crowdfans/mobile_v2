@@ -75,7 +75,7 @@ abstract final class CfTempMocks {
   /// Membership / recarga — subscriptions + wallet APIs.
   /// Off (CF-206 demock): Assinar + hub usam API real (`POST /subscriptions`,
   /// `GET /me/wallet`). Helper [cfTempMockMembershipSummary] só para testes
-  /// print / CF-207 deep-link ([useMembershipActivationConfirmedFixtures]).
+  /// print / deep-link seeded (CF-207 também democked).
   static const useMembershipFixtures = false;
 
   /// CF-205 Gerenciar membership — **off**: hub/perfil passam params reais
@@ -83,10 +83,11 @@ abstract final class CfTempMocks {
   /// de print. Não liga Assinar (CF-206) nem confirmação (CF-207).
   static const useMembershipManageFixtures = false;
 
-  /// CF-207 confirmação de ativação — deep-link vazio / preço ≤ 0 usa
-  /// [cfTempMockMembershipSummary] (Banda Uelo / 240). TEMP até QA abrir
-  /// sempre com params da assinatura real. Não liga Assinar (CF-206).
-  static const useMembershipActivationConfirmedFixtures = true;
+  /// CF-207 confirmação de ativação. **Off (demock):** tela usa só params
+  /// da rota (Assinar real ou deep-link seeded). Helper
+  /// [cfTempMockMembershipSummary] fica para testes/QA deep-link — não
+  /// inventa Banda Uelo/240 na UI. Não liga Assinar (CF-206).
+  static const useMembershipActivationConfirmedFixtures = false;
 
   /// Preferências — `GET/PUT /api/v1/notifications/preferences`.
   /// Genérico off: CF-213 usa [useArtistsNotifPrintFixtures].
@@ -862,8 +863,8 @@ abstract final class Cf162ProfileAccountFixtures {
 }
 
 /// Resumo print Assinar/confirmação (Banda Uelo / 240 / 2.684).
-/// Assinar CF-206 democked — não injeta na UI. CF-207 deep-link vazio:
-/// [CfTempMocks.useMembershipActivationConfirmedFixtures].
+/// CF-206/207 democked — não injeta na UI. Helper só para testes/QA
+/// deep-link seeded (params explícitos; empty route não inventa print).
 const cfTempMockMembershipSummary = (
   artistName: 'Banda Uelo',
   artistHandle: '@bandauelo',
