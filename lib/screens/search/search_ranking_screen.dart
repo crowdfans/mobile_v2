@@ -9,7 +9,9 @@ import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-String _rankingLead(String kind) {
+/// Chrome do ranking — critério alinhado ao backend
+/// (`search_service.go`: engaged = interações 7d; active = posts 7d).
+String rankingLeadForKind(String kind) {
   return switch (kind) {
     'active' => 'Top 500',
     'engaged' => 'Top 100',
@@ -17,7 +19,7 @@ String _rankingLead(String kind) {
   };
 }
 
-String _rankingQualifier(String kind) {
+String rankingQualifierForKind(String kind) {
   return switch (kind) {
     'active' => 'Ativos',
     'engaged' => 'Engajados',
@@ -25,9 +27,7 @@ String _rankingQualifier(String kind) {
   };
 }
 
-/// Título, descrição e métrica da linha usam o mesmo critério do backend
-/// (`search_service.go`: engaged = interações 7d; active = posts 7d).
-String _rankingSubtitle(String kind) {
+String rankingSubtitleForKind(String kind) {
   return switch (kind) {
     'active' => 'Artistas com mais posts nos últimos 7 dias',
     'engaged' => 'Artistas com mais interações nos últimos 7 dias',
@@ -35,7 +35,7 @@ String _rankingSubtitle(String kind) {
   };
 }
 
-String _rankingMetricHint(String kind) {
+String rankingMetricHintForKind(String kind) {
   return switch (kind) {
     'active' => 'posts (7d)',
     'engaged' => 'interações (7d)',
@@ -43,7 +43,16 @@ String _rankingMetricHint(String kind) {
   };
 }
 
-int _rankingLimit(String kind) => kind == 'engaged' ? 100 : 500;
+/// CF-193: Engajados/Ativos ordenam por métrica, não por “postagens”.
+/// CF-189 print Top 500 mantém o rótulo do mock.
+String rankingSortLabelForKind(String kind) {
+  return switch (kind) {
+    'engaged' || 'active' => 'Ordenar por:',
+    _ => 'Ordenar postagens por:',
+  };
+}
+
+int rankingLimitForKind(String kind) => kind == 'engaged' ? 100 : 500;
 
 /// Lista completa de ranking de artistas.
 class SearchRankingScreen extends StatefulWidget {
@@ -87,7 +96,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
       setState(() {
         _artists = cfTempMockRankingArtists(
           kind: _kind,
-          limit: _rankingLimit(_kind).clamp(1, 8),
+          limit: rankingLimitForKind(_kind).clamp(1, 8),
         );
         _error = null;
         _loading = false;
@@ -97,7 +106,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
     try {
       final data = await SearchService.rankArtists(
         _kind,
-        limit: _rankingLimit(_kind),
+        limit: rankingLimitForKind(_kind),
       );
       setState(() => _artists = data.artists);
     } catch (_) {
@@ -142,13 +151,13 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                           child: Semantics(
                             header: true,
                             label:
-                                '${_rankingLead(_kind)} ${_rankingQualifier(_kind)}. ${_rankingSubtitle(_kind)}',
+                                '${rankingLeadForKind(_kind)} ${rankingQualifierForKind(_kind)}. ${rankingSubtitleForKind(_kind)}',
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: _rankingLead(_kind),
+                                    text: rankingLeadForKind(_kind),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
@@ -156,7 +165,8 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: ' · ${_rankingQualifier(_kind)}',
+                                    text:
+                                        ' · ${rankingQualifierForKind(_kind)}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -180,7 +190,7 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                   child: Text(
-                    'Ordenar postagens por:',
+                    rankingSortLabelForKind(_kind),
                     style: TextStyle(
                       fontSize: 13,
                       color: colors.textSecondary,
@@ -248,7 +258,8 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
                                     return SearchArtistRankRow(
                                       artist: artist,
                                       position: artist.rank ?? index + 1,
-                                      metricHint: _rankingMetricHint(_kind),
+                                      metricHint:
+                                          rankingMetricHintForKind(_kind),
                                       layout:
                                           SearchArtistRankRowLayout.rankLeading,
                                       onPressed: () => context.push(
