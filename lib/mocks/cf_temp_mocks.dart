@@ -11,7 +11,8 @@
 // CF-171: checkout PIX pendente (etapas 01/02/03 + código).
 // CF-181: grade Cartas no perfil do artista.
 // CF-187: Meu Perfil preenchido (seletor + stats/bio/posts do print).
-// CF-213/216/217/219: notif artistas, dispositivos, telefone, bio.
+// CF-213/216/219: notif artistas, dispositivos, bio.
+// CF-217 telefone: demock (API CF-271 PUT /profile + Firebase).
 // CF-222…230: fã-clube perfil / moderadores / expulsão / aviso.
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
 // CF-176: menu ⋯ do post (home) — ícones/rótulos/destaques do print.
@@ -1411,11 +1412,6 @@ extension Cf216ConnectedDevicesFixtures on CfTempMocks {
       ),
     ];
   }
-}
-
-/// CF-217 — telefone atual do print.
-abstract final class Cf217ChangePhoneMock {
-  static const currentPhoneLabel = '(11) 98765-4321';
 }
 
 /// CF-219 — bio do print (contador 56).
