@@ -87,9 +87,9 @@ abstract final class CfTempMocks {
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
 
-  /// CF-239 Exclusivo liberado (perfil Ludmilla assinante) — TEMP até
-  /// subscriptions/check + posts exclusivos reais baterem o print.
-  /// Não altera o caminho bloqueado (CF-184 teaser).
+  /// CF-239 Exclusivo liberado (Ludmilla) + CF-184 bloqueado (Kheper) —
+  /// TEMP até subscriptions/check + posts exclusivos reais baterem os prints.
+  /// Ludmilla → assinante; Kheper → teaser só (sem posts bloqueados).
   static const useArtistExclusiveFixtures = true;
 
   /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
@@ -1465,6 +1465,17 @@ bool cfTempMockArtistExclusiveSubscribed(String artistId, String? name) {
   return id.contains('ludmilla') ||
       id == 'mock-fc-ludmilla' ||
       n.contains('ludmilla');
+}
+
+/// Exclusivo bloqueado no perfil (CF-184) — Kheper / print sem assinatura.
+/// Nunca inclui Ludmilla (caminho CF-239 unlocked).
+bool cfTempMockArtistExclusiveForceLocked(String artistId, String? name) {
+  if (cfTempMockArtistExclusiveSubscribed(artistId, name)) {
+    return false;
+  }
+  final id = artistId.trim().toLowerCase();
+  final n = (name ?? '').trim().toLowerCase();
+  return id.contains('kheper') || n.contains('kheper');
 }
 
 List<FeedPost> cfTempMockLudmillaExclusivePosts() {

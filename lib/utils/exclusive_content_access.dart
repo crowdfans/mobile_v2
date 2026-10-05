@@ -57,6 +57,14 @@ bool canAccessFanClubBase({
   return isOwner || isFollowing || isMember;
 }
 
+/// CF-184: aba Exclusivo sem assinatura → só o teaser (sem posts bloqueados).
+bool artistExclusiveShowsTeaserOnly({
+  required bool subscriptionResolved,
+  required bool subscribed,
+}) {
+  return subscriptionResolved && !subscribed;
+}
+
 bool canAccessExclusivePost(FeedPost post, ExclusiveAccessContext context) {
   if (!isExclusivePost(post)) {
     return true;
