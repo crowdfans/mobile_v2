@@ -62,7 +62,7 @@ const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   ),
   NotificationPreferenceGroup(
     id: 'interactions',
-    title: 'Interações com Você',
+    title: 'Interações com você',
     navSubtitle:
         'Curtidas do artista nas suas coisas, respostas, menções ao seu fan/ e novos seguidores.',
     pageIntro:
