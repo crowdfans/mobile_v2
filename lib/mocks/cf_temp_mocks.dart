@@ -2512,10 +2512,9 @@ abstract final class Cf181CartasMock {
 /// CF-169/170 packs — fixture de print (só testes). Catálogo live = API (CF-270).
 const bool kUseCf170WalletPackMocks = false;
 
-/// CF-171 — checkout PIX pendente com código (print etapas 01/02/03).
-/// **TEMP** até o gateway real emitir `pending` + `pixCopyPaste` (hoje o
-/// sandbox costuma devolver `paid` e pular a tela de instruções).
-const bool kUseCf171PixCheckoutMocks = true;
+/// CF-171 — checkout PIX pendente. **Off:** API devolve `pending` + `pixCopyPaste`
+/// via financial (`POST /me/wallet/checkout`). Fixture só para testes de print.
+const bool kUseCf171PixCheckoutMocks = false;
 
 /// Recibo demo CF-171 (código PIX + status pending, sem mensagem técnica).
 abstract final class Cf171PixCheckoutMock {

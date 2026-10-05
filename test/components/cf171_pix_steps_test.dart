@@ -57,11 +57,12 @@ void main() {
         AppPalette.platinum900,
       );
 
-      expect(kUseCfTempMocks && kUseCf171PixCheckoutMocks, isTrue);
-      final mock = Cf171PixCheckoutMock.pending(packId: 'pack_240');
-      expect(mock.status, 'pending');
-      expect(mock.pixCopyPaste, isNotEmpty);
-      expect(mock.message, isNull);
+      // Demock: flag off; fixture só para asserts de print/layout.
+      expect(kUseCf171PixCheckoutMocks, isFalse);
+      final fixture = Cf171PixCheckoutMock.pending(packId: 'pack_240');
+      expect(fixture.status, 'pending');
+      expect(fixture.pixCopyPaste, isNotEmpty);
+      expect(fixture.message, isNull);
     },
   );
 
@@ -103,10 +104,11 @@ void main() {
     expect(walletUserFacingMessage(''), isNull);
   });
 
-  test('CF-171 red: mock nunca devolve paid sem código (pula etapas)', () {
-    final mock = Cf171PixCheckoutMock.pending(packId: 'x', coins: 0);
-    expect(mock.status, isNot(equals('paid')));
-    expect(mock.pixCopyPaste?.trim(), isNotEmpty);
+  test('CF-171 red: fixture pending nunca é paid sem código (pula etapas)', () {
+    expect(kUseCf171PixCheckoutMocks, isFalse);
+    final fixture = Cf171PixCheckoutMock.pending(packId: 'x', coins: 0);
+    expect(fixture.status, isNot(equals('paid')));
+    expect(fixture.pixCopyPaste?.trim(), isNotEmpty);
   });
 
   // --- edge ---

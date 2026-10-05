@@ -12,7 +12,7 @@ void main() {
 
     expect(CfTempMocks.useArtistSobreFixtures, isFalse); // CF-269
     expect(kUseCf170WalletPackMocks, isFalse); // CF-270 democked
-    expect(kUseCf171PixCheckoutMocks, isTrue); // CF-171 até PIX pending real
+    expect(kUseCf171PixCheckoutMocks, isFalse); // CF-171 demock — PIX pending API
 
     expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
     expect(CfTempMocks.useFanScoreFixtures, isFalse); // CF-201 demock Insights

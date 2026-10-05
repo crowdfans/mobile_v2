@@ -143,7 +143,7 @@ class _ProfileWalletPaymentScreenState
     }
     setState(() => _busy = true);
     try {
-      // CF-171: mock pending+PIX evita skip da tela quando sandbox devolve paid.
+      // CF-171 demock: API pending+PIX; mock só se flag TEMP religada.
       final result = kUseCfTempMocks && kUseCf171PixCheckoutMocks
           ? Cf171PixCheckoutMock.pending(
               packId: widget.packId,
