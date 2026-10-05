@@ -4,7 +4,6 @@ import 'package:crowdfans/components/search/search_rank_sort_chip.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -90,18 +89,8 @@ class _SearchRankingScreenState extends State<SearchRankingScreen> {
       _loading = true;
       _error = null;
     });
-    // TEMP ranking: só se a flag ainda estiver on (CF-268 demock = off).
-    if (CfTempMocks.useRankingFixtures) {
-      setState(() {
-        _artists = cfTempMockRankingArtists(
-          kind: _kind,
-          limit: rankingLimitForKind(_kind).clamp(1, 8),
-        );
-        _error = null;
-        _loading = false;
-      });
-      return;
-    }
+    // CF-189/CF-268: sempre API real (`…/search/artists/rankings`).
+    // Fixtures TEMP removidas da UI — amostra só em testes.
     try {
       final data = await SearchService.rankArtists(
         _kind,
