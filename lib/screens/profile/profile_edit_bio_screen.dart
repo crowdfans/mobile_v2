@@ -1,3 +1,4 @@
+import 'package:characters/characters.dart';
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/input/app_text_field.dart';
 import 'package:crowdfans/components/profile/account_feedback_banner.dart';
@@ -31,6 +32,9 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
   var _saving = false;
   String? _error;
   String? _success;
+
+  /// Contagem por grapheme (emoji / caracteres compostos).
+  int get _bioCount => _bio.characters.length;
 
   @override
   void initState() {
@@ -76,10 +80,11 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
   }
 
   void handleChangeBio(String value) {
+    final clamped = value.characters.length > _maxBioLength
+        ? value.characters.take(_maxBioLength).toString()
+        : value;
     setState(() {
-      _bio = value.length > _maxBioLength
-          ? value.substring(0, _maxBioLength)
-          : value;
+      _bio = clamped;
       _error = null;
       _success = null;
     });
@@ -119,6 +124,7 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
       if (!mounted) {
         return;
       }
+      // Erro preserva o texto digitado e o cursor (campo não remonta).
       setState(() {
         _saving = false;
         _error = error.toString();
@@ -129,7 +135,7 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
   bool get canSave {
     return _profile != null &&
         _bio != _initialBio &&
-        _bio.length <= _maxBioLength &&
+        _bioCount <= _maxBioLength &&
         !_saving;
   }
 
@@ -138,6 +144,7 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
     final colors = CrowdFansTheme.of(context);
     return Scaffold(
       backgroundColor: colors.background,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
           children: [
@@ -170,7 +177,8 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
                         ),
                         const SizedBox(height: 10),
                         AppTextField(
-                          key: const ValueKey('edit-bio-field'),
+                          // Remonta só quando a bio inicial do perfil muda (load).
+                          key: ValueKey('edit-bio-field-$_initialBio'),
                           hint: 'Conte um pouco sobre você',
                           maxLines: 6,
                           maxLength: _maxBioLength,
@@ -178,7 +186,7 @@ class _ProfileEditBioScreenState extends ConsumerState<ProfileEditBioScreen> {
                           onChanged: handleChangeBio,
                         ),
                         const SizedBox(height: 8),
-                        ProfileBioFieldMeta(count: _bio.length),
+                        ProfileBioFieldMeta(count: _bioCount),
                         if (_error != null) ...[
                           const SizedBox(height: 16),
                           AccountFeedbackBanner(
