@@ -17,10 +17,10 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/226 prints
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-226 print Regras
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-234 lightbox via feed
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
-    expect(CfTempMocks.useFanClubSelectorFixtures, isFalse);
+    expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
     expect(CfTempMocks.useModerationPanelFixtures, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
