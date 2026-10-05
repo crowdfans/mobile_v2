@@ -4,6 +4,7 @@ import 'package:crowdfans/components/comments/comment_composer.dart';
 import 'package:crowdfans/components/comments/comment_gif_picker.dart';
 import 'package:crowdfans/components/comments/comment_post_context_header.dart';
 import 'package:crowdfans/components/comments/comment_replies_toggle.dart';
+import 'package:crowdfans/components/comments/comment_reply_target.dart';
 import 'package:crowdfans/components/comments/comment_row.dart';
 import 'package:crowdfans/components/comments/comment_sort_chip.dart';
 import 'package:crowdfans/components/comments/comment_thread_header.dart';
@@ -360,8 +361,10 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     required String bannerAuthor,
     required String bannerHandle,
   }) {
+    // CF-69: mesmo tocado em reply aninhada, parent da API = raiz da thread.
+    final root = commentInstagramReplyParent(threadRoot: parent);
     setState(() {
-      _replyTo = parent;
+      _replyTo = root;
       _replyBannerAuthor = bannerAuthor;
       _replyBannerHandle = bannerHandle;
       _editing = null;
@@ -420,7 +423,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           postId: widget.postId,
           content: content,
           gifUrl: _selectedGifUrl,
-          parentCommentId: _replyTo?.id,
+          parentCommentId: commentApiParentId(replyToRoot: _replyTo),
         );
         setState(() {
           if (_replyTo != null) {
