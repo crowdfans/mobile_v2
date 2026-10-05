@@ -78,7 +78,7 @@ class NovoPostHeader extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 130,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
