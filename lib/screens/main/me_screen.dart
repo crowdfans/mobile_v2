@@ -22,6 +22,7 @@ import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/services/fan_letter_service.dart';
+import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/profile_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -33,6 +34,38 @@ import 'package:go_router/go_router.dart';
 enum _MePostsFilter { all, posts, media }
 
 enum _ArtistFeedFilter { all, posts, media }
+
+/// Une overview (memberships) com [FollowService.listFollows] sem duplicar.
+Future<List<FollowedArtist>> mergeMeFollowedArtists(
+  List<FollowedArtist> fromOverview,
+) async {
+  final seen = <String>{
+    for (final artist in fromOverview)
+      if (artist.id.trim().isNotEmpty) artist.id.trim(),
+  };
+  final merged = [...fromOverview];
+  try {
+    final follows = await FollowService.listFollows();
+    for (final follow in follows) {
+      final id = follow.artistUid.trim();
+      if (id.isEmpty || seen.contains(id)) {
+        continue;
+      }
+      seen.add(id);
+      merged.add(
+        FollowedArtist(
+          id: id,
+          label: follow.artistName,
+          memberCount: '0',
+          avatarUri: follow.avatarUrl,
+        ),
+      );
+    }
+  } catch (_) {
+    // Rede/API: mantém só o que veio do overview.
+  }
+  return merged;
+}
 
 /// Aba Perfil — identidade, atalhos, artistas, filtros e publicações.
 class MeScreen extends ConsumerStatefulWidget {
@@ -169,6 +202,12 @@ class _MeScreenState extends ConsumerState<MeScreen> {
         posts = [for (final item in items) item.toFeedPost(owner: profile)];
       }
 
+      // CF-187: seletor Fã Clube usa follows ∪ overview (memberships).
+      var artists = overview?.followedArtists ?? const <FollowedArtist>[];
+      if (!profile.isArtist) {
+        artists = await mergeMeFollowedArtists(artists);
+      }
+
       var letters = <FanLetter>[];
       int? memberCount;
       int? rank;
@@ -198,7 +237,7 @@ class _MeScreenState extends ConsumerState<MeScreen> {
       }
       setState(() {
         _posts = posts;
-        _artists = overview?.followedArtists ?? const [];
+        _artists = artists;
         _letters = letters;
         _memberCount = memberCount;
         _fanClubRank = rank;
