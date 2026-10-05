@@ -19,6 +19,7 @@
 // Remover: apague este arquivo e os imports/`if` nos services que o usam.
 
 import 'package:crowdfans/components/fan_club/fan_club_compose_artist.dart';
+import 'package:crowdfans/components/fan_letter/fan_letter_canvas_preview.dart';
 import 'package:crowdfans/components/profile/connected_device_row.dart';
 import 'package:crowdfans/models/fan_profile.dart';
 import 'package:crowdfans/models/fan_score.dart';
@@ -34,6 +35,7 @@ import 'package:crowdfans/services/notification_preferences_service.dart';
 import 'package:crowdfans/services/notifications_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
+import 'package:flutter/material.dart';
 
 /// Master: qualquer mock deste arquivo. Preferir flags por feature abaixo.
 /// Só desligar flag depois da feature real (backend + front). CF-266/267 OK.
@@ -1897,11 +1899,28 @@ abstract final class Cf178FanClubsFeedMock {
 }
 
 /// Liga grade demo CF-181 (Cartas vazias → print povoado).
-/// Desligado: `GET /api/v1/fan-letters/artist/:artistId`.
-const bool kUseCf181CartasMocks = false;
+/// Off só com `GET /api/v1/fan-letters/artist/:artistId` equivalente ao print.
+const bool kUseCf181CartasMocks = true;
 
-/// Cartas do print CF-181 (autoria no topo da grade).
+/// Cartas do print CF-181 (image4/image5 — autoria topo + grade 3 colunas).
 abstract final class Cf181CartasMock {
+  static const _avatarAline =
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
+  static const _avatarMaria =
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80';
+  static const _avatarCaio =
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80';
+  static const _avatarJoao =
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80';
+  static const _avatarAnna =
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80';
+  static const _avatarLia =
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80';
+  static const _avatarRafa =
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80';
+  static const _avatarVic =
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80';
+
   static List<FanLetter> letters({required String artistId}) {
     return [
       FanLetter(
@@ -1910,7 +1929,7 @@ abstract final class Cf181CartasMock {
         artistName: 'Ludmilla',
         fanDisplayName: 'Aline Duarte',
         fanHandle: 'alineduarte',
-        fanAvatarUri: '',
+        fanAvatarUri: _avatarAline,
         votesCount: 12,
         sendsCount: 1,
         artistUpvoted: false,
@@ -1922,24 +1941,24 @@ abstract final class Cf181CartasMock {
         id: 'cf181-2',
         artistId: artistId,
         artistName: 'Ludmilla',
-        fanDisplayName: 'Caio Loux',
-        fanHandle: 'caioloux',
-        fanAvatarUri: '',
-        votesCount: 8,
+        fanDisplayName: 'Aline Duarte',
+        fanHandle: 'alineduarte',
+        fanAvatarUri: _avatarAline,
+        votesCount: 11,
         sendsCount: 1,
         artistUpvoted: false,
         postedAt: 0,
-        bodyText: 'Teu show foi incrível',
+        bodyText: 'LUDMILLA',
         backgroundId: 'grad-lilac',
       ),
       FanLetter(
         id: 'cf181-3',
         artistId: artistId,
         artistName: 'Ludmilla',
-        fanDisplayName: 'Nina Costa',
-        fanHandle: 'ninacosta',
-        fanAvatarUri: '',
-        votesCount: 5,
+        fanDisplayName: 'Maria Eduarda',
+        fanHandle: 'mariaeduarda',
+        fanAvatarUri: _avatarMaria,
+        votesCount: 9,
         sendsCount: 1,
         artistUpvoted: false,
         postedAt: 0,
@@ -1950,10 +1969,10 @@ abstract final class Cf181CartasMock {
         id: 'cf181-4',
         artistId: artistId,
         artistName: 'Ludmilla',
-        fanDisplayName: 'Vic Melo',
-        fanHandle: 'vicmelo',
-        fanAvatarUri: '',
-        votesCount: 3,
+        fanDisplayName: 'Caio Loux',
+        fanHandle: 'caioloux',
+        fanAvatarUri: _avatarCaio,
+        votesCount: 8,
         sendsCount: 1,
         artistUpvoted: false,
         postedAt: 0,
@@ -1964,10 +1983,10 @@ abstract final class Cf181CartasMock {
         id: 'cf181-5',
         artistId: artistId,
         artistName: 'Ludmilla',
-        fanDisplayName: 'Rafa Nogueira',
-        fanHandle: 'rafanogueira',
-        fanAvatarUri: '',
-        votesCount: 2,
+        fanDisplayName: 'João Ribeiro',
+        fanHandle: 'joaoribeiro',
+        fanAvatarUri: _avatarJoao,
+        votesCount: 7,
         sendsCount: 1,
         artistUpvoted: false,
         postedAt: 0,
@@ -1978,17 +1997,140 @@ abstract final class Cf181CartasMock {
         id: 'cf181-6',
         artistId: artistId,
         artistName: 'Ludmilla',
-        fanDisplayName: 'Lia Costa',
-        fanHandle: 'liacosta',
-        fanAvatarUri: '',
-        votesCount: 1,
+        fanDisplayName: 'Anna Lu',
+        fanHandle: 'annalu',
+        fanAvatarUri: _avatarAnna,
+        votesCount: 6,
         sendsCount: 1,
         artistUpvoted: false,
         postedAt: 0,
         bodyText: 'MEU CONFORTO',
         backgroundId: 'grad-peach',
       ),
+      FanLetter(
+        id: 'cf181-7',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Lia Costa',
+        fanHandle: 'liacosta',
+        fanAvatarUri: _avatarLia,
+        votesCount: 5,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'CARTA ABERTA',
+        backgroundId: 'grad-mint',
+      ),
+      FanLetter(
+        id: 'cf181-8',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Rafa Nogueira',
+        fanHandle: 'rafanogueira',
+        fanAvatarUri: _avatarRafa,
+        votesCount: 4,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'SEMPRE AQUI',
+        backgroundId: 'paper-cream',
+      ),
+      FanLetter(
+        id: 'cf181-9',
+        artistId: artistId,
+        artistName: 'Ludmilla',
+        fanDisplayName: 'Vic Melo',
+        fanHandle: 'vicmelo',
+        fanAvatarUri: _avatarVic,
+        votesCount: 3,
+        sendsCount: 1,
+        artistUpvoted: false,
+        postedAt: 0,
+        bodyText: 'TE AMO LU',
+        backgroundId: 'pattern-dots',
+      ),
     ];
+  }
+
+  /// Stickers compactos da grade (print image4/image5).
+  static List<FanLetterPlacedSticker> stickersFor(String letterId) {
+    const coffee =
+        'assets/Stickers/Capybara/CapybaraCharacterSticker_coffee.png';
+    const cake = 'assets/Stickers/Birthday/Artboard 4@2x.png';
+    const paw = 'assets/Stickers/kawaii stickers/paw.png';
+    const peach = 'assets/Stickers/kawaii stickers/peach.png';
+    const cactus = 'assets/Stickers/kawaii stickers/cactus.png';
+    const heart = 'assets/Stickers/kawaii stickers/heart-smile.png';
+    const gift = 'assets/Stickers/kawaii stickers/gift-box.png';
+    const star = 'assets/Stickers/kawaii stickers/star-smile.png';
+    const xoxo = 'assets/Stickers/kawaii stickers/xoxo.png';
+    // Offsets relativos ao tile ~3:4 (preview compacto).
+    return switch (letterId) {
+      'cf181-1' => [
+        const FanLetterPlacedSticker(
+          id: 's1',
+          asset: coffee,
+          offset: Offset(28, 72),
+        ),
+      ],
+      'cf181-2' => [
+        const FanLetterPlacedSticker(
+          id: 's2',
+          asset: cake,
+          offset: Offset(30, 70),
+        ),
+      ],
+      'cf181-3' => [
+        const FanLetterPlacedSticker(
+          id: 's3',
+          asset: paw,
+          offset: Offset(32, 74),
+        ),
+      ],
+      'cf181-4' => [
+        const FanLetterPlacedSticker(
+          id: 's4',
+          asset: peach,
+          offset: Offset(34, 72),
+        ),
+      ],
+      'cf181-5' => [
+        const FanLetterPlacedSticker(
+          id: 's5',
+          asset: cactus,
+          offset: Offset(34, 70),
+        ),
+      ],
+      'cf181-6' => [
+        const FanLetterPlacedSticker(
+          id: 's6',
+          asset: heart,
+          offset: Offset(32, 72),
+        ),
+      ],
+      'cf181-7' => [
+        const FanLetterPlacedSticker(
+          id: 's7',
+          asset: gift,
+          offset: Offset(34, 72),
+        ),
+      ],
+      'cf181-8' => [
+        const FanLetterPlacedSticker(
+          id: 's8',
+          asset: star,
+          offset: Offset(34, 70),
+        ),
+      ],
+      'cf181-9' => [
+        const FanLetterPlacedSticker(
+          id: 's9',
+          asset: xoxo,
+          offset: Offset(32, 72),
+        ),
+      ],
+      _ => const [],
+    };
   }
 }
 
