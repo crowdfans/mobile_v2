@@ -94,11 +94,7 @@ abstract final class CfTempMocks {
   /// Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-<<<<<<< HEAD
-  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share).
-=======
-  /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share + CF-176 menu ⋯).
->>>>>>> bf0dc7c (CF-176: menu do post — Copiar Link roxo, fixture e testes green/red/edge)
+  /// Home feed — **TEMP on** (CF-232 vídeo + CF-233/234/235 + CF-236 share + CF-176 menu ⋯).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
