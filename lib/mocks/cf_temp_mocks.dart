@@ -610,6 +610,15 @@ const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
 
+/// CF-200 — tela Defender retorno (motivo rosado + campo 24–420).
+/// TEMP até a API sempre enviar `viewerExpulsionReason` e o submit real
+/// funcionar na conta de QA. Não altera flags CF-229/CF-230.
+const bool kUseCf200DefendReturnFixtures = true;
+
+/// True quando o mock TEMP da tela Defender retorno (CF-200) está ativo.
+bool cf200DefendReturnFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf200DefendReturnFixtures;
+
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
