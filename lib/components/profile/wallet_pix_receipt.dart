@@ -1,8 +1,9 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/services/wallet_service.dart';
+import 'package:crowdfans/utils/wallet_user_message.dart';
 import 'package:flutter/material.dart';
 
-/// Recibo PIX sandbox após checkout.
+/// Recibo PIX após checkout (sem texto técnico ao usuário).
 class WalletPixReceipt extends StatelessWidget {
   const WalletPixReceipt({
     super.key,
@@ -17,6 +18,7 @@ class WalletPixReceipt extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
     final pix = receipt.pixCopyPaste?.trim() ?? '';
+    final userMessage = walletUserFacingMessage(receipt.message);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -29,7 +31,7 @@ class WalletPixReceipt extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              receipt.status == 'paid' ? 'Pago (sandbox)' : 'Aguardando PIX',
+              receipt.status == 'paid' ? 'Pago' : 'Aguardando PIX',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -48,12 +50,20 @@ class WalletPixReceipt extends StatelessWidget {
                 child: const Text('Copiar PIX'),
               ),
             ],
-            const SizedBox(height: 8),
-            Text(
-              receipt.message ??
-                  '${receipt.coins} moedas · ${receipt.provider}',
-              style: TextStyle(fontSize: 12, color: colors.textSecondary),
-            ),
+            if (userMessage != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                userMessage,
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+              ),
+            ] else if (receipt.message == null ||
+                receipt.message!.trim().isEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                '${receipt.coins} moedas · ${receipt.provider}',
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+              ),
+            ],
           ],
         ),
       ),
