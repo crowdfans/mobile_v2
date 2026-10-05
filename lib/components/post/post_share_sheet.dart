@@ -7,7 +7,11 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Sheet só de compartilhar (distinto do menu de gerenciamento do post).
+/// Sheet só de compartilhar (CF-236) — distinto do menu ⋯ ([PostOptionsSheet]).
+///
+/// Print: alça + grade Copiar Link / WhatsApp / Stories + “Compartilhar para…”.
+/// Sem Reportar / Editar / favoritos. Cancelar (backdrop) só fecha; abrir
+/// destino não incrementa contagem de share no app.
 class PostShareSheet extends StatelessWidget {
   const PostShareSheet({
     super.key,
@@ -85,10 +89,13 @@ class PostShareSheet extends StatelessWidget {
       visible: visible,
       onClose: onClose,
       child: Semantics(
+        key: const Key('post-share-sheet'),
         scopesRoute: true,
         namesRoute: true,
+        explicitChildNodes: true,
         label: 'Compartilhar post',
         // Print CF-236: só alça (no shell) + tiles + “Compartilhar para…”.
+        // Distinto do menu de gerenciamento (Reportar / Fã Clube / Memórias).
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

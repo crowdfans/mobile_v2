@@ -49,10 +49,11 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 — **TEMP on** (CF-189): API lista existe, mas
+  /// Ranking Top 100/500 + home Explorar (CF-172/189): API lista existe, mas
   /// tendência histórica / densidade do print ainda não bate (prod mostra
-  /// poucas linhas + 0 membros + tudo neutro). Off quando snapshot histórico
-  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
+  /// poucas linhas + 0 membros + tudo neutro). CF-172 usa as 3 primeiras
+  /// linhas em `SearchScreen`; CF-189 a lista completa. Off quando snapshot
+  /// histórico ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
   static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
@@ -77,19 +78,21 @@ abstract final class CfTempMocks {
   /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-233 carrossel + CF-234 lightbox URIs + CF-235).
+  /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share sheet print).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
-  /// Busca artistas — `GET /api/v1/search/artists`.
-  static const useSearchArtistsFixtures = false;
+  /// Busca artistas “L” (CF-240) — **TEMP on** até
+  /// `GET /api/v1/search/artists` devolver Ludmilla…Carol Biazin.
+  /// Não altera blocos/cards do ranking (CF-172).
+  static const useSearchArtistsFixtures = true;
 
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
 
-  /// CF-239 Exclusivo liberado (perfil Ludmilla assinante) — TEMP até
-  /// subscriptions/check + posts exclusivos reais baterem o print.
-  /// Não altera o caminho bloqueado (CF-184 teaser).
+  /// CF-239 Exclusivo liberado (Ludmilla) + CF-184 bloqueado (Kheper) —
+  /// TEMP até subscriptions/check + posts exclusivos reais baterem os prints.
+  /// Ludmilla → assinante; Kheper → teaser só (sem posts bloqueados).
   static const useArtistExclusiveFixtures = true;
 
   /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
@@ -100,6 +103,11 @@ abstract final class CfTempMocks {
 
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
+
+  /// CF-209 Meet & Greet — switches do print (convites/lembretes on, resultado off).
+  /// TEMP até preferências reais baterem o estado de referência do QA.
+  /// Não liga hub CF-166 nem CF-211 (wallet).
+  static const useMeetGreetNotifPrintFixtures = true;
 
   /// CF-211 Membership e Jam Coins — switches do print (renovação/saldo on, promo off).
   /// TEMP até preferências reais baterem o estado de referência do QA.
@@ -287,6 +295,9 @@ abstract final class CfTempMocks {
 
 /// Linhas de ranking equivalentes ao print CF-189 (image.png).
 /// Tendências: up / down / neutral — ícone + semantics, sem colorir neutro.
+///
+/// CF-241 (sheet ⋮): Ludmilla #1 leva `weeksInRanking: 11`, `peakRank: 1`,
+/// `previousRank: 2` — métricas do print; ausente na API real vira "—" no sheet.
 List<ArtistSearchItem> cfTempMockRankingArtists({
   required String kind,
   int limit = 8,
@@ -321,6 +332,7 @@ List<ArtistSearchItem> cfTempMockRankingArtists({
   }
 
   final samples = <ArtistSearchItem>[
+    // CF-241 print: sheet Ludmilla — semanas 11 / máx 1 / semana passada 2.
     ArtistSearchItem(
       id: 'mock-fc-ludmilla',
       name: 'Ludmilla',
@@ -551,6 +563,26 @@ const cfTempMockStrikeReason =
 /// True quando o mock TEMP do banner expulso (CF-229) está ativo.
 bool cf229ExpelledFixturesEnabled() =>
     kUseCfTempMocks && kUseCf229ExpelledFixtures;
+
+/// CF-230 — banner aviso (Laís Costa) no feed do clube.
+/// TEMP até a conta de QA receber strikes + motivo + chances da API.
+/// Não altera o caminho expulso (CF-229).
+const bool kUseCf230WarningFixtures = true;
+
+/// Cover do print CF-230 (Laís Costa).
+const cfTempMockLaisCoverUrl =
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80';
+
+/// ArtistUid do print CF-230 para atalho em Clubes.
+const cfTempMockLaisArtistUid = 'mock-fc-lais';
+
+/// Avatar do post Lari Rocha no print CF-230.
+const cfTempMockLariAvatarUrl =
+    'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=200&q=80';
+
+/// True quando o mock TEMP do banner de aviso (CF-230) está ativo.
+bool cf230WarningFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf230WarningFixtures;
 
 /// CF-199 — fila Contestações 2 / Avisos 2 / Expulsos 1 (image1.png).
 abstract final class Cf199ModerationPanelFixtures {
@@ -1384,7 +1416,7 @@ ArtistFanClubFeed cfTempMockArtistFanClubFeed(
         sharesCount: 5,
         authorName: 'Lari Rocha',
         authorHandle: 'fan/larirocha',
-        authorAvatarUri: '',
+        authorAvatarUri: cfTempMockLariAvatarUrl,
         membershipMonthsLabel: '1',
       ),
     ],
@@ -1424,9 +1456,9 @@ ArtistFanClub _cfTempMockFanClubMeta(
     ),
     CfFanClubFixtureKind.warning => ArtistFanClub(
       id: 230,
-      name: 'Laís Costa Fã Clube',
+      name: 'Laís Costa',
       description: 'Fã clube de Laís Costa',
-      artistUid: artistUid.trim().isEmpty ? 'mock-fc-lais' : artistUid,
+      artistUid: artistUid.trim().isEmpty ? cfTempMockLaisArtistUid : artistUid,
       artistName: 'Laís Costa',
       isActive: true,
       memberCount: 8225,
@@ -1451,12 +1483,32 @@ List<String> cfTempMockCf234LightboxUris() {
   return const [_cfCarouselDeer, _cfCarouselBeach, _cfCarouselCity];
 }
 
-/// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// Post de fundo do print CF-236 (Mayra texto · 84 / 11 / 3) — abre share sheet.
+FeedPost cfTempMockCf236SharePost() {
+  return const FeedPost(
+    id: 'cf236-mayra-share',
+    type: PostType.text,
+    author: 'Mayra',
+    artistId: 'mock-fc-mayra',
+    handle: '@mayra',
+    rank: '#3',
+    minutesAgo: 8,
+    avatarUri: '',
+    text:
+        'Ensaio curto antes do show. Queria deixar registrado aqui com vocês.',
+    votes: 84,
+    comments: 11,
+    shares: 3,
+  );
+}
+
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
-  return const [
-    FeedPost(
+  return [
+    const FeedPost(
       id: 'cf235-mayra-exclusive',
       type: PostType.video,
       author: 'Mayra',
@@ -1476,7 +1528,8 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    cfTempMockCf236SharePost(),
+    const FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
       author: 'Banda Uelo',
@@ -1494,7 +1547,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf233-ponzanelli-carousel',
       type: PostType.carousel,
       author: 'Ponzanelli',
@@ -1516,7 +1569,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
         _cfCarouselDeer,
       ],
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf232-carol-text',
       type: PostType.text,
       author: 'Carol Biazin',
@@ -1605,6 +1658,17 @@ bool cfTempMockArtistExclusiveSubscribed(String artistId, String? name) {
       n.contains('ludmilla');
 }
 
+/// Exclusivo bloqueado no perfil (CF-184) — Kheper / print sem assinatura.
+/// Nunca inclui Ludmilla (caminho CF-239 unlocked).
+bool cfTempMockArtistExclusiveForceLocked(String artistId, String? name) {
+  if (cfTempMockArtistExclusiveSubscribed(artistId, name)) {
+    return false;
+  }
+  final id = artistId.trim().toLowerCase();
+  final n = (name ?? '').trim().toLowerCase();
+  return id.contains('kheper') || n.contains('kheper');
+}
+
 List<FeedPost> cfTempMockLudmillaExclusivePosts() {
   return const [
     FeedPost(
@@ -1644,13 +1708,64 @@ List<FeedPost> cfTempMockLudmillaExclusivePosts() {
   ];
 }
 
-/// Busca artistas “L” (CF-240).
+/// Resultados print CF-240 (Buscar artistas · query “L”).
+List<ArtistSearchItem> _cf240SearchArtistsPrint() {
+  return const [
+    ArtistSearchItem(
+      id: 'mock-search-ludmilla',
+      name: 'Ludmilla',
+      handle: '@ludmilla',
+      avatarUri: '',
+      memberCount: 512000,
+      membersLabel: '512 mil membros',
+      rank: 1,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-anitta',
+      name: 'Anitta',
+      handle: '@anitta',
+      avatarUri: '',
+      memberCount: 487000,
+      membersLabel: '487 mil membros',
+      rank: 2,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-mayra',
+      name: 'Mayra',
+      handle: '@mayra',
+      avatarUri: '',
+      memberCount: 368000,
+      membersLabel: '368 mil membros',
+      rank: 3,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-uelo',
+      name: 'Banda Uelo',
+      handle: '@bandauelo',
+      avatarUri: '',
+      memberCount: 228000,
+      membersLabel: '228 mil membros',
+      rank: 4,
+    ),
+    ArtistSearchItem(
+      id: 'mock-search-carol',
+      name: 'Carol Biazin',
+      handle: '@carolbiazin',
+      avatarUri: '',
+      memberCount: 196000,
+      membersLabel: '196 mil membros',
+      rank: 5,
+    ),
+  ];
+}
+
+/// Busca artistas “L” (CF-240). Lista própria — não reusa ranking (CF-172/241).
 List<ArtistSearchItem>? cfTempMockSearchArtists(String query) {
   final q = query.trim().toLowerCase();
   if (q.isEmpty) {
     return null;
   }
-  final all = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 5);
+  final all = _cf240SearchArtistsPrint();
   if (q == 'l') {
     return all;
   }

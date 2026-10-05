@@ -242,20 +242,27 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         for (final item in postItems) item.toFeedPost(owner: owner),
       ];
       var subscribed = check.isSubscribed;
-      if (kUseCfTempMocks &&
-          CfTempMocks.useArtistExclusiveFixtures &&
-          cfTempMockArtistExclusiveSubscribed(
-            widget.artistId,
-            displayName(),
-          )) {
-        subscribed = true;
-        final exclusive = cfTempMockLudmillaExclusivePosts();
-        final seen = posts.map((p) => p.id).toSet();
-        posts = [
-          ...exclusive,
-          for (final post in posts)
-            if (!seen.contains(post.id)) post,
-        ];
+      if (kUseCfTempMocks && CfTempMocks.useArtistExclusiveFixtures) {
+        // CF-239 unlocked: Ludmilla assinante + posts do print.
+        if (cfTempMockArtistExclusiveSubscribed(
+          widget.artistId,
+          displayName(),
+        )) {
+          subscribed = true;
+          final exclusive = cfTempMockLudmillaExclusivePosts();
+          final seen = posts.map((p) => p.id).toSet();
+          posts = [
+            ...exclusive,
+            for (final post in posts)
+              if (!seen.contains(post.id)) post,
+          ];
+        } else if (cfTempMockArtistExclusiveForceLocked(
+          widget.artistId,
+          displayName(),
+        )) {
+          // CF-184 locked: Kheper → teaser só (sem revelar posts).
+          subscribed = false;
+        }
       }
       var following = isFollowing;
       var memberCount = club?.memberCount;
@@ -675,7 +682,10 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
           child: Center(child: CircularProgressIndicator()),
         );
       }
-      if (!_subscribed) {
+      if (artistExclusiveShowsTeaserOnly(
+        subscriptionResolved: _subscriptionResolved,
+        subscribed: _subscribed,
+      )) {
         // Um único card de membership — sem posts bloqueados redundantes (CF-184).
         return ArtistProfileExclusiveTeaser(
           artistName: name,

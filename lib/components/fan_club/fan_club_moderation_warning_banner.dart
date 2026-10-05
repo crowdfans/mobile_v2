@@ -19,7 +19,7 @@ class FanClubModerationWarningBanner extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       label:
-          'Aviso de moderação. $reason. $chances chances restantes.',
+          'Você recebeu um aviso neste fã clube. $reason. Você ainda tem $chances chances para ajustar seu comportamento.',
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: const Color(0xFFFFF4D6),
