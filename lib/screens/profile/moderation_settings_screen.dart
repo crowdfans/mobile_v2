@@ -16,8 +16,8 @@ class ModerationSettingsScreen extends StatefulWidget {
 }
 
 class _ModerationSettingsScreenState extends State<ModerationSettingsScreen> {
-  int? _moderationCount;
-  int? _contestationCount;
+  var _moderationCount = 0;
+  var _contestationCount = 0;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _ModerationSettingsScreenState extends State<ModerationSettingsScreen> {
         _contestationCount = results[1].length;
       });
     } catch (_) {
-      // Mantém chevron se a contagem falhar; não bloqueia o hub.
+      // Mantém 0 se a contagem falhar; não bloqueia o hub.
     }
   }
 

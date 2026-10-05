@@ -1,6 +1,5 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// Opção do hub Fã Clube (sem contorno — CF-163).
 class ModerationHubCard extends StatelessWidget {
@@ -9,14 +8,15 @@ class ModerationHubCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.badgeCount,
+    required this.badgeCount,
   });
 
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  /// Contagem real à direita (print CF-163); null = chevron.
-  final int? badgeCount;
+
+  /// Contagem real à direita (print CF-163 — badge circular, sem chevron).
+  final int badgeCount;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ModerationHubCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
         child: Row(
           children: [
             Expanded(
@@ -35,7 +35,7 @@ class ModerationHubCard extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
                     ),
                   ),
@@ -44,42 +44,32 @@ class ModerationHubCard extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 13,
-                      height: 18 / 13,
-                      color: colors.textTertiary,
+                      height: 1.35,
+                      fontWeight: FontWeight.w400,
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            if (badgeCount != null)
-              Container(
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: colors.surfaceAlt,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  '$badgeCount',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: colors.textSecondary,
-                  ),
-                ),
-              )
-            else
-              SvgPicture.asset(
-                'assets/icons/arrows/chevron-right.svg',
-                width: 18,
-                height: 18,
-                colorFilter: ColorFilter.mode(
-                  colors.textTertiary,
-                  BlendMode.srcIn,
+            Container(
+              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: colors.surfaceAlt,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                '$badgeCount',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textSecondary,
                 ),
               ),
+            ),
           ],
         ),
       ),
