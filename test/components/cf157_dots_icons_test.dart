@@ -1,9 +1,14 @@
+import 'package:crowdfans/components/comments/comment_row.dart';
+import 'package:crowdfans/components/comments/comment_thread_header.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_cover.dart';
 import 'package:crowdfans/components/fan_club/fan_club_community_toolbar.dart';
 import 'package:crowdfans/components/post/my_post_row.dart';
+import 'package:crowdfans/components/post/post_card_header.dart';
+import 'package:crowdfans/components/profile/artist_profile_compact_header.dart';
 import 'package:crowdfans/components/profile/artist_profile_public_cover.dart';
 import 'package:crowdfans/components/search/search_artist_rank_row.dart';
 import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/post_service.dart';
 import 'package:crowdfans/services/search_service.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +145,99 @@ void main() {
 
     expect(svgAsset(vertical), findsOneWidget);
     expect(find.byIcon(Icons.more_vert), findsNothing);
+  });
+
+  testWidgets('post_card_header usa dots-horizontal.svg (print CF-131)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PostCardHeader(
+            displayAuthorName: 'Mayra',
+            displayAuthorHandle: '@mayra',
+            minutesAgo: 12,
+            rank: '#3',
+            onPressOpenProfile: () {},
+            onPressOpenPostOptions: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(svgAsset(horizontal), findsOneWidget);
+    expect(find.byIcon(Icons.more_horiz), findsNothing);
+  });
+
+  testWidgets('comment_thread_header usa dots-horizontal.svg', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: CommentThreadHeader(
+            onBack: () {},
+            author: 'Autor',
+            handle: '@autor',
+            avatarUrl: '',
+            onMenu: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(svgAsset(horizontal), findsOneWidget);
+    expect(find.byIcon(Icons.more_horiz), findsNothing);
+  });
+
+  testWidgets('comment_row usa dots-horizontal.svg', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: CommentRow(
+            comment: const CommentItem(
+              id: 'c1',
+              author: 'Fan',
+              handle: '@fan',
+              avatarUri: '',
+              minutesAgo: 1,
+              text: 'Oi',
+              votes: 0,
+            ),
+            isOwn: false,
+            isReply: false,
+            onOpenProfile: () {},
+            onReply: () {},
+            onReport: () {},
+            onEdit: () {},
+            onDelete: () {},
+            onVoteApplied: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(svgAsset(horizontal), findsOneWidget);
+    expect(find.byIcon(Icons.more_horiz), findsNothing);
+  });
+
+  testWidgets('artist_profile_compact_header usa dots-horizontal.svg', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ArtistProfileCompactHeader(
+            displayName: 'Artista',
+            handle: '@artista',
+            avatarUrl: '',
+            onBack: () {},
+            onMore: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(svgAsset(horizontal), findsOneWidget);
+    expect(find.byIcon(Icons.more_horiz), findsNothing);
   });
 }
 

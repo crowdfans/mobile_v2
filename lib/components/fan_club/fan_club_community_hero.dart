@@ -2,6 +2,9 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
 /// Identidade do Fã Clube sob o cover: nome, membros, favorito, Ver mais / Regras.
+///
+/// Print CF-222: `Enzo Lima` + `Fã Clube >` na mesma linha; estrela à direita;
+/// `11.841 membros` abaixo; links azuis Ver mais / Regras.
 class FanClubCommunityHero extends StatelessWidget {
   const FanClubCommunityHero({
     super.key,
@@ -40,73 +43,43 @@ class FanClubCommunityHero extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: onOpenArtist,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w600,
-                              height: 1.15,
-                              color: colors.textPrimary,
-                            ),
+                child: InkWell(
+                  onTap: onOpenArtist,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            height: 1.15,
+                            color: colors.textPrimary,
                           ),
-                          const SizedBox(height: 2),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Fã Clube',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: colors.textTertiary,
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right_rounded,
-                                size: 20,
-                                color: colors.textTertiary,
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: members,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textPrimary,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' membros',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 8),
+                      Text(
+                        'Fã Clube',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: colors.textTertiary,
+                        ),
                       ),
-                    ),
-                  ],
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                        color: colors.textTertiary,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               IconButton(
@@ -128,6 +101,27 @@ class FanClubCommunityHero extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: members,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                TextSpan(
+                  text: ' membros',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 8),
           Row(

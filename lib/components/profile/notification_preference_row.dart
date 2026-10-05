@@ -23,49 +23,52 @@ class NotificationPreferenceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    return Opacity(
-      opacity: enabled ? 1 : 0.55,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: showDivider
-              ? Border(top: BorderSide(color: colors.border))
-              : null,
-        ),
-        child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
-                      child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+    // Um único foco acessível: rótulo + estado do switch (A11Y-01 / CF-211).
+    return MergeSemantics(
+      child: Opacity(
+        opacity: enabled ? 1 : 0.55,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: showDivider
+                ? Border(top: BorderSide(color: colors.border))
+                : null,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 12,
-                        height: 1.4,
-                        color: colors.textSecondary,
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.4,
+                          color: colors.textSecondary,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Switch.adaptive(
-                value: value,
-                onChanged: enabled ? onChanged : null,
-                activeThumbColor: colors.surface,
-                activeTrackColor: colors.primary,
-              ),
-            ],
+                Switch.adaptive(
+                  value: value,
+                  onChanged: enabled ? onChanged : null,
+                  activeThumbColor: colors.surface,
+                  activeTrackColor: colors.primary,
+                ),
+              ],
+            ),
           ),
         ),
       ),

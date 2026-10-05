@@ -45,7 +45,8 @@ class FanClubCommunityScreen extends StatefulWidget {
 class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
   ArtistFanClub? _club;
   var _posts = <FeedPost>[];
-  var _sortPopular = true;
+  /// Print CF-222: "Novos" selecionado por padrão.
+  var _sortPopular = false;
   var _feedFilter = _ClubFeedFilter.all;
   var _page = 1;
   var _hasMore = true;
@@ -185,19 +186,27 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
     }
     try {
       if (!append) {
+        final useClubFixtures =
+            kUseCfTempMocks && CfTempMocks.useFanClubFixtures;
         final results = await Future.wait([
           FanClubService.getArtistFanClubFeed(
             widget.artistId,
             page: 1,
             pageSize: _pageSize,
           ),
-          CommunityService.getCommunityPosts(page: 1, pageSize: 50),
+          if (!useClubFixtures)
+            CommunityService.getCommunityPosts(page: 1, pageSize: 50)
+          else
+            Future<List<CommunityPost>>.value(const []),
           FollowService.checkFollow(widget.artistId)
               .then((value) => value, onError: (_) => false),
-          SubscriptionService.checkSubscription(widget.artistId).then(
-            (value) => value.isSubscribed,
-            onError: (_) => false,
-          ),
+          if (!useClubFixtures)
+            SubscriptionService.checkSubscription(widget.artistId).then(
+              (value) => value.isSubscribed,
+              onError: (_) => false,
+            )
+          else
+            Future<bool>.value(false),
         ]);
         final feed = results[0] as ArtistFanClubFeed?;
         final community = results[1] as List<CommunityPost>;
@@ -215,7 +224,11 @@ class _FanClubCommunityScreenState extends State<FanClubCommunityScreen> {
         ];
         final avatar = _avatarUrl.isNotEmpty
             ? _avatarUrl
-            : (fromCommunity.isNotEmpty ? fromCommunity.first.avatarUri : '');
+            : (useClubFixtures
+                ? cfTempMockFanClubCoverUrl
+                : (fromCommunity.isNotEmpty
+                    ? fromCommunity.first.avatarUri
+                    : ''));
         if (!mounted) {
           return;
         }
