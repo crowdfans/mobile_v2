@@ -15,6 +15,7 @@
 // CF-232…235/237/239/240/241: home feed, compose, exclusivo, busca, ranking.
 // CF-176: menu ⋯ do post (home) — ícones/rótulos/destaques do print.
 // CF-185: perfil artista Feed — capa + CTA Seguir/Membership♪/Membership✓.
+// CF-191: menu lateral Favoritos / Seus Artistas (print).
 // Outros CFs: acrescentar aqui — não criar outros arquivos em lib/mocks/.
 //
 // Desligar CF-190: `kUseCf190NotificationMocks = false`
@@ -49,6 +50,9 @@ const bool kUseCf190NotificationMocks = false;
 
 /// CF-190 — lista vazia para validar empty state do print.
 const bool kCf190MockEmpty = false;
+
+/// CF-191 — força menu lateral vazio (sem favoritos/artistas).
+const bool kCf191MockEmpty = false;
 
 /// Mocks temporários CrowdFans (um arquivo só).
 abstract final class CfTempMocks {
@@ -147,8 +151,81 @@ abstract final class CfTempMocks {
   /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
   static const useArtistSobreFixtures = true;
 
-  /// Favoritos menu — follows/social reais.
-  static const useFavoriteArtistsFixtures = false;
+  /// Favoritos menu lateral CF-191. **TEMP** até follows/social reais.
+  static const useFavoriteArtistsFixtures = true;
+
+  /// CF-191 — artistas do print (Favoritos + Seus Artistas).
+  static List<HomeFollowedArtist> sidebarFollowedArtists({
+    bool empty = false,
+  }) {
+    if (empty || kCf191MockEmpty) {
+      return const [];
+    }
+    return const [
+      HomeFollowedArtist(
+        id: 'cf191-mayra',
+        username: 'Mayra',
+        avatarUrl: _avatarMayra,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-marinhos',
+        username: 'Marinhos',
+        avatarUrl: _avatarMan,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-uelo',
+        username: 'Banda Uelo',
+        avatarUrl: _avatarMeet,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-enzo',
+        username: 'Enzo Lima',
+        avatarUrl: _avatarCamila,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-ludmilla',
+        username: 'Ludmilla',
+        avatarUrl: _avatarWoman,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-anitta',
+        username: 'Anitta',
+        avatarUrl: _avatarRed,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-carol',
+        username: 'Carol Biazin',
+        avatarUrl: _avatarMayra,
+      ),
+      HomeFollowedArtist(
+        id: 'cf191-kheper',
+        username: 'Kheper',
+        avatarUrl: _avatarMeet,
+      ),
+    ];
+  }
+
+  /// IDs favoritos do print CF-191 (estrelas amarelas).
+  static Set<String> sidebarFavoriteIds({bool empty = false}) {
+    if (empty || kCf191MockEmpty) {
+      return {};
+    }
+    return {
+      'cf191-mayra',
+      'cf191-marinhos',
+      'cf191-uelo',
+    };
+  }
+
+  /// Visitado recentemente — print CF-191 sem linhas.
+  static List<HomeFollowedArtist> sidebarRecentArtists({
+    bool empty = false,
+  }) {
+    if (empty || kCf191MockEmpty) {
+      return const [];
+    }
+    return const [];
+  }
 
   // --- CF-190 avatars / thumbs ---
   static const _avatarWoman =
