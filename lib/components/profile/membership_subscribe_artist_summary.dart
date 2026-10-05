@@ -62,7 +62,8 @@ class MembershipSubscribeArtistSummary extends StatelessWidget {
                         handle,
                         style: TextStyle(
                           fontSize: 13,
-                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                          color: colors.primary,
                         ),
                       ),
                     ],
