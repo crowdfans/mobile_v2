@@ -1,11 +1,21 @@
+import 'package:crowdfans/utils/exclusive_content_access.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Sem assinatura: só o teaser; posts exclusivos não acompanham o CTA.
-bool showExclusiveLockedPosts({required bool subscribed}) => subscribed;
-
 void main() {
-  test('bloqueado não lista posts sob o teaser', () {
-    expect(showExclusiveLockedPosts(subscribed: false), isFalse);
-    expect(showExclusiveLockedPosts(subscribed: true), isTrue);
+  test('CF-184: bloqueado não lista posts sob o teaser', () {
+    expect(
+      artistExclusiveShowsTeaserOnly(
+        subscriptionResolved: true,
+        subscribed: false,
+      ),
+      isTrue,
+    );
+    expect(
+      artistExclusiveShowsTeaserOnly(
+        subscriptionResolved: true,
+        subscribed: true,
+      ),
+      isFalse,
+    );
   });
 }

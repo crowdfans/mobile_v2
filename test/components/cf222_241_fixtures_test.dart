@@ -28,7 +28,7 @@ void main() {
     expect(warning.fanClub.viewerLatestStrikeReason, cfTempMockStrikeReason);
   });
 
-  test('CF-232/233/235 home feed fixtures', () {
+  test('CF-232/233/235/236 home feed fixtures', () {
     final posts = cfTempMockHomeFeedPosts();
     expect(posts.any((p) => p.author == 'Banda Uelo' && p.type == PostType.video),
         isTrue);
@@ -44,6 +44,10 @@ void main() {
     expect(exclusive.author, 'Mayra');
     expect(exclusive.exclusiveLocked, isFalse);
     expect(exclusive.rank, '#3');
+    final sharePrint = posts.firstWhere((p) => p.id == 'cf236-mayra-share');
+    expect(sharePrint.votes, 84);
+    expect(sharePrint.comments, 11);
+    expect(sharePrint.shares, 3);
   });
 
   test('CF-237 selector + CF-240 search L + CF-241 Ludmilla ranking', () {

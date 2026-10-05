@@ -48,10 +48,11 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 — **TEMP on** (CF-189): API lista existe, mas
+  /// Ranking Top 100/500 + home Explorar (CF-172/189): API lista existe, mas
   /// tendência histórica / densidade do print ainda não bate (prod mostra
-  /// poucas linhas + 0 membros + tudo neutro). Off quando snapshot histórico
-  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
+  /// poucas linhas + 0 membros + tudo neutro). CF-172 usa as 3 primeiras
+  /// linhas em `SearchScreen`; CF-189 a lista completa. Off quando snapshot
+  /// histórico ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
   static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
@@ -76,7 +77,7 @@ abstract final class CfTempMocks {
   /// usa [kUseCf225ModeratorsMocks]. Off quando API real bater os prints.
   static const useFanClubFixtures = true;
 
-  /// Home feed — **TEMP on** (CF-233 carrossel + CF-234 lightbox URIs + CF-235).
+  /// Home feed — **TEMP on** (CF-233/234/235 + CF-236 share sheet print).
   /// Off quando `GET /api/v1/home` devolver posts equivalentes aos prints.
   static const useHomeFeedFixtures = true;
 
@@ -88,9 +89,9 @@ abstract final class CfTempMocks {
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
 
-  /// CF-239 Exclusivo liberado (perfil Ludmilla assinante) — TEMP até
-  /// subscriptions/check + posts exclusivos reais baterem o print.
-  /// Não altera o caminho bloqueado (CF-184 teaser).
+  /// CF-239 Exclusivo liberado (Ludmilla) + CF-184 bloqueado (Kheper) —
+  /// TEMP até subscriptions/check + posts exclusivos reais baterem os prints.
+  /// Ludmilla → assinante; Kheper → teaser só (sem posts bloqueados).
   static const useArtistExclusiveFixtures = true;
 
   /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
@@ -1293,12 +1294,32 @@ List<String> cfTempMockCf234LightboxUris() {
   return const [_cfCarouselDeer, _cfCarouselBeach, _cfCarouselCity];
 }
 
-/// Home feed — vídeo / carrossel / exclusivo (CF-232 / 233 / 235).
+/// Post de fundo do print CF-236 (Mayra texto · 84 / 11 / 3) — abre share sheet.
+FeedPost cfTempMockCf236SharePost() {
+  return const FeedPost(
+    id: 'cf236-mayra-share',
+    type: PostType.text,
+    author: 'Mayra',
+    artistId: 'mock-fc-mayra',
+    handle: '@mayra',
+    rank: '#3',
+    minutesAgo: 8,
+    avatarUri: '',
+    text:
+        'Ensaio curto antes do show. Queria deixar registrado aqui com vocês.',
+    votes: 84,
+    comments: 11,
+    shares: 3,
+  );
+}
+
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
 List<FeedPost> cfTempMockHomeFeedPosts() {
-  return const [
-    FeedPost(
+  return [
+    const FeedPost(
       id: 'cf235-mayra-exclusive',
       type: PostType.video,
       author: 'Mayra',
@@ -1318,7 +1339,8 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    cfTempMockCf236SharePost(),
+    const FeedPost(
       id: 'cf232-uelo-video',
       type: PostType.video,
       author: 'Banda Uelo',
@@ -1336,7 +1358,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoUri: '',
       videoThumbnailUri: '',
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf233-ponzanelli-carousel',
       type: PostType.carousel,
       author: 'Ponzanelli',
@@ -1358,7 +1380,7 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
         _cfCarouselDeer,
       ],
     ),
-    FeedPost(
+    const FeedPost(
       id: 'cf232-carol-text',
       type: PostType.text,
       author: 'Carol Biazin',
@@ -1445,6 +1467,17 @@ bool cfTempMockArtistExclusiveSubscribed(String artistId, String? name) {
   return id.contains('ludmilla') ||
       id == 'mock-fc-ludmilla' ||
       n.contains('ludmilla');
+}
+
+/// Exclusivo bloqueado no perfil (CF-184) — Kheper / print sem assinatura.
+/// Nunca inclui Ludmilla (caminho CF-239 unlocked).
+bool cfTempMockArtistExclusiveForceLocked(String artistId, String? name) {
+  if (cfTempMockArtistExclusiveSubscribed(artistId, name)) {
+    return false;
+  }
+  final id = artistId.trim().toLowerCase();
+  final n = (name ?? '').trim().toLowerCase();
+  return id.contains('kheper') || n.contains('kheper');
 }
 
 List<FeedPost> cfTempMockLudmillaExclusivePosts() {
