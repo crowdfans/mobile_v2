@@ -14,7 +14,7 @@ void main() {
     expect(kUseCf170WalletPackMocks, isTrue); // CF-270
 
     expect(CfTempMocks.useRankingFixtures, isTrue); // CF-189 até tendência real
-    expect(CfTempMocks.useFanScoreFixtures, isFalse);
+    expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isFalse);
@@ -24,6 +24,7 @@ void main() {
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
     expect(CfTempMocks.useModerationPanelFixtures, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
+    expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
     expect(kUseCf194CommentMocks, isFalse);

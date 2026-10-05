@@ -5,6 +5,7 @@ import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/vote_service.dart';
 import 'package:crowdfans/utils/relative_time.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Linha de um comentário (ou resposta) — layout do print CF-194.
 class CommentRow extends StatelessWidget {
@@ -108,10 +109,14 @@ class CommentRow extends StatelessWidget {
                     ),
                     PopupMenuButton<String>(
                       padding: EdgeInsets.zero,
-                      icon: Icon(
-                        Icons.more_horiz,
-                        size: 20,
-                        color: colors.textTertiary,
+                      icon: SvgPicture.asset(
+                        'assets/icons/General/dots-horizontal.svg',
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(
+                          colors.textTertiary,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       onSelected: (value) {
                         switch (value) {
