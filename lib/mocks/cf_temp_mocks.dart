@@ -119,10 +119,9 @@ abstract final class CfTempMocks {
   /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
   static const useFanClubSelectorFixtures = true;
 
-  /// CF-239 Exclusivo liberado (Ludmilla) + CF-184 bloqueado (Kheper) —
-  /// TEMP até subscriptions/check + posts exclusivos reais baterem os prints.
-  /// Ludmilla → assinante; Kheper → teaser só (sem posts bloqueados).
-  static const useArtistExclusiveFixtures = true;
+  /// CF-239/184 Exclusivo perfil — democked: `GET …/subscriptions/:uid/check`
+  /// + posts reais. Helpers Ludmilla/Kheper ficam só para testes de anatomia.
+  static const useArtistExclusiveFixtures = false;
 
   /// Painel moderação (CF-199) — **TEMP on**: fila Contestações 2 / Avisos 2 /
   /// Expulsos 1 (Anna Lu / Vic Melo) igual ao print. APIs de appeals/strikes/

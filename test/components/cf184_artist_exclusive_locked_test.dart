@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CF-184 flag + Kheper bloqueado (sem tocar Ludmilla CF-239)', () {
     expect(kUseCfTempMocks, isTrue);
-    expect(CfTempMocks.useArtistExclusiveFixtures, isTrue);
+    expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
 
     // Print CF-184 (Kheper): força teaser bloqueado.
     expect(
