@@ -28,6 +28,7 @@ void main() {
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
+    expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isFalse);
     expect(kUseCf195CommentMocks, isFalse);
     expect(kUseCf178FanClubsFeedMocks, isFalse);

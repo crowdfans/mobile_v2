@@ -257,6 +257,44 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
             if (!seen.contains(post.id)) post,
         ];
       }
+      var following = isFollowing;
+      var memberCount = club?.memberCount;
+      var fanClubRank = rank;
+      var resolvedProfile = profile;
+      // CF-185: capa fotográfica + CTA Seguir/Membership (prints). Não mexe
+      // na aba Fã Clube (CF-186).
+      if (kUseCfTempMocks && kUseCf185ArtistFeedMocks) {
+        final cf185 = Cf185ArtistFeedFixtures.resolve(
+          widget.artistId,
+          displayName(),
+        );
+        if (cf185 != null) {
+          if (cf185.following != null) {
+            following = cf185.following!;
+          }
+          if (cf185.subscribed != null) {
+            subscribed = cf185.subscribed!;
+          }
+          memberCount = cf185.memberCount;
+          fanClubRank = cf185.rank;
+          final base = resolvedProfile ?? fallbackOwner;
+          resolvedProfile = base.copyWith(
+            displayName: cf185.displayName,
+            name: cf185.handle.replaceFirst('@', ''),
+            photoUrl: cf185.coverUrl.isNotEmpty
+                ? cf185.coverUrl
+                : base.photoUrl,
+          );
+          if (cf185.feedPosts.isNotEmpty) {
+            final seen = posts.map((p) => p.id).toSet();
+            posts = [
+              ...cf185.feedPosts,
+              for (final post in posts)
+                if (!seen.contains(post.id)) post,
+            ];
+          }
+        }
+      }
       if (!mounted) {
         return;
       }
@@ -270,15 +308,15 @@ class _ArtistProfileScreenState extends ConsumerState<ArtistProfileScreen> {
         letters = Cf181CartasMock.letters(artistId: widget.artistId);
       }
       setState(() {
-        _profile = profile;
+        _profile = resolvedProfile;
         _posts = posts;
         _letters = letters;
         _lettersError = lettersError;
         _subscribed = subscribed;
         _subscriptionResolved = true;
-        _following = isFollowing;
-        _memberCount = club?.memberCount;
-        _fanClubRank = rank;
+        _following = following;
+        _memberCount = memberCount;
+        _fanClubRank = fanClubRank;
         _loading = false;
         _error = null;
       });
