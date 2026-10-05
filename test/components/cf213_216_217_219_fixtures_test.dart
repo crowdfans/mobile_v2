@@ -33,8 +33,12 @@ void main() {
     expect(sessions[2].location, 'Campinas, Brasil');
   });
 
-  test('CF-219 fixtures: bio do print', () {
-    // CF-217 demock: telefone vem de GET /profile + Firebase (sem Cf217ChangePhoneMock).
+  test('CF-219 fixtures: bio do print (flag off; helpers só teste)', () {
+    expect(kUseCf219EditBioMock, isFalse);
     expect(Cf219EditBioMock.bio.length, 56);
+    expect(
+      Cf219EditBioMock.bio,
+      'Gosto muito di rock e pop, se vc gosta tb vamos ser ami!',
+    );
   });
 }
