@@ -88,11 +88,11 @@ class PostShareSheet extends StatelessWidget {
     return BottomSheetShell(
       visible: visible,
       onClose: onClose,
+      // Rota Semantics (scopesRoute + explicitChildNodes) fica no
+      // BottomSheetShell — evita assert CF-158 se flags divergirem.
       child: Semantics(
         key: const Key('post-share-sheet'),
-        scopesRoute: true,
-        namesRoute: true,
-        explicitChildNodes: true,
+        container: true,
         label: 'Compartilhar post',
         // Print CF-236: só alça (no shell) + tiles + “Compartilhar para…”.
         // Distinto do menu de gerenciamento (Reportar / Fã Clube / Memórias).

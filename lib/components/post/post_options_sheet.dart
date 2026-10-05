@@ -229,11 +229,10 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
     return BottomSheetShell(
       visible: widget.visible,
       onClose: widget.onClose,
+      // Rota Semantics no BottomSheetShell (CF-158 scopesRoute assert).
       child: Semantics(
         key: const Key('post-options-sheet'),
-        scopesRoute: true,
-        namesRoute: true,
-        explicitChildNodes: true,
+        container: true,
         label: 'Opções do post',
         child: Column(
           children: [
