@@ -9,7 +9,7 @@ import 'package:video_player/video_player.dart';
 /// Fallback se o mp4 não inicializar (mesmo intervalo do Expo).
 const storyBackgroundFallbackDuration = Duration(seconds: 15);
 
-/// Fundo em vídeo do onboarding: toca sozinho e avança ao terminar.
+/// Fundo em vídeo do onboarding: autoplay + tap esquerda/direita (paridade Expo).
 class StoryBackground extends StatefulWidget {
   const StoryBackground({super.key, this.onVideoChange});
 
@@ -30,6 +30,14 @@ class _StoryBackgroundState extends State<StoryBackground> {
   @override
   void initState() {
     super.initState();
+    // Não chamar handleOpenStory aqui: setState + onVideoChange durante o
+    // primeiro build quebra o PresentationScreen (setState during build).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      widget.onVideoChange?.call(_index);
+    });
     handleOpenVideo(0);
   }
 
@@ -125,6 +133,26 @@ class _StoryBackgroundState extends State<StoryBackground> {
     handleOpenStory((_index + 1) % storyBackgroundVideos.length);
   }
 
+  void handleGoToPrevious() {
+    if (!mounted) {
+      return;
+    }
+    _didAdvance = true;
+    _fallback?.cancel();
+    handleOpenStory(
+      (_index - 1 + storyBackgroundVideos.length) %
+          storyBackgroundVideos.length,
+    );
+  }
+
+  void handleTapNext() {
+    handleGoToNext();
+  }
+
+  void handleTapPrevious() {
+    handleGoToPrevious();
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
@@ -145,6 +173,24 @@ class _StoryBackgroundState extends State<StoryBackground> {
                 ),
               ),
             ),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  key: const Key('onboarding-story-prev'),
+                  behavior: HitTestBehavior.translucent,
+                  onTap: handleTapPrevious,
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  key: const Key('onboarding-story-next'),
+                  behavior: HitTestBehavior.translucent,
+                  onTap: handleTapNext,
+                ),
+              ),
+            ],
+          ),
           StoryBackgroundProgress(
             currentIndex: _index,
             isSecondStory: _index == 1,
