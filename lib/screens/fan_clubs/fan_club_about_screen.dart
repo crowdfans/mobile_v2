@@ -6,6 +6,7 @@ import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
 import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,11 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
       _error = null;
     });
     try {
-      final club = await FanClubService.getArtistFanClub(widget.artistId);
+      // CF-223: fixtures só nesta tela (não toca o feed CF-222).
+      final ArtistFanClub? club =
+          (kUseCfTempMocks && CfTempMocks.useFanClubFixtures)
+              ? cfTempMockArtistFanClubFeed(widget.artistId).fanClub
+              : await FanClubService.getArtistFanClub(widget.artistId);
       if (!mounted) {
         return;
       }
@@ -186,17 +191,32 @@ class _FanClubAboutScreenState extends State<FanClubAboutScreen> {
                             for (final mod in preview)
                               FanClubModeratorPreviewRow(moderator: mod),
                           const SizedBox(height: 12),
-                          AppButton(
-                            label: 'Ver todos os moderadores',
-                            variant: AppButtonVariant.outline,
-                            onPressed: () {
-                              context.push(
-                                Pages.fanClubModeratorsOf(
-                                  artistId: widget.artistId,
-                                  name: club.artistName,
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: FilledButton(
+                              onPressed: () {
+                                context.push(
+                                  Pages.fanClubModeratorsOf(
+                                    artistId: widget.artistId,
+                                    name: club.artistName,
+                                  ),
+                                );
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: colors.surfaceAlt,
+                                foregroundColor: colors.textPrimary,
+                                elevation: 0,
+                                shape: const StadiumBorder(),
+                              ),
+                              child: const Text(
+                                'Ver todos os moderadores',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                              );
-                            },
+                              ),
+                            ),
                           ),
                           if (club.viewerIsOwner || club.viewerIsModerator) ...[
                             const SizedBox(height: 8),
