@@ -19,12 +19,8 @@ void main() {
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223 Ver mais
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
-<<<<<<< HEAD
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
-=======
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235 feed print
->>>>>>> f248a3c (CF-230: aviso de moderação — Laís Costa, motivo e 2 chances)
+    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-233/234/235/236 feed print
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-184/239
