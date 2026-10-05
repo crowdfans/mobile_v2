@@ -42,6 +42,11 @@ class _ProfileNotificationCategoryScreenState
     if (CfTempMocks.useNotificationCategoryPrintFixtures) {
       return true;
     }
+    // CF-209 — Meet & Greet (não liga hub CF-166 / CF-211).
+    if (widget.categoryId == 'meet' &&
+        CfTempMocks.useMeetGreetNotifPrintFixtures) {
+      return true;
+    }
     // CF-211 — Membership e Jam Coins (não liga CF-208/209).
     return widget.categoryId == 'wallet' &&
         CfTempMocks.useMembershipNotifPrintFixtures;

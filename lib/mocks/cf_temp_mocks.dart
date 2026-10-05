@@ -100,6 +100,11 @@ abstract final class CfTempMocks {
   /// Prefs subpáginas CF-208/209/211 — preferences API.
   static const useNotificationCategoryPrintFixtures = false;
 
+  /// CF-209 Meet & Greet — switches do print (convites/lembretes on, resultado off).
+  /// TEMP até preferências reais baterem o estado de referência do QA.
+  /// Não liga hub CF-166 nem CF-211 (wallet).
+  static const useMeetGreetNotifPrintFixtures = true;
+
   /// CF-211 Membership e Jam Coins — switches do print (renovação/saldo on, promo off).
   /// TEMP até preferências reais baterem o estado de referência do QA.
   static const useMembershipNotifPrintFixtures = true;
