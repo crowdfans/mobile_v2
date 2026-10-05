@@ -50,7 +50,7 @@ void main() {
     expect(kUseCf194CommentMocks, isFalse); // CF-194 demock — comments API
     expect(kUseCf195CommentMocks, isFalse); // CF-195 demock — Home comments API
     expect(kUseCf196CommentMocks, isFalse); // CF-196 demock — reply+teclado real
-    expect(kUseCf197GifMocks, isTrue); // CF-197 seletor GIF TEMP
+    expect(kUseCf197GifMocks, isFalse); // CF-197 demock — Tenor / erro seguro
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isFalse); // CF-181 demock — fan-letters API
     expect(kUseCf187MeProfileMocks, isFalse); // CF-187 demock Meu Perfil API

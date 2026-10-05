@@ -29,6 +29,16 @@ abstract final class CommentGifService {
   static const userErrorMessage =
       'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
 
+  /// Chave Tenor em `.env` (`TENOR_API_KEY` / `EXPO_PUBLIC_TENOR_API_KEY`).
+  /// Sem chave → erro seguro (não lista vazia “em branco”).
+  static String? get apiKey => EnvService.maybe('TENOR_API_KEY');
+
+  /// True quando há chave configurada para chamar a Tenor.
+  static bool get hasApiKey {
+    final key = apiKey;
+    return key != null && key.trim().isNotEmpty;
+  }
+
   /// Detecta vazamento de segredo/config na mensagem exibida.
   static bool messageExposesSecrets(String message) {
     final lower = message.toLowerCase();
@@ -39,10 +49,16 @@ abstract final class CommentGifService {
   }
 
   /// Featured quando [query] está vazio; senão search.
+  ///
+  /// Com chave: Tenor. Sem chave / rede / HTTP erro: [userErrorMessage].
+  /// Resposta 200 com `results: []` → lista vazia (UI de empty, não erro).
   static Future<List<CommentGifItem>> fetchCommentGifs([
     String query = '',
   ]) async {
-    final tenorApiKey = EnvService.get('TENOR_API_KEY', 'LIVDSRZULELA');
+    final tenorApiKey = apiKey?.trim() ?? '';
+    if (tenorApiKey.isEmpty) {
+      throw ApiError(userErrorMessage, 0);
+    }
     final encodedQuery = Uri.encodeQueryComponent(query.trim());
     final uri = query.trim().isEmpty
         ? Uri.parse(

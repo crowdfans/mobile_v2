@@ -31,6 +31,10 @@ Widget _harness({
 }
 
 void main() {
+  test('CF-197 demock: TEMP off — picker nunca depende de fixtures em runtime', () {
+    expect(kUseCf197GifMocks, isFalse);
+  });
+
   group('CF-197 GIF picker — green', () {
     testWidgets('sheet Tenor + grid; selecionar devolve item sem fechar via close', (
       tester,
@@ -67,7 +71,9 @@ void main() {
   });
 
   group('CF-197 GIF picker — red', () {
-    testWidgets('erro recuperável sem API key; busca preservada', (tester) async {
+    testWidgets('erro recuperável sem API key; busca preservada (não blank)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _harness(
           query: 'rock',
@@ -83,6 +89,8 @@ void main() {
       expect(find.textContaining('apikey'), findsNothing);
       expect(find.textContaining('LIVDSRZULELA'), findsNothing);
       expect(find.byKey(const Key('comment-gif-error')), findsOneWidget);
+      // Sem TEMP: erro explícito — sheet não fica em branco.
+      expect(find.byKey(const Key('comment-gif-grid')), findsNothing);
 
       final field = tester.widget<TextField>(
         find.descendant(
@@ -117,6 +125,9 @@ void main() {
       );
       expect(find.byKey(const Key('comment-gif-empty')), findsOneWidget);
       expect(find.byKey(const Key('comment-gif-clear')), findsOneWidget);
+      // Empty ≠ blank: título + busca + empty copy permanecem.
+      expect(find.text('Escolher GIF'), findsOneWidget);
+      expect(find.byKey(const Key('comment-gif-search')), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('comment-gif-clear')));
       await tester.pump();
