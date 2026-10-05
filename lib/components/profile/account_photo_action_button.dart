@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Ação outline da foto de perfil (galeria / câmera).
+/// Ação outline da foto de perfil (galeria / câmera) — print CF-220.
 class AccountPhotoActionButton extends StatelessWidget {
   const AccountPhotoActionButton({
     super.key,
@@ -26,6 +26,7 @@ class AccountPhotoActionButton extends StatelessWidget {
           shape: const StadiumBorder(),
           side: BorderSide(color: colors.border),
           foregroundColor: colors.textPrimary,
+          backgroundColor: colors.surface,
           padding: const EdgeInsets.symmetric(horizontal: 18),
         ),
         child: Row(

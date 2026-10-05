@@ -181,7 +181,8 @@ class _ProfilePhotoScreenState extends ConsumerState<ProfilePhotoScreen> {
                       onAction: handleLoad,
                     )
                   : ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 34),
+                      // Insets laterais ~40 espelham o print (botões pill).
+                      padding: const EdgeInsets.fromLTRB(40, 24, 40, 34),
                       children: [
                         Center(
                           child: AccountAvatar(
@@ -189,7 +190,7 @@ class _ProfilePhotoScreenState extends ConsumerState<ProfilePhotoScreen> {
                             localBytes: _localPhotoBytes,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 18),
                         AccountPhotoActions(
                           hasLocalPhoto: _localPhotoBytes != null,
                           onGallery: () => handlePick(ImageSource.gallery),
@@ -209,9 +210,11 @@ class _ProfilePhotoScreenState extends ConsumerState<ProfilePhotoScreen> {
                             success: true,
                           ),
                         ],
+                        // Idle do print: só galeria/câmera. Salvar aparece após pick.
                         if (canSave) ...[
                           const SizedBox(height: 16),
                           AppButton(
+                            key: const Key('profile-photo-save'),
                             label: _saving ? 'Salvando...' : 'Salvar foto',
                             disabled: !canSave,
                             onPressed: handleSave,
