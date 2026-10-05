@@ -150,8 +150,8 @@ abstract final class CfTempMocks {
 
   /// CF-185 perfil artista Feed — capa + CTA. Flag: [kUseCf185ArtistFeedMocks].
 
-  /// Sobre Spotify/base. **TEMP** até [CF-269] (location/track/listeners/genre).
-  static const useArtistSobreFixtures = true;
+  /// Sobre Spotify/base — off após [CF-269] (campos reais no profile).
+  static const useArtistSobreFixtures = false;
 
   /// Favoritos menu lateral CF-191. **TEMP** até follows/social reais.
   static const useFavoriteArtistsFixtures = true;
@@ -2599,8 +2599,7 @@ List<JamCoinPack> resolveWalletRechargePacks(
   return apiPacks;
 }
 
-/// CF-182 — Sobre do artista (Spotify + base do print Ludmilla).
-/// **TEMP** até [CF-269] expor location/track/listeners/genre/redes na API.
+/// CF-182 — amostra do print Ludmilla (só testes de widget; app usa API CF-269).
 abstract final class Cf182ArtistSobreMock {
   static const location = 'Rio de Janeiro, BR';
   static const trackTitle = 'Maldivas';
