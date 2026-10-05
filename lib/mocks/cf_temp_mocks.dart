@@ -72,7 +72,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-  /// TEMP ligado p/ CF-222 print (Enzo / Aline carousel); API real sem dados do print.
+  /// TEMP ligado p/ CF-222…230 prints (Enzo / mods / banners).
+  /// Lista Moderadores (CF-225) também usa [kUseCf225ModeratorsMocks].
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
@@ -870,6 +871,11 @@ extension Cf213NotificationPrefFixtures on CfTempMocks {
 /// seletor + contagens/bio/posts quando a conta real ainda está vazia.
 const bool kUseCf187MeProfileMocks = true;
 
+/// CF-225 — lista Moderadores (print Enzo Lima + 3 fãs). TEMP até
+/// `GET …/fanclub` devolver moderadores com nome/handle/avatar do print.
+/// Flag dedicada na tela; [CfTempMocks.useFanClubFixtures] já cobre o feed.
+const bool kUseCf225ModeratorsMocks = true;
+
 /// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
 abstract final class Cf187MeProfileFixtures {
   static const _avatar =
@@ -1108,26 +1114,30 @@ CfFanClubFixtureKind cfTempMockFanClubKind(String artistUid) {
 }
 
 List<FanClubModerator> cfTempMockFanClubModerators() {
+  // Avatares alinhados ao print CF-225 (Aline / Maria / Lari+gato).
   return const [
     FanClubModerator(
       userUid: 'cf-mod-aline',
       handle: 'alineduarte',
       displayName: 'Aline Duarte',
-      photoUrl: '',
+      photoUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-maria',
       handle: 'mariaeduarda',
       displayName: 'Maria Eduarda',
-      photoUrl: '',
+      photoUrl:
+          'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=100&q=80',
       role: 'moderator',
     ),
     FanClubModerator(
       userUid: 'cf-mod-lari',
       handle: 'larirocha',
       displayName: 'Lari Rocha',
-      photoUrl: '',
+      photoUrl:
+          'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=100&q=80',
       role: 'moderator',
     ),
   ];
