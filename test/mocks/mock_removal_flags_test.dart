@@ -18,7 +18,7 @@ void main() {
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-226 print Regras
-    expect(CfTempMocks.useHomeFeedFixtures, isFalse);
+    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-235 até home API
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);

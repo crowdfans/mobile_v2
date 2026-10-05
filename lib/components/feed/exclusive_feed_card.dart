@@ -45,7 +45,7 @@ class ExclusiveFeedCard extends StatelessWidget {
         ),
       );
     }
-    // Desbloqueado (Home CF-235): card tintido + badge Exclusivo.
+    // Desbloqueado (Home CF-235): badge Exclusivo acima + rank do print (#3).
     return PostCard(
       post: post,
       backgroundColor: const Color(0xFFEEF3F8),
@@ -55,7 +55,7 @@ class ExclusiveFeedCard extends StatelessWidget {
       onPressOptions: onPressOptions,
       onPressShare: onPressShare,
       onVoteApplied: onVoteApplied,
-      hideRank: true,
+      hideRank: false,
       topContentAfterHeader: false,
       topContent: ExclusivePostMetaRow(
         memberName: resolvedUsername,
