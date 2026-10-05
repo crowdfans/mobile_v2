@@ -10,16 +10,33 @@ class CommentGifItem {
     required this.id,
     required this.previewUrl,
     required this.originalUrl,
+    this.label,
   });
 
   final String id;
   final String previewUrl;
   final String originalUrl;
+
+  /// Nome acessível do resultado (VoiceOver / TalkBack).
+  final String? label;
 }
 
 /// Busca GIFs na Tenor (featured ou search).
 abstract final class CommentGifService {
   static const _clientKey = 'crowdfans-mobile';
+
+  /// Mensagem recuperável — nunca citar API key ou config interna.
+  static const userErrorMessage =
+      'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
+
+  /// Detecta vazamento de segredo/config na mensagem exibida.
+  static bool messageExposesSecrets(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('api key') ||
+        lower.contains('apikey') ||
+        lower.contains('tenor.googleapis') ||
+        lower.contains('livdsrzulela');
+  }
 
   /// Featured quando [query] está vazio; senão search.
   static Future<List<CommentGifItem>> fetchCommentGifs([
@@ -39,10 +56,10 @@ abstract final class CommentGifService {
       response = await http.get(uri).timeout(const Duration(seconds: 15));
     } catch (_) {
       // Sem detalhes de rede/chave — mensagem genérica para a UI.
-      throw ApiError('Não foi possível carregar os GIFs.', 0);
+      throw ApiError(userErrorMessage, 0);
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Não foi possível carregar os GIFs.', response.statusCode);
+      throw ApiError(userErrorMessage, response.statusCode);
     }
     final payload = jsonDecode(response.body);
     final results = payload is Map
@@ -60,11 +77,13 @@ abstract final class CommentGifService {
       if (id.isEmpty || previewUrl.isEmpty || originalUrl.isEmpty) {
         continue;
       }
+      final contentDescription = '${item['content_description'] ?? ''}'.trim();
       items.add(
         CommentGifItem(
           id: id,
           previewUrl: previewUrl,
           originalUrl: originalUrl,
+          label: contentDescription.isEmpty ? null : contentDescription,
         ),
       );
     }

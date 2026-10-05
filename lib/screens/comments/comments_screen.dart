@@ -231,7 +231,9 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       _gifAnnouncement = null;
     });
     try {
-      final items = await CommentGifService.fetchCommentGifs(query);
+      final items = (kUseCfTempMocks && kUseCf197GifMocks)
+          ? Cf197GifFixtures.itemsFor(query)
+          : await CommentGifService.fetchCommentGifs(query);
       if (!mounted) {
         return;
       }
@@ -249,12 +251,12 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         return;
       }
       // Mensagem recuperável — nunca expor API key ou detalhes internos.
+      // Query permanece em `_gifQuery` (busca preservada no erro).
       setState(() {
         _loadingGifs = false;
         _gifItems = const [];
         _gifAnnouncement = null;
-        _gifError =
-            'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
+        _gifError = CommentGifService.userErrorMessage;
       });
     }
   }

@@ -5,6 +5,7 @@
 // CF-193/189/200+: ranking, expulsão, membership — seções abaixo.
 // CF-194: comentários do fã-clube (prints recolhido/expandido).
 // CF-195: comentários Home — respostas expandidas.
+// CF-197: seletor de GIF (featured / busca / vazio; erro sem API key).
 // CF-198: Central de ajuda (hierarquia + acessos rápidos + FAQ).
 // CF-178: feed Postagens dos Fã Clubes.
 // CF-171: checkout PIX pendente (etapas 01/02/03 + código).
@@ -29,6 +30,7 @@ import 'package:crowdfans/models/fan_score.dart';
 import 'package:crowdfans/models/feed_post.dart';
 import 'package:crowdfans/models/home_feed.dart';
 import 'package:crowdfans/models/profile.dart';
+import 'package:crowdfans/services/comment_gif_service.dart';
 import 'package:crowdfans/services/comment_service.dart';
 import 'package:crowdfans/services/community_service.dart';
 import 'package:crowdfans/services/fan_club_service.dart';
@@ -1348,6 +1350,104 @@ abstract final class Cf219EditBioMock {
 /// Liga dados de demo do CF-195 (Home sem comentários → print populado).
 /// TEMP até a API Home povoar o mesmo estado do print.
 const bool kUseCf195CommentMocks = true;
+
+/// Liga fixtures do seletor de GIF (CF-197) — evita Tenor/API key em QA.
+/// Desligar quando `TENOR_API_KEY` de prod estiver estável no app.
+const bool kUseCf197GifMocks = true;
+
+/// GIFs demo do sheet Escolher GIF (featured / busca / vazio).
+abstract final class Cf197GifFixtures {
+  static const _thumbA =
+      'https://images.unsplash.com/photo-1516280440612-596598c2f5a2?auto=format&fit=crop&w=200&q=80';
+  static const _thumbB =
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=200&q=80';
+  static const _thumbC =
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=80';
+  static const _thumbD =
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&q=80';
+  static const _thumbE =
+      'https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=200&q=80';
+  static const _thumbF =
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=200&q=80';
+
+  static List<CommentGifItem> featured() {
+    return const [
+      CommentGifItem(
+        id: 'cf197-feat-1',
+        previewUrl: _thumbA,
+        originalUrl: _thumbA,
+        label: 'Microfone no palco',
+      ),
+      CommentGifItem(
+        id: 'cf197-feat-2',
+        previewUrl: _thumbB,
+        originalUrl: _thumbB,
+        label: 'Show ao vivo',
+      ),
+      CommentGifItem(
+        id: 'cf197-feat-3',
+        previewUrl: _thumbC,
+        originalUrl: _thumbC,
+        label: 'Luzes de festival',
+      ),
+      CommentGifItem(
+        id: 'cf197-feat-4',
+        previewUrl: _thumbD,
+        originalUrl: _thumbD,
+        label: 'Praia ao entardecer',
+      ),
+      CommentGifItem(
+        id: 'cf197-feat-5',
+        previewUrl: _thumbE,
+        originalUrl: _thumbE,
+        label: 'Cervo na floresta',
+      ),
+      CommentGifItem(
+        id: 'cf197-feat-6',
+        previewUrl: _thumbF,
+        originalUrl: _thumbF,
+        label: 'Cidade à noite',
+      ),
+    ];
+  }
+
+  /// Featured (query vazia), busca filtrada, ou lista vazia.
+  static List<CommentGifItem> itemsFor(String query) {
+    final trimmed = query.trim().toLowerCase();
+    if (trimmed.isEmpty) {
+      return featured();
+    }
+    if (trimmed.contains('___sem_resultado___') ||
+        trimmed == 'xyzzy' ||
+        trimmed == 'semresultado') {
+      return const [];
+    }
+    final all = featured();
+    final matched = [
+      for (final item in all)
+        if ((item.label ?? '').toLowerCase().contains(trimmed) ||
+            item.id.toLowerCase().contains(trimmed))
+          item,
+    ];
+    if (matched.isNotEmpty) {
+      return matched;
+    }
+    // Busca genérica (ex.: "rock") → subset demo com ids marcados.
+    return [
+      for (var i = 0; i < all.length && i < 3; i++)
+        CommentGifItem(
+          id: 'cf197-rock-${all[i].id}',
+          previewUrl: all[i].previewUrl,
+          originalUrl: all[i].originalUrl,
+          label: all[i].label,
+        ),
+    ];
+  }
+}
+
+
+/// Print CF-195: só a 1ª thread com respostas começa expandida.
+
 
 /// Print CF-195: só a 1ª thread com respostas começa expandida.
 Set<String> cf195InitialExpandedReplyIds(List<CommentItem> comments) {
