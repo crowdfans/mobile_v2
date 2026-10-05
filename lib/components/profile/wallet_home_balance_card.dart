@@ -44,16 +44,16 @@ class WalletHomeBalanceCard extends StatelessWidget {
                   Text(
                     'Jam Coins',
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     balance,
                     style: TextStyle(
-                      fontSize: 34,
+                      fontSize: 36,
                       fontWeight: FontWeight.w900,
                       height: 1.05,
                       color: colors.textPrimary,
