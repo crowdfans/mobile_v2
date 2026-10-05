@@ -50,6 +50,19 @@ class _SearchScreenState extends State<SearchScreen> {
       _loading = true;
       _error = null;
     });
+    // CF-172: home Explorar = preview Top 500 Fã Clubes (Ludmilla/Anitta/Mayra
+    // + tendência) enquanto a API de ranking não devolve densidade do print.
+    // Mesma flag de CF-189; não misturar com CF-240 (resultados tipados).
+    if (kUseCfTempMocks && CfTempMocks.useRankingFixtures) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _topArtists = cfTempMockRankingArtists(kind: 'fan-clubs', limit: 3);
+        _loading = false;
+      });
+      return;
+    }
     try {
       final data = await SearchService.rankArtists('fan-clubs', limit: 3);
       if (!mounted) {

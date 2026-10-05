@@ -48,10 +48,11 @@ const bool kCf190MockEmpty = false;
 abstract final class CfTempMocks {
   // --- Feature flags (backlog UX) ---
 
-  /// Ranking Top 100/500 — **TEMP on** (CF-189): API lista existe, mas
+  /// Ranking Top 100/500 + home Explorar (CF-172/189): API lista existe, mas
   /// tendência histórica / densidade do print ainda não bate (prod mostra
-  /// poucas linhas + 0 membros + tudo neutro). Off quando snapshot histórico
-  /// ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
+  /// poucas linhas + 0 membros + tudo neutro). CF-172 usa as 3 primeiras
+  /// linhas em `SearchScreen`; CF-189 a lista completa. Off quando snapshot
+  /// histórico ([BACKEND_TODO] ranking) + dados reais equivalentes ao print.
   static const useRankingFixtures = true;
 
   /// FanScore — `GET /api/v1/profiles/:handle/fan-score`.
