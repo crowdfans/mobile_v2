@@ -9,6 +9,7 @@ class SearchQueryField extends StatelessWidget {
     required this.hint,
     required this.onChanged,
     this.controller,
+    this.focusNode,
     this.autofocus = false,
     this.onSubmitted,
     this.onClear,
@@ -20,12 +21,13 @@ class SearchQueryField extends StatelessWidget {
   final String hint;
   final ValueChanged<String> onChanged;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final bool autofocus;
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onClear;
   final bool showClear;
 
-  /// Cantos tipo pílula (print CF-240).
+  /// Cantos tipo pílula (print CF-240 / CF-173).
   final bool pill;
 
   /// Rótulo acessível quando o hint visual é só "…".
@@ -37,6 +39,7 @@ class SearchQueryField extends StatelessWidget {
     final radius = BorderRadius.circular(pill ? 999 : 10);
     final field = TextField(
       controller: controller,
+      focusNode: focusNode,
       autofocus: autofocus,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
