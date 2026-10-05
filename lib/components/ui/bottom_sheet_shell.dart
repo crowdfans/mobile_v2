@@ -16,6 +16,7 @@ class BottomSheetShell extends StatefulWidget {
     required this.child,
     this.bottomOffset = 0,
     this.coverNavigation = true,
+    this.panelColor,
   });
 
   final bool visible;
@@ -28,6 +29,9 @@ class BottomSheetShell extends StatefulWidget {
 
   /// Se true, desenha no overlay raiz por cima da Navigation Bar.
   final bool coverNavigation;
+
+  /// Cor do painel (ex.: lilás CF-192). Null = [CrowdFansColors.surface].
+  final Color? panelColor;
 
   @override
   State<BottomSheetShell> createState() => _BottomSheetShellState();
@@ -79,7 +83,8 @@ class _BottomSheetShellState extends State<BottomSheetShell>
       });
     } else if (widget.coverNavigation != oldWidget.coverNavigation ||
         widget.child != oldWidget.child ||
-        widget.bottomOffset != oldWidget.bottomOffset) {
+        widget.bottomOffset != oldWidget.bottomOffset ||
+        widget.panelColor != oldWidget.panelColor) {
       _entry?.markNeedsBuild();
       _syncOverlay();
     }
@@ -154,7 +159,7 @@ class _BottomSheetShellState extends State<BottomSheetShell>
                 namesRoute: true,
                 explicitChildNodes: true,
                 child: Material(
-                  color: colors.surface,
+                  color: widget.panelColor ?? colors.surface,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),

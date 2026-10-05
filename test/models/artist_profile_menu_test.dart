@@ -4,5 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CF-192: rótulo curto do print', () {
     expect(artistProfileReportLabel(), 'Denunciar');
+    expect(artistProfileOpenFanClubLabel(), 'Abrir fã clube');
   });
 }
