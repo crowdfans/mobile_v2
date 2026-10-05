@@ -1,4 +1,5 @@
 import 'package:crowdfans/components/fan_clubs/fan_club_search_result_row.dart';
+import 'package:crowdfans/components/fan_clubs/fan_clubs_feed_filters.dart';
 import 'package:crowdfans/components/fan_clubs/fan_clubs_feed_header.dart';
 import 'package:crowdfans/components/fan_clubs/fan_clubs_search_chrome.dart';
 import 'package:crowdfans/components/feed/feed_item.dart';
@@ -18,8 +19,6 @@ import 'package:go_router/go_router.dart';
 
 const _pageSize = 20;
 const _scrollToTopThreshold = 420.0;
-
-enum _ClubsContentFilter { all, posts, media }
 
 class _ClubArtist {
   const _ClubArtist({
@@ -52,7 +51,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
   var _loading = true;
   var _loadingMore = false;
   var _sortPopular = true;
-  var _contentFilter = _ClubsContentFilter.all;
+  var _contentFilter = FanClubsContentFilter.all;
   var _sidebarVisible = false;
   var _searchOpen = false;
   var _searchQuery = '';
@@ -68,32 +67,12 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
     );
   }
 
-  bool isMediaPost(CommunityPost post) {
-    final type = post.type.toLowerCase();
-    return type == 'image' ||
-        type == 'carousel' ||
-        type == 'video' ||
-        (post.imageUri?.trim().isNotEmpty ?? false);
-  }
-
   List<CommunityPost> visiblePosts() {
-    final sorted = [..._posts];
-    if (_sortPopular) {
-      sorted.sort((a, b) => b.votes.compareTo(a.votes));
-    } else {
-      sorted.sort((a, b) => a.minutesAgo.compareTo(b.minutesAgo));
-    }
-    return switch (_contentFilter) {
-      _ClubsContentFilter.all => sorted,
-      _ClubsContentFilter.posts => [
-        for (final post in sorted)
-          if (!isMediaPost(post)) post,
-      ],
-      _ClubsContentFilter.media => [
-        for (final post in sorted)
-          if (isMediaPost(post)) post,
-      ],
-    };
+    return fanClubsVisiblePosts(
+      posts: _posts,
+      sortPopular: _sortPopular,
+      filter: _contentFilter,
+    );
   }
 
   List<_ClubArtist> searchArtists() {
@@ -177,10 +156,7 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
         final subs = results[0] as List<Subscription>;
         final follows = results[1] as List<ArtistFollow>;
         final posts = results[2] as List<CommunityPost>;
-        final feedPosts =
-            posts.isEmpty &&
-                kUseCfTempMocks &&
-                kUseCf178FanClubsFeedMocks
+        final feedPosts = shouldUseCf178FanClubsFeedFixtures(posts)
             ? Cf178FanClubsFeedMock.posts()
             : posts;
         final merged = <_ClubArtist>[];
@@ -417,24 +393,24 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                 else
                   FanClubsFeedHeader(
                     sortPopular: _sortPopular,
-                    filterAll: _contentFilter == _ClubsContentFilter.all,
-                    filterPosts: _contentFilter == _ClubsContentFilter.posts,
-                    filterMedia: _contentFilter == _ClubsContentFilter.media,
+                    filterAll: _contentFilter == FanClubsContentFilter.all,
+                    filterPosts: _contentFilter == FanClubsContentFilter.posts,
+                    filterMedia: _contentFilter == FanClubsContentFilter.media,
                     onOpenMenu: handleOpenMenu,
                     onOpenSearch: handleToggleSearch,
                     onSortPopular: () => setState(() => _sortPopular = true),
                     onSortNew: () => setState(() => _sortPopular = false),
                     onFilterAll: () {
-                      setState(() => _contentFilter = _ClubsContentFilter.all);
+                      setState(() => _contentFilter = FanClubsContentFilter.all);
                     },
                     onFilterPosts: () {
                       setState(
-                        () => _contentFilter = _ClubsContentFilter.posts,
+                        () => _contentFilter = FanClubsContentFilter.posts,
                       );
                     },
                     onFilterMedia: () {
                       setState(
-                        () => _contentFilter = _ClubsContentFilter.media,
+                        () => _contentFilter = FanClubsContentFilter.media,
                       );
                     },
                   ),
@@ -513,9 +489,9 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
                                     padding: const EdgeInsets.only(top: 40),
                                     child: Text(
                                       key: const Key('fan-clubs-empty'),
-                                      _artists.isEmpty
-                                          ? 'Siga artistas para ver posts da comunidade aqui.'
-                                          : 'Nenhum post na comunidade ainda.',
+                                      fanClubsEmptyMessage(
+                                        hasArtists: _artists.isNotEmpty,
+                                      ),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 14,

@@ -2,7 +2,8 @@ import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CF-178 mock feed: Felipe Rhy + Laís Costa do print', () {
+  test('CF-178 mock feed documenta print (flag off em prod)', () {
+    expect(kUseCf178FanClubsFeedMocks, isFalse);
     final posts = Cf178FanClubsFeedMock.posts();
     expect(posts, hasLength(2));
     expect(posts.first.author, 'Felipe Rhy');
