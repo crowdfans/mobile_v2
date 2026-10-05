@@ -16,8 +16,8 @@ void main() {
 
     expect(CfTempMocks.useRankingFixtures, isFalse); // CF-268 demock
     expect(CfTempMocks.useFanScoreFixtures, isFalse); // CF-201 demock Insights
-    expect(CfTempMocks.useMembershipFixtures, isFalse);
-    expect(CfTempMocks.useMembershipManageFixtures, isTrue); // CF-205 print
+    expect(CfTempMocks.useMembershipFixtures, isFalse); // CF-206 demock Assinar
+    expect(CfTempMocks.useMembershipManageFixtures, isFalse); // CF-205 demock
     expect(
       CfTempMocks.useMembershipActivationConfirmedFixtures,
       isTrue,
@@ -43,7 +43,7 @@ void main() {
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse); // CF-208 API
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
-    expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
+    expect(CfTempMocks.useMembershipNotifPrintFixtures, isFalse); // CF-211 demock
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock
     expect(kUseCf185ArtistFeedMocks, isFalse); // CF-185 demock capa/CTA Feed
