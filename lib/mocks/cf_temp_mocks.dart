@@ -2245,10 +2245,10 @@ abstract final class Cf181CartasMock {
   }
 }
 
-/// CF-170 packs. **TEMP** até [CF-270] (catálogo + RevenueCat alinhados ao print).
+/// CF-170 packs (print Pagamento 240 / R$ 19,90). **TEMP** até [CF-270].
 const bool kUseCf170WalletPackMocks = true;
 
-/// Pacotes demo CF-169/170 (print de recarga; 240 = CF-170 pagamento).
+/// Pacotes demo: CF-169 lista de recarga; `cf170-240` = print CF-170 pagamento.
 abstract final class Cf170WalletPackMock {
   static List<JamCoinPack> packs() {
     return const [
