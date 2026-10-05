@@ -11,6 +11,8 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
     this.previewReady = false,
     this.monthlyListeners = 'Não informado',
     this.genre = 'Não informado',
+    this.playlistName,
+    this.openSpotifyAlbum,
     this.onOpenSpotify,
   });
 
@@ -20,6 +22,8 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
   final bool previewReady;
   final String monthlyListeners;
   final String genre;
+  final String? playlistName;
+  final String? openSpotifyAlbum;
   final VoidCallback? onOpenSpotify;
 
   @override
@@ -28,6 +32,8 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
     final hasTrack = track.isNotEmpty;
     final displayTitle = hasTrack ? track : 'Prévia Spotify';
     final name = artistName.trim().isEmpty ? 'Artista' : artistName.trim();
+    final playlist = (playlistName ?? '').trim();
+    final album = (openSpotifyAlbum ?? '').trim();
     return Semantics(
       label: hasTrack && previewReady
           ? 'Prévia Spotify de $displayTitle, pronta para tocar'
@@ -206,6 +212,15 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
+                      if (previewReady)
+                        const Text(
+                          '0:00 / 0:15',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        ),
+                      if (previewReady) const SizedBox(height: 4),
                       Text(
                         previewReady
                             ? 'Prévia pronta para tocar'
@@ -235,23 +250,73 @@ class ArtistProfileSpotifyCard extends StatelessWidget {
                       value: genre,
                     ),
                   ),
+                  if (playlist.isNotEmpty) ...[
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ArtistProfileSpotifyStatTile(
+                        label: 'PLAYLIST',
+                        value: playlist,
+                      ),
+                    ),
+                  ],
                 ],
               ),
               if (onOpenSpotify != null) ...[
                 const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: onOpenSpotify,
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF1DB954),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                    child: const Text(
-                      'Abrir no Spotify',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                Semantics(
+                  button: true,
+                  label: album.isEmpty
+                      ? 'Abrir no Spotify'
+                      : 'Abrir no Spotify $album',
+                  child: InkWell(
+                    onTap: onOpenSpotify,
+                    borderRadius: BorderRadius.circular(12),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'ABRIR NO SPOTIFY',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.4,
+                                      color: Color(0xFF1DB954),
+                                    ),
+                                  ),
+                                  if (album.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      album,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.open_in_new_rounded,
+                              size: 18,
+                              color: Color(0xFF94A3B8),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
