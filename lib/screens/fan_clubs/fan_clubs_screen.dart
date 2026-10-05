@@ -232,6 +232,28 @@ class _FanClubsScreenState extends State<FanClubsScreen> {
             ),
           );
         }
+        // CF-230: atalho Laís Costa (aviso) para QA abrir o print.
+        if (cf230WarningFixturesEnabled() &&
+            !merged.any(
+              (artist) =>
+                  cfTempMockFanClubKind(artist.artistUid) ==
+                  CfFanClubFixtureKind.warning,
+            )) {
+          final insertAt =
+              merged.isNotEmpty &&
+                  cfTempMockFanClubKind(merged.first.artistUid) ==
+                      CfFanClubFixtureKind.expelled
+              ? 1
+              : 0;
+          merged.insert(
+            insertAt,
+            const _ClubArtist(
+              artistUid: cfTempMockLaisArtistUid,
+              artistName: 'Laís Costa',
+              avatarUrl: cfTempMockLaisCoverUrl,
+            ),
+          );
+        }
         if (!mounted) {
           return;
         }
