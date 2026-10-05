@@ -17,7 +17,7 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223/227 Ver mais + menu
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186/222/223/227
     expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
     expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
