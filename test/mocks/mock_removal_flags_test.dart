@@ -17,13 +17,8 @@ void main() {
     expect(CfTempMocks.useFanScoreFixtures, isTrue); // CF-201 print Insights
     expect(CfTempMocks.useMembershipFixtures, isFalse);
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
-<<<<<<< HEAD
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-226 print Regras
+    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-222/223 Ver mais
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-234/235 TEMP
-=======
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-223 Ver mais
-    expect(CfTempMocks.useHomeFeedFixtures, isFalse);
->>>>>>> 7116ea5 (CF-223: Ver mais — fixtures de moderadores e CTA surfaceAlt)
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse);
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);

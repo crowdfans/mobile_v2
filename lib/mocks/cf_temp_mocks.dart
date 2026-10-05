@@ -72,12 +72,8 @@ abstract final class CfTempMocks {
   static const useSecuritySettingsFixtures = false;
 
   /// Fã-clube — `GET /api/v1/artist/:uid/fanclub` (+ strikes/expulsions).
-<<<<<<< HEAD
-  /// TEMP ligado p/ CF-222 print (Enzo / Aline carousel); API real sem dados do print.
-=======
-  /// **TEMP on** (CF-223 Ver mais): prévia Aline/Maria/Lari + candidatura.
-  /// Off quando moderadores/membership reais batem o print Enzo.
->>>>>>> 7116ea5 (CF-223: Ver mais — fixtures de moderadores e CTA surfaceAlt)
+  /// **TEMP on** (CF-222 community + CF-223 Ver mais moderadores/candidatura).
+  /// Off quando API real bater os prints Enzo / Aline / lista de mods.
   static const useFanClubFixtures = true;
 
   /// Home feed — **TEMP on** (CF-234 lightbox + CF-235 Mayra exclusivo;
