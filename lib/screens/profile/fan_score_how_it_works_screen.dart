@@ -1,4 +1,5 @@
 import 'package:crowdfans/components/profile/fan_score_how_it_works_card.dart';
+import 'package:crowdfans/components/profile/fan_score_how_it_works_factors.dart';
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
@@ -88,14 +89,9 @@ class FanScoreHowItWorksScreen extends StatelessWidget {
                         'quase diária ao longo do mês.',
                   ),
                   const SizedBox(height: 20),
-                  // Print CF-202: seção seguinte abaixo dos cards.
-                  Text(
-                    'O que entra na conta',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textSecondary,
-                    ),
+                  // Print CF-202: seção + card (anexo corta o miolo; copy TEMP).
+                  const FanScoreHowItWorksFactors(
+                    body: cfTempMockFanScoreHowItWorksFactorsBody,
                   ),
                 ],
               ),

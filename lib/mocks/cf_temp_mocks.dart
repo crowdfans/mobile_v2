@@ -656,7 +656,14 @@ const cfTempMockRechargeConfirmed = (
   bonusCoins: 40,
 );
 
+/// Copy da seção “O que entra na conta” (print CF-202; corpo cortado no anexo).
+const cfTempMockFanScoreHowItWorksFactorsBody =
+    'Curtidas, comentários, cartas, membership, doações e '
+    'presença no fã-clube entram na pontuação do ciclo. '
+    'Interações com o próprio artista pesam mais.';
+
 /// FanScore demo do print CF-201 (ciclo + cards Ultimate/Super).
+/// CF-202 reutiliza [cycleDetails.endLabel] no rodapé “Como funciona”.
 FanScoreData cfTempMockFanScoreData() {
   const ultimate = FanScoreTier(
     id: 'ultimate',
@@ -692,8 +699,7 @@ FanScoreData cfTempMockFanScoreData() {
       endLabel: 'segunda-feira, 31/08/2026 às 23:59',
       helperText:
           'O ciclo vigente encerra em segunda-feira, 31/08/2026 às 23:59 e reseta logo em seguida.',
-    ),
-    entries: [
+    ),    entries: [
       FanScoreEntry(
         artistId: 'mock-fs-kheper',
         artistName: 'Kheper',
