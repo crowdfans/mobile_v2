@@ -1094,6 +1094,10 @@ const bool kUseCf187MeProfileMocks = true;
 /// Flag dedicada na tela; [CfTempMocks.useFanClubFixtures] já cobre o feed.
 const bool kUseCf225ModeratorsMocks = true;
 
+/// CF-224 — Solicitar moderação (candidato Aline + limites 24/420). TEMP
+/// até o perfil real bater o print; não altera CF-225 lista / CF-199 painel.
+const bool kUseCf224RequestModerationMocks = true;
+
 /// Fixtures do print CF-187 (Aline Duarte + filtro + posts).
 abstract final class Cf187MeProfileFixtures {
   static const _avatar =
@@ -1475,7 +1479,8 @@ ArtistFanClub _cfTempMockFanClubMeta(
 const cfTempMockModerationCandidate = (
   displayName: 'Aline Duarte',
   handle: 'fan/alineduarte',
-  photoUrl: '',
+  photoUrl:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
 );
 
 /// URIs do visualizador CF-234 (print: cervo como `1/3`).
