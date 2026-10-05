@@ -87,6 +87,17 @@ class CommentComposer extends StatelessWidget {
                         width: 56,
                         height: 56,
                         fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => ColoredBox(
+                          color: colors.surfaceAlt,
+                          child: SizedBox(
+                            width: 56,
+                            height: 56,
+                            child: Icon(
+                              Icons.gif_box_outlined,
+                              color: colors.textTertiary,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     TextButton(
