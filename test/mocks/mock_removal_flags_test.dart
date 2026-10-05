@@ -30,7 +30,7 @@ void main() {
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
     expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
-    expect(kUseCf194CommentMocks, isFalse);
+    expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
     expect(kUseCf195CommentMocks, isFalse);
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isFalse);

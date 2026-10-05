@@ -82,9 +82,23 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   late int _postVotes = widget.postVotes ?? 0;
   late int _postMyVote = 0;
   // `late` — field initializers cannot read `this`/`widget` (same as `_postVotes`).
-  late final int _postShares = widget.postShares ?? 0;
+  late int _postShares = widget.postShares ?? 0;
+  /// Quando o TEMP CF-194 preenche a lista, o header também usa o print.
+  var _usingCf194Mocks = false;
 
   bool get _isFanClubContext => (widget.clubName ?? '').trim().isNotEmpty;
+
+  String? get _displayAuthor =>
+      _usingCf194Mocks ? Cf194FanClubCommentsMock.postAuthor : widget.postAuthor;
+  String? get _displayHandle =>
+      _usingCf194Mocks ? Cf194FanClubCommentsMock.postHandle : widget.postHandle;
+  String? get _displayText =>
+      _usingCf194Mocks ? Cf194FanClubCommentsMock.postText : widget.postText;
+  String? get _displayClubName =>
+      _usingCf194Mocks ? Cf194FanClubCommentsMock.clubName : widget.clubName;
+  int? get _displayMinutesAgo => _usingCf194Mocks
+      ? Cf194FanClubCommentsMock.postMinutesAgo
+      : widget.postMinutesAgo;
 
   @override
   void initState() {
@@ -140,14 +154,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               _isFanClubContext &&
               kUseCfTempMocks &&
               kUseCf194CommentMocks) {
-            _comments = Cf194FanClubCommentsMock.comments();
-            _hasMore = false;
-            _expandedReplyIds
-              ..clear()
-              ..addAll([
-                for (final c in _comments)
-                  if (c.replies.isNotEmpty) c.id,
-              ]);
+            _applyCf194PrintFixtures();
           } else if (_comments.isEmpty &&
               !_isFanClubContext &&
               kUseCfTempMocks &&
@@ -175,15 +182,8 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           if (_isFanClubContext &&
               kUseCfTempMocks &&
               kUseCf194CommentMocks) {
-            _comments = Cf194FanClubCommentsMock.comments();
-            _hasMore = false;
+            _applyCf194PrintFixtures();
             _error = null;
-            _expandedReplyIds
-              ..clear()
-              ..addAll([
-                for (final c in _comments)
-                  if (c.replies.isNotEmpty) c.id,
-              ]);
           } else if (!_isFanClubContext &&
               kUseCfTempMocks &&
               kUseCf195CommentMocks) {
@@ -202,6 +202,17 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
         }
       });
     }
+  }
+
+  /// Print CF-194: lista + header do post; threads **recolhidas** por padrão
+  /// (image1). Expandir/ocultar não apaga o rascunho do compositor.
+  void _applyCf194PrintFixtures() {
+    _comments = Cf194FanClubCommentsMock.comments();
+    _hasMore = false;
+    _usingCf194Mocks = true;
+    _postVotes = Cf194FanClubCommentsMock.postVotes;
+    _postShares = Cf194FanClubCommentsMock.postShares;
+    _expandedReplyIds.clear();
   }
 
   Future<void> handleLoadMore() async {
@@ -480,7 +491,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
 
   /// Menu ⋯ do cabeçalho (print CF-194 — sempre acionável).
   Future<void> handleOpenPostMenu() async {
-    final author = (widget.postAuthor ?? '').trim();
+    final author = (_displayAuthor ?? '').trim();
     final label = author.isEmpty ? 'este post' : author;
     await AppAlert.show(
       context,
@@ -531,24 +542,24 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                 }
                 context.go(Pages.home);
               },
-              author: widget.postAuthor,
-              handle: widget.postHandle,
+              author: _displayAuthor,
+              handle: _displayHandle,
               avatarUrl: widget.postAvatarUrl,
               clubAvatarUrl: widget.clubAvatarUrl,
-              clubName: widget.clubName,
+              clubName: _displayClubName,
               // Print CF-194: ⋯ ativo (não esmaecido).
               onMenu: handleOpenPostMenu,
             ),
-            if ((widget.postAuthor ?? '').trim().isNotEmpty ||
-                (widget.clubName ?? '').trim().isNotEmpty ||
-                (widget.postText ?? '').trim().isNotEmpty ||
-                widget.postMinutesAgo != null)
+            if ((_displayAuthor ?? '').trim().isNotEmpty ||
+                (_displayClubName ?? '').trim().isNotEmpty ||
+                (_displayText ?? '').trim().isNotEmpty ||
+                _displayMinutesAgo != null)
               CommentPostContextHeader(
-                author: widget.postAuthor,
-                handle: widget.postHandle,
-                text: widget.postText,
-                clubName: widget.clubName,
-                minutesAgo: widget.postMinutesAgo,
+                author: _displayAuthor,
+                handle: _displayHandle,
+                text: _displayText,
+                clubName: _displayClubName,
+                minutesAgo: _displayMinutesAgo,
                 votes: _postVotes,
                 myVote: _postMyVote,
                 shares: _postShares,
