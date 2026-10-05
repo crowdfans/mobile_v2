@@ -16,6 +16,8 @@ void main() {
       final root = comments.first;
       final reply = root.replies.first;
       final second = comments[1];
+      final third = comments[2];
+      final expandedIds = cf195InitialExpandedReplyIds(comments);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -58,21 +60,22 @@ void main() {
                           onDelete: () {},
                           onVoteApplied: (_) {},
                         ),
-                        CommentRow(
-                          comment: reply,
-                          isOwn: false,
-                          isReply: true,
-                          replyToHandle: root.handle,
-                          onOpenProfile: () {},
-                          onReply: () {},
-                          onReport: () {},
-                          onEdit: () {},
-                          onDelete: () {},
-                          onVoteApplied: (_) {},
-                        ),
+                        if (expandedIds.contains(root.id))
+                          CommentRow(
+                            comment: reply,
+                            isOwn: false,
+                            isReply: true,
+                            replyToHandle: root.handle,
+                            onOpenProfile: () {},
+                            onReply: () {},
+                            onReport: () {},
+                            onEdit: () {},
+                            onDelete: () {},
+                            onVoteApplied: (_) {},
+                          ),
                         CommentRepliesToggle(
                           replyCount: root.replies.length,
-                          expanded: true,
+                          expanded: expandedIds.contains(root.id),
                           onToggle: () {},
                         ),
                         CommentRow(
@@ -86,10 +89,35 @@ void main() {
                           onDelete: () {},
                           onVoteApplied: (_) {},
                         ),
+                        if (expandedIds.contains(second.id))
+                          for (final r in second.replies)
+                            CommentRow(
+                              comment: r,
+                              isOwn: false,
+                              isReply: true,
+                              replyToHandle: second.handle,
+                              onOpenProfile: () {},
+                              onReply: () {},
+                              onReport: () {},
+                              onEdit: () {},
+                              onDelete: () {},
+                              onVoteApplied: (_) {},
+                            ),
                         CommentRepliesToggle(
                           replyCount: second.replies.length,
-                          expanded: false,
+                          expanded: expandedIds.contains(second.id),
                           onToggle: () {},
+                        ),
+                        CommentRow(
+                          comment: third,
+                          isOwn: false,
+                          isReply: false,
+                          onOpenProfile: () {},
+                          onReply: () {},
+                          onReport: () {},
+                          onEdit: () {},
+                          onDelete: () {},
+                          onVoteApplied: (_) {},
                         ),
                       ],
                     ),
@@ -120,12 +148,22 @@ void main() {
       expect(find.textContaining('Fã-clube'), findsNothing);
       expect(find.text('Fê Andrade'), findsOneWidget);
       expect(find.text('Rafa Nogueira'), findsOneWidget);
+      expect(find.text('Nina Costa'), findsOneWidget);
+      expect(find.text('Vic Melo'), findsOneWidget);
       expect(find.textContaining('fan/feandrade'), findsWidgets);
       expect(find.text('Ocultar respostas'), findsOneWidget);
       expect(find.text('Ver 2 respostas'), findsOneWidget);
+      expect(find.text('Camila R.'), findsNothing);
       expect(find.text('Resposta'), findsNothing);
-      expect(find.text('Responder'), findsNWidgets(3));
+      // Fê + Rafa (expandida) + Nina + Vic.
+      expect(find.text('Responder'), findsNWidgets(4));
+      expect(find.text('229'), findsOneWidget);
+      expect(find.text('15'), findsOneWidget);
+      expect(find.text('212'), findsOneWidget);
       expect(find.text('Adicione um comentário...'), findsOneWidget);
+      // Só a 1ª thread expandida — respostas de Nina não aparecem.
+      expect(find.text('Lia Costa'), findsNothing);
+      expect(find.text('Bruno M.'), findsNothing);
     },
   );
 }
