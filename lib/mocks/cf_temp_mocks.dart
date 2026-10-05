@@ -81,8 +81,8 @@ abstract final class CfTempMocks {
   /// Busca artistas — `GET /api/v1/search/artists`.
   static const useSearchArtistsFixtures = false;
 
-  /// Seletor fã-clube compose — follows/subscriptions.
-  static const useFanClubSelectorFixtures = false;
+  /// Seletor fã-clube compose — TEMP até follows/subs baterem o print CF-237.
+  static const useFanClubSelectorFixtures = true;
 
   /// Exclusivo perfil — subscriptions/check + posts reais.
   static const useArtistExclusiveFixtures = false;
@@ -1331,15 +1331,51 @@ HomeFeedDto cfTempMockHomeFeedDto({int page = 1}) {
   );
 }
 
-/// Seletor Novo post → Fã Clube (CF-237).
+/// Seletor Novo post → Fã Clube (CF-237) — ordem e nomes do print.
 List<FanClubComposeArtist> cfTempMockFanClubSelectorArtists() {
+  const mayra =
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80';
+  const marinhos =
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80';
+  const uelo =
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80';
+  const enzo =
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80';
+  const ludmilla =
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80';
+  const anitta =
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80';
   return const [
-    FanClubComposeArtist(id: 'mock-fc-mayra', name: 'Mayra'),
-    FanClubComposeArtist(id: 'mock-fc-marinhos', name: 'Marinhos'),
-    FanClubComposeArtist(id: 'mock-fc-uelo', name: 'Banda Uelo'),
-    FanClubComposeArtist(id: 'mock-fc-enzo', name: 'Enzo Lima'),
-    FanClubComposeArtist(id: 'mock-fc-ludmilla', name: 'Ludmilla'),
-    FanClubComposeArtist(id: 'mock-fc-anitta', name: 'Anitta'),
+    FanClubComposeArtist(
+      id: 'mock-fc-mayra',
+      name: 'Mayra',
+      avatarUrl: mayra,
+    ),
+    FanClubComposeArtist(
+      id: 'mock-fc-marinhos',
+      name: 'Marinhos',
+      avatarUrl: marinhos,
+    ),
+    FanClubComposeArtist(
+      id: 'mock-fc-uelo',
+      name: 'Banda Uelo',
+      avatarUrl: uelo,
+    ),
+    FanClubComposeArtist(
+      id: 'mock-fc-enzo',
+      name: 'Enzo Lima',
+      avatarUrl: enzo,
+    ),
+    FanClubComposeArtist(
+      id: 'mock-fc-ludmilla',
+      name: 'Ludmilla',
+      avatarUrl: ludmilla,
+    ),
+    FanClubComposeArtist(
+      id: 'mock-fc-anitta',
+      name: 'Anitta',
+      avatarUrl: anitta,
+    ),
   ];
 }
 
