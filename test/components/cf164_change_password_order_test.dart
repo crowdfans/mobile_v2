@@ -29,7 +29,10 @@ void main() {
     expect(find.byType(SettingsSegmentedTabs), findsNothing);
     expect(find.text('Trocar e-mail'), findsNothing);
     expect(find.text('Telefone e dispositivos'), findsNothing);
+    expect(find.text('Segurança e login'), findsNothing);
+    expect(find.text('Confirme sua senha atual antes de definir uma nova senha.'), findsNothing);
     expect(find.text('Salvar nova senha'), findsOneWidget);
+    expect(find.text('Alterar senha'), findsOneWidget);
     expect(find.text('Critérios da nova senha'), findsOneWidget);
     expect(find.textContaining('Pelo menos 8 caracteres'), findsOneWidget);
     expect(find.textContaining('Pelo menos 1 letra maiúscula'), findsOneWidget);
@@ -42,28 +45,31 @@ void main() {
     expect(find.textContaining('símbolo'), findsNothing);
     expect(find.text('Fraca'), findsNothing);
 
-    final labels = tester
+    // Print: olho nos 3 campos de senha.
+    final fields = tester
         .widgetList<AppTextField>(find.byType(AppTextField))
-        .map((f) => f.label)
         .toList();
+    expect(fields.length, 3);
+    for (final field in fields) {
+      expect(field.obscureText, isTrue);
+      expect(field.showObscureToggle, isTrue);
+    }
+
+    final labels = fields.map((f) => f.label).toList();
     expect(labels, [
       'Senha atual',
       'Nova senha',
       'Confirmar nova senha',
     ]);
 
-    final hints = tester
-        .widgetList<AppTextField>(find.byType(AppTextField))
-        .map((f) => f.hint)
-        .toList();
+    final hints = fields.map((f) => f.hint).toList();
     expect(hints, [
       'Digite sua senha atual',
       'Digite sua nova senha',
       'Repita a nova senha',
     ]);
 
-    final fieldsY = tester
-        .widgetList<AppTextField>(find.byType(AppTextField))
+    final fieldsY = fields
         .map((f) => tester.getTopLeft(find.byWidget(f)).dy)
         .toList();
     final criteriaY =
@@ -71,5 +77,17 @@ void main() {
     expect(fieldsY[0] < fieldsY[1], isTrue);
     expect(fieldsY[1] < fieldsY[2], isTrue);
     expect(fieldsY[2] < criteriaY, isTrue);
+
+    // Critérios sem caixa contornada: widget raiz é Column (não Card/Container).
+    final criteriaElement = tester.element(find.byType(PasswordRequirementsCard));
+    expect(criteriaElement.widget, isA<PasswordRequirementsCard>());
+    expect(find.descendant(
+      of: find.byType(PasswordRequirementsCard),
+      matching: find.byType(Card),
+    ), findsNothing);
+    expect(find.descendant(
+      of: find.byType(PasswordRequirementsCard),
+      matching: find.byType(Container),
+    ), findsNothing);
   });
 }

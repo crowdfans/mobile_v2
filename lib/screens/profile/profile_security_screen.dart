@@ -113,9 +113,8 @@ class _ProfileSecurityScreenState extends State<ProfileSecurityScreen> {
                   SecurityAccessNavRow(
                     title: 'Alterar senha',
                     subtitle: 'Atualize sua senha periodicamente.',
-                    onTap: () => context.push(
-                      '${Pages.profileSecurityCredentials}?mode=password',
-                    ),
+                    // CF-164: página dedicada — NUNCA hub com abas / Segurança e login.
+                    onTap: () => context.push(Pages.profileChangePassword),
                   ),
                   SecurityAccessNavRow(
                     title: 'Trocar e-mail',

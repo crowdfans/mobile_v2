@@ -8,11 +8,12 @@ import 'package:crowdfans/services/profile_security_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Alterar senha — página dedicada (CF-164). Sem abas / sem Trocar e-mail.
+/// Alterar senha — página dedicada (CF-164). Layout = print YouTrack.
+/// Sem abas / sem Trocar e-mail / sem Telefone e dispositivos.
 class ProfileSecurityCredentialsScreen extends StatefulWidget {
   const ProfileSecurityCredentialsScreen({super.key, this.initialMode});
 
-  /// Aceito por compatibilidade de rota; e-mail redireciona em [Pages].
+  /// Aceito por compatibilidade de rota; e-mail redireciona em [Pages]/router.
   final String? initialMode;
 
   @override
@@ -107,81 +108,79 @@ class _ProfileSecurityCredentialsScreenState
             Expanded(
               child: GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
-                child: SingleChildScrollView(
+                child: ListView(
                   key: ValueKey(_formNonce),
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  // Espaçamento generoso = REFERÊNCIA CF-164 (não o hub com abas).
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Atualize sua senha de acesso',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          height: 1.25,
-                          color: colors.textPrimary,
-                        ),
+                  children: [
+                    Text(
+                      'Atualize sua senha de acesso',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
+                        color: colors.textPrimary,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Use uma combinação forte para proteger sua conta e '
-                        'evitar acessos indevidos.',
-                        style: TextStyle(
-                          fontSize: 15,
-                          height: 1.45,
-                          color: colors.textSecondary,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Use uma combinação forte para proteger sua conta e '
+                      'evitar acessos indevidos.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.45,
+                        color: colors.textSecondary,
                       ),
-                      const SizedBox(height: 28),
-                      AppTextField(
-                        key: ValueKey('current-$_formNonce'),
-                        label: 'Senha atual',
-                        hint: 'Digite sua senha atual',
-                        obscureText: true,
-                        onChanged: (value) =>
-                            setState(() => _currentPassword = value),
+                    ),
+                    const SizedBox(height: 32),
+                    AppTextField(
+                      key: ValueKey('current-$_formNonce'),
+                      label: 'Senha atual',
+                      hint: 'Digite sua senha atual',
+                      obscureText: true,
+                      onChanged: (value) =>
+                          setState(() => _currentPassword = value),
+                    ),
+                    const SizedBox(height: 20),
+                    AppTextField(
+                      key: ValueKey('new-pw-$_formNonce'),
+                      label: 'Nova senha',
+                      hint: 'Digite sua nova senha',
+                      obscureText: true,
+                      onChanged: (value) =>
+                          setState(() => _newPassword = value),
+                    ),
+                    const SizedBox(height: 20),
+                    AppTextField(
+                      key: ValueKey('confirm-pw-$_formNonce'),
+                      label: 'Confirmar nova senha',
+                      hint: 'Repita a nova senha',
+                      obscureText: true,
+                      onChanged: (value) =>
+                          setState(() => _confirmPassword = value),
+                    ),
+                    const SizedBox(height: 28),
+                    PasswordRequirementsCard(
+                      password: _newPassword,
+                      confirmPassword: _confirmPassword,
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      AccountFeedbackBanner(
+                        message: _error!,
+                        success: false,
                       ),
-                      const SizedBox(height: 18),
-                      AppTextField(
-                        key: ValueKey('new-pw-$_formNonce'),
-                        label: 'Nova senha',
-                        hint: 'Digite sua nova senha',
-                        obscureText: true,
-                        onChanged: (value) =>
-                            setState(() => _newPassword = value),
-                      ),
-                      const SizedBox(height: 18),
-                      AppTextField(
-                        key: ValueKey('confirm-pw-$_formNonce'),
-                        label: 'Confirmar nova senha',
-                        hint: 'Repita a nova senha',
-                        obscureText: true,
-                        onChanged: (value) =>
-                            setState(() => _confirmPassword = value),
-                      ),
-                      const SizedBox(height: 28),
-                      PasswordRequirementsCard(
-                        password: _newPassword,
-                        confirmPassword: _confirmPassword,
-                      ),
-                      if (_error != null) ...[
-                        const SizedBox(height: 16),
-                        AccountFeedbackBanner(
-                          message: _error!,
-                          success: false,
-                        ),
-                      ],
-                      if (_success != null) ...[
-                        const SizedBox(height: 16),
-                        AccountFeedbackBanner(
-                          message: _success!,
-                          success: true,
-                        ),
-                      ],
                     ],
-                  ),
+                    if (_success != null) ...[
+                      const SizedBox(height: 16),
+                      AccountFeedbackBanner(
+                        message: _success!,
+                        success: true,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
