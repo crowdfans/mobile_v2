@@ -54,5 +54,6 @@ void main() {
     expect(kUseCf178FanClubsFeedMocks, isFalse);
     expect(kUseCf181CartasMocks, isFalse); // CF-181 demock — fan-letters API
     expect(kUseCf187MeProfileMocks, isFalse); // CF-187 demock Meu Perfil API
+    expect(kUseCf219EditBioMock, isFalse); // CF-219 demock — description API + seed
   });
 }

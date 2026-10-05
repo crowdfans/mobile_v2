@@ -1410,6 +1410,11 @@ extension Cf216ConnectedDevicesFixtures on CfTempMocks {
 }
 
 /// CF-219 — bio do print (contador 56).
+/// **Off:** tela usa `Profile.description` via GET/PUT `/api/v1/profile`;
+/// seed grava bio em `seed_demo_users` / `seed_cf219_bio`.
+/// Fixture fica só para testes/print.
+const bool kUseCf219EditBioMock = false;
+
 abstract final class Cf219EditBioMock {
   static const bio =
       'Gosto muito di rock e pop, se vc gosta tb vamos ser ami!';
