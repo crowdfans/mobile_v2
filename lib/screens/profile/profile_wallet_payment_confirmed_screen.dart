@@ -4,11 +4,12 @@ import 'package:crowdfans/components/profile/wallet_payment_confirmed_info_note.
 import 'package:crowdfans/components/profile/wallet_payment_confirmed_purchase_card.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Confirmação real da recarga — só após crédito (CF-204).
+///
+/// Valores vêm da mesma transação (rota); não inventa o exemplo de 240 do print.
 class ProfileWalletPaymentConfirmedScreen extends StatelessWidget {
   const ProfileWalletPaymentConfirmedScreen({
     super.key,
@@ -32,15 +33,9 @@ class ProfileWalletPaymentConfirmedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    // TEMP: demo do print (240 = 200 + 40) se a rota chegar sem valores.
-    final useMock =
-        coinsTotal <= 0 && CfTempMocks.useMembershipFixtures && kUseCfTempMocks;
-    final total =
-        useMock ? cfTempMockRechargeConfirmed.coinsTotal : coinsTotal;
-    final base =
-        useMock ? cfTempMockRechargeConfirmed.baseCoins : baseCoins;
-    final bonus =
-        useMock ? cfTempMockRechargeConfirmed.bonusCoins : bonusCoins;
+    final total = coinsTotal;
+    final base = baseCoins;
+    final bonus = bonusCoins;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -58,8 +53,8 @@ class ProfileWalletPaymentConfirmedScreen extends StatelessWidget {
                     Center(
                       child: Image.asset(
                         'assets/images/Confetti.png',
-                        width: 120,
-                        height: 120,
+                        width: 140,
+                        height: 140,
                         excludeFromSemantics: true,
                         errorBuilder: (_, _, _) => Icon(
                           Icons.celebration,

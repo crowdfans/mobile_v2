@@ -553,7 +553,9 @@ const cfTempMockMembershipManage = (
   monthsLabel: '3 meses',
 );
 
-/// Recarga confirmada (CF-204) — print: 240 = 200 JC + 40 bônus.
+/// Recarga confirmada (CF-204) — referência do print (240 = 200 JC + 40 bônus).
+/// A tela de confirmação usa só params da transação real; este mock é TEMP
+/// para testes/QA deep-link, não é inventado na UI.
 const cfTempMockRechargeConfirmed = (
   coinsTotal: 240,
   baseCoins: 200,
