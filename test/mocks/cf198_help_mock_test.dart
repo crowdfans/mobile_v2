@@ -1,25 +1,28 @@
+import 'package:crowdfans/content/help_content.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('CF-198 help fixtures (green)', () {
-    test('TEMP on + hero/intro/acessos do print', () {
-      expect(CfTempMocks.useHelpFixtures, isTrue);
-      expect(kUseCf198HelpMocks, isTrue);
+  group('CF-198 help content (green)', () {
+    test('demock: flags off + hero/intro/acessos oficiais', () {
+      expect(CfTempMocks.useHelpFixtures, isFalse);
+      expect(kUseCf198HelpMocks, isFalse);
       expect(kCf198MockEmpty, isFalse);
-      expect(cf198HelpFixturesEnabled(), isTrue);
+      expect(cf198HelpFixturesEnabled(), isFalse);
 
-      expect(Cf198HelpFixtures.headerTitle, 'Ajuda');
-      expect(Cf198HelpFixtures.heroTitle, 'Central de ajuda');
+      expect(HelpContent.headerTitle, 'Ajuda');
+      expect(HelpContent.heroTitle, 'Central de ajuda');
       expect(
-        Cf198HelpFixtures.intro,
+        HelpContent.intro,
         contains('conta, memberships, artistas, moderação'),
       );
-      expect(Cf198HelpFixtures.quickAccessSectionTitle, 'Acessos rápidos');
+      expect(HelpContent.quickAccessSectionTitle, 'Acessos rápidos');
+      // Sample de print espelha o conteúdo oficial.
+      expect(Cf198HelpFixtures.heroTitle, HelpContent.heroTitle);
     });
 
     test('quatro acessos rápidos com destinos descritivos', () {
-      final rows = Cf198HelpFixtures.quickAccess();
+      final rows = HelpContent.quickAccess();
       expect(rows, hasLength(4));
       expect(rows.map((r) => r.title).toList(), [
         'Segurança e Login',
@@ -34,7 +37,7 @@ void main() {
     });
 
     test('FAQ Conta e perfil já aberta (sem accordion)', () {
-      final sections = Cf198HelpFixtures.faqSections();
+      final sections = HelpContent.faqSections();
       expect(sections, isNotEmpty);
       expect(sections.first.title, 'Conta e perfil');
       expect(sections.first.items, hasLength(3));
@@ -51,33 +54,24 @@ void main() {
     });
   });
 
-  group('CF-198 help fixtures (red)', () {
-    test('helper desliga com empty ou flag off', () {
+  group('CF-198 help content (red)', () {
+    test('TEMP desligado — helper não liga fixtures', () {
       expect(kUseCfTempMocks, isTrue);
-      expect(CfTempMocks.useHelpFixtures, isTrue);
-      expect(kUseCf198HelpMocks, isTrue);
-      expect(kCf198MockEmpty, isFalse);
-      expect(cf198HelpFixturesEnabled(), isTrue);
-      // Contrato red: qualquer um dos gates desliga o print.
-      expect(
-        kUseCfTempMocks &&
-            CfTempMocks.useHelpFixtures &&
-            kUseCf198HelpMocks &&
-            !true, // simula kCf198MockEmpty
-        isFalse,
-      );
+      expect(CfTempMocks.useHelpFixtures, isFalse);
+      expect(kUseCf198HelpMocks, isFalse);
+      expect(cf198HelpFixturesEnabled(), isFalse);
     });
 
-    test('destinos inválidos não colidem com os quatro do print', () {
+    test('destinos inválidos não colidem com os quatro oficiais', () {
       final destinations =
-          Cf198HelpFixtures.quickAccess().map((r) => r.destination).toSet();
+          HelpContent.quickAccess().map((r) => r.destination).toSet();
       expect(destinations.contains(''), isFalse);
       expect(destinations.contains('unknown'), isFalse);
       expect(destinations.contains('profileSecurity'), isTrue);
     });
 
     test('perguntas sem resposta vazia / título em branco', () {
-      for (final section in Cf198HelpFixtures.faqSections()) {
+      for (final section in HelpContent.faqSections()) {
         expect(section.title.trim(), isNotEmpty);
         for (final item in section.items) {
           expect(item.$1.trim(), isNotEmpty);
@@ -87,20 +81,20 @@ void main() {
     });
   });
 
-  group('CF-198 help fixtures (edge)', () {
+  group('CF-198 help content (edge)', () {
     test('intro longo sem truncar contrato de leitura', () {
-      expect(Cf198HelpFixtures.intro.length, greaterThan(80));
-      expect(Cf198HelpFixtures.intro.contains('\n'), isFalse);
+      expect(HelpContent.intro.length, greaterThan(80));
+      expect(HelpContent.intro.contains('\n'), isFalse);
     });
 
     test('primeira resposta OTP é parágrafo longo (edge texto)', () {
-      final answer = Cf198HelpFixtures.faqSections().first.items.first.$2;
+      final answer = HelpContent.faqSections().first.items.first.$2;
       expect(answer.length, greaterThan(120));
       expect(answer, contains('Conexões sociais'));
     });
 
     test('mailto suporte está bem formado', () {
-      final uri = Uri.parse(Cf198HelpFixtures.supportEmail);
+      final uri = Uri.parse(HelpContent.supportEmail);
       expect(uri.scheme, 'mailto');
       expect(uri.path, 'support@crowdfans.app');
     });
