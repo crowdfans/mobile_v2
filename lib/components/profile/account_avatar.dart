@@ -3,12 +3,16 @@ import 'dart:typed_data';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Avatar circular da tela de editar perfil.
+/// Avatar circular grande da tela Foto de perfil (CF-220).
+///
+/// Raio ~64 espelha o preview do print YouTrack (diâmetro ~⅓ da largura).
 class AccountAvatar extends StatelessWidget {
   const AccountAvatar({super.key, this.photoUrl, this.localBytes});
 
   final String? photoUrl;
   final Uint8List? localBytes;
+
+  static const double radius = 64;
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +23,18 @@ class AccountAvatar extends StatelessWidget {
     } else if (photoUrl != null && photoUrl!.isNotEmpty) {
       image = NetworkImage(photoUrl!);
     }
-    return CircleAvatar(
-      radius: 88,
-      backgroundColor: colors.surfaceAlt,
-      backgroundImage: image,
-      child: image == null
-          ? Icon(Icons.person, size: 72, color: colors.textTertiary)
-          : null,
+    return Semantics(
+      label: 'Pré-visualização da foto de perfil',
+      image: true,
+      child: CircleAvatar(
+        key: const Key('profile-photo-avatar'),
+        radius: radius,
+        backgroundColor: colors.surfaceAlt,
+        backgroundImage: image,
+        child: image == null
+            ? Icon(Icons.person, size: 52, color: colors.textTertiary)
+            : null,
+      ),
     );
   }
 }

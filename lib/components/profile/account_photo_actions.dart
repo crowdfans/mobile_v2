@@ -28,14 +28,16 @@ class AccountPhotoActions extends StatelessWidget {
             color: colors.textTertiary,
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 34),
         AccountPhotoActionButton(
+          key: const Key('profile-photo-gallery'),
           label: 'Selecionar foto da galeria',
           icon: Icons.image_outlined,
           onPressed: onGallery,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 20),
         AccountPhotoActionButton(
+          key: const Key('profile-photo-camera'),
           label: 'Tirar foto',
           icon: Icons.photo_camera_outlined,
           onPressed: onCamera,
