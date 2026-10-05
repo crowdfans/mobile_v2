@@ -37,6 +37,6 @@ void main() {
     expect(kUseCf194CommentMocks, isFalse);
     expect(kUseCf195CommentMocks, isFalse);
     expect(kUseCf178FanClubsFeedMocks, isFalse);
-    expect(kUseCf181CartasMocks, isFalse);
+    expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
   });
 }
