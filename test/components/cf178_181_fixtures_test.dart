@@ -2,7 +2,8 @@ import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CF-178 mock feed: Felipe Rhy + Laís Costa do print', () {
+  test('CF-178 mock feed documenta print (flag off em prod)', () {
+    expect(kUseCf178FanClubsFeedMocks, isFalse);
     final posts = Cf178FanClubsFeedMock.posts();
     expect(posts, hasLength(2));
     expect(posts.first.author, 'Felipe Rhy');
@@ -12,8 +13,9 @@ void main() {
     expect(posts.last.type, 'carousel');
   });
 
-  test('CF-181 mock cartas: print image4/image5 (nomes + stickers)', () {
-    expect(kUseCf181CartasMocks, isTrue);
+  test('CF-181 fixture cartas: print image4/image5 (nomes + stickers)', () {
+    // Flag off em prod; fixture permanece para regressão de print.
+    expect(kUseCf181CartasMocks, isFalse);
     final letters = Cf181CartasMock.letters(artistId: 'artist-1');
     expect(letters, hasLength(9));
     expect(

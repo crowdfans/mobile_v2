@@ -43,7 +43,7 @@ void main() {
   group('CF-184/CF-274 green — teaser único alinhado ao print', () {
     test('fixtures Kheper bloqueado; Ludmilla CF-239 intacto', () {
       expect(kUseCfTempMocks, isTrue);
-      expect(CfTempMocks.useArtistExclusiveFixtures, isTrue);
+      expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
       expect(
         cfTempMockArtistExclusiveForceLocked('mock-kheper', 'Kheper'),
         isTrue,

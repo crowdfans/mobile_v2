@@ -31,27 +31,28 @@ void main() {
     expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
     expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-175/176/232/233/234/235/236
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
-    expect(CfTempMocks.useSearchArtistsFixtures, isTrue); // CF-240 TEMP
+    expect(CfTempMocks.useSearchArtistsFixtures, isFalse); // CF-240 demock
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
-    expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-184/239
+    expect(CfTempMocks.useArtistExclusiveFixtures, isFalse); // CF-184/239 demock
     expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
-    expect(CfTempMocks.useHelpFixtures, isTrue); // CF-198 print
-    expect(kUseCf198HelpMocks, isTrue); // CF-198 Central de ajuda
+    expect(CfTempMocks.useHelpFixtures, isFalse); // CF-198 HelpContent oficial
+    expect(kUseCf198HelpMocks, isFalse); // CF-198 demock
     expect(kCf198MockEmpty, isFalse);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
     expect(CfTempMocks.useInteractionsNotifPrintFixtures, isFalse); // CF-208 API
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
-    expect(CfTempMocks.useFavoriteArtistsFixtures, isTrue); // CF-191 print sidebar
-    expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
-    expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
-    expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
-    expect(kUseCf196CommentMocks, isTrue); // CF-196 reply+teclado
+    expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock
+    expect(kUseCf185ArtistFeedMocks, isFalse); // CF-185 demock capa/CTA Feed
+    expect(kUseCf194CommentMocks, isFalse); // CF-194 demock — comments API
+    expect(kUseCf195CommentMocks, isFalse); // CF-195 demock — Home comments API
+    expect(kUseCf196CommentMocks, isFalse); // CF-196 demock — reply+teclado real
     expect(kUseCf197GifMocks, isTrue); // CF-197 seletor GIF TEMP
     expect(kUseCf178FanClubsFeedMocks, isFalse);
-    expect(kUseCf181CartasMocks, isTrue); // CF-181 print Cartas até API povoada
+    expect(kUseCf181CartasMocks, isFalse); // CF-181 demock — fan-letters API
+    expect(kUseCf187MeProfileMocks, isFalse); // CF-187 demock Meu Perfil API
   });
 }

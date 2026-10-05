@@ -144,7 +144,8 @@ Widget _harness({
 
 void main() {
   test('CF-194 fixtures batem o print (Fê+Nina, tempos, votos)', () {
-    expect(kUseCf194CommentMocks, isTrue);
+    // Fixtures permanecem para asserts de print; flag demockada.
+    expect(kUseCf194CommentMocks, isFalse);
     final comments = Cf194FanClubCommentsMock.comments();
     expect(comments, hasLength(2));
     expect(comments.first.author, 'Fê Andrade');

@@ -8,7 +8,7 @@ void main() {
     final uris = cfTempMockCf234LightboxUris();
     expect(uris, hasLength(3));
     expect(uris.first, contains('1484406566174')); // Unsplash deer
-    expect(CfTempMocks.useHomeFeedFixtures, isTrue);
+    expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     final carousel = cfTempMockHomeFeedPosts().firstWhere(
       (p) => p.id == 'cf233-ponzanelli-carousel',
     );

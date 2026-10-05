@@ -7,10 +7,12 @@ class CreatePostPreview extends StatelessWidget {
     super.key,
     required this.text,
     required this.hasImage,
+    this.hasMusic = false,
   });
 
   final String text;
   final bool hasImage;
+  final bool hasMusic;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,14 @@ class CreatePostPreview extends StatelessWidget {
             if (hasImage) ...[
               const SizedBox(height: 8),
               Text(
-                '📸 Imagem selecionada',
+                'Imagem selecionada',
+                style: TextStyle(fontSize: 14, color: colors.textTertiary),
+              ),
+            ],
+            if (hasMusic) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Música selecionada',
                 style: TextStyle(fontSize: 14, color: colors.textTertiary),
               ),
             ],

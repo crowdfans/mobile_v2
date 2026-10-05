@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CF-195 mock: print Home — Fê expandido, Nina recolhida, Vic', () {
-    expect(kUseCf195CommentMocks, isTrue);
+    // Fixtures permanecem para asserts de print; flag demockada.
+    expect(kUseCf195CommentMocks, isFalse);
 
     final comments = Cf195HomeCommentsMock.comments();
     expect(comments, hasLength(3));

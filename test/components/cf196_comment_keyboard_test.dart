@@ -89,7 +89,7 @@ void main() {
         Cf196CommentReplyMock.mentionDraft('fan/rafanogueira'),
         'fan/rafanogueira ',
       );
-      expect(kUseCf196CommentMocks, isTrue);
+      expect(kUseCf196CommentMocks, isFalse);
     });
   });
 

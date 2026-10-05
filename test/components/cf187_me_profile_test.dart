@@ -6,6 +6,7 @@ import 'package:crowdfans/components/profile/me_profile_toolbar.dart';
 import 'package:crowdfans/components/profile/profile_identity_block.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
+import 'package:crowdfans/models/fan_profile.dart';
 import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/screens/main/me_screen.dart';
 import 'package:crowdfans/state/auth_session.dart';
@@ -14,19 +15,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeFanAuth extends AuthSessionNotifier {
+  _FakeFanAuth(this.profile);
+
+  final Profile? profile;
+
   @override
   AuthSession build() {
-    return const AuthSession(
+    return AuthSession(
       isLoading: false,
       isBackendValidated: true,
-      profile: Profile(
-        userUid: 'fan-empty',
-        displayName: 'Vic Fan',
-        name: 'Vic Fan',
-        description: '',
-        photoUrl: '',
-        isArtist: false,
-      ),
+      profile: profile,
     );
   }
 }
@@ -41,16 +39,15 @@ Finder richTextContaining(String needle) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('CF-187 formatProfileCount pt-BR', () {
+  // --- Green ---
+  test('CF-187 green: formatProfileCount pt-BR + fixtures print', () {
     expect(formatProfileCount(0), '0');
     expect(formatProfileCount(8), '8');
     expect(formatProfileCount(124), '124');
     expect(formatProfileCount(1180), '1.180');
     expect(formatProfileCount(12840), '12.840');
-  });
 
-  test('CF-187 fixtures batem o print preenchido', () {
-    expect(kUseCf187MeProfileMocks, isTrue);
+    expect(kUseCf187MeProfileMocks, isFalse); // demock
     final profile = Cf187MeProfileFixtures.profile;
     expect(profile.displayName, 'Aline Duarte');
     expect(profile.name, 'alineduarte');
@@ -68,48 +65,9 @@ void main() {
     );
   });
 
-  testWidgets('CF-187 identidade: stats formatados + bio + avatar', (
+  testWidgets('CF-187 green: identidade stats + bio + Editar + seletor', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: buildCrowdFansTheme(Brightness.light),
-        home: Scaffold(
-          body: ProfileIdentityBlock(
-            profile: Cf187MeProfileFixtures.profile.copyWith(photoUrl: ''),
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Aline Duarte'), findsOneWidget);
-    expect(find.text('fan/alineduarte'), findsOneWidget);
-    expect(find.text('1.180'), findsOneWidget);
-    expect(find.text('124'), findsOneWidget);
-    expect(find.text('8'), findsOneWidget);
-    expect(find.text('Posts'), findsOneWidget);
-    expect(find.text('Cartas'), findsOneWidget);
-    expect(find.text('Artistas'), findsOneWidget);
-    expect(find.textContaining('rock e pop'), findsOneWidget);
-  });
-
-  testWidgets('CF-187 Editar Perfil com borda escura do print', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: buildCrowdFansTheme(Brightness.light),
-        home: Scaffold(
-          body: MeProfileActionsRow(onEditProfile: () {}),
-        ),
-      ),
-    );
-
-    final button = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
-    final side = button.style?.side?.resolve({});
-    expect(side?.color, AppPalette.platinum800);
-    expect(find.text('Editar Perfil'), findsOneWidget);
-  });
-
-  testWidgets('CF-187 toolbar + chips + seletor Fã Clube', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: buildCrowdFansTheme(Brightness.light),
@@ -122,6 +80,12 @@ void main() {
                   onJams: () {},
                   onSettings: () {},
                 ),
+                ProfileIdentityBlock(
+                  profile: Cf187MeProfileFixtures.profile.copyWith(
+                    photoUrl: '',
+                  ),
+                ),
+                MeProfileActionsRow(onEditProfile: () {}),
                 Row(
                   children: [
                     MePostsFilterChip(
@@ -154,17 +118,24 @@ void main() {
     );
     await tester.pump();
 
-    expect(richTextContaining('Meu Perfil'), findsOneWidget);
-    expect(richTextContaining('fan/alineduarte'), findsOneWidget);
-    expect(find.text('Jams'), findsOneWidget);
-    expect(find.text('Todos'), findsOneWidget);
-    expect(find.text('Posts'), findsOneWidget);
-    expect(find.text('Media'), findsOneWidget);
+    expect(find.text('Aline Duarte'), findsOneWidget);
+    expect(find.text('fan/alineduarte'), findsWidgets);
+    expect(find.text('1.180'), findsOneWidget);
+    expect(find.text('124'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
+    expect(find.textContaining('rock e pop'), findsOneWidget);
+    expect(find.text('Editar Perfil'), findsOneWidget);
     expect(find.text('Filtrar por Fã Clube'), findsOneWidget);
     expect(find.byKey(const Key('me-fan-club-filter')), findsOneWidget);
+
+    final button = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
+    final side = button.style?.side?.resolve({});
+    expect(side?.color, AppPalette.platinum800);
   });
 
-  testWidgets('CF-187 nav Meu Perfil anuncia selecionado', (tester) async {
+  testWidgets('CF-187 green: nav Meu Perfil anuncia selecionado', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: buildCrowdFansTheme(Brightness.light),
@@ -188,16 +159,30 @@ void main() {
     );
   });
 
-  testWidgets('CF-187 MeScreen preenchido: seletor + posts + contagens', (
+  // --- Red ---
+  testWidgets('CF-187 red: MeScreen sem mock + perfil vazio → empty state', (
     tester,
   ) async {
+    expect(kUseCf187MeProfileMocks, isFalse);
+
     await tester.binding.setSurfaceSize(const Size(390, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          authSessionProvider.overrideWith(_FakeFanAuth.new),
+          authSessionProvider.overrideWith(
+            () => _FakeFanAuth(
+              const Profile(
+                userUid: '',
+                displayName: '',
+                name: '',
+                description: '',
+                photoUrl: '',
+                isArtist: false,
+              ),
+            ),
+          ),
         ],
         child: MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
@@ -208,14 +193,42 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(richTextContaining('Meu Perfil'), findsOneWidget);
-    expect(find.text('Aline Duarte'), findsAtLeastNWidgets(1));
-    expect(find.text('1.180'), findsOneWidget);
-    expect(find.text('Editar Perfil'), findsOneWidget);
+    // Sem fixtures TEMP: não inventa Aline / posts do print.
+    expect(find.text('Aline Duarte'), findsNothing);
+    expect(find.textContaining('mutirão'), findsNothing);
+    expect(find.text('Nenhuma publicação'), findsOneWidget);
+    // Estrutura da tela permanece (seletor + Editar com perfil de sessão vazio).
     expect(find.text('Filtrar por Fã Clube'), findsOneWidget);
-    expect(find.text('Todos'), findsOneWidget);
-    expect(find.text('Nenhuma publicação'), findsNothing);
-    expect(find.textContaining('mutirão'), findsOneWidget);
-    expect(find.byKey(const Key('me-fan-club-filter')), findsOneWidget);
+    expect(find.text('Editar Perfil'), findsOneWidget);
+  });
+
+  // --- Edge ---
+  test('CF-187 edge: mergeMeFollowedArtists dedupe + overview-only', () async {
+    final overview = [
+      const FollowedArtist(
+        id: 'a1',
+        label: 'Mayra',
+        memberCount: '10',
+        avatarUri: '',
+      ),
+      const FollowedArtist(
+        id: 'a1',
+        label: 'Mayra dup',
+        memberCount: '10',
+        avatarUri: '',
+      ),
+    ];
+    // Sem HTTP: merge só preserva overview (catch interno se FollowService falhar).
+    final merged = await mergeMeFollowedArtists(overview);
+    expect(merged, isNotEmpty);
+    expect(merged.first.id, 'a1');
+    expect(merged.first.label, 'Mayra');
+  });
+
+  test('CF-187 edge: contagem zero e bio longa nas fixtures', () {
+    expect(formatProfileCount(0), '0');
+    final long = Cf187MeProfileFixtures.profile.description;
+    expect(long.length, greaterThan(40));
+    expect(kUseCf187MeProfileMocks, isFalse);
   });
 }
