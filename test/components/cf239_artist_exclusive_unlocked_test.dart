@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CF-239 flag + fixtures Ludmilla assinante', () {
     expect(kUseCfTempMocks, isTrue);
-    expect(CfTempMocks.useArtistExclusiveFixtures, isTrue);
+    expect(CfTempMocks.useArtistExclusiveFixtures, isFalse);
     expect(
       cfTempMockArtistExclusiveSubscribed('mock-fc-ludmilla', 'Ludmilla'),
       isTrue,
