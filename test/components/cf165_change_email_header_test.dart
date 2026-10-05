@@ -34,7 +34,14 @@ void main() {
     expect(find.textContaining('legado'), findsNothing);
     expect(find.text('Telefone e dispositivos'), findsNothing);
     expect(find.text('E-mail atual:'), findsNothing);
+    // YouTrack: manter mecanismo de confirmação (crop corta abaixo do 3º campo).
     expect(find.text('Enviar confirmação'), findsOneWidget);
+
+    final headline = tester.widget<Text>(
+      find.text('Atualize o e-mail da sua conta'),
+    );
+    expect(headline.style?.fontWeight, FontWeight.w800);
+    expect(headline.style?.fontSize, 22);
 
     final fields = tester
         .widgetList<AppTextField>(find.byType(AppTextField))
