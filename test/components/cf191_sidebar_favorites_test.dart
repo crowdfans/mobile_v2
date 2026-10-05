@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Widget wrapSidebar({
   required List<HomeFollowedArtist> artists,
   bool asDrawerPanel = true,
+  bool? useFixturesOverride,
 }) {
   return MaterialApp(
     theme: buildCrowdFansTheme(Brightness.light),
@@ -20,6 +21,7 @@ Widget wrapSidebar({
         artists: artists,
         onClose: () {},
         onPressArtist: (_) {},
+        useFixturesOverride: useFixturesOverride,
       ),
     ),
   );
@@ -41,10 +43,10 @@ void main() {
     });
   }
 
-  group('CF-191 green — print Favoritos + Seus Artistas', () {
-    test('fixtures ON com artistas do print', () {
+  group('CF-191 green — demock + print helpers', () {
+    test('flag off; helpers de print intactos', () {
       expect(kUseCfTempMocks, isTrue);
-      expect(CfTempMocks.useFavoriteArtistsFixtures, isTrue);
+      expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse);
       expect(kCf191MockEmpty, isFalse);
 
       final artists = CfTempMocks.sidebarFollowedArtists();
@@ -80,9 +82,13 @@ void main() {
       }
     });
 
-    testWidgets('menu mostra seções e estrelas do print', (tester) async {
+    testWidgets('fixtures override ON: seções e estrelas do print', (
+      tester,
+    ) async {
       await setTallSurface(tester);
-      await tester.pumpWidget(wrapSidebar(artists: const []));
+      await tester.pumpWidget(
+        wrapSidebar(artists: const [], useFixturesOverride: true),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Visitado recentemente'), findsOneWidget);
@@ -99,8 +105,10 @@ void main() {
       expect(find.text('Kheper'), findsOneWidget);
 
       expect(find.text('Nenhum artista visitado recentemente.'), findsNothing);
-      expect(find.text('Nenhum favorito ainda. Toque na estrela para destacar.'),
-          findsNothing);
+      expect(
+        find.text('Nenhum favorito ainda. Toque na estrela para destacar.'),
+        findsNothing,
+      );
 
       expect(find.byIcon(Icons.star), findsNWidgets(3));
       expect(find.byIcon(Icons.star_border), findsNWidgets(5));
@@ -121,10 +129,43 @@ void main() {
       );
       expect(anittaStar, findsOneWidget);
     });
+
+    testWidgets('fixtures off: Seus Artistas usa lista real (widget.artists)', (
+      tester,
+    ) async {
+      await setTallSurface(tester);
+      SharedPreferences.setMockInitialValues({
+        'sidebar.favoriteArtistIds': ['real-mayra'],
+      });
+      await tester.pumpWidget(
+        wrapSidebar(
+          useFixturesOverride: false,
+          artists: const [
+            HomeFollowedArtist(
+              id: 'real-mayra',
+              username: 'Mayra',
+              avatarUrl: 'https://example.com/m.jpg',
+            ),
+            HomeFollowedArtist(
+              id: 'real-anitta',
+              username: 'Anitta',
+              avatarUrl: 'https://example.com/a.jpg',
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Mayra'), findsOneWidget);
+      expect(find.text('Anitta'), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.star_border), findsOneWidget);
+      expect(find.text('Nenhum artista seguido ainda.'), findsNothing);
+    });
   });
 
   group('CF-191 red — vazio / bloqueado', () {
-    test('empty fixtures devolvem listas vazias', () {
+    test('empty helpers devolvem listas vazias', () {
       expect(kCf191MockEmpty, isFalse);
       expect(CfTempMocks.sidebarFollowedArtists(empty: true), isEmpty);
       expect(CfTempMocks.sidebarFavoriteIds(empty: true), isEmpty);
@@ -145,7 +186,6 @@ void main() {
               artists: const [],
               onClose: () {},
               onPressArtist: (_) {},
-              // Test-only: desliga fixtures neste harness.
               useFixturesOverride: false,
             ),
           ),
@@ -163,7 +203,7 @@ void main() {
     });
   });
 
-  group('CF-191 edge — teclado / texto longo / toggle', () {
+  group('CF-191 edge — teclado / texto longo / toggle / fixtures off', () {
     testWidgets('nome longo não estoura a linha; estrela permanece alvo', (
       tester,
     ) async {
@@ -192,14 +232,19 @@ void main() {
       expect(text.maxLines, 1);
       expect(text.overflow, TextOverflow.ellipsis);
       expect(find.byIcon(Icons.star_border), findsOneWidget);
-      expect(tester.getSize(find.byType(IconButton)).width, greaterThanOrEqualTo(40));
+      expect(
+        tester.getSize(find.byType(IconButton)).width,
+        greaterThanOrEqualTo(40),
+      );
     });
 
     testWidgets('toggle move artista de Favoritos para Seus Artistas', (
       tester,
     ) async {
       await setTallSurface(tester);
-      await tester.pumpWidget(wrapSidebar(artists: const []));
+      await tester.pumpWidget(
+        wrapSidebar(artists: const [], useFixturesOverride: true),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.star), findsNWidgets(3));
@@ -218,6 +263,38 @@ void main() {
         find.text('Nenhum favorito ainda. Toque na estrela para destacar.'),
         findsNothing,
       );
+    });
+
+    testWidgets('fixtures off + prefs: toggle persiste favorito local', (
+      tester,
+    ) async {
+      await setTallSurface(tester);
+      SharedPreferences.setMockInitialValues({});
+      await tester.pumpWidget(
+        wrapSidebar(
+          useFixturesOverride: false,
+          artists: const [
+            HomeFollowedArtist(
+              id: 'real-uelo',
+              username: 'Banda Uelo',
+              avatarUrl: '',
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.star_border), findsOneWidget);
+      final toggle = find.descendant(
+        of: find.widgetWithText(SidebarArtistRow, 'Banda Uelo'),
+        matching: find.byType(IconButton),
+      );
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.star), findsOneWidget);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getStringList('sidebar.favoriteArtistIds'), ['real-uelo']);
     });
 
     testWidgets('drawer Home: barreira à direita fecha e absorve foco', (
@@ -246,6 +323,7 @@ void main() {
                     artists: const [],
                     onClose: () => closed = true,
                     onPressArtist: (_) {},
+                    useFixturesOverride: true,
                   ),
                 ),
                 Positioned(

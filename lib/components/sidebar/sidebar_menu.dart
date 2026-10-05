@@ -2,6 +2,7 @@ import 'package:crowdfans/components/sidebar/sidebar_artist_row.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/models/home_feed.dart';
+import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/sidebar_artists_store.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,7 @@ class _SidebarMenuState extends State<SidebarMenu>
   late final Animation<double> _fade;
   var _favoriteIds = <String>{};
   var _recent = <HomeFollowedArtist>[];
+  var _followedFromApi = <HomeFollowedArtist>[];
   var _ready = false;
   var _shouldRender = false;
 
@@ -113,18 +115,38 @@ class _SidebarMenuState extends State<SidebarMenu>
       setState(() {
         _favoriteIds = {...CfTempMocks.sidebarFavoriteIds()};
         _recent = CfTempMocks.sidebarRecentArtists();
+        _followedFromApi = const [];
         _ready = true;
       });
       return;
     }
     final ids = await SidebarArtistsStore.loadFavoriteIds();
     final recent = await SidebarArtistsStore.loadRecent();
+    // Home feed TEMP pode vir sem followedArtists — completa com follows reais.
+    var follows = <HomeFollowedArtist>[];
+    if (widget.artists.isEmpty) {
+      try {
+        final list = await FollowService.listFollows();
+        follows = [
+          for (final item in list)
+            if (item.artistUid.trim().isNotEmpty)
+              HomeFollowedArtist(
+                id: item.artistUid,
+                username: item.artistName,
+                avatarUrl: item.avatarUrl,
+              ),
+        ];
+      } catch (_) {
+        follows = const [];
+      }
+    }
     if (!mounted) {
       return;
     }
     setState(() {
       _favoriteIds = ids;
       _recent = recent;
+      _followedFromApi = follows;
       _ready = true;
     });
   }
@@ -161,7 +183,11 @@ class _SidebarMenuState extends State<SidebarMenu>
     if (useFixtures) {
       return CfTempMocks.sidebarFollowedArtists();
     }
-    return widget.artists;
+    // Prefer artists da Home quando presentes; senão lista de follows.
+    if (widget.artists.isNotEmpty) {
+      return widget.artists;
+    }
+    return _followedFromApi;
   }
 
   List<HomeFollowedArtist> resolveFavorites(List<HomeFollowedArtist> artists) {

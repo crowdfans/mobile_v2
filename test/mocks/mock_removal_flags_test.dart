@@ -33,7 +33,7 @@ void main() {
     expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
     expect(CfTempMocks.useHomeFeedFixtures, isTrue); // CF-175/176/232/233/234/235/236
     expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
-    expect(CfTempMocks.useSearchArtistsFixtures, isTrue); // CF-240 TEMP
+    expect(CfTempMocks.useSearchArtistsFixtures, isFalse); // CF-240 demock
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isTrue); // CF-184/239
     expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
@@ -45,7 +45,7 @@ void main() {
     expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue); // CF-209
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue); // CF-211
     expect(CfTempMocks.useProfileAccountFixtures, isFalse);
-    expect(CfTempMocks.useFavoriteArtistsFixtures, isTrue); // CF-191 print sidebar
+    expect(CfTempMocks.useFavoriteArtistsFixtures, isFalse); // CF-191 demock
     expect(kUseCf185ArtistFeedMocks, isTrue); // CF-185 capa/CTA Feed
     expect(kUseCf194CommentMocks, isTrue); // CF-194 print até comments API
     expect(kUseCf195CommentMocks, isTrue); // CF-195 print Home
