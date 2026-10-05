@@ -538,7 +538,30 @@ abstract final class FanClubService {
   static Future<FanClubAppeal> createFanClubAppeal(
     String artistUid,
     String defense,
-  ) {
+  ) async {
+    // TEMP CF-200: permite demo do Enviar defesa sem expulsão real na conta QA.
+    // Não altera caminhos CF-229 (banner) / CF-230 (aviso).
+    if (cf200DefendReturnFixturesEnabled()) {
+      final trimmed = defense.trim();
+      final length = trimmed.runes.length;
+      if (length < 24 || length > 420) {
+        throw ApiError(
+          'Explique em 24 a 420 caracteres.',
+          400,
+        );
+      }
+      return FanClubAppeal(
+        appealId: 'cf200-appeal-temp',
+        expulsionId: 'cf200-expulsion-temp',
+        requesterUid: 'cf200-requester',
+        displayName: 'Você',
+        handle: 'voce',
+        photoUrl: '',
+        defense: trimmed,
+        status: 'pending',
+        createdAt: '2026-01-01T12:00:00Z',
+      );
+    }
     return HttpService.request(
       ApiUrls.withParams(ApiUrls.artistFanclubAppeals, {
         'artistUid': artistUid,

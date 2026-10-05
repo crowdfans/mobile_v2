@@ -35,13 +35,19 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
   String? _fieldError;
   String? _reason;
 
+  /// Motivo TEMP do print quando a API/rota não traz texto.
+  bool get _useTempReason =>
+      cf200DefendReturnFixturesEnabled() ||
+      CfTempMocks.useFanClubFixtures ||
+      cf229ExpelledFixturesEnabled();
+
   @override
   void initState() {
     super.initState();
     _reason = widget.expulsionReason;
     if ((_reason ?? '').trim().isEmpty) {
       // TEMP: demo do card rosado do print enquanto a API não manda motivo.
-      if (CfTempMocks.useFanClubFixtures || cf229ExpelledFixturesEnabled()) {
+      if (_useTempReason) {
         _reason = cfTempMockExpulsionReason;
       }
       handleLoadReason();
@@ -64,9 +70,7 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
       setState(() {
         if (apiReason.isNotEmpty) {
           _reason = apiReason;
-        } else if ((CfTempMocks.useFanClubFixtures ||
-                cf229ExpelledFixturesEnabled()) &&
-            (_reason ?? '').trim().isEmpty) {
+        } else if (_useTempReason && (_reason ?? '').trim().isEmpty) {
           _reason = cfTempMockExpulsionReason;
         }
       });
@@ -74,8 +78,7 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
       if (!mounted) {
         return;
       }
-      if ((CfTempMocks.useFanClubFixtures || cf229ExpelledFixturesEnabled()) &&
-          (_reason ?? '').trim().isEmpty) {
+      if (_useTempReason && (_reason ?? '').trim().isEmpty) {
         setState(() => _reason = cfTempMockExpulsionReason);
       }
     }
@@ -149,6 +152,7 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
     final colors = CrowdFansTheme.of(context);
     return Scaffold(
       backgroundColor: colors.background,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
           children: [
@@ -159,6 +163,8 @@ class _FanClubDefendReturnScreenState extends State<FanClubDefendReturnScreen> {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 children: [
                   Text(
                     'Explique para a moderação por que você acredita que deve voltar para a comunidade e o que mudou desde a expulsão.',

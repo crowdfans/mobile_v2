@@ -17,7 +17,7 @@ class FanClubDefendReturnReasonCard extends StatelessWidget {
       label: 'Motivo da expulsão: $text',
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: const Color(0xFFFFE8E8),
+          color: AppPalette.red100,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.danger.withValues(alpha: 0.35)),
         ),

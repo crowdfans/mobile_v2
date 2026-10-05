@@ -81,7 +81,10 @@ class ExclusiveFeedCardLockedContent extends StatelessWidget {
             child: OutlinedButton(
               onPressed: canUnlock ? onPressUnlock : null,
               style: OutlinedButton.styleFrom(
+                // Print CF-175: CTA contornado (fundo claro, borda/texto roxos).
                 foregroundColor: colors.primary,
+                backgroundColor: Colors.white,
+                disabledForegroundColor: colors.primary.withValues(alpha: 0.4),
                 side: BorderSide(color: colors.primary),
                 shape: const StadiumBorder(),
               ),

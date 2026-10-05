@@ -617,6 +617,15 @@ const cfTempMockFelipeArtistUid = 'mock-fc-felipe-rhy';
 const cfTempMockExpulsionReason =
     'A equipe identificou ataques recorrentes e quebra das regras de convivência do fã clube.';
 
+/// CF-200 — tela Defender retorno (motivo rosado + campo 24–420).
+/// TEMP até a API sempre enviar `viewerExpulsionReason` e o submit real
+/// funcionar na conta de QA. Não altera flags CF-229/CF-230.
+const bool kUseCf200DefendReturnFixtures = true;
+
+/// True quando o mock TEMP da tela Defender retorno (CF-200) está ativo.
+bool cf200DefendReturnFixturesEnabled() =>
+    kUseCfTempMocks && kUseCf200DefendReturnFixtures;
+
 /// Motivo de aviso de moderação (CF-230).
 const cfTempMockStrikeReason =
     'Você insistiu em provocações repetidas nos comentários mesmo depois de avisos da equipe.';
@@ -1700,6 +1709,7 @@ FeedPost cfTempMockCf236SharePost() {
   );
 }
 
+<<<<<<< HEAD
 /// CF-176 — menu ⋯ do post (home). TEMP até o feed real expor post com artista
 /// para abrir `PostOptionsSheet` igual ao print (atalhos + share + lista + Reportar).
 const bool kUseCf176PostOptionsMocks = true;
@@ -1724,7 +1734,11 @@ FeedPost cfTempMockCf176MenuPost() {
 }
 
 /// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236).
+=======
+/// Home feed — vídeo / carrossel / exclusivo / share (CF-232 / 233 / 235 / 236 / 175).
+>>>>>>> origin/prod
 /// Ordem do print CF-235: Mayra exclusivo primeiro; Uelo parcial abaixo.
+/// CF-175: Kheper exclusivo bloqueado (CTA contornado) após Mayra.
 /// CF-236: Mayra texto 84/11/3 (tap share → sheet distinto do menu ⋯).
 /// CF-176: Carol texto — tap ⋯ → `PostOptionsSheet` (gestão, não share).
 /// CF-234 abre o lightbox a partir do carrossel (≥3 URIs).
@@ -1749,6 +1763,21 @@ List<FeedPost> cfTempMockHomeFeedPosts() {
       videoDuration: '00:00',
       videoUri: '',
       videoThumbnailUri: '',
+    ),
+    const FeedPost(
+      id: 'cf175-kheper-locked',
+      type: PostType.text,
+      author: 'Kheper',
+      artistId: 'mock-fc-kheper',
+      handle: '@kheperrrr',
+      minutesAgo: 19,
+      avatarUri: '',
+      text: '',
+      votes: 110,
+      comments: 21,
+      shares: 7,
+      isExclusive: true,
+      exclusiveLocked: true,
     ),
     cfTempMockCf236SharePost(),
     if (kUseCfTempMocks && kUseCf176PostOptionsMocks) cfTempMockCf176MenuPost(),
