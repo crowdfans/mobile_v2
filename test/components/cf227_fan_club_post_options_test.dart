@@ -105,8 +105,8 @@ void main() {
   test(
     'CF-227 fixture Laís Costa inclui post Lari Rocha do print',
     () {
-      expect(CfTempMocks.useFanClubFixtures, isTrue);
-      expect(kUseCf227FanClubPostMenuFixtures, isTrue);
+      expect(CfTempMocks.useFanClubFixtures, isFalse);
+      expect(kUseCf227FanClubPostMenuFixtures, isFalse);
 
       final feed = cfTempMockArtistFanClubFeed(cfTempMockLaisArtistUid);
       expect(feed.fanClub.artistName, 'Laís Costa');

@@ -7,13 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CF-230: flag TEMP + Laís Costa (aviso) sem tocar CF-229', () {
     expect(kUseCfTempMocks, isTrue);
-    expect(kUseCf230WarningFixtures, isTrue);
-    expect(cf230WarningFixturesEnabled(), isTrue);
+    expect(kUseCf230WarningFixtures, isFalse);
+    expect(cf230WarningFixturesEnabled(), isFalse);
     expect(cfTempMockLaisArtistUid, 'mock-fc-lais');
     expect(cfTempMockLaisCoverUrl, isNotEmpty);
 
     // CF-229 permanece ligado e isolado.
-    expect(kUseCf229ExpelledFixtures, isTrue);
+    expect(kUseCf229ExpelledFixtures, isFalse);
     expect(cfTempMockFelipeArtistUid, isNot(cfTempMockLaisArtistUid));
     expect(
       cfTempMockFanClubKind(cfTempMockLaisArtistUid),

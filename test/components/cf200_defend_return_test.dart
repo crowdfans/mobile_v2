@@ -80,8 +80,8 @@ void main() {
 
     test('fixture TEMP CF-200 + limites alinhados ao servidor', () {
       expect(kUseCfTempMocks, isTrue);
-      expect(kUseCf200DefendReturnFixtures, isTrue);
-      expect(cf200DefendReturnFixturesEnabled(), isTrue);
+      expect(kUseCf200DefendReturnFixtures, isFalse);
+      expect(cf200DefendReturnFixturesEnabled(), isFalse);
       expect(cfTempMockExpulsionReason, contains('ataques recorrentes'));
       expect(FanClubDefendReturnField.minChars, 24);
       expect(FanClubDefendReturnField.maxChars, 420);
@@ -308,8 +308,8 @@ void main() {
     });
 
     test('CF-229/230 flags intactas (não regressão)', () {
-      expect(kUseCf229ExpelledFixtures, isTrue);
-      expect(kUseCf230WarningFixtures, isTrue);
+      expect(kUseCf229ExpelledFixtures, isFalse);
+      expect(kUseCf230WarningFixtures, isFalse);
       expect(cfTempMockStrikeReason, isNot(equals(cfTempMockExpulsionReason)));
     });
   });

@@ -24,19 +24,19 @@ void main() {
     ); // CF-207 print
     expect(CfTempMocks.useNotificationPrefFixtures, isFalse);
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue); // CF-213
-    expect(CfTempMocks.useFanClubFixtures, isTrue); // CF-186/222/223/227
-    expect(kUseCf200DefendReturnFixtures, isTrue); // CF-200 Defender retorno
-    expect(kUseCf227FanClubPostMenuFixtures, isTrue); // CF-227 post menu
-    expect(kUseCf224RequestModerationMocks, isTrue); // CF-224 Solicitar moderação
-    expect(kUseCf225ModeratorsMocks, isTrue); // CF-225 Moderadores
-    expect(kUseCf229ExpelledFixtures, isTrue); // CF-229 expelled banner
-    expect(kUseCf230WarningFixtures, isTrue); // CF-230 warning banner
+    expect(CfTempMocks.useFanClubFixtures, isFalse); // demock CF-222…230
+    expect(kUseCf200DefendReturnFixtures, isFalse); // CF-200 demock
+    expect(kUseCf227FanClubPostMenuFixtures, isFalse); // CF-227 demock
+    expect(kUseCf224RequestModerationMocks, isFalse); // CF-224 demock
+    expect(kUseCf225ModeratorsMocks, isFalse); // CF-225 demock
+    expect(kUseCf229ExpelledFixtures, isFalse); // CF-229 demock
+    expect(kUseCf230WarningFixtures, isFalse); // CF-230 demock
+    expect(CfTempMocks.useModerationPanelFixtures, isFalse); // CF-199 demock
     expect(CfTempMocks.useHomeFeedFixtures, isFalse); // demock GET /home
     expect(kUseCf176PostOptionsMocks, isTrue); // CF-176 menu ⋯ print
     expect(CfTempMocks.useSearchArtistsFixtures, isFalse); // CF-240 demock
     expect(CfTempMocks.useFanClubSelectorFixtures, isTrue); // CF-237 TEMP
     expect(CfTempMocks.useArtistExclusiveFixtures, isFalse); // CF-184/239 demock
-    expect(CfTempMocks.useModerationPanelFixtures, isTrue); // CF-199 print
     expect(CfTempMocks.useHelpFixtures, isFalse); // CF-198 HelpContent oficial
     expect(kUseCf198HelpMocks, isFalse); // CF-198 demock
     expect(kCf198MockEmpty, isFalse);

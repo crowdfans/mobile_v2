@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CF-225 fixtures: Enzo + 3 moderadores com fan/handle', () {
-    expect(kUseCf225ModeratorsMocks, isTrue);
+    expect(kUseCf225ModeratorsMocks, isFalse);
     final club = cfTempMockArtistFanClubFeed('mock-fc-enzo').fanClub;
     expect(club.artistName, 'Enzo Lima');
     expect(club.viewerIsOwner, isFalse);

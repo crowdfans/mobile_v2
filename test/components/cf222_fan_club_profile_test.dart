@@ -42,7 +42,7 @@ void main() {
   });
 
   test('CF-222 fixture feed: Enzo + Aline carousel + selo 3', () {
-    expect(CfTempMocks.useFanClubFixtures, isTrue);
+    expect(CfTempMocks.useFanClubFixtures, isFalse);
     final feed = cfTempMockArtistFanClubFeed('mock-fc-enzo');
     expect(feed.fanClub.artistName, 'Enzo Lima');
     expect(feed.fanClub.memberCount, 11841);
