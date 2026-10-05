@@ -7,7 +7,6 @@ import 'package:crowdfans/components/profile/membership_subscribe_terms_checkbox
 import 'package:crowdfans/components/profile/profile_screen_header.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
-import 'package:crowdfans/mocks/cf_temp_mocks.dart';
 import 'package:crowdfans/services/follow_service.dart';
 import 'package:crowdfans/services/subscription_service.dart';
 import 'package:crowdfans/services/wallet_service.dart';
@@ -15,7 +14,19 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+/// Nome exibido na Assinar (CF-206 demock) — params reais; sem fixture TEMP.
+String membershipSubscribeArtistName(String raw) {
+  final value = raw.trim();
+  return value.isEmpty ? 'Artista' : value;
+}
+
+/// Preço mensal — 0/negativo cai no catálogo real (100 Jam Coins).
+int membershipSubscribePricePerMonth(int raw) {
+  return raw > 0 ? raw : 100;
+}
+
 /// Revisão e aceite antes de cobrir a membership (CF-206).
+/// Demock: wallet + `POST /subscriptions` reais; sem `useMembershipFixtures`.
 class ProfileMembershipSubscribeScreen extends StatefulWidget {
   const ProfileMembershipSubscribeScreen({
     super.key,
@@ -57,15 +68,7 @@ class _ProfileMembershipSubscribeScreenState
       }
       setState(() => _balance = wallet.displayBalance);
     } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      // TEMP: saldo do print CF-206 quando a carteira falha.
-      if (CfTempMocks.useMembershipFixtures && kUseCfTempMocks) {
-        setState(
-          () => _balance = cfTempMockMembershipSummary.jamCoinsBalanceLabel,
-        );
-      }
+      // Demock CF-206: falha de carteira mantém "—" (sem print 2.684).
     }
   }
 
@@ -105,9 +108,7 @@ class _ProfileMembershipSubscribeScreenState
             artistId: widget.artistId,
             artistHandle: widget.artistHandle,
             artistAvatarUrl: widget.artistAvatarUrl,
-            pricePerMonth: widget.pricePerMonth > 0
-                ? widget.pricePerMonth
-                : 100,
+            pricePerMonth: membershipSubscribePricePerMonth(widget.pricePerMonth),
           ),
         );
         return;
@@ -115,7 +116,8 @@ class _ProfileMembershipSubscribeScreenState
       await AppAlert.show(
         context,
         title: 'Assinatura',
-        message: 'A assinatura ainda não está ativa. Tente novamente em instantes.',
+        message:
+            'A assinatura ainda não está ativa. Tente novamente em instantes.',
       );
     } on ApiError catch (error) {
       if (mounted) {
@@ -145,25 +147,8 @@ class _ProfileMembershipSubscribeScreenState
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final useMock = CfTempMocks.useMembershipFixtures &&
-        kUseCfTempMocks &&
-        (widget.artistName.trim().isEmpty || widget.pricePerMonth <= 0);
-    final name = useMock
-        ? cfTempMockMembershipSummary.artistName
-        : (widget.artistName.trim().isEmpty
-            ? 'Artista'
-            : widget.artistName.trim());
-    final handle = useMock
-        ? cfTempMockMembershipSummary.artistHandle
-        : widget.artistHandle;
-    final price = useMock
-        ? cfTempMockMembershipSummary.pricePerMonth
-        : (widget.pricePerMonth > 0 ? widget.pricePerMonth : 100);
-    final balance = (_balance == '—' || _balance.trim().isEmpty) &&
-            CfTempMocks.useMembershipFixtures &&
-            kUseCfTempMocks
-        ? cfTempMockMembershipSummary.jamCoinsBalanceLabel
-        : _balance;
+    final name = membershipSubscribeArtistName(widget.artistName);
+    final price = membershipSubscribePricePerMonth(widget.pricePerMonth);
     final canSubscribe = _accepted && !_busy;
 
     return Scaffold(
@@ -175,7 +160,7 @@ class _ProfileMembershipSubscribeScreenState
               title: 'Assinar',
               onBack: handleBack,
               action: MembershipSubscribeBalancePill(
-                balance: balance,
+                balance: _balance,
                 onPressed: () => context.push(Pages.profileWallet),
               ),
             ),
@@ -185,7 +170,7 @@ class _ProfileMembershipSubscribeScreenState
                 children: [
                   MembershipSubscribeArtistSummary(
                     artistName: name,
-                    artistHandle: handle,
+                    artistHandle: widget.artistHandle,
                     artistAvatarUrl: widget.artistAvatarUrl,
                     pricePerMonth: price,
                   ),
