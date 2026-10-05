@@ -15,7 +15,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-/// Opções do post (três pontinhos) — layout dos prints CF-68.
+/// Menu de gerenciamento do post (três pontinhos) — prints CF-68 / CF-176.
+///
+/// Distinto do [PostShareSheet] (ícone de share no footer): aqui há Fã Clube,
+/// Memórias, seguir/favoritar e Reportar. Atalhos de share compactos existem,
+/// mas **sem** a linha “Compartilhar para…”.
 class PostOptionsSheet extends StatefulWidget {
   const PostOptionsSheet({
     super.key,
@@ -225,8 +229,14 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
     return BottomSheetShell(
       visible: widget.visible,
       onClose: widget.onClose,
-      child: Column(
-        children: [
+      child: Semantics(
+        key: const Key('post-options-sheet'),
+        scopesRoute: true,
+        namesRoute: true,
+        explicitChildNodes: true,
+        label: 'Opções do post',
+        child: Column(
+          children: [
           Row(
             children: [
               PostOptionsShortcutCard(
@@ -347,6 +357,7 @@ class _PostOptionsSheetState extends State<PostOptionsSheet> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
