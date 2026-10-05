@@ -7,7 +7,7 @@ alwaysApply: true
 
 App mobile de produto. Expo `../mobile` / `crowdfans-mobile-rn` = referência. Não copiar `frontendapp/`.
 
-Git: `main`+`prod` iguais. Branch `CF-<id>` → PR `prod` → espelhar `main` → apagar branch. Leia `AGENTS.md`.
+Git: branch `CF-<id>` a partir de **`prod`** → PR `--base prod` → merge **só `prod`**. Não espelhar `main`. Checkout build/QA = **`prod`**. Leia `AGENTS.md`.
 
 - Telas: `lib/screens/` (estado na tela). Componentes: `lib/components/<domínio>/`, um widget público por arquivo.
 - Proibido `_Foo extends StatelessWidget` dentro de tela (vale o `State` da tela). Sem `lib/widgets/` na raiz.

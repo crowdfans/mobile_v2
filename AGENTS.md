@@ -6,6 +6,12 @@ Não copiar `frontendapp/` (Flutter legado / Supabase). Não implementar feature
 
 ---
 
+## Git
+
+Branch `CF-xx` a partir de **`prod`** → PR `--base prod` → merge **somente `prod`**. **Não** abrir PR em `main` nem espelhar `prod`→`main`. Checkout local de build/QA = **`prod`**.
+
+---
+
 ## Telas vs componentes
 
 - Tela = `lib/screens/.../*_screen.dart`. Estado, handlers e `Scaffold` ficam **na tela**.
