@@ -54,15 +54,9 @@ void main() {
     );
   });
 
-<<<<<<< HEAD
-  test('CF-213 green: flags CF-209/211/166 hub intactas', () {
-    expect(CfTempMocks.useArtistsNotifPrintFixtures, isTrue);
-    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
-=======
-  test('CF-213 green: demock não liga hub CF-166 nem CF-209/211', () {
+  test('CF-213 green: demock artists; hub CF-209/211 flags atuais', () {
     expect(CfTempMocks.useArtistsNotifPrintFixtures, isFalse);
-    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isTrue);
->>>>>>> 05fb972 (CF-213: demock artists notif print fixtures (0.1.1+92))
+    expect(CfTempMocks.useMeetGreetNotifPrintFixtures, isFalse); // CF-209 demock
     expect(CfTempMocks.useMembershipNotifPrintFixtures, isTrue);
     expect(CfTempMocks.useNotificationCategoryPrintFixtures, isFalse);
   });
