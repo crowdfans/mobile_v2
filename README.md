@@ -84,6 +84,16 @@ Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
 
 Helpers: `integration_test/helpers/e2e_env.dart`, `e2e_auth.dart`.
 
+**CF-128 green / red / edge (obrigatório):**
+
+| Grupo | Patrol (`e2e_artist_post_fan_comment_test.dart`) | Widget (`test/components/cf128_artist_post_fan_comment_test.dart`) |
+|---|---|---|
+| GREEN | artista posta → superfã comenta → texto visível | `comment-submit` com rascunho; `post-comments`; publish com texto |
+| RED | senha inválida fica no login; composer vazio sem `comment-submit` | draft vazio / publish desabilitado |
+| EDGE | comentário longo visível | teclado `viewInsets`; zero comentários; limite 280 |
+
+Widget suite: `flutter test test/components/cf128_artist_post_fan_comment_test.dart`.
+
 ### Firebase Test Lab (CF-125 / CF-126)
 
 Android **pronto**: APIs FTL no `crowdfans-prod` + `scripts/ftl_android.sh` (job smoke Passed).
