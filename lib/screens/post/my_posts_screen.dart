@@ -1,7 +1,6 @@
 import 'package:crowdfans/components/post/my_post_options_sheet.dart';
-import 'package:crowdfans/components/post/my_post_row.dart';
+import 'package:crowdfans/components/post/my_posts_body.dart';
 import 'package:crowdfans/components/post/my_posts_header.dart';
-import 'package:crowdfans/components/profile/profile_state.dart';
 import 'package:crowdfans/components/toolbar/toolbar_back_button.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
@@ -148,7 +147,17 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   ),
                 ),
                 MyPostsHeader(onCreate: handleCreate),
-                Expanded(child: _body()),
+                Expanded(
+                  child: MyPostsBody(
+                    loading: _loading,
+                    error: _error,
+                    posts: _posts,
+                    onRetry: handleLoad,
+                    onCreate: handleCreate,
+                    onOpenMenu: (id) => setState(() => _menuPostId = id),
+                    onRefresh: handleRefresh,
+                  ),
+                ),
               ],
             ),
             MyPostOptionsSheet(
@@ -173,41 +182,4 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     );
   }
 
-  Widget _body() {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (_error != null) {
-      return ProfileState(
-        title: 'Erro ao carregar posts',
-        message: _error,
-        actionLabel: 'Tentar Novamente',
-        onAction: handleLoad,
-      );
-    }
-    if (_posts.isEmpty) {
-      return ProfileState(
-        title: 'Nenhum post publicado',
-        message: 'Comece a compartilhar seu conteúdo com seus fãs!',
-        actionLabel: 'Criar Primeiro Post',
-        onAction: handleCreate,
-      );
-    }
-    return RefreshIndicator(
-      onRefresh: handleRefresh,
-      child: ListView.separated(
-        key: const Key('my-posts-list'),
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        itemCount: _posts.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final post = _posts[index];
-          return MyPostRow(
-            post: post,
-            onOpenMenu: () => setState(() => _menuPostId = post.id),
-          );
-        },
-      ),
-    );
-  }
 }

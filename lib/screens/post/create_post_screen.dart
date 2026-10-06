@@ -41,13 +41,18 @@ PostType resolveCreatePostType({
   return PostType.text;
 }
 
+const createPostMaxLength = 280;
+
+/// Contador `n/280` do campo de descrição (edit/create).
+String createPostLengthLabel(int length) => '$length/$createPostMaxLength';
+
 /// Publicar habilitado: texto ou mídia, até 280 caracteres (CF-128 / CF-141).
 bool canPublishCreatePost({
   required String text,
   required bool hasMedia,
   bool hasMusic = false,
 }) {
-  if (text.length > 280) {
+  if (text.length > createPostMaxLength) {
     return false;
   }
   return text.trim().isNotEmpty || hasMedia || hasMusic;
@@ -59,7 +64,7 @@ String? validateCreatePost({
   required bool hasMedia,
   bool hasMusic = false,
 }) {
-  if (text.length > 280) {
+  if (text.length > createPostMaxLength) {
     return 'O post pode ter no máximo 280 caracteres';
   }
   if (text.trim().isEmpty && !hasMedia && !hasMusic) {
@@ -328,7 +333,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       label: 'Descrição',
                       hint: 'O que você quer compartilhar?',
                       maxLines: 6,
-                      maxLength: 280,
+                      maxLength: createPostMaxLength,
                       initialValue: _text,
                       onChanged: handleTextChange,
                     ),
@@ -336,10 +341,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${_text.length}/280',
+                      createPostLengthLabel(_text.length),
+                      key: const Key('create-post-length'),
                       style: TextStyle(
                         fontSize: 12,
-                        color: _text.length > 280
+                        color: _text.length > createPostMaxLength
                             ? colors.danger
                             : colors.textTertiary,
                       ),
