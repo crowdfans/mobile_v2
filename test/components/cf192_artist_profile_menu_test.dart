@@ -3,6 +3,7 @@ import 'package:crowdfans/components/post/post_sheet_list_item.dart';
 import 'package:crowdfans/components/ui/bottom_sheet_shell.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/screens/report/report_screen.dart';
 import 'package:crowdfans/services/report_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,10 +21,7 @@ Finder _svgAsset(String assetName) {
 
 /// Fecha o sheet no [onClose] antes da navegação (evita overlay stale).
 class _Cf192MenuHarness extends StatefulWidget {
-  const _Cf192MenuHarness({
-    required this.artistId,
-    required this.artistName,
-  });
+  const _Cf192MenuHarness({required this.artistId, required this.artistName});
 
   final String artistId;
   final String artistName;
@@ -59,10 +57,7 @@ void main() {
       );
       expect(route, contains('context=artist-profile'));
       expect(route, contains('targetId=artist-1'));
-      expect(
-        Uri.parse(route).queryParameters['displayName'],
-        'Gus Art',
-      );
+      expect(Uri.parse(route).queryParameters['displayName'], 'Gus Art');
       expect(
         ReportService.parseContext('artist-profile'),
         ReportContext.artistProfile,
@@ -121,14 +116,13 @@ void main() {
           ),
           GoRoute(
             path: Pages.report,
-            builder: (context, state) {
-              final name = state.uri.queryParameters['displayName'] ?? '';
-              final ctx = state.uri.queryParameters['context'] ?? '';
-              final id = state.uri.queryParameters['targetId'] ?? '';
-              return Scaffold(
-                body: Text('report:$ctx|$id|$name'),
-              );
-            },
+            builder: (context, state) => ReportScreen(
+              contextKind: ReportService.parseContext(
+                state.uri.queryParameters['context'],
+              ),
+              targetId: state.uri.queryParameters['targetId'],
+              displayName: state.uri.queryParameters['displayName'],
+            ),
           ),
         ],
       );
@@ -146,7 +140,15 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 350));
 
-      expect(find.text('report:artist-profile|gus-art|Gus Art'), findsOneWidget);
+      expect(router.state.uri.path, Pages.report);
+      expect(router.state.uri.queryParameters['context'], 'artist-profile');
+      expect(router.state.uri.queryParameters['targetId'], 'gus-art');
+      expect(router.state.uri.queryParameters['displayName'], 'Gus Art');
+      expect(find.text('Denunciar perfil de artista'), findsOneWidget);
+      expect(
+        find.text('Por que você está denunciando Gus Art?'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Abrir fã clube chama callback (sem ações de post)', (
@@ -203,22 +205,72 @@ void main() {
       expect(find.text('Abrir fã clube'), findsNothing);
     });
 
+    testWidgets(
+      'chrome legado (Ações do perfil / Reportar / rótulo longo) ausente',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildCrowdFansTheme(Brightness.light),
+            home: Scaffold(
+              body: ArtistProfileOptionsSheet(
+                visible: true,
+                artistId: 'artist-1',
+                artistName: 'Gus Art',
+                onClose: () {},
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.text('Denunciar'), findsOneWidget);
+        expect(find.text('Ações do perfil'), findsNothing);
+        expect(find.text('Reportar'), findsNothing);
+        expect(find.text('Denunciar perfil de artista'), findsNothing);
+        expect(find.text('Denunciar este artista'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'enviar denúncia sem targetId mostra Alvo da denúncia inválido',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildCrowdFansTheme(Brightness.light),
+            home: const ReportScreen(
+              contextKind: ReportContext.artistProfile,
+              targetId: '',
+              displayName: 'Gus Art',
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('Denunciar perfil de artista'), findsOneWidget);
+        await tester.tap(find.text('Spam'));
+        await tester.pump();
+
+        await tester.tap(find.text('Enviar denúncia'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Alvo da denúncia inválido.'), findsOneWidget);
+      },
+    );
+
     testWidgets('artistId vazio: Denunciar fecha e não navega', (tester) async {
       final router = GoRouter(
         initialLocation: '/profile',
         routes: [
           GoRoute(
             path: '/profile',
-            builder: (context, state) => const _Cf192MenuHarness(
-              artistId: '   ',
-              artistName: 'Gus Art',
-            ),
+            builder: (context, state) =>
+                const _Cf192MenuHarness(artistId: '   ', artistName: 'Gus Art'),
           ),
           GoRoute(
             path: Pages.report,
-            builder: (context, state) => const Scaffold(
-              body: Text('report-opened'),
-            ),
+            builder: (context, state) =>
+                const Scaffold(body: Text('report-opened')),
           ),
         ],
       );
@@ -272,10 +324,7 @@ void main() {
 
   group('CF-192 edge — texto longo / nome vazio / texto ampliado', () {
     test('nome vazio vira fallback artista na rota', () {
-      final route = artistProfileReportRoute(
-        artistId: 'a1',
-        artistName: '  ',
-      );
+      final route = artistProfileReportRoute(artistId: 'a1', artistName: '  ');
       expect(route, contains('displayName=artista'));
     });
 
@@ -287,6 +336,18 @@ void main() {
       );
       expect(route, contains('targetId=artist-long'));
       expect(route, contains(Uri.encodeQueryComponent(long)));
+    });
+
+    test('nome e id especiais ficam URL-encoded', () {
+      const id = 'id/with spaces&x';
+      const name = 'Ana & João?';
+      final route = artistProfileReportRoute(artistId: id, artistName: name);
+      final uri = Uri.parse(route);
+      expect(uri.queryParameters['context'], 'artist-profile');
+      expect(uri.queryParameters['targetId'], id);
+      expect(uri.queryParameters['displayName'], name);
+      expect(route, contains(Uri.encodeQueryComponent(id)));
+      expect(route, contains(Uri.encodeQueryComponent(name)));
     });
 
     testWidgets('texto ampliado: ambas ações cabem e são tocáveis', (
@@ -367,6 +428,56 @@ void main() {
 
       expect(behindTapped, isFalse);
       expect(closed, isTrue);
+    });
+
+    testWidgets('onClose no scrim não navega para denúncia nem fã clube', (
+      tester,
+    ) async {
+      var closed = false;
+      final router = GoRouter(
+        initialLocation: '/profile',
+        routes: [
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => Scaffold(
+              body: ArtistProfileOptionsSheet(
+                visible: true,
+                artistId: 'artist-1',
+                artistName: 'Gus Art',
+                onClose: () => closed = true,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: Pages.report,
+            builder: (context, state) =>
+                const Scaffold(body: Text('report-opened')),
+          ),
+          GoRoute(
+            path: '/fan-clubs/community/:artistId',
+            builder: (context, state) =>
+                const Scaffold(body: Text('fan-club-opened')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: buildCrowdFansTheme(Brightness.light),
+          routerConfig: router,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+
+      expect(closed, isTrue);
+      expect(router.state.uri.path, '/profile');
+      expect(find.text('report-opened'), findsNothing);
+      expect(find.text('fan-club-opened'), findsNothing);
     });
   });
 }
