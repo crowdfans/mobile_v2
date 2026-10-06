@@ -1,7 +1,10 @@
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/components/home/create_menu_sheet.dart';
+import 'package:crowdfans/components/input/app_text_field.dart';
+import 'package:crowdfans/components/post/create_post_feedback_banner.dart';
 import 'package:crowdfans/components/post/my_post_options_sheet.dart';
 import 'package:crowdfans/components/post/my_post_row.dart';
+import 'package:crowdfans/components/post/my_posts_body.dart';
 import 'package:crowdfans/constants/pages.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
@@ -145,6 +148,46 @@ void main() {
       expect(canPublishCreatePost(text: 'a' * 281, hasMedia: false), isFalse);
     });
 
+    testWidgets('RED: lista em erro de rede oferece Tentar Novamente', (
+      tester,
+    ) async {
+      var retried = false;
+      await tester.pumpWidget(
+        wrap(
+          MyPostsBody(
+            loading: false,
+            error: 'SocketException: Failed host lookup',
+            posts: const [],
+            onRetry: () => retried = true,
+            onCreate: () {},
+            onOpenMenu: (_) {},
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text(myPostsErrorTitle), findsOneWidget);
+      expect(find.text('SocketException: Failed host lookup'), findsOneWidget);
+      await tester.tap(find.text(myPostsErrorActionLabel));
+      await tester.pump();
+      expect(retried, isTrue);
+      expect(find.byKey(const Key('my-posts-list')), findsNothing);
+      expect(find.byKey(const Key('my-posts-item-menu')), findsNothing);
+    });
+
+    testWidgets('banner de falha na edição fica visível', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          const CreatePostFeedbackBanner(
+            message: 'Falha de rede ao salvar o post',
+            success: false,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text('Falha de rede ao salvar o post'), findsOneWidget);
+    });
+
     testWidgets('create-post-submit desabilitado sem conteúdo', (tester) async {
       var pressed = false;
       await tester.pumpWidget(
@@ -244,6 +287,64 @@ void main() {
         formatMyPostDate(DateTime.now().toIso8601String()),
         'agora',
       );
+    });
+
+    testWidgets('EDGE: lista vazia (zero posts) e CTA criar', (tester) async {
+      var created = false;
+      await tester.pumpWidget(
+        wrap(
+          MyPostsBody(
+            loading: false,
+            posts: const [],
+            onRetry: () {},
+            onCreate: () => created = true,
+            onOpenMenu: (_) {},
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text(myPostsEmptyTitle), findsOneWidget);
+      expect(find.text(myPostsEmptyMessage), findsOneWidget);
+      expect(find.byKey(const Key('my-posts-item-menu')), findsNothing);
+      await tester.tap(find.text(myPostsEmptyActionLabel));
+      await tester.pump();
+      expect(created, isTrue);
+    });
+
+    testWidgets('EDGE: teclado maxLength 280 não aceita overflow', (
+      tester,
+    ) async {
+      var value = '';
+      await tester.pumpWidget(
+        wrap(
+          AppTextField(
+            key: const Key('create-post-content'),
+            label: 'Descrição',
+            maxLines: 6,
+            maxLength: createPostMaxLength,
+            onChanged: (next) => value = next,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(find.byType(TextFormField), '${'E' * 300}');
+      await tester.pump();
+      expect(value.length, createPostMaxLength);
+      expect(
+        canPublishCreatePost(text: value, hasMedia: false),
+        isTrue,
+      );
+
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+      expect(find.byType(TextFormField), findsOneWidget);
+    });
+
+    test('createPostLengthLabel no zero e no limite', () {
+      expect(createPostLengthLabel(0), '0/280');
+      expect(createPostLengthLabel(createPostMaxLength), '280/280');
     });
 
     testWidgets('sheet oculto não mostra ações', (tester) async {

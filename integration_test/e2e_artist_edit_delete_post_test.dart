@@ -1,4 +1,6 @@
+import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/constants/pages.dart';
+import 'package:crowdfans/screens/post/create_post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -135,8 +137,46 @@ void main() {
     },
   );
 
+  patrolTest(
+    'RED: editar com texto vazio não publica',
+    skip: missingCreds,
+    timeout: const Timeout(Duration(minutes: 4)),
+    ($) async {
+      await bootstrapCrowdFansForPatrol($);
+      await E2eAuth.loginAsArtist($);
+
+      final stamp = await E2eAuth.createArtistTextPost($);
+      final label = 'load-e2e $stamp';
+      expect($(label), findsWidgets);
+
+      await $(const Key('my-posts-item-menu')).tap();
+      await E2eAuth.pumpFrames($);
+      await $(const Key('my-posts-edit')).tap();
+      await E2eAuth.pumpFrames($, times: 3);
+      await $('Editar Post').waitUntilVisible(
+        timeout: const Duration(seconds: 20),
+      );
+
+      await $(const Key('create-post-content')).enterText('   ');
+      await E2eAuth.pumpFrames($);
+      final submit = $.tester.widget<AppButton>(
+        find.byKey(const Key('create-post-submit')),
+      );
+      expect(submit.disabled, isTrue);
+      expect($('Editar Post'), findsOneWidget);
+
+      // Volta sem salvar — post original permanece.
+      await E2eAuth.go($, Pages.myPosts);
+      await E2eAuth.pumpFrames($, times: 3);
+      await $('Meus Posts').waitUntilVisible(
+        timeout: const Duration(seconds: 30),
+      );
+      expect($(label), findsWidgets);
+    },
+  );
+
   // ---------------------------------------------------------------------------
-  // EDGE — texto longo (280) na edição continua publicável
+  // EDGE — texto longo (280), teclado, fixtures off = skip sem E2E_*
   // ---------------------------------------------------------------------------
   patrolTest(
     'EDGE: editar post com texto no limite 280 e salvar',
@@ -157,8 +197,12 @@ void main() {
         timeout: const Duration(seconds: 20),
       );
 
-      final longText = 'E' * 280;
+      final longText = 'E' * createPostMaxLength;
       await $(const Key('create-post-content')).enterText(longText);
+      FocusManager.instance.primaryFocus?.unfocus();
+      await E2eAuth.pumpFrames($);
+      expect($(const Key('create-post-length')), findsOneWidget);
+      expect($('280/280'), findsWidgets);
       await $(const Key('create-post-submit')).tap();
       await E2eAuth.pumpFrames($, times: 6);
 
