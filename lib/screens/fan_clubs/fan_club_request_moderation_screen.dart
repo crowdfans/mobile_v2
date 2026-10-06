@@ -14,6 +14,10 @@ import 'package:crowdfans/utils/app_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+/// Erro de carga do perfil (fixtures off / sessão / rede).
+const kFanClubRequestModerationLoadError =
+    'Não foi possível carregar seu perfil.';
+
 /// Traduz erros do POST moderator-requests para copy compreensível (CF-224).
 String mapFanClubModerationRequestError(Object error) {
   final raw = error is ApiError ? error.message : error.toString();
@@ -58,6 +62,7 @@ class FanClubRequestModerationScreen extends StatefulWidget {
     super.key,
     required this.artistId,
     this.artistName,
+    this.loadCandidate,
   });
 
   /// Limite mínimo alinhado ao servidor (`CreateModeratorRequest`, 24 runes).
@@ -68,6 +73,9 @@ class FanClubRequestModerationScreen extends StatefulWidget {
 
   final String artistId;
   final String? artistName;
+
+  /// Override de testes (print / falha de rede). Produção deixa null.
+  final Future<Profile> Function()? loadCandidate;
 
   @override
   State<FanClubRequestModerationScreen> createState() =>
@@ -111,7 +119,8 @@ class _FanClubRequestModerationScreenState
         });
         return;
       }
-      final profile = await ProfileService.getMyProfile();
+      final profile = await (widget.loadCandidate ??
+          ProfileService.getMyProfile)();
       if (!mounted) {
         return;
       }
@@ -132,7 +141,7 @@ class _FanClubRequestModerationScreenState
       }
       setState(() {
         _loading = false;
-        _error = 'Não foi possível carregar seu perfil.';
+        _error = kFanClubRequestModerationLoadError;
       });
     }
   }
