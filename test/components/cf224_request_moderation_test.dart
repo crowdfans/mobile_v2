@@ -2,6 +2,7 @@ import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/components/buttons/app_button.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/mocks/cf_temp_mocks.dart';
+import 'package:crowdfans/models/profile.dart';
 import 'package:crowdfans/screens/fan_clubs/fan_club_request_moderation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,9 +10,22 @@ import 'package:flutter_test/flutter_test.dart';
 /// CF-273 — regressão FE de CF-224 (solicitar moderação).
 /// Obrigatório Gustavo: green / red / edge.
 void main() {
+  Profile printCandidate() {
+    return Profile(
+      userUid: 'cf-mod-aline',
+      displayName: cfTempMockModerationCandidate.displayName,
+      name: 'alineduarte',
+      description: '',
+      photoUrl: cfTempMockModerationCandidate.photoUrl,
+      isArtist: false,
+    );
+  }
+
   Future<void> pumpScreen(
     WidgetTester tester, {
     double keyboardInset = 0,
+    Future<Profile> Function()? loadCandidate,
+    bool usePrintCandidate = true,
   }) async {
     await tester.pumpWidget(
       MediaQuery(
@@ -21,9 +35,11 @@ void main() {
         ),
         child: MaterialApp(
           theme: buildCrowdFansTheme(Brightness.light),
-          home: const FanClubRequestModerationScreen(
+          home: FanClubRequestModerationScreen(
             artistId: 'mock-fc-enzo',
             artistName: 'Enzo Lima',
+            loadCandidate: loadCandidate ??
+                (usePrintCandidate ? () async => printCandidate() : null),
           ),
         ),
       ),
@@ -32,9 +48,7 @@ void main() {
   }
 
   group('CF-273 green', () {
-    test('fixture elegível: Aline + limites 24/420 alinhados ao server', () {
-      expect(kUseCfTempMocks, isTrue);
-      expect(kUseCf224RequestModerationMocks, isFalse);
+    test('print helper Aline + limites 24/420 alinhados ao server', () {
       expect(cfTempMockModerationCandidate.displayName, 'Aline Duarte');
       expect(cfTempMockModerationCandidate.handle, 'fan/alineduarte');
       expect(cfTempMockModerationCandidate.photoUrl, isNotEmpty);
@@ -157,6 +171,13 @@ void main() {
   });
 
   group('CF-273 edge', () {
+    test('fixtures off: flags demock; amostra print permanece p/ testes', () {
+      expect(kUseCfTempMocks, isTrue);
+      expect(kUseCf224RequestModerationMocks, isFalse);
+      expect(CfTempMocks.useFanClubFixtures, isFalse);
+      expect(cfTempMockModerationCandidate.displayName, 'Aline Duarte');
+    });
+
     testWidgets('contagem zero: 0/420 no estado inicial', (tester) async {
       await pumpScreen(tester);
       expect(find.text('0/420'), findsOneWidget);
@@ -185,7 +206,6 @@ void main() {
 
       expect(find.text('Solicitar moderação'), findsOneWidget);
 
-      // Campo + CTA estão no ListView — scroll até o botão sob o inset.
       await tester.scrollUntilVisible(
         find.text('Enviar solicitação'),
         60,
@@ -201,7 +221,6 @@ void main() {
     testWidgets('emoji/runes: ≥24 graphemes habilita CTA', (tester) async {
       await pumpScreen(tester);
 
-      // 24 emojis (cada um 1 character no Dart characters API).
       final emojis = '😀' * 24;
       await tester.enterText(find.byType(TextFormField), emojis);
       await tester.pump();
@@ -209,6 +228,33 @@ void main() {
       expect(find.text('24/420'), findsOneWidget);
       final button = tester.widget<AppButton>(find.byType(AppButton));
       expect(button.disabled, isFalse);
+    });
+
+    testWidgets(
+      'rede: falha ao carregar perfil — copy de erro, sem formulário/submit',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          loadCandidate: () async {
+            throw ApiError('Falha de rede ao falar com o servidor.', 0);
+          },
+        );
+
+        expect(find.text(kFanClubRequestModerationLoadError), findsOneWidget);
+        expect(find.text('Aline Duarte'), findsNothing);
+        expect(find.text('Enviar solicitação'), findsNothing);
+        expect(find.text('Pedido enviado ao artista.'), findsNothing);
+        expect(find.byType(AppButton), findsNothing);
+      },
+    );
+
+    test('rede no POST: Falha de rede não vira sucesso', () {
+      expect(
+        mapFanClubModerationRequestError(
+          ApiError('Falha de rede ao falar com o servidor.', 0),
+        ),
+        'Falha de rede ao falar com o servidor.',
+      );
     });
   });
 }
