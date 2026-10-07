@@ -4,7 +4,7 @@ import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/api/api_urls.dart';
 import 'package:crowdfans/services/http_service.dart';
 import 'package:crowdfans/services/media_url_shapes.dart';
-import 'package:http/http.dart' as http;
+import 'package:crowdfans/services/object_storage_client.dart';
 
 /// Pasta de mídia no object store (`users/{uid}/{kind}/` — GCS na linha 0.2).
 enum MediaKind { avatar, post, fanClub, fanLetter }
@@ -55,10 +55,11 @@ class MediaPresignPayload {
   }
 }
 
-/// Upload de imagem via presign (`POST /api/v1/me/media/uploads` + PUT object store).
+/// Upload de imagem via presign API + [ObjectStorageClient] (GCS signed PUT).
 ///
 /// Flavor **gcp** (`release/0.2`): URLs GCS / signed `X-Goog-*` — sem Spaces.
-/// Ver [media_url_shapes.dart] e `docs/MEDIA_GCS.md`.
+/// Auth Firebase só na chamada `POST /me/media/uploads` ([HttpService]);
+/// o PUT ao bucket **não** leva Bearer (CF-358).
 abstract final class MediaService {
   /// URL já pública (http/https) — não precisa de upload.
   static bool isRemoteMediaUrl(String uri) {
@@ -124,7 +125,7 @@ abstract final class MediaService {
     );
   }
 
-  /// Envia bytes via PUT presigned (GCS na linha gcp) e devolve a URL pública.
+  /// Presign na API (Bearer) + PUT signed no object store (sem Bearer).
   static Future<String> uploadBytes({
     required Uint8List bytes,
     required MediaKind kind,
@@ -141,33 +142,22 @@ abstract final class MediaService {
     );
     _assertPresignShapes(presign);
 
-    final headers = <String, String>{
-      ...presign.headers,
-      'Content-Type': contentType,
-    };
-    // GCS signed PUT não usa x-amz-acl; se o server mandar residual Spaces, ignore no gcp.
-    if (mediaBackendExpectsGcs()) {
-      headers.removeWhere(
-        (key, _) => key.toLowerCase().startsWith('x-amz-'),
-      );
-    }
-
-    late http.Response uploaded;
-    try {
-      final uri = Uri.parse(presign.uploadUrl);
-      uploaded =
-          await (presign.method == 'POST'
-                  ? http.post(uri, headers: headers, body: bytes)
-                  : http.put(uri, headers: headers, body: bytes))
-              .timeout(const Duration(seconds: 60));
-    } catch (_) {
-      throw ApiError('Falha de rede ao enviar a imagem.', 0);
-    }
-    if (uploaded.statusCode < 200 || uploaded.statusCode >= 300) {
-      final backend = mediaBackendExpectsGcs() ? 'Cloud Storage' : 'armazenamento';
+    final headers = ObjectStorageClient.headersForSignedUpload(
+      fromServer: presign.headers,
+      contentType: contentType,
+    );
+    final status = await ObjectStorageClient.putSignedBytes(
+      uploadUrl: presign.uploadUrl,
+      method: presign.method,
+      headers: headers,
+      bytes: bytes,
+    );
+    if (status < 200 || status >= 300) {
+      final backend =
+          mediaBackendExpectsGcs() ? 'Cloud Storage' : 'armazenamento';
       throw ApiError(
-        'Falha ao enviar a imagem para o $backend (${uploaded.statusCode}).',
-        uploaded.statusCode,
+        'Falha ao enviar a imagem para o $backend ($status).',
+        status,
       );
     }
     return presign.publicUrl;

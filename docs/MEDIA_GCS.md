@@ -21,8 +21,11 @@ PR mobile [#342](https://github.com/crowdfans/mobile_v2/pull/342) · [API_BACKEN
 | Arquivo | Papel |
 |---------|--------|
 | `lib/services/media_url_shapes.dart` | Detecta GCS / Spaces / signed; `isAllowed*` por flavor |
-| `lib/services/media_service.dart` | Presign + PUT; rejeita Spaces no flavor gcp |
-| `test/services/media_gcs_shapes_test.dart` | GRE |
+| `lib/services/object_storage_client.dart` | PUT signed **sem** Bearer (CF-358) |
+| `lib/services/media_service.dart` | Presign API + ObjectStorageClient; rejeita Spaces no gcp |
+| `test/services/media_gcs_shapes_test.dart` | GRE shapes |
+| `test/services/storage_auth_clients_test.dart` | GRE headers/auth boundary |
+| [STORAGE_AUTH_CLIENTS.md](./STORAGE_AUTH_CLIENTS.md) | Contrato auth ↔ storage |
 
 ```bash
 flutter test test/services/media_gcs_shapes_test.dart
