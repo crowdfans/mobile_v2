@@ -32,3 +32,8 @@ Seletor: `lib/firebase_options.dart` → `DefaultFirebaseOptions` usa `appFlavor
 4. Nunca reintroduzir keys no `release/0.2` / PRs GCP.
 
 Branch `prod` (DO `0.1.x`) pode continuar com o configure histórico — fora deste PR.
+
+## App Distribution
+
+Canal testers para builds `APP_FLAVOR=gcp`: [APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md)  
+(`npm run distribute:gcp` → grupo `flutter-testers`, notes `[gcp] …`).

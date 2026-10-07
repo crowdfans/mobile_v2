@@ -42,6 +42,11 @@ Detalhe: [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md).
 Unit + Patrol smoke contra Cloud Run **placeholder** (pré-deploy).  
 Detalhe: [PATROL_GCP_FLAVOR.md](./PATROL_GCP_FLAVOR.md).
 
+## App Distribution (gcp)
+
+Builds flavor gcp → Firebase App Distribution.  
+Detalhe: [APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md).
+
 ## Versão
 
 `pubspec` nesta linha: `0.2.0+N`. Ver [VERSIONING.md](./VERSIONING.md).
