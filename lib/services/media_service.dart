@@ -3,9 +3,10 @@ import 'dart:typed_data';
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/api/api_urls.dart';
 import 'package:crowdfans/services/http_service.dart';
+import 'package:crowdfans/services/media_url_shapes.dart';
 import 'package:http/http.dart' as http;
 
-/// Pasta de mídia no Spaces (`users/{uid}/{kind}/`).
+/// Pasta de mídia no object store (`users/{uid}/{kind}/` — GCS na linha 0.2).
 enum MediaKind { avatar, post, fanClub, fanLetter }
 
 extension MediaKindApi on MediaKind {
@@ -20,23 +21,27 @@ extension MediaKindApi on MediaKind {
   }
 }
 
-class _PresignPayload {
-  const _PresignPayload({
+class MediaPresignPayload {
+  const MediaPresignPayload({
     required this.uploadUrl,
     required this.method,
     required this.headers,
     required this.publicUrl,
+    this.objectKey = '',
+    this.expiresIn = 0,
   });
 
   final String uploadUrl;
   final String method;
   final Map<String, String> headers;
   final String publicUrl;
+  final String objectKey;
+  final int expiresIn;
 
-  factory _PresignPayload.fromJson(Object? json) {
+  factory MediaPresignPayload.fromJson(Object? json) {
     final map = (json as Map?)?.cast<String, dynamic>() ?? {};
     final rawHeaders = map['headers'] as Map? ?? {};
-    return _PresignPayload(
+    return MediaPresignPayload(
       uploadUrl: map['uploadUrl'] as String? ?? '',
       method: (map['method'] as String? ?? 'PUT').toUpperCase(),
       headers: {
@@ -44,11 +49,16 @@ class _PresignPayload {
           entry.key.toString(): entry.value.toString(),
       },
       publicUrl: map['publicUrl'] as String? ?? '',
+      objectKey: map['objectKey'] as String? ?? '',
+      expiresIn: (map['expiresIn'] as num?)?.toInt() ?? 0,
     );
   }
 }
 
-/// Upload de imagem via presign (`POST /api/v1/me/media/uploads` + PUT Spaces).
+/// Upload de imagem via presign (`POST /api/v1/me/media/uploads` + PUT object store).
+///
+/// Flavor **gcp** (`release/0.2`): URLs GCS / signed `X-Goog-*` — sem Spaces.
+/// Ver [media_url_shapes.dart] e `docs/MEDIA_GCS.md`.
 abstract final class MediaService {
   /// URL já pública (http/https) — não precisa de upload.
   static bool isRemoteMediaUrl(String uri) {
@@ -82,7 +92,7 @@ abstract final class MediaService {
     return 'image/jpeg';
   }
 
-  /// Resolve URI local (bytes) para URL pública; http(s) passa direto.
+  /// Resolve URI local (bytes) para URL pública; http(s) permitido passa direto.
   static Future<String?> resolveMediaUrl({
     required String uri,
     required MediaKind kind,
@@ -94,6 +104,14 @@ abstract final class MediaService {
       return null;
     }
     if (isRemoteMediaUrl(trimmed) && bytes == null) {
+      if (!isAllowedPublicMediaUrl(trimmed)) {
+        throw ApiError(
+          mediaBackendExpectsGcs()
+              ? 'URL de mídia inválida para GCS (Spaces/DO não são aceitos neste flavor).'
+              : 'URL de mídia inválida.',
+          0,
+        );
+      }
       return trimmed;
     }
     if (bytes == null || bytes.isEmpty) {
@@ -106,7 +124,7 @@ abstract final class MediaService {
     );
   }
 
-  /// Envia bytes ao Spaces via PUT presigned e devolve a URL pública.
+  /// Envia bytes via PUT presigned (GCS na linha gcp) e devolve a URL pública.
   static Future<String> uploadBytes({
     required Uint8List bytes,
     required MediaKind kind,
@@ -115,19 +133,25 @@ abstract final class MediaService {
     if (bytes.isEmpty) {
       throw ApiError('A imagem selecionada está vazia.', 0);
     }
-    final presign = await HttpService.request<_PresignPayload>(
+    final presign = await HttpService.request<MediaPresignPayload>(
       ApiUrls.meMediaUploads,
       method: Method.post,
       body: {'kind': kind.apiValue, 'contentType': contentType},
-      parse: _PresignPayload.fromJson,
+      parse: MediaPresignPayload.fromJson,
     );
-    if (presign.uploadUrl.isEmpty || presign.publicUrl.isEmpty) {
-      throw ApiError('O servidor não devolveu URL de upload.', 0);
-    }
+    _assertPresignShapes(presign);
+
     final headers = <String, String>{
       ...presign.headers,
       'Content-Type': contentType,
     };
+    // GCS signed PUT não usa x-amz-acl; se o server mandar residual Spaces, ignore no gcp.
+    if (mediaBackendExpectsGcs()) {
+      headers.removeWhere(
+        (key, _) => key.toLowerCase().startsWith('x-amz-'),
+      );
+    }
+
     late http.Response uploaded;
     try {
       final uri = Uri.parse(presign.uploadUrl);
@@ -140,11 +164,34 @@ abstract final class MediaService {
       throw ApiError('Falha de rede ao enviar a imagem.', 0);
     }
     if (uploaded.statusCode < 200 || uploaded.statusCode >= 300) {
+      final backend = mediaBackendExpectsGcs() ? 'Cloud Storage' : 'armazenamento';
       throw ApiError(
-        'Falha ao enviar a imagem para o Spaces (${uploaded.statusCode}).',
+        'Falha ao enviar a imagem para o $backend (${uploaded.statusCode}).',
         uploaded.statusCode,
       );
     }
     return presign.publicUrl;
+  }
+
+  static void _assertPresignShapes(MediaPresignPayload presign) {
+    if (presign.uploadUrl.isEmpty || presign.publicUrl.isEmpty) {
+      throw ApiError('O servidor não devolveu URL de upload.', 0);
+    }
+    if (!isAllowedUploadUrl(presign.uploadUrl)) {
+      throw ApiError(
+        mediaBackendExpectsGcs()
+            ? 'URL de upload não é signed GCS (X-Goog-*). Spaces/DO bloqueado no flavor gcp.'
+            : 'URL de upload inválida.',
+        0,
+      );
+    }
+    if (!isAllowedPublicMediaUrl(presign.publicUrl)) {
+      throw ApiError(
+        mediaBackendExpectsGcs()
+            ? 'publicUrl não tem shape GCS (storage.googleapis.com/…).'
+            : 'publicUrl inválida.',
+        0,
+      );
+    }
   }
 }

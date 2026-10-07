@@ -47,6 +47,11 @@ Detalhe: [PATROL_GCP_FLAVOR.md](./PATROL_GCP_FLAVOR.md).
 Builds flavor gcp → Firebase App Distribution.  
 Detalhe: [APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md).
 
+## Mídia GCS (CF-339)
+
+Upload/preview: shapes `storage.googleapis.com` / signed `X-Goog-*` (sem Spaces).  
+Detalhe: [MEDIA_GCS.md](./MEDIA_GCS.md).
+
 ## Versão
 
 `pubspec` nesta linha: `0.2.0+N`. Ver [VERSIONING.md](./VERSIONING.md).
