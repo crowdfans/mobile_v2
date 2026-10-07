@@ -4,7 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-/// Firebase Auth no projeto `crowdfans-prod` (`DefaultFirebaseOptions`).
+/// Firebase Auth — options por [APP_FLAVOR] (`DefaultFirebaseOptions`).
+///
+/// Stubs em `firebase_options_gcp.dart` / `_digitalocean.dart` (sem keys).
+/// Ver `docs/FIREBASE_FLAVORS.md`.
 abstract final class FirebaseService {
   static FirebaseAuth get auth => FirebaseAuth.instance;
 

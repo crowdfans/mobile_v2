@@ -80,7 +80,7 @@ Projeto: **`crowdfans-prod`** (não `crowdfans-dev-e9703`). CLI: `npx firebase-t
 3. `flutterfire configure --project=crowdfans-prod --platforms=ios,android,web --yes`
 4. Trocar `FirebaseService` para `DefaultFirebaseOptions.currentPlatform`.
 
-App Distribution, `google-services.json` e o plist **só** saem desse configure — copiar a chave web do Expo no `.env` cobre Auth no Dart, não o app nativo.
+App Distribution: keys reais via configure **local/CI** — em `release/0.2` os stubs por flavor (`docs/FIREBASE_FLAVORS.md`) usam `REPLACE_ME_*` (sem secrets no git). Copiar a chave web do Expo no `.env` cobre Auth no Dart, não o app nativo.
 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 

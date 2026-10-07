@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:000000000000:ios:replace_me_gcp</string>
+	<string>1:000000000000:ios:replace_me_digitalocean</string>
 </dict>
 </plist>

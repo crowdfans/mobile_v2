@@ -32,6 +32,11 @@ iOS: use `--dart-define-from-file=config/….json` (schemes nativos de flavor ai
 
 Placeholders Cloud Run são provisórios até o deploy real (CF-286+). Atualizar JSON/env com a URL `.run.app` retornada pelo `gcloud run services describe`.
 
+## Firebase
+
+Options + `google-services` / plist **por flavor**, stubs sem segredos.  
+Detalhe: [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md).
+
 ## Versão
 
 `pubspec` nesta linha: `0.2.0+N`. Ver [VERSIONING.md](./VERSIONING.md).
