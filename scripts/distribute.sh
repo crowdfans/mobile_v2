@@ -23,8 +23,11 @@ FIREBASE_PROJECT='crowdfans-prod'
 TESTER_GROUP='flutter-testers'
 WEB_CHANNEL='testers'
 WEB_EXPIRES='14d'
-APK_PATH='build/app/outputs/flutter-apk/app-release.apk'
+# Default flavor GCP (release/0.2). Override: APP_FLAVOR=digitalocean
+APP_FLAVOR="${APP_FLAVOR:-gcp}"
+APK_PATH="build/app/outputs/flutter-apk/app-${APP_FLAVOR}-release.apk"
 WEB_INDEX='build/web/index.html'
+DART_DEFINE_FILE="config/${APP_FLAVOR}.json"
 
 PLATFORM='android'
 SKIP_BUILD=0
@@ -128,8 +131,13 @@ upload_ios() {
 }
 
 build_android() {
-  echo "→ APK $build_name ($build_number)"
-  flutter build apk --release \
+  echo "→ APK $build_name ($build_number) flavor=$APP_FLAVOR"
+  local define_args=()
+  if [[ -f "$DART_DEFINE_FILE" ]]; then
+    define_args=(--dart-define-from-file="$DART_DEFINE_FILE")
+  fi
+  flutter build apk --release --flavor "$APP_FLAVOR" \
+    "${define_args[@]}" \
     --build-name="$build_name" \
     --build-number="$build_number"
 }
@@ -159,9 +167,15 @@ build_ios() {
 }
 
 build_web() {
-  echo "→ Web $build_name ($build_number)"
+  echo "→ Web $build_name ($build_number) flavor=$APP_FLAVOR"
+  local define_args=()
+  if [[ -f "$DART_DEFINE_FILE" ]]; then
+    define_args=(--dart-define-from-file="$DART_DEFINE_FILE")
+  else
+    define_args=(--dart-define=APP_FLAVOR=gcp --dart-define=API_MODE=gcp)
+  fi
   flutter build web --release \
-    --dart-define=API_BASE_URL=https://crowdfans-server-prod-h9qb6.ondigitalocean.app \
+    "${define_args[@]}" \
     --build-name="$build_name" \
     --build-number="$build_number"
 }

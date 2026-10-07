@@ -38,8 +38,10 @@ LOCALE="${FTL_LOCALE:-pt_BR}"
 ORIENTATION="${FTL_ORIENTATION:-portrait}"
 TIMEOUT="${FTL_TIMEOUT:-10m}"
 RESULTS_DIR="${FTL_RESULTS_DIR:-build/ftl-android-results}"
-APP_APK="${FTL_APP_APK:-build/app/outputs/apk/debug/app-debug.apk}"
-TEST_APK="${FTL_TEST_APK:-build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk}"
+APP_FLAVOR="${APP_FLAVOR:-gcp}"
+APP_APK="${FTL_APP_APK:-build/app/outputs/apk/${APP_FLAVOR}/debug/app-${APP_FLAVOR}-debug.apk}"
+TEST_APK="${FTL_TEST_APK:-build/app/outputs/apk/androidTest/${APP_FLAVOR}/debug/app-${APP_FLAVOR}-debug-androidTest.apk}"
+DART_DEFINE_FILE="${DART_DEFINE_FILE:-config/${APP_FLAVOR}.json}"
 
 DRY_RUN=0
 SKIP_BUILD=0
@@ -112,7 +114,10 @@ if ! gcloud firebase test android models list --project "$PROJECT" >/dev/null; t
 fi
 echo "    models list OK"
 
-BUILD_CMD=(patrol build android --target "$TEST_TARGET")
+BUILD_CMD=(patrol build android --flavor "$APP_FLAVOR" --target "$TEST_TARGET")
+if [[ -f "$DART_DEFINE_FILE" ]]; then
+  BUILD_CMD+=(--dart-define-from-file="$DART_DEFINE_FILE")
+fi
 for define in "${EXTRA_DART_DEFINES[@]+"${EXTRA_DART_DEFINES[@]}"}"; do
   BUILD_CMD+=("$define")
 done

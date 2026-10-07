@@ -5,10 +5,25 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 abstract final class EnvService {
   static const _expoPrefix = 'EXPO_PUBLIC_';
 
-  /// Carrega `.env` local; se não existir no bundle, cai no `.env.example`.
+  /// Carrega env do flavor/backend ativo, depois `.env` / `.env.example`.
+  ///
+  /// Ordem: `.env.<flavor>` → `.env` → `.env.<flavor>.example` → `.env.example`.
+  /// Flavor via `--dart-define=APP_FLAVOR=` (default `gcp` na linha `release/0.2`).
   static Future<void> load() async {
+    const flavorDefine = String.fromEnvironment(
+      'APP_FLAVOR',
+      defaultValue: 'gcp',
+    );
+    final flavor = flavorDefine.trim().toLowerCase();
+    final candidates = <String>[
+      if (flavor.isNotEmpty) '.env.$flavor',
+      '.env',
+      if (flavor.isNotEmpty) '.env.$flavor.example',
+      '.env.example',
+    ];
+
     Object? lastError;
-    for (final name in ['.env', '.env.example']) {
+    for (final name in candidates) {
       try {
         await dotenv.load(fileName: name);
         return;
@@ -17,7 +32,7 @@ abstract final class EnvService {
       }
     }
     throw StateError(
-      'Não foi possível carregar .env nem .env.example: $lastError',
+      'Não foi possível carregar env (flavor=$flavor): $lastError',
     );
   }
 

@@ -1,0 +1,5 @@
+{
+  "APP_FLAVOR": "digitalocean",
+  "API_MODE": "digitalocean",
+  "API_DIGITALOCEAN_BASE_URL": "https://crowdfans-server-prod-h9qb6.ondigitalocean.app"
+}
