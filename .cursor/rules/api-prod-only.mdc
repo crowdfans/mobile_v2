@@ -1,17 +1,16 @@
 ---
-description: API backends GCP (release/0.2) vs DO; nunca hosts mortos
+description: API CrowdFans — DO vivo vs GCP Cloud Run; nunca hosts mortos
 alwaysApply: true
 ---
 
-# API CrowdFans — backends
+# API CrowdFans
 
-**Proibido:** `crowdfans-app-dev*` e `crowdfans-app-prod.ondigitalocean.app` (DNS morto). Nunca como fallback.
+**Proibido:** `crowdfans-app-dev*` e `crowdfans-app-prod.ondigitalocean.app` (não resolvem DNS).
 
-| Linha | Branch | Default | Base |
-|-------|--------|---------|------|
-| **GCP** | `release/0.2` | `API_MODE=gcp` | Cloud Run (`API_GCP_*` / placeholders) |
-| **DO** | `prod` | digitalocean | `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
+| Canal | URL / host |
+|-------|------------|
+| **DO vivo** (`prod` / 0.1.x) | `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
+| **GCP** (`release/0.2` / 0.2.0+N) | Cloud Run `crowdfans-server` / `crowdfans-server-staging` (após tags) |
+| Local | `API_MODE=local` → localhost |
 
-`API_MODE=local` (localhost) ok.
-
-SoT agent-facing: `docs/API_HOSTS.md`. Pós-cutover (`v0.2.0`) o canônico é Cloud Run / `api.crowdfans.app` — não server-prod DO.
+Não inventar fallback `dev` nem `crowdfans-app-prod`.
