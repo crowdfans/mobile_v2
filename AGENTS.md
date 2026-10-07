@@ -84,7 +84,14 @@ App Distribution, `google-services.json` e o plist **só** saem desse configure 
 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 
-**API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS). Default DigitalOcean = `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Localhost só com `API_MODE=local`.
+**API (duas linhas até cutover):** nunca `crowdfans-app-dev*` / `crowdfans-app-prod` (DNS morto).
+
+| Linha | Branch | Alvo |
+|-------|--------|------|
+| DO (usuários hoje) | `prod` | `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
+| GCP | `release/0.2` | Cloud Run via `API_MODE=gcp` / `API_GCP_*` (placeholders até CF-286) |
+
+`API_MODE=local` (localhost) ok. Detalhe e placeholders: [`docs/API_HOSTS.md`](docs/API_HOSTS.md). Pós-cutover o canônico deixa de ser DO.
 
 ---
 
