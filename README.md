@@ -18,6 +18,8 @@ API_MODE=local
 API_LOCAL_BASE_URL=http://localhost:8080
 ```
 
+GCP staging (`release/0.2`): `API_MODE=gcp` + `API_GCP_STAGING_BASE_URL` (placeholder até Cloud Run — ver `docs/GCP_STAGING_CONFIG.md`).
+
 Login nativo usa o Firebase **`crowdfans-prod`**.
 
 ## Patrol (QA E2E)
