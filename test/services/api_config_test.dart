@@ -99,5 +99,6 @@ void main() {
     expect(debug.flavor, 'gcp');
     expect(debug.mode, 'gcp');
     expect(debug.baseUrl, isNotEmpty);
+    expect(debug.cutoverForceDo, isFalse);
   });
 }

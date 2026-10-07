@@ -1,4 +1,5 @@
 import 'package:crowdfans/services/api_config.dart';
+import 'package:crowdfans/services/cutover_flags.dart';
 import 'package:crowdfans/services/env_service.dart';
 
 /// Formas de URL de mídia: GCS (linha `release/0.2` / flavor `gcp`) vs Spaces (DO).
@@ -99,7 +100,15 @@ String mediaGcsPublicBaseUrl() {
 }
 
 /// Flavor gcp (e local na linha 0.2) → só GCS; digitalocean → Spaces ok.
+/// Cutover [CutoverFlags.mediaBackendOverride] / kill-switch pode forçar Spaces.
 bool mediaBackendExpectsGcs() {
+  final override = CutoverFlags.mediaBackendOverride();
+  if (override == 'spaces') {
+    return false;
+  }
+  if (override == 'gcs') {
+    return true;
+  }
   final flavor = appFlavor();
   return flavor == 'gcp' || flavor == 'local' || flavor == 'gcp_prod';
 }

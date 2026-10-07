@@ -1,3 +1,4 @@
+import 'package:crowdfans/services/cutover_flags.dart';
 import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -53,8 +54,12 @@ String appFlavor() {
   return kDefaultAppFlavor;
 }
 
-/// Modo de API efetivo (alias de [appFlavor] + `API_MODE`).
+/// Modo de API efetivo (alias de [appFlavor] + `API_MODE` + cutover flags).
 String apiMode() {
+  final cutover = CutoverFlags.apiBackendOverride();
+  if (cutover != null) {
+    return cutover;
+  }
   const fromDefine = String.fromEnvironment('API_MODE');
   if (fromDefine.trim().isNotEmpty) {
     return _normalizeMode(fromDefine);
@@ -86,13 +91,27 @@ String _normalizeMode(String raw) {
 /// Resolve a base da API.
 ///
 /// No **web**, não há `.env` no Hosting — usa dart-define / defaults do flavor.
+/// Cutover (CF-359): kill-switch DO → [kCrowdFansDoProdApi]; ver [CutoverFlags].
 String apiBaseUrl() {
+  // Kill-switch tem prioridade sobre API_BASE_URL / RC URL (rollback seguro).
+  if (CutoverFlags.forceDigitalOcean()) {
+    return _digitalOceanUrl();
+  }
+
   const fromDefine = String.fromEnvironment('API_BASE_URL');
   final forced = _cleanUrl(
     fromDefine.isNotEmpty ? fromDefine : _env('API_BASE_URL'),
   );
   if (forced.isNotEmpty) {
     return _ensureSafe(_rewriteLocalhost(forced), fallback: _fallbackForMode());
+  }
+
+  final cutoverUrl = CutoverFlags.apiBaseUrlOverride();
+  if (cutoverUrl != null && cutoverUrl.isNotEmpty) {
+    return _ensureSafe(
+      _rewriteLocalhost(cutoverUrl),
+      fallback: _fallbackForMode(),
+    );
   }
 
   final mode = apiMode();
@@ -169,11 +188,13 @@ String _fallbackForMode() {
 }
 
 /// Snapshot para debug na tela de login / erros de rede.
-({String baseUrl, String mode, String flavor}) apiConfigDebug() {
+({String baseUrl, String mode, String flavor, bool cutoverForceDo})
+apiConfigDebug() {
   return (
     baseUrl: apiBaseUrl(),
     mode: apiMode(),
     flavor: appFlavor(),
+    cutoverForceDo: CutoverFlags.forceDigitalOcean(),
   );
 }
 

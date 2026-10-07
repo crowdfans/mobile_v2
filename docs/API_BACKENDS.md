@@ -52,6 +52,11 @@ Detalhe: [APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md).
 Upload/preview: shapes `storage.googleapis.com` / signed `X-Goog-*` (sem Spaces).  
 Detalhe: [MEDIA_GCS.md](./MEDIA_GCS.md).
 
+## Cutover flags / Remote Config (CF-359)
+
+Kill-switch e overrides de API/mídia em dual-run: [REMOTE_CONFIG_CUTOVER.md](./REMOTE_CONFIG_CUTOVER.md).  
+`cf_cutover_force_digitalocean=true` → rollback para DO server-prod.
+
 ## Versão
 
 `pubspec` nesta linha: `0.2.0+N`. Ver [VERSIONING.md](./VERSIONING.md).
