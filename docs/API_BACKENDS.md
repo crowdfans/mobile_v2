@@ -37,6 +37,11 @@ Placeholders Cloud Run são provisórios até o deploy real (CF-286+). Atualizar
 Options + `google-services` / plist **por flavor**, stubs sem segredos.  
 Detalhe: [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md).
 
+## Patrol / GRE stubs (gcp)
+
+Unit + Patrol smoke contra Cloud Run **placeholder** (pré-deploy).  
+Detalhe: [PATROL_GCP_FLAVOR.md](./PATROL_GCP_FLAVOR.md).
+
 ## Versão
 
 `pubspec` nesta linha: `0.2.0+N`. Ver [VERSIONING.md](./VERSIONING.md).

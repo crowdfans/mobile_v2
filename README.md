@@ -43,12 +43,16 @@ export PATH="$HOME/sdk/flutter/bin:$HOME/.pub-cache/bin:$PATH"
 patrol doctor
 ```
 
-Smoke local (emulador/simulador ligado):
+Smoke local (emulador/simulador ligado) — flavor **gcp** na linha `release/0.2`:
 
 ```bash
-patrol test -t integration_test/smoke_test.dart
-patrol test -t integration_test/superfan_onboarding_login_test.dart
+npm run test:patrol:smoke
+npm run test:patrol:superfan
+npm run test:patrol:gcp          # GRE stub Cloud Run placeholder
+npm run test:unit:gcp            # unit GRE sem device
 ```
+
+Docs: [`docs/PATROL_GCP_FLAVOR.md`](docs/PATROL_GCP_FLAVOR.md).
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
