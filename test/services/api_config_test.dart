@@ -1,13 +1,16 @@
 import 'package:crowdfans/services/api_config.dart';
+import 'package:crowdfans/services/cutover_flags.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUp(() {
+    CutoverFlags.resetRemoteValues();
     dotenv.loadFromString(envString: '', isOptional: true);
   });
 
   tearDown(() {
+    CutoverFlags.resetRemoteValues();
     dotenv.loadFromString(envString: '', isOptional: true);
   });
 
