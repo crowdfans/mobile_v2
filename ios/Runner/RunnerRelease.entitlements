@@ -4,5 +4,13 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
+	<!-- Universal Links — prod + placeholder staging GCP (CF-357).
+	     apple-app-site-association no host ainda pendente até DNS/LB GCP. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:crowdfans.app</string>
+		<string>applinks:www.crowdfans.app</string>
+		<string>applinks:staging.crowdfans.app</string>
+	</array>
 </dict>
 </plist>

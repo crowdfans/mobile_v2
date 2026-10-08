@@ -607,11 +607,22 @@ abstract final class Pages {
   };
 
   /// Converte deep link Expo (`/pages/...` ou `mobile://...`) para rota Flutter.
+  ///
+  /// Também aceita HTTPS App Links / Universal Links
+  /// (`https://crowdfans.app/...`, `https://staging.crowdfans.app/...`
+  /// placeholder GCP — ver `DeepLinkHosts`).
   static String fromIncomingLocation(String location) {
     var path = location;
-    if (path.startsWith('mobile:')) {
+    if (path.startsWith('mobile:') ||
+        path.startsWith('https:') ||
+        path.startsWith('http:')) {
       final uri = Uri.parse(path);
-      path = uri.path.isEmpty ? '/${uri.host}' : uri.path;
+      if (path.startsWith('mobile:')) {
+        path = uri.path.isEmpty ? '/${uri.host}' : uri.path;
+      } else {
+        // HTTPS: só strip host se for deep link conhecido; senão deixa path.
+        path = uri.path.isEmpty ? '/' : uri.path;
+      }
       if (uri.query.isNotEmpty) {
         path = '$path?${uri.query}';
       }
@@ -620,12 +631,16 @@ abstract final class Pages {
       path = '/$path';
     }
     final withoutQuery = path.split('?').first;
+    final q = path.contains('?') ? path.substring(path.indexOf('?')) : '';
     final mapped = _expoAliases[withoutQuery];
     if (mapped != null) {
-      final q = path.contains('?') ? path.substring(path.indexOf('?')) : '';
       return '$mapped$q';
     }
-    return _mapExpoParamPath(withoutQuery) ?? path;
+    final paramMapped = _mapExpoParamPath(withoutQuery);
+    if (paramMapped != null) {
+      return '$paramMapped$q';
+    }
+    return path;
   }
 
   static String? _mapExpoParamPath(String path) {
