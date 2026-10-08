@@ -2,6 +2,15 @@
 
 Reescrita do app Expo em [`crowdfans/mobile`](https://github.com/crowdfans/mobile) para Flutter.
 
+## Deploy / Git
+
+| Trilha | Branch | Versão / API |
+|--------|--------|----------------|
+| **GCP** | [`release/0.2`](https://github.com/crowdfans/mobile_v2/tree/release/0.2) | `0.2.0+N`; API Cloud Run após staging/cutover ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
+| DO vivo | `prod` | `0.1.x`; API App Platform legada |
+
+Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · docs: [CF-372](https://crowd-fans.youtrack.cloud/issue/CF-372) · Git: [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md).
+
 ## Rodar
 
 ```bash
@@ -11,7 +20,9 @@ flutter pub get
 flutter run
 ```
 
-API padrão: `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Para o Go local:
+API **DO** (canal `prod` / 0.1.x): `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`.  
+**Proibido:** `crowdfans-app-dev*` / `crowdfans-app-prod` (DNS morto).  
+API **GCP** (builds `0.2.0+N`): hostname Cloud Run `crowdfans-server-staging` / `crowdfans-server` quando provisionado. Local:
 
 ```
 API_MODE=local
@@ -41,9 +52,10 @@ patrol test -t integration_test/superfan_onboarding_login_test.dart
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
-Fluxos reais contra a API de produção
-(`https://crowdfans-server-prod-h9qb6.ondigitalocean.app`). Sem credenciais o
-teste fica `skip` com mensagem clara — **não** finge verde.
+Fluxos reais contra a API (default DO legado
+`https://crowdfans-server-prod-h9qb6.ondigitalocean.app`; builds GCP usam
+Cloud Run quando configurado). Sem credenciais o teste fica `skip` com
+mensagem clara — **não** finge verde.
 
 1. Copie o exemplo e preencha contas de teste (nunca committe):
 
