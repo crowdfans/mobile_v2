@@ -43,12 +43,16 @@ export PATH="$HOME/sdk/flutter/bin:$HOME/.pub-cache/bin:$PATH"
 patrol doctor
 ```
 
-Smoke local (emulador/simulador ligado):
+Smoke local (emulador/simulador ligado) — flavor **gcp** na linha `release/0.2`:
 
 ```bash
-patrol test -t integration_test/smoke_test.dart
-patrol test -t integration_test/superfan_onboarding_login_test.dart
+npm run test:patrol:smoke
+npm run test:patrol:superfan
+npm run test:patrol:gcp          # GRE stub Cloud Run placeholder
+npm run test:unit:gcp            # unit GRE sem device
 ```
+
+Docs: [`docs/PATROL_GCP_FLAVOR.md`](docs/PATROL_GCP_FLAVOR.md).
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
@@ -120,18 +124,21 @@ npm run ftl:android
 ```
 ## App Distribution
 
-Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm install` e `npm run firebase:login`.
+Grupo `flutter-testers` no projeto `crowdfans-prod`. Linha **`release/0.2`**: flavor **gcp** (Cloud Run).  
+Docs: [`docs/APP_DISTRIBUTION_GCP.md`](docs/APP_DISTRIBUTION_GCP.md). Primeira vez: `npm install` + `npm run firebase:login`.
 
 ```bash
-npm run distribute          # gera o APK e envia (o atalho do dia a dia)
+npm run distribute:gcp      # Android --flavor gcp → App Distribution (atalho release/0.2)
+npm run distribute          # idem (default APP_FLAVOR=gcp neste branch)
 npm run distribute:ios      # IPA ad-hoc, se o signing Apple existir
 npm run distribute:web      # Flutter web no Hosting (canal testers)
 npm run distribute:all
+# Grupo dedicado (ops): TESTER_GROUP=flutter-testers-gcp npm run distribute:gcp
 ```
 
 Web **não** entra no App Distribution (só APK/IPA). O script sobe um [preview channel](https://firebase.google.com/docs/hosting/manage-preview-channels) `testers` em `crowdfans-prod` (expira em 14 dias) e imprime o URL. No console: Authentication → Authorized domains → cole esse host. OTP no browser ainda precisa do reCAPTCHA (`PENDENCIA.md`).
 
-No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
+No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). Notas = `[gcp] ` + último commit; override com `./scripts/distribute.sh android --notes "…"`.
 
 ## Estrutura
 

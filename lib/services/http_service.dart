@@ -4,13 +4,28 @@ import 'dart:convert';
 import 'package:crowdfans/api/api_error.dart';
 import 'package:crowdfans/services/api_config.dart';
 import 'package:crowdfans/services/firebase_service.dart';
+import 'package:crowdfans/services/media_url_shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 enum Method { get, post, put, patch, delete }
 
 /// Cliente HTTP da API CrowdFans (envelope `{ success, message, data }`).
+///
+/// Só fala com a API (`apiBaseUrl`). Object store (GCS signed PUT) →
+/// [ObjectStorageClient] — nunca Bearer em `storage.googleapis.com` (CF-358).
 abstract final class HttpService {
+  /// Host absoluto é object store / CDN mídia (não API CrowdFans).
+  static bool isObjectStoreUrl(String url) {
+    final trimmed = url.trim();
+    if (!trimmed.startsWith('http')) {
+      return false;
+    }
+    return isGcsPublicUrl(trimmed) ||
+        isGcsSignedUploadUrl(trimmed) ||
+        isSpacesMediaUrl(trimmed);
+  }
+
   static Future<T> request<T>(
     String path, {
     Method method = Method.get,
@@ -19,6 +34,13 @@ abstract final class HttpService {
     Duration timeout = const Duration(seconds: 15),
     T Function(Object? json)? parse,
   }) async {
+    if (path.startsWith('http') && isObjectStoreUrl(path)) {
+      throw ApiError(
+        'HttpService não envia Bearer a GCS/Spaces. Use ObjectStorageClient.',
+        0,
+      );
+    }
+
     final headers = <String, String>{'Content-Type': 'application/json'};
     if (requireAuth) {
       final token = await FirebaseService.currentIdToken();

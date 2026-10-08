@@ -1,0 +1,8 @@
+{
+  "APP_FLAVOR": "gcp",
+  "API_MODE": "gcp",
+  "API_GCP_BASE_URL": "https://crowdfans-server-staging.southamerica-east1.run.app",
+  "API_GCP_STAGING_BASE_URL": "https://crowdfans-server-staging.southamerica-east1.run.app",
+  "API_GCP_PROD_BASE_URL": "https://crowdfans-server-prod.southamerica-east1.run.app",
+  "MEDIA_GCS_BUCKET": "crowdfans-media-gcp"
+}

@@ -1,19 +1,29 @@
+import 'package:crowdfans/services/cutover_flags.dart';
 import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 
-/// Única API DigitalOcean válida (responde de verdade).
+/// API DigitalOcean viva (linha `prod` / flavor `digitalocean`).
 /// Nunca usar crowdfans-app-dev* nem crowdfans-app-prod (DNS morto).
-const kCrowdFansProdApi =
+const kCrowdFansDoProdApi =
     'https://crowdfans-server-prod-h9qb6.ondigitalocean.app';
 
-/// Placeholder Cloud Run staging (região SP).
+/// Default Cloud Run **staging** na linha GCP (`release/0.2` / flavor `gcp`).
 ///
-/// CF-286 ainda bloqueia project/billing — sem URL real. Substituir em
-/// `.env` / `--dart-define=API_GCP_STAGING_BASE_URL=…` quando o serviço
-/// `crowdfans-server` staging existir. Marcador `REPLACE_ME` / `XXXX` = não
-/// usar em builds que falham se a API não resolver DNS.
-const kCrowdFansGcpStagingApiPlaceholder =
-    'https://REPLACE_ME-crowdfans-server-staging-XXXX.southamerica-east1.run.app';
+/// Hostname provisório alinhado ao serviço `crowdfans-server-staging`
+/// (Cloud Build). Substituir pela URL real via `API_GCP_BASE_URL` /
+/// `API_GCP_STAGING_BASE_URL` assim que o deploy existir (pós CF-286).
+const kCrowdFansGcpStagingApi =
+    'https://crowdfans-server-staging.southamerica-east1.run.app';
+
+/// Default Cloud Run **prod** GCP (cutover). Override com `API_GCP_PROD_BASE_URL`.
+const kCrowdFansGcpProdApi =
+    'https://crowdfans-server-prod.southamerica-east1.run.app';
+
+/// Flavors / backends: `gcp` | `digitalocean` | `local`.
+///
+/// Ordem: `--dart-define=APP_FLAVOR=…` → `API_MODE` no `.env` → default
+/// da linha (`gcp` em `release/0.2`).
+const kDefaultAppFlavor = 'gcp';
 
 String _cleanUrl(String value) => value.replaceAll(RegExp(r'/$'), '');
 
@@ -24,100 +34,173 @@ bool _isForbiddenApiHost(String url) {
       lower.contains('crowdfans-app-prod');
 }
 
-bool _isUnresolvedPlaceholder(String url) {
-  final lower = url.toLowerCase();
-  return lower.contains('replace_me') ||
-      lower.contains('-xxxx.') ||
-      lower.contains('xxxx.');
+String _env(String key, [String fallback = '']) {
+  if (kIsWeb) {
+    return fallback;
+  }
+  return EnvService.get(key, fallback);
+}
+
+/// Flavor ativo (`gcp`, `digitalocean`, `local`, …).
+String appFlavor() {
+  const fromDefine = String.fromEnvironment('APP_FLAVOR');
+  if (fromDefine.trim().isNotEmpty) {
+    return fromDefine.trim().toLowerCase();
+  }
+  final fromEnv = _env('APP_FLAVOR').trim();
+  if (fromEnv.isNotEmpty) {
+    return fromEnv.toLowerCase();
+  }
+  return kDefaultAppFlavor;
+}
+
+/// Modo de API efetivo (alias de [appFlavor] + `API_MODE` + cutover flags).
+String apiMode() {
+  final cutover = CutoverFlags.apiBackendOverride();
+  if (cutover != null) {
+    return cutover;
+  }
+  const fromDefine = String.fromEnvironment('API_MODE');
+  if (fromDefine.trim().isNotEmpty) {
+    return _normalizeMode(fromDefine);
+  }
+  final fromEnv = _env('API_MODE').trim();
+  if (fromEnv.isNotEmpty) {
+    return _normalizeMode(fromEnv);
+  }
+  return _normalizeMode(appFlavor());
+}
+
+String _normalizeMode(String raw) {
+  final mode = raw.trim().toLowerCase();
+  switch (mode) {
+    case 'do':
+    case 'digital_ocean':
+    case 'prod': // legado DO
+      return 'digitalocean';
+    case 'gcp_staging':
+    case 'staging':
+      return 'gcp';
+    case 'gcp_prod':
+      return 'gcp_prod';
+    default:
+      return mode;
+  }
 }
 
 /// Resolve a base da API.
 ///
-/// Modos (`API_MODE`):
-/// - `digitalocean` (default) — server-prod DO vivo
-/// - `local` — localhost (ou DO se localhost for rejeitado no device)
-/// - `gcp` / `gcp_staging` — Cloud Run staging ([kCrowdFansGcpStagingApiPlaceholder]
-///   até preencher `API_GCP_STAGING_BASE_URL`)
-///
-/// No **web**, ignora `.env`/dart-define e usa sempre [kCrowdFansProdApi]
-/// (Firebase Hosting ignora `**/.*`, então o `.env` do bundle não sobe).
+/// No **web**, não há `.env` no Hosting — usa dart-define / defaults do flavor.
+/// Cutover (CF-359): kill-switch DO → [kCrowdFansDoProdApi]; ver [CutoverFlags].
 String apiBaseUrl() {
-  if (kIsWeb) {
-    return kCrowdFansProdApi;
+  // Kill-switch tem prioridade sobre API_BASE_URL / RC URL (rollback seguro).
+  if (CutoverFlags.forceDigitalOcean()) {
+    return _digitalOceanUrl();
   }
 
   const fromDefine = String.fromEnvironment('API_BASE_URL');
   final forced = _cleanUrl(
-    fromDefine.isNotEmpty ? fromDefine : EnvService.get('API_BASE_URL'),
+    fromDefine.isNotEmpty ? fromDefine : _env('API_BASE_URL'),
   );
   if (forced.isNotEmpty) {
-    return _ensureSafe(_rewriteLocalhost(forced));
+    return _ensureSafe(_rewriteLocalhost(forced), fallback: _fallbackForMode());
   }
 
-  final mode = EnvService.get('API_MODE', 'digitalocean').toLowerCase();
+  final cutoverUrl = CutoverFlags.apiBaseUrlOverride();
+  if (cutoverUrl != null && cutoverUrl.isNotEmpty) {
+    return _ensureSafe(
+      _rewriteLocalhost(cutoverUrl),
+      fallback: _fallbackForMode(),
+    );
+  }
 
-  final digitalOcean = _ensureSafe(
-    _cleanUrl(
-      EnvService.get(
-        'API_DIGITALOCEAN_BASE_URL',
-        EnvService.get('API_PROD_BASE_URL', kCrowdFansProdApi),
-      ),
-    ),
-  );
+  final mode = apiMode();
 
   if (mode == 'local') {
+    const localDefine = String.fromEnvironment('API_LOCAL_BASE_URL');
     final local = _cleanUrl(
-      EnvService.get('API_LOCAL_BASE_URL', 'http://localhost:8080'),
+      localDefine.isNotEmpty
+          ? localDefine
+          : _env('API_LOCAL_BASE_URL', 'http://localhost:8080'),
     );
-    final resolved = _rewriteLocalhost(local);
-    if (resolved.contains('localhost') || resolved.contains('127.0.0.1')) {
-      return digitalOcean;
-    }
-    return resolved;
+    return _rewriteLocalhost(local);
   }
 
-  if (mode == 'gcp' || mode == 'gcp_staging') {
-    return resolveGcpStagingApiBaseUrl(
-      EnvService.get('API_GCP_STAGING_BASE_URL'),
-      fallbackDigitalOcean: digitalOcean,
-    );
+  if (mode == 'digitalocean') {
+    return _digitalOceanUrl();
   }
 
-  return digitalOcean;
+  if (mode == 'gcp_prod') {
+    return _gcpProdUrl();
+  }
+
+  // Default GCP staging (linha release/0.2).
+  return _gcpStagingUrl();
 }
 
-/// Resolve URL GCP staging a partir do env (testável sem dotenv).
-///
-/// Placeholder / vazio / host morto → [fallbackDigitalOcean] (não quebra build
-/// até CF-286 liberar o serviço).
-String resolveGcpStagingApiBaseUrl(
-  String configured, {
-  String fallbackDigitalOcean = kCrowdFansProdApi,
-}) {
-  final cleaned = _cleanUrl(
-    configured.isNotEmpty ? configured : kCrowdFansGcpStagingApiPlaceholder,
+String _digitalOceanUrl() {
+  const fromDefine = String.fromEnvironment('API_DIGITALOCEAN_BASE_URL');
+  final fromEnv = _cleanUrl(
+    fromDefine.isNotEmpty
+        ? fromDefine
+        : _env(
+            'API_DIGITALOCEAN_BASE_URL',
+            _env('API_PROD_BASE_URL', kCrowdFansDoProdApi),
+          ),
   );
-  if (cleaned.isEmpty ||
-      _isForbiddenApiHost(cleaned) ||
-      _isUnresolvedPlaceholder(cleaned)) {
-    return _ensureSafe(fallbackDigitalOcean);
+  return _ensureSafe(fromEnv, fallback: kCrowdFansDoProdApi);
+}
+
+String _gcpStagingUrl() {
+  const baseDefine = String.fromEnvironment('API_GCP_BASE_URL');
+  const stagingDefine = String.fromEnvironment('API_GCP_STAGING_BASE_URL');
+  final fromDefine = baseDefine.isNotEmpty ? baseDefine : stagingDefine;
+  final fromEnv = _cleanUrl(
+    fromDefine.isNotEmpty
+        ? fromDefine
+        : _env(
+            'API_GCP_BASE_URL',
+            _env('API_GCP_STAGING_BASE_URL', kCrowdFansGcpStagingApi),
+          ),
+  );
+  return _ensureSafe(fromEnv, fallback: kCrowdFansGcpStagingApi);
+}
+
+String _gcpProdUrl() {
+  const fromDefine = String.fromEnvironment('API_GCP_PROD_BASE_URL');
+  final fromEnv = _cleanUrl(
+    fromDefine.isNotEmpty
+        ? fromDefine
+        : _env('API_GCP_PROD_BASE_URL', kCrowdFansGcpProdApi),
+  );
+  return _ensureSafe(fromEnv, fallback: kCrowdFansGcpProdApi);
+}
+
+String _fallbackForMode() {
+  final mode = apiMode();
+  if (mode == 'digitalocean') {
+    return kCrowdFansDoProdApi;
   }
-  return cleaned;
+  if (mode == 'gcp_prod') {
+    return kCrowdFansGcpProdApi;
+  }
+  return kCrowdFansGcpStagingApi;
 }
 
 /// Snapshot para debug na tela de login / erros de rede.
-({String baseUrl, String mode}) apiConfigDebug() {
+({String baseUrl, String mode, String flavor, bool cutoverForceDo})
+apiConfigDebug() {
   return (
     baseUrl: apiBaseUrl(),
-    mode: kIsWeb
-        ? 'digitalocean'
-        : EnvService.get('API_MODE', 'digitalocean').toLowerCase(),
+    mode: apiMode(),
+    flavor: appFlavor(),
+    cutoverForceDo: CutoverFlags.forceDigitalOcean(),
   );
 }
 
-String _ensureSafe(String baseUrl) {
+String _ensureSafe(String baseUrl, {required String fallback}) {
   if (baseUrl.isEmpty || _isForbiddenApiHost(baseUrl)) {
-    return kCrowdFansProdApi;
+    return fallback;
   }
   return baseUrl;
 }

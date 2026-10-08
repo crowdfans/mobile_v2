@@ -4,9 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-/// Firebase Auth no projeto `crowdfans-prod` (`DefaultFirebaseOptions`).
+/// Firebase Auth — options por [APP_FLAVOR] (`DefaultFirebaseOptions`).
+///
+/// Stubs em `firebase_options_gcp.dart` / `_digitalocean.dart` (sem keys).
+/// Ver `docs/FIREBASE_FLAVORS.md` · `docs/STORAGE_AUTH_CLIENTS.md` (CF-358).
 abstract final class FirebaseService {
   static FirebaseAuth get auth => FirebaseAuth.instance;
+
+  /// True quando apiKey ainda é placeholder `REPLACE_ME_*` (release/0.2 stubs).
+  static bool get usingStubOptions {
+    final key = DefaultFirebaseOptions.currentPlatform.apiKey;
+    return key.contains('REPLACE_ME');
+  }
 
   static Future<void> initialize() async {
     if (Firebase.apps.isEmpty) {
@@ -17,6 +26,9 @@ abstract final class FirebaseService {
     await auth.setLanguageCode('pt-BR');
   }
 
+  /// ID token Firebase para `Authorization: Bearer` na API CrowdFans.
+  ///
+  /// Object store GCS **não** usa este token — só signed URL (CF-358).
   static Future<String?> currentIdToken({bool forceRefresh = false}) async {
     final user = auth.currentUser;
     if (user == null) {

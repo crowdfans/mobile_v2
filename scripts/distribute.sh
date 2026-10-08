@@ -2,15 +2,25 @@
 # Gera o APK (IPA se houver signing) e envia ao App Distribution.
 # Web vai para o Firebase Hosting (canal testers) — App Distribution não aceita web.
 #
+# Linha release/0.2: default APP_FLAVOR=gcp → Cloud Run config + grupo testers.
+# Docs: docs/APP_DISTRIBUTION_GCP.md
+#
 # Uso:
-#   npm run distribute              # Android (padrão)
+#   npm run distribute                 # Android flavor gcp (padrão release/0.2)
+#   npm run distribute:gcp             # explícito gcp
+#   APP_FLAVOR=digitalocean npm run distribute:android
 #   npm run distribute:ios
 #   npm run distribute:web
 #   npm run distribute:all
 #   ./scripts/distribute.sh android --notes "o que mudou"
 #   ./scripts/distribute.sh web --skip-build
 #
-# Variáveis opcionais: BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER.
+# Env:
+#   APP_FLAVOR          gcp (default) | digitalocean
+#   TESTER_GROUP        App Distribution group (default: flutter-testers;
+#                       opcional futuro: flutter-testers-gcp)
+#   WEB_CHANNEL         Hosting preview (default: testers; gcp → testers-gcp se setado)
+#   BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER
 
 set -euo pipefail
 
@@ -20,11 +30,16 @@ cd "$ROOT"
 ANDROID_APP_ID='1:658897248078:android:edd3c987eb54bcdc2c881f'
 IOS_APP_ID='1:658897248078:ios:874725d168494cab2c881f'
 FIREBASE_PROJECT='crowdfans-prod'
-TESTER_GROUP='flutter-testers'
-WEB_CHANNEL='testers'
+# Default flavor GCP (release/0.2). Override: APP_FLAVOR=digitalocean
+APP_FLAVOR="${APP_FLAVOR:-gcp}"
+# Canal App Distribution — mesmo projeto Firebase; grupo default compartilhado.
+# Ops pode criar `flutter-testers-gcp` e exportar TESTER_GROUP=flutter-testers-gcp.
+TESTER_GROUP="${TESTER_GROUP:-flutter-testers}"
+WEB_CHANNEL="${WEB_CHANNEL:-testers}"
 WEB_EXPIRES='14d'
-APK_PATH='build/app/outputs/flutter-apk/app-release.apk'
+APK_PATH="build/app/outputs/flutter-apk/app-${APP_FLAVOR}-release.apk"
 WEB_INDEX='build/web/index.html'
+DART_DEFINE_FILE="config/${APP_FLAVOR}.json"
 
 PLATFORM='android'
 SKIP_BUILD=0
@@ -63,6 +78,8 @@ done
 if [[ -z "$NOTES" ]]; then
   NOTES="$(git -C "$ROOT" log -1 --pretty='%s' 2>/dev/null || echo 'Build Flutter para testers')"
 fi
+# Prefixo de canal/flavor nas notas (visível no App Distribution).
+NOTES="[${APP_FLAVOR}] $NOTES"
 
 export PATH="$ROOT/node_modules/.bin:${FLUTTER_SDK:-$HOME/sdk/flutter}/bin:$HOME/sdk/flutter/bin:$PATH"
 
@@ -128,8 +145,14 @@ upload_ios() {
 }
 
 build_android() {
-  echo "→ APK $build_name ($build_number)"
-  flutter build apk --release \
+  echo "→ APK $build_name ($build_number) flavor=$APP_FLAVOR define=$DART_DEFINE_FILE"
+  if [[ ! -f "$DART_DEFINE_FILE" ]]; then
+    echo "config ausente: $DART_DEFINE_FILE (veja config/gcp.json)" >&2
+    exit 1
+  fi
+  local define_args=(--dart-define-from-file="$DART_DEFINE_FILE")
+  flutter build apk --release --flavor "$APP_FLAVOR" \
+    "${define_args[@]}" \
     --build-name="$build_name" \
     --build-number="$build_number"
 }
@@ -137,9 +160,12 @@ build_android() {
 upload_android() {
   if [[ ! -f "$APK_PATH" ]]; then
     echo "APK não encontrado: $APK_PATH" >&2
+    echo "Esperado flavor=$APP_FLAVOR (flutter build apk --flavor $APP_FLAVOR)." >&2
     exit 1
   fi
-  echo "→ App Distribution Android ($TESTER_GROUP)"
+  echo "→ App Distribution Android"
+  echo "   project=$FIREBASE_PROJECT group=$TESTER_GROUP flavor=$APP_FLAVOR"
+  echo "   apk=$APK_PATH"
   firebase appdistribution:distribute "$APK_PATH" \
     --app "$ANDROID_APP_ID" \
     --groups "$TESTER_GROUP" \
@@ -152,16 +178,29 @@ build_ios() {
     echo "iOS pulado: não há certificado Apple no Keychain. Veja PENDENCIA.md." >&2
     return 1
   fi
-  echo "→ IPA $build_name ($build_number)"
+  # iOS ainda sem schemes nativos de flavor — sync plist + dart-define.
+  bash "$ROOT/scripts/sync_firebase_flavor.sh" "$APP_FLAVOR"
+  echo "→ IPA $build_name ($build_number) flavor=$APP_FLAVOR (dart-define only)"
+  local define_args=()
+  if [[ -f "$DART_DEFINE_FILE" ]]; then
+    define_args=(--dart-define-from-file="$DART_DEFINE_FILE")
+  fi
   flutter build ipa --release --export-method ad-hoc \
+    "${define_args[@]}" \
     --build-name="$build_name" \
     --build-number="$build_number"
 }
 
 build_web() {
-  echo "→ Web $build_name ($build_number)"
+  echo "→ Web $build_name ($build_number) flavor=$APP_FLAVOR"
+  local define_args=()
+  if [[ -f "$DART_DEFINE_FILE" ]]; then
+    define_args=(--dart-define-from-file="$DART_DEFINE_FILE")
+  else
+    define_args=(--dart-define=APP_FLAVOR=gcp --dart-define=API_MODE=gcp)
+  fi
   flutter build web --release \
-    --dart-define=API_BASE_URL=https://crowdfans-server-prod-h9qb6.ondigitalocean.app \
+    "${define_args[@]}" \
     --build-name="$build_name" \
     --build-number="$build_number"
 }
@@ -203,8 +242,11 @@ run_web() {
   upload_web
 }
 
-echo "CrowdFans → testers ($FIREBASE_PROJECT / $TESTER_GROUP)"
-echo "Notas: $NOTES"
+echo "CrowdFans → App Distribution / Hosting"
+echo "  project=$FIREBASE_PROJECT group=$TESTER_GROUP flavor=$APP_FLAVOR"
+echo "  web_channel=$WEB_CHANNEL apk=$APK_PATH"
+echo "  Notas: $NOTES"
+echo "  Docs: docs/APP_DISTRIBUTION_GCP.md"
 
 status=0
 case "$PLATFORM" in

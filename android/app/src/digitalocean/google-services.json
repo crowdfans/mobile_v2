@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:replace_me_default",
+        "mobilesdk_app_id": "1:000000000000:android:replace_me_digitalocean",
         "android_client_info": {
           "package_name": "com.crowdfans.crowdfans"
         }

@@ -34,6 +34,21 @@ android {
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 
+    // Backends: gcp (release/0.2 / Cloud Run) · digitalocean (DO vivo / branch prod).
+    // Mesmo applicationId (Firebase). Ex.: flutter run --flavor gcp \
+    //   --dart-define-from-file=config/gcp.json
+    flavorDimensions += "backend"
+    productFlavors {
+        create("gcp") {
+            dimension = "backend"
+            resValue("string", "app_backend", "gcp")
+        }
+        create("digitalocean") {
+            dimension = "backend"
+            resValue("string", "app_backend", "digitalocean")
+        }
+    }
+
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
