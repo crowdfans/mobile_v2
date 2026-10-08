@@ -6,9 +6,16 @@ Não copiar `frontendapp/` (Flutter legado / Supabase). Não implementar feature
 
 ---
 
-## Git
+## Git / deploy (dual-line)
 
-Branch `CF-xx` a partir de **`prod`** → PR `--base prod` → merge **somente `prod`**. **Não** abrir PR em `main` nem espelhar `prod`→`main`. Checkout local de build/QA = **`prod`**.
+| Trilha | Branch / PR base | Versão / API |
+|--------|------------------|--------------|
+| **GCP** | **`release/0.2`** | `0.2.0+N`; API Cloud Run após staging/cutover ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
+| **DO vivo** | `prod` | `0.1.x`; API App Platform legada |
+
+- Migração GCP: branch a partir de **`release/0.2`** → PR `--base release/0.2`.
+- Hotfix DO: branch a partir de **`prod`** → PR `--base prod`. **Não** misturar no mesmo PR. **Não** espelhar `prod`→`main`.
+- Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · [CF-373](https://crowd-fans.youtrack.cloud/issue/CF-373).
 
 ---
 
@@ -80,18 +87,14 @@ Projeto: **`crowdfans-prod`** (não `crowdfans-dev-e9703`). CLI: `npx firebase-t
 3. `flutterfire configure --project=crowdfans-prod --platforms=ios,android,web --yes`
 4. Trocar `FirebaseService` para `DefaultFirebaseOptions.currentPlatform`.
 
-App Distribution: keys reais via configure **local/CI** — em `release/0.2` os stubs por flavor (`docs/FIREBASE_FLAVORS.md`) usam `REPLACE_ME_*` (sem secrets no git). Copiar a chave web do Expo no `.env` cobre Auth no Dart, não o app nativo.
+App Distribution, `google-services.json` e o plist **só** saem desse configure — copiar a chave web do Expo no `.env` cobre Auth no Dart, não o app nativo.
 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 
-**API (duas linhas até cutover):** nunca `crowdfans-app-dev*` / `crowdfans-app-prod` (DNS morto).
-
-| Linha | Branch | Alvo |
-|-------|--------|------|
-| DO (usuários hoje) | `prod` | `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
-| GCP | `release/0.2` | Cloud Run via `API_MODE=gcp` / `API_GCP_*` (placeholders até CF-286) |
-
-`API_MODE=local` (localhost) ok. Detalhe e placeholders: [`docs/API_HOSTS.md`](docs/API_HOSTS.md). Pós-cutover o canônico deixa de ser DO.
+**API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS).  
+- Canal DO (`prod` / 0.1.x): `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`  
+- Canal GCP (`release/0.2` / 0.2.0+N): Cloud Run `crowdfans-server` / `-staging` quando provisionado  
+- Localhost só com `API_MODE=local`.
 
 ---
 
