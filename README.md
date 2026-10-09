@@ -122,19 +122,24 @@ No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). 
 
 ## Remote deploy (Mac always-on)
 
-Orquestração preferida: CLI `cf` no laptop → SSH → este repo no Mac.
+**Product UX:** from any machine, only:
 
 ```bash
-# no laptop (repo cf_cli)
-cf deploy mobile --dry-run
-cf deploy mobile --platform android
-cf deploy mobile                    # all = android + ios TestFlight + web
+cf deploy mobile
 ```
 
-No Mac, o entrypoint é `scripts/remote_deploy.sh` (flock, `git pull --ff-only` em `prod`, depois `distribute.sh`):
+The `cf` CLI is a thin SSH trigger. The caller never needs Flutter, Xcode, or the Android SDK. The Mac under `/Users/guschinaglia/Developer/CrowdFans/mobile_v2` does `git fetch` / `checkout prod` / `pull --ff-only`, then the full build + upload.
 
 ```bash
-# no Mac, dentro de …/CrowdFans/mobile_v2
+# any machine with cf + SSH key (no Flutter here)
+cf deploy mobile --dry-run              # resolved host + remote command plan
+cf deploy mobile                        # all = android + ios TestFlight + web
+cf deploy mobile --platform android     # optional filter
+```
+
+On the Mac, SSH runs `scripts/remote_deploy.sh` (mkdir lock → git ff-only → `distribute.sh`). You can also invoke that script directly on the Mac for debugging:
+
+```bash
 ./scripts/remote_deploy.sh --dry-run
 ./scripts/remote_deploy.sh --platform ios
 npm run remote-deploy:dry
@@ -144,18 +149,18 @@ Defaults locked: host `mac-mini.local`, user `guschinaglia`, path
 `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, ref `prod`.
 iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; web → Hosting `testers`.
 
-### Setup Mac (Gustavo)
+### Setup Mac (Gustavo) — once
 
 1. Checkout `mobile_v2` em `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, branch `prod`.
 2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login`.
 3. Signing Apple Distribution no Keychain (IPA `app-store`).
-4. Credenciais ASC para upload TestFlight (env no shell do Mac, **não** no git):
+4. Credenciais ASC para upload TestFlight (env no login shell do Mac — `cf` SSHs with `bash -lc`; **não** no git):
    - `ASC_API_KEY_ID` + `ASC_API_ISSUER_ID` + `ASC_API_KEY_PATH` (`.p8`), **ou**
    - `ASC_USERNAME` + `ASC_APP_SPECIFIC_PASSWORD`
-5. Laptop: chave SSH dedicada (`~/.ssh/cf_mobile_deploy`) com acesso a `guschinaglia@mac-mini.local`.
-6. Confirmar que mDNS/DNS resolve `mac-mini.local` na LAN e TCP `:22` responde.
+5. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
+6. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
 
-Sem a chave/ASC no Mac, `--dry-run` ainda valida o plano; upload TestFlight falha com mensagem clara e o IPA fica em `build/ios/ipa/` para Transporter manual.
+Sem ASC no Mac, o IPA ainda é gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 
 ## Estrutura
 

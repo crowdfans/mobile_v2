@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Deploy remoto no Mac always-on — chamado por `cf deploy mobile` via SSH.
+# Product UX: o caller só roda `cf deploy mobile`; Flutter/Xcode/SDK ficam aqui.
 #
 # Uso (no Mac, a partir do checkout mobile_v2):
 #   ./scripts/remote_deploy.sh
