@@ -12,7 +12,7 @@
 #   ./scripts/remote_deploy.sh --notes "o que mudou"
 #
 # Fluxo:
-#   1. flock (um deploy por vez)
+#   1. mkdir lock (um deploy por vez; portátil no macOS)
 #   2. git fetch + checkout --ref + pull --ff-only
 #   3. android/web → scripts/distribute.sh
 #   4. ios → scripts/distribute.sh ios --testflight (TestFlight)
