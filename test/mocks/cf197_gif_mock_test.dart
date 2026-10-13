@@ -55,16 +55,16 @@ void main() {
   });
 
   group('CF-197 GIF demock — edge', () {
-    test('fixtures empty vs featured; EXPO_PUBLIC alias', () {
+    test('fixtures empty vs featured; TENOR_API_KEY from .env', () {
       expect(Cf197GifFixtures.itemsFor('___sem_resultado___'), isEmpty);
       expect(Cf197GifFixtures.itemsFor('xyzzy'), isEmpty);
       expect(Cf197GifFixtures.itemsFor(''), isNotEmpty);
 
       dotenv.loadFromString(
-        envString: 'EXPO_PUBLIC_TENOR_API_KEY=expo-alias-key\n',
+        envString: 'TENOR_API_KEY=tenor-test-key\n',
       );
       expect(CommentGifService.hasApiKey, isTrue);
-      expect(CommentGifService.apiKey, 'expo-alias-key');
+      expect(CommentGifService.apiKey, 'tenor-test-key');
     });
 
     test('chave só com espaços conta como ausente', () {

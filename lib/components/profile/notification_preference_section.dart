@@ -43,7 +43,7 @@ class NotificationPreferenceGroup {
   String get headerTitle => pageTitle ?? title;
 }
 
-/// Catálogo da tela de preferências (espelho do Expo + hub CF-166).
+/// Catálogo da tela de preferências (comportamento de produto + hub CF-166).
 const notificationPreferenceGroups = <NotificationPreferenceGroup>[
   NotificationPreferenceGroup(
     id: 'general',

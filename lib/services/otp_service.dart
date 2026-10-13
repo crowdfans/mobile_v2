@@ -1,6 +1,6 @@
 import 'package:crowdfans/services/firebase_phone_auth_service.dart';
 
-/// Facade de OTP SMS (espelho do `OtpService` do Expo).
+/// Facade de OTP SMS (espelho do `OtpService` de produto).
 abstract final class OtpService {
   static Future<void> sendOTP({
     required String countryCode,

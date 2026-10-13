@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-/// CF-103 — onboarding Superfã/Artista (stories + CTAs) vs contrato Expo/ticket.
+/// CF-103 — onboarding Superfã/Artista (stories + CTAs) vs contrato legado/ticket.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

@@ -23,7 +23,7 @@ class StoriesRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final story = stories[index];
           final type = story.featureType?.toLowerCase();
-          // Meet = anel verde; demais (live / sem tipo) = anel vermelho, como no Expo e nos prints.
+          // Meet = anel verde; demais (live / sem tipo) = anel vermelho, como nos prints e nos prints.
           if (type == 'meetandgreet') {
             final eventId = (story.eventId ?? story.id).trim();
             return StoryMeetAndGreetItem(

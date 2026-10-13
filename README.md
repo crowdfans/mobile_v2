@@ -1,6 +1,6 @@
 # CrowdFans mobile_v2 (Flutter)
 
-Reescrita do app Expo em [`crowdfans/mobile`](https://github.com/crowdfans/mobile) para Flutter.
+App Flutter CrowdFans (`mobile_v2`).
 
 ## Rodar
 
@@ -74,7 +74,7 @@ patrol test -t integration_test/e2e_artist_edit_delete_post_test.dart \
 ```
 
 Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
-(espelho do Expo `../mobile/.env.e2e.example`).
+.
 
 | Ticket | Arquivo | Credenciais |
 |---|---|---|
@@ -164,7 +164,7 @@ Sem ASC no Mac, o IPA ainda é gerado em `build/ios/ipa/` (Transporter manual). 
 
 ## Estrutura
 
-Espelha o mobile Expo:
+Espelha o fluxo mobile:
 
 - `lib/constants/pages.dart` — rotas (`Pages.*`)
 - `lib/api/api_urls.dart` — endpoints (`ApiUrls.*`)
@@ -173,4 +173,4 @@ Espelha o mobile Expo:
 
 ## Migração
 
-Ver `MIGRATION.md`. O Expo em `../mobile` continua sendo a referência de comportamento até cada tela ser marcada como feita.
+Ver `MIGRATION.md`. Layout: prints YouTrack / `Downloads/Screens`.

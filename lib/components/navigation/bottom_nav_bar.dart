@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Bottom nav das 4 abas + atalho de criar (SVGs do Expo).
+/// Bottom nav das 4 abas + atalho de criar (SVGs de produto).
 class BottomNavBar extends ConsumerWidget {
   const BottomNavBar({
     super.key,

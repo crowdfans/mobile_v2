@@ -107,7 +107,7 @@ abstract final class ApiUrls {
   static const meetEventCallEarlyEndReport =
       '/api/v1/meet-events/calls/:callId/early-end-report';
 
-  /// Alias legado do Expo (`FOLLOWS`).
+  /// Alias legado de produto (`FOLLOWS`).
   static const fanClubs = follows;
 
   /// Substitui `:param` no path. Ex.: `withParams(profileByUid, {'userUID': uid})`.

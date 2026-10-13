@@ -144,7 +144,7 @@ class InformationHelpCard extends StatelessWidget {
   }
 }
 
-/// Conteúdo dos Termos de Uso (espelho do Expo).
+/// Conteúdo dos Termos de Uso (comportamento de produto).
 const informationTermsSections = [
   InformationDocumentSection(
     title: '1. Aceitação e conta',

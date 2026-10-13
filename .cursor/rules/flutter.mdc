@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Flutter CrowdFans (`mobile_v2`)
 
-App mobile de produto. Expo `../mobile` / `crowdfans-mobile-rn` = referência. Não copiar `frontendapp/`.
+App mobile de produto. Único app mobile ativo. Não copiar `frontendapp/`. Repos `mobile` / `crowdfans-mobile-rn` retirados.
 
 Git: branch `CF-<id>` a partir de **`prod`** → PR `--base prod` → merge **só `prod`**. Não espelhar `main`. Checkout build/QA = **`prod`**. Leia `AGENTS.md`.
 

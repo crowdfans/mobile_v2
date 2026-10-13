@@ -14,7 +14,7 @@ class FanClubRulesSection {
   final String body;
 }
 
-/// Conteúdo portado do Expo (`FanClubRulesScreen`).
+/// Conteúdo portado de produto (`FanClubRulesScreen`).
 const fanClubRulesSections = <FanClubRulesSection>[
   FanClubRulesSection(
     id: 'respect',

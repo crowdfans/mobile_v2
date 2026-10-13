@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#208AEF",
     "theme_color": "#208AEF",
-    "description": "CrowdFans Superfã — migração Expo → Flutter",
+    "description": "CrowdFans Superfã — Flutter",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

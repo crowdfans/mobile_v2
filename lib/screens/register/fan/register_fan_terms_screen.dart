@@ -41,11 +41,11 @@ class _RegisterFanTermsScreenState
   }
 
   void handleOpenTerms() {
-    // Documentos legais ainda não têm URL no app (igual ao Expo).
+    // Documentos legais ainda não têm URL no app (igual ao fluxo de produto).
   }
 
   void handleOpenPrivacy() {
-    // Documentos legais ainda não têm URL no app (igual ao Expo).
+    // Documentos legais ainda não têm URL no app (igual ao fluxo de produto).
   }
 
   Future<void> handleSubmit() async {
