@@ -4,8 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Stub GRE para `APP_FLAVOR=gcp` contra URLs Cloud Run placeholder.
 ///
-/// Cloud Run ainda não está live (CF-286+) — estes testes validam o
-/// **wiring** (flavor → URL), não HTTP real. Suite live = CF-362.
+/// Cloud Run live (`peefddw6nq`) — estes testes validam o **wiring** (flavor → URL).
 void main() {
   setUp(() {
     dotenv.loadFromString(envString: '', isOptional: true);
@@ -21,7 +20,7 @@ void main() {
       expect(apiMode(), 'gcp');
       expect(apiBaseUrl(), kCrowdFansGcpStagingApi);
       expect(apiBaseUrl(), contains('.run.app'));
-      expect(apiBaseUrl(), contains('southamerica-east1'));
+      expect(apiBaseUrl(), contains('peefddw6nq'));
     });
 
     test('API_MODE=gcp + API_GCP_* do config/gcp.json shape', () {
@@ -29,8 +28,8 @@ void main() {
         envString:
             'APP_FLAVOR=gcp\n'
             'API_MODE=gcp\n'
-            'API_GCP_BASE_URL=https://crowdfans-server-staging.southamerica-east1.run.app\n'
-            'API_GCP_STAGING_BASE_URL=https://crowdfans-server-staging.southamerica-east1.run.app\n',
+            'API_GCP_BASE_URL=https://crowdfans-server-peefddw6nq-rj.a.run.app\n'
+            'API_GCP_STAGING_BASE_URL=https://crowdfans-server-peefddw6nq-rj.a.run.app\n',
       );
       final debug = apiConfigDebug();
       expect(debug.flavor, 'gcp');
@@ -43,7 +42,7 @@ void main() {
       dotenv.loadFromString(
         envString:
             'API_MODE=gcp\n'
-            'API_GCP_BASE_URL=https://crowdfans-server-staging-abc123.southamerica-east1.run.app\n',
+            'API_GCP_BASE_URL=https://crowdfans-server-custom-abc123-rj.a.run.app\n',
       );
       expect(apiBaseUrl(), endsWith('.run.app'));
       expect(apiBaseUrl().contains('ondigitalocean'), isFalse);
@@ -97,7 +96,7 @@ void main() {
       dotenv.loadFromString(
         envString:
             'API_MODE=gcp\n'
-            'API_GCP_BASE_URL=https://crowdfans-server-staging.southamerica-east1.run.app/\n',
+            'API_GCP_BASE_URL=https://crowdfans-server-peefddw6nq-rj.a.run.app/\n',
       );
       expect(apiBaseUrl().endsWith('/'), isFalse);
       expect(apiBaseUrl(), kCrowdFansGcpStagingApi);
@@ -133,10 +132,11 @@ void main() {
       expect('${debug.mode}:${debug.baseUrl}', contains('run.app'));
     });
 
-    test('placeholder staging ≠ prod gcp', () {
-      expect(kCrowdFansGcpStagingApi, isNot(kCrowdFansGcpProdApi));
-      expect(kCrowdFansGcpStagingApi, contains('staging'));
-      expect(kCrowdFansGcpProdApi, contains('prod'));
+    test('gcp staging alias == prod alias (single Cloud Run)', () {
+      expect(kCrowdFansGcpStagingApi, kCrowdFansGcpProdApi);
+      expect(kCrowdFansGcpApi, 'https://crowdfans-server-peefddw6nq-rj.a.run.app');
+      expect(kCrowdFansGcpApi, contains('peefddw6nq'));
+      expect(kCrowdFansGcpFinancialApi, contains('financial'));
     });
   });
 }

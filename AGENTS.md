@@ -92,8 +92,8 @@ App Distribution, `google-services.json` e o plist **só** saem desse configure 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 
 **API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS).  
-- Canal DO (`prod` / 0.1.x): `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`  
-- Canal GCP (`release/0.2` / 0.2.0+N): Cloud Run `crowdfans-server` / `-staging` quando provisionado  
+- Canal GCP (`release/0.2`): `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`  
+- Canal DO legado: flavor `digitalocean` / branch `prod` (não default)  
 - Localhost só com `API_MODE=local`.
 
 ---
