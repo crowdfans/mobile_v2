@@ -2,22 +2,24 @@ import 'package:crowdfans/services/cutover_flags.dart';
 import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 
-/// API DigitalOcean viva (linha `prod` / flavor `digitalocean`).
+/// API DigitalOcean legado (flavor `digitalocean` / hotfixes branch `prod`).
 /// Nunca usar crowdfans-app-dev* nem crowdfans-app-prod (DNS morto).
 const kCrowdFansDoProdApi =
     'https://crowdfans-server-prod-h9qb6.ondigitalocean.app';
 
-/// Default Cloud Run **staging** na linha GCP (`release/0.2` / flavor `gcp`).
-///
-/// Hostname provisório alinhado ao serviço `crowdfans-server-staging`
-/// (Cloud Build). Substituir pela URL real via `API_GCP_BASE_URL` /
-/// `API_GCP_STAGING_BASE_URL` assim que o deploy existir (pós CF-286).
-const kCrowdFansGcpStagingApi =
-    'https://crowdfans-server-staging.southamerica-east1.run.app';
+/// Cloud Run **server** GCP (canonical, verificado). Único host remoto até edge DNS.
+const kCrowdFansGcpApi =
+    'https://crowdfans-server-peefddw6nq-rj.a.run.app';
 
-/// Default Cloud Run **prod** GCP (cutover). Override com `API_GCP_PROD_BASE_URL`.
-const kCrowdFansGcpProdApi =
-    'https://crowdfans-server-prod.southamerica-east1.run.app';
+/// Alias histórico — mesmo host que [kCrowdFansGcpApi] (sem staging separado).
+const kCrowdFansGcpStagingApi = kCrowdFansGcpApi;
+
+/// Alias `gcp_prod` / Make `prod` — mesmo host que [kCrowdFansGcpApi] até split edge.
+const kCrowdFansGcpProdApi = kCrowdFansGcpApi;
+
+/// Cloud Run **financial** GCP (server `FINANCIAL_BASE_URL` / scripts).
+const kCrowdFansGcpFinancialApi =
+    'https://crowdfans-financial-peefddw6nq-rj.a.run.app';
 
 /// Flavors / backends: `gcp` | `digitalocean` | `local`.
 ///
@@ -76,12 +78,13 @@ String _normalizeMode(String raw) {
   switch (mode) {
     case 'do':
     case 'digital_ocean':
-    case 'prod': // legado DO
+    case 'digitalocean':
       return 'digitalocean';
     case 'gcp_staging':
     case 'staging':
       return 'gcp';
     case 'gcp_prod':
+    case 'prod': // Make/API prod = GCP prod (mesmo host hoje)
       return 'gcp_prod';
     default:
       return mode;

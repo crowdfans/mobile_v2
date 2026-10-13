@@ -2,53 +2,27 @@ import 'package:crowdfans/services/api_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('resolveGcpStagingApiBaseUrl', () {
-    test('green: URL Cloud Run real é aceita', () {
-      const url =
-          'https://crowdfans-server-staging-abc123-uc.a.run.app';
+  group('GCP Cloud Run constants', () {
+    test('green: server URI canônica', () {
       expect(
-        resolveGcpStagingApiBaseUrl(url),
-        url,
+        kCrowdFansGcpApi,
+        'https://crowdfans-server-peefddw6nq-rj.a.run.app',
+      );
+      expect(kCrowdFansGcpStagingApi, kCrowdFansGcpApi);
+      expect(kCrowdFansGcpProdApi, kCrowdFansGcpApi);
+    });
+
+    test('green: financial URI canônica', () {
+      expect(
+        kCrowdFansGcpFinancialApi,
+        'https://crowdfans-financial-peefddw6nq-rj.a.run.app',
       );
     });
 
-    test('red: placeholder REPLACE_ME cai no fallback DO', () {
-      expect(
-        resolveGcpStagingApiBaseUrl(kCrowdFansGcpStagingApiPlaceholder),
-        kCrowdFansProdApi,
-      );
-    });
-
-    test('red: vazio usa placeholder e cai no fallback DO', () {
-      expect(resolveGcpStagingApiBaseUrl(''), kCrowdFansProdApi);
-    });
-
-    test('red: host DO morto é rejeitado → fallback', () {
-      expect(
-        resolveGcpStagingApiBaseUrl(
-          'https://crowdfans-app-prod.ondigitalocean.app',
-        ),
-        kCrowdFansProdApi,
-      );
-    });
-
-    test('edge: trailing slash é removido', () {
-      const url =
-          'https://crowdfans-server-staging-abc123-uc.a.run.app';
-      expect(
-        resolveGcpStagingApiBaseUrl('$url/'),
-        url,
-      );
-    });
-
-    test('edge: fallback custom quando placeholder', () {
-      expect(
-        resolveGcpStagingApiBaseUrl(
-          '',
-          fallbackDigitalOcean: 'https://example.test',
-        ),
-        'https://example.test',
-      );
+    test('red: hosts DO mortos continuam proibidos no resolver', () {
+      // apiBaseUrl com force via API_BASE_URL é coberto em gcp_flavor_gre_test.
+      expect(kCrowdFansGcpApi.contains('crowdfans-app-'), isFalse);
+      expect(kCrowdFansDoProdApi.contains('crowdfans-app-'), isFalse);
     });
   });
 }

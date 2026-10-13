@@ -20,7 +20,7 @@ flutter pub get
 flutter run
 ```
 
-API **DO** (canal `prod` / 0.1.x): `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`.  
+API **GCP**: `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`.  
 **Proibido:** `crowdfans-app-dev*` / `crowdfans-app-prod` (DNS morto).  
 API **GCP** (builds `0.2.0+N`): hostname Cloud Run `crowdfans-server-staging` / `crowdfans-server` quando provisionado. Local:
 
@@ -57,7 +57,7 @@ Docs: [`docs/PATROL_GCP_FLAVOR.md`](docs/PATROL_GCP_FLAVOR.md).
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
 Fluxos reais contra a API (default DO legado
-`https://crowdfans-server-prod-h9qb6.ondigitalocean.app`; builds GCP usam
+`https://crowdfans-server-peefddw6nq-rj.a.run.app`; builds GCP usam
 Cloud Run quando configurado). Sem credenciais o teste fica `skip` com
 mensagem clara — **não** finge verde.
 

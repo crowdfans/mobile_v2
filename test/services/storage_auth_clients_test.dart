@@ -101,7 +101,7 @@ void main() {
     test('HttpService.isObjectStoreUrl false para API absoluta Cloud Run', () {
       expect(
         HttpService.isObjectStoreUrl(
-          'https://crowdfans-server-staging.southamerica-east1.run.app/api/v1/me',
+          'https://crowdfans-server-peefddw6nq-rj.a.run.app/api/v1/me',
         ),
         isFalse,
       );
