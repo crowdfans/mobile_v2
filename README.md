@@ -110,7 +110,8 @@ Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm i
 
 ```bash
 npm run distribute          # gera o APK e envia (o atalho do dia a dia)
-npm run distribute:ios      # IPA ad-hoc, se o signing Apple existir
+npm run distribute:ios      # IPA ad-hoc → App Distribution (se signing existir)
+npm run distribute:ios:testflight  # IPA app-store → TestFlight (ASC no Mac)
 npm run distribute:web      # Flutter web no Hosting (canal testers)
 npm run distribute:all
 ```
@@ -118,6 +119,48 @@ npm run distribute:all
 Web **não** entra no App Distribution (só APK/IPA). O script sobe um [preview channel](https://firebase.google.com/docs/hosting/manage-preview-channels) `testers` em `crowdfans-prod` (expira em 14 dias) e imprime o URL. No console: Authentication → Authorized domains → cole esse host. OTP no browser ainda precisa do reCAPTCHA (`PENDENCIA.md`).
 
 No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
+
+## Remote deploy (Mac always-on)
+
+**Product UX:** from any machine, only:
+
+```bash
+cf deploy mobile
+```
+
+The `cf` CLI is a thin SSH trigger. The caller never needs Flutter, Xcode, or the Android SDK. The Mac under `/Users/guschinaglia/Developer/CrowdFans/mobile_v2` does `git fetch` / `checkout prod` / `pull --ff-only`, then the full build + upload.
+
+```bash
+# any machine with cf + SSH key (no Flutter here)
+cf deploy mobile --dry-run              # resolved host + remote command plan
+cf deploy mobile                        # all = android + ios TestFlight + web
+cf deploy mobile --platform android     # optional filter
+```
+
+On the Mac, SSH runs `scripts/remote_deploy.sh` (mkdir lock → git ff-only → `distribute.sh`). You can also invoke that script directly on the Mac for debugging:
+
+```bash
+./scripts/remote_deploy.sh --dry-run
+./scripts/remote_deploy.sh --platform ios
+npm run remote-deploy:dry
+```
+
+Defaults locked: host `mac-mini.local`, user `guschinaglia`, path
+`/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, ref `prod`.
+iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; web → Hosting `testers`.
+
+### Setup Mac (Gustavo) — once
+
+1. Checkout `mobile_v2` em `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, branch `prod`.
+2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login`.
+3. Signing Apple Distribution no Keychain (IPA `app-store`).
+4. Credenciais ASC para upload TestFlight (env no login shell do Mac — `cf` SSHs with `bash -lc`; **não** no git):
+   - `ASC_API_KEY_ID` + `ASC_API_ISSUER_ID` + `ASC_API_KEY_PATH` (`.p8`), **ou**
+   - `ASC_USERNAME` + `ASC_APP_SPECIFIC_PASSWORD`
+5. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
+6. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
+
+Sem ASC no Mac, o IPA ainda é gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 
 ## Estrutura
 
