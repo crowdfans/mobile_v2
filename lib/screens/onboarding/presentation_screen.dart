@@ -6,7 +6,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Onboarding inicial com stories em vídeo (igual ao Expo).
+/// Onboarding inicial com stories em vídeo (igual ao fluxo de produto).
 class PresentationScreen extends StatefulWidget {
   const PresentationScreen({super.key});
 

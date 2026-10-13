@@ -76,7 +76,7 @@ class ProfileProScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'A assinatura, o paywall e o Customer Center usam RevenueCat (`purchases_flutter`). Essa ligação entra no próximo corte de IAP — os planos lifetime / yearly / monthly já existem no Expo.',
+                    'A assinatura, o paywall e o Customer Center usam RevenueCat (`purchases_flutter`). Essa ligação entra no próximo corte de IAP — os planos lifetime / yearly / monthly já existem no fluxo legado.',
                     style: TextStyle(
                       fontSize: 14,
                       height: 20 / 14,

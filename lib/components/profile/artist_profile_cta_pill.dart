@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Pill único de membership no perfil do artista (rótulo Expo: + Seguir).
+/// Pill único de membership no perfil do artista (rótulo legado: + Seguir).
 class ArtistProfileCtaPill extends StatelessWidget {
   const ArtistProfileCtaPill({
     super.key,

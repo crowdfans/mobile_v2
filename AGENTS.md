@@ -1,8 +1,8 @@
 # Flutter — CrowdFans (`mobile_v2`)
 
-**App mobile de produto.** Expo em `../mobile` e `crowdfans-mobile-rn` são só referência de comportamento. Código: padrões deste arquivo e `.cursor/rules/`.
+**App mobile de produto (Flutter).** Único app mobile ativo. Código: padrões deste arquivo e `.cursor/rules/`.
 
-Não copiar `frontendapp/` (Flutter legado / Supabase). Não implementar feature nova no Expo.
+Não copiar `frontendapp/` (Flutter legado / Supabase). Repos `mobile` / `crowdfans-mobile-rn` estão retirados.
 
 ---
 
@@ -80,9 +80,9 @@ Projeto: **`crowdfans-prod`** (não `crowdfans-dev-e9703`). CLI: `npx firebase-t
 3. `flutterfire configure --project=crowdfans-prod --platforms=ios,android,web --yes`
 4. Trocar `FirebaseService` para `DefaultFirebaseOptions.currentPlatform`.
 
-App Distribution, `google-services.json` e o plist **só** saem desse configure — copiar a chave web do Expo no `.env` cobre Auth no Dart, não o app nativo.
+App Distribution, `google-services.json` e o plist **só** saem desse configure — chaves web no `.env` cobrem Auth no Dart, não o app nativo.
 
-O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
+O `.env` usa chaves Flutter (`FIREBASE_*`, `API_*`).
 
 **API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS). Default DigitalOcean = `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Localhost só com `API_MODE=local`.
 

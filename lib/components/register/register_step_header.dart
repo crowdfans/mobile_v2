@@ -1,7 +1,7 @@
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Título + subtítulo das etapas de cadastro (espelho do Expo).
+/// Título + subtítulo das etapas de cadastro (comportamento de produto).
 class RegisterStepHeader extends StatelessWidget {
   const RegisterStepHeader({super.key, required this.title, this.subtitle});
 

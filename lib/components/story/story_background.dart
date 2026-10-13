@@ -6,10 +6,10 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-/// Fallback se o mp4 não inicializar (mesmo intervalo do Expo).
+/// Fallback se o mp4 não inicializar (mesmo intervalo de produto).
 const storyBackgroundFallbackDuration = Duration(seconds: 15);
 
-/// Fundo em vídeo do onboarding: autoplay + tap esquerda/direita (paridade Expo).
+/// Fundo em vídeo do onboarding: autoplay + tap esquerda/direita (paridade legado).
 class StoryBackground extends StatefulWidget {
   const StoryBackground({super.key, this.onVideoChange});
 

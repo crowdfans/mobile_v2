@@ -165,7 +165,7 @@ abstract final class WalletService {
     );
   }
 
-  /// Assina o WS da carteira; retorna cleanup (espelho Expo).
+  /// Assina o WS da carteira; retorna cleanup (comportamento de produto).
   static Future<VoidCallback> subscribe(
     void Function(WalletRealtimeEvent event) onEvent,
   ) async {

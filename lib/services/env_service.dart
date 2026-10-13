@@ -1,10 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Leitura de `.env` (aceita chaves Expo `EXPO_PUBLIC_*` e as curtas do Flutter).
+/// Leitura de `.env` (chaves curtas Flutter: `API_*`, `FIREBASE_*`, …).
 
 abstract final class EnvService {
-  static const _expoPrefix = 'EXPO_PUBLIC_';
-
   /// Carrega `.env` local; se não existir no bundle, cai no `.env.example`.
   static Future<void> load() async {
     Object? lastError;
@@ -22,11 +20,9 @@ abstract final class EnvService {
   }
 
   static String? maybe(String key) {
-    for (final name in _aliases(key)) {
-      final value = dotenv.maybeGet(name)?.trim();
-      if (value != null && value.isNotEmpty) {
-        return value;
-      }
+    final value = dotenv.maybeGet(key)?.trim();
+    if (value != null && value.isNotEmpty) {
+      return value;
     }
     return null;
   }
@@ -39,16 +35,9 @@ abstract final class EnvService {
     final value = maybe(key);
     if (value == null || value.isEmpty) {
       throw StateError(
-        'Variável $key ausente. Copie o .env do Expo (prod) para mobile_v2/.env.',
+        'Variável $key ausente. Defina em mobile_v2/.env (veja .env.example).',
       );
     }
     return value;
-  }
-
-  static List<String> _aliases(String key) {
-    if (key.startsWith(_expoPrefix)) {
-      return [key, key.substring(_expoPrefix.length)];
-    }
-    return [key, '$_expoPrefix$key'];
   }
 }

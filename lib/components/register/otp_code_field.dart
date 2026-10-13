@@ -2,7 +2,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Seis caixas de dígito do OTP (espelho do Expo).
+/// Seis caixas de dígito do OTP (comportamento de produto).
 class OtpCodeField extends StatefulWidget {
   const OtpCodeField({super.key, required this.code, required this.onChanged});
 

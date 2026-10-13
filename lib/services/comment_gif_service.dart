@@ -29,7 +29,7 @@ abstract final class CommentGifService {
   static const userErrorMessage =
       'Não foi possível carregar os GIFs da Tenor. Verifique sua conexão e tente novamente.';
 
-  /// Chave Tenor em `.env` (`TENOR_API_KEY` / `EXPO_PUBLIC_TENOR_API_KEY`).
+  /// Chave Tenor em `.env` (`TENOR_API_KEY` / `TENOR_API_KEY`).
   /// Sem chave → erro seguro (não lista vazia “em branco”).
   static String? get apiKey => EnvService.maybe('TENOR_API_KEY');
 

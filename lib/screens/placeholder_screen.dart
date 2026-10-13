@@ -3,7 +3,7 @@ import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Tela temporária até a feature correspondente do Expo ser migrada.
+/// Tela temporária até a feature correspondente de produto ser migrada.
 class PlaceholderScreen extends StatelessWidget {
   const PlaceholderScreen({
     super.key,

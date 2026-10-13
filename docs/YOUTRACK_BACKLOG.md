@@ -81,7 +81,7 @@ CF-82 / CF-83 estão em §2 (**YT Done**, gus) via [#41](https://github.com/crow
 
 ## 2. Já feitos nesta migração
 
-Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração Expo→Flutter.
+Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração legado→Flutter.
 
 | ID | Summary | Stage | Priority | Notas |
 |---|---|---|---|---|
@@ -144,7 +144,7 @@ API/prod: sempre `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` (nunca
 | ID | Summary | Stage | Priority | Serviço | Notas |
 |---|---|---|---|---|---|
 | CF-10 | [Mobile] UI checkout Jam Coins + chamada de vídeo 1:1 | Backlog | Major | Mobile | Checkout Jam Coins OK; Meet via CF-30. |
-| CF-120 | [Artista] ⛔ Live — criar acesso e estúdio (chat, destacadas, doações) | Backlog | Minor | Mobile | ⛔ Live — adiado (buraco Expo). |
+| CF-120 | [Artista] ⛔ Live — criar acesso e estúdio (chat, destacadas, doações) | Backlog | Minor | Mobile | ⛔ Live — adiado (buraco legado). |
 | CF-121 | [Artista] Meet & Greet — criar, fila, atender e encerrar chamada | Backlog | Minor | Mobile | Hub artista em CF-30 (`/meet`). |
 | CF-30 | [Mobile/Backend] Meet 1:1 — SDK CometChat + telas fila/chamada | Done | Major | Mobile | Flutter: API + WS + telas + `cometchat_calls_sdk` (sandbox sem WebRTC). |
 | CF-97 | [Mobile] Meet 1:1 — timer de 1 minuto na UI | Done | Major | Mobile | Timer via WS `video-call.tick` na `MeetCallScreen`. |
@@ -195,9 +195,9 @@ Ordem sugerida para `mobile_v2` (UI Mobile acionável; QA depois das telas crít
 4. ~~**QA** CF-122/123/124~~ — **YT Done** (gus) via [#35](https://github.com/crowdfans/mobile_v2/pull/35). ~~CF-125/126 FTL Android~~ Done (job verde). Restam CF-127 (signing iOS) e CF-128/129/130 (creds/run verde).
 5. **Não puxar agora:** CF-120/121 Live/Meet ⛔, CF-30/97/99/10 Meet, Horus CF-100–102, backend CF-9/31/96/98/21/4/1/14.
 
-### Expo vs Flutter (resumo rápido)
+### legado vs Flutter (resumo rápido)
 
-- Expo (`../mobile`) cobre o fluxo Superfã principal e settings de artista (insights/audience/fan-club/wallet).
+- legado (`../mobile`) cobre o fluxo Superfã principal e settings de artista (insights/audience/fan-club/wallet).
 - Flutter (`mobile_v2`): Superfã + Artista UI + Patrol smoke + bags CF-82/83 **YT Done** (§2), incl. polish [#44](https://github.com/crowdfans/mobile_v2/pull/44). **0 Mobile acionável agora**; bloqueados = CF-103 (mocks) + CF-127–130 (FTL iOS/fixtures).
 - Live/Meet: buraco nos dois — não inventar UI.
 - **Verdict 2026-09-09 ~18:15:** FTL Android unblocked (CF-125/126 Done); CF-127 ainda signing; CF-103 sem anexos.

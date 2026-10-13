@@ -50,7 +50,7 @@ abstract final class PushTokenService {
 
   /// Pede permissão, obtém o token nativo e envia ao backend.
   ///
-  /// Web e falhas silenciosas (igual ao Expo): não bloqueiam a sessão.
+  /// Web e falhas silenciosas (igual ao fluxo de produto): não bloqueiam a sessão.
   static Future<void> syncPushTokenWithBackend() async {
     if (kIsWeb) {
       return;

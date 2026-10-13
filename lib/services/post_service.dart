@@ -102,7 +102,7 @@ class PostWriteRequest {
   }
 }
 
-/// CRUD de posts — espelho do `PostService` do Expo.
+/// CRUD de posts — espelho do `PostService` de produto.
 abstract final class PostService {
   /// Cria um post (`POST /api/v1/post`).
   static Future<UserPost> createPost(PostWriteRequest request) {

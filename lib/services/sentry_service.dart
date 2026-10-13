@@ -2,7 +2,7 @@ import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-/// Observabilidade — mesmo contrato do Expo (`initSentry` só se houver DSN).
+/// Observabilidade — mesmo contrato de produto (`initSentry` só se houver DSN).
 abstract final class SentryService {
   static String? get _dsn => EnvService.maybe('SENTRY_DSN');
 
@@ -11,7 +11,7 @@ abstract final class SentryService {
     return dsn != null && dsn.isNotEmpty;
   }
 
-  /// Inicializa o Sentry. Sem DSN, não faz nada (igual ao Expo).
+  /// Inicializa o Sentry. Sem DSN, não faz nada (igual ao fluxo de produto).
   static Future<void> initialize() async {
     if (!isEnabled) {
       return;

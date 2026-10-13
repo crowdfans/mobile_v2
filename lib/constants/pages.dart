@@ -512,11 +512,10 @@ abstract final class Pages {
   static const profileArtistAudience = '/me/settings/artist-audience';
   static const profileArtistFanClub = '/me/settings/artist-fan-club';
 
-  /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
-  /// Prefixos que não exigem sessão (espelho do Expo `AppRootAuthGate`).
+  /// Prefixos que não exigem sessão (comportamento de produto `AppRootAuthGate`).
   static const publicPrefixes = ['/onboarding', '/login', '/register'];
 
-  static const _expoAliases = <String, String>{
+  static const _legacyAliases = <String, String>{
     '/pages/demo/DemoScreen': home,
     '/pages/feed': home,
     '/pages/clubs': clubs,
@@ -606,7 +605,7 @@ abstract final class Pages {
     '/pages/register/fan/RegisterFanSuccessScreen': registerFanSuccess,
   };
 
-  /// Converte deep link Expo (`/pages/...` ou `mobile://...`) para rota Flutter.
+  /// Converte deep link legado (`/pages/...` ou `mobile://...`) para rota Flutter.
   static String fromIncomingLocation(String location) {
     var path = location;
     if (path.startsWith('mobile:')) {
@@ -620,15 +619,15 @@ abstract final class Pages {
       path = '/$path';
     }
     final withoutQuery = path.split('?').first;
-    final mapped = _expoAliases[withoutQuery];
+    final mapped = _legacyAliases[withoutQuery];
     if (mapped != null) {
       final q = path.contains('?') ? path.substring(path.indexOf('?')) : '';
       return '$mapped$q';
     }
-    return _mapExpoParamPath(withoutQuery) ?? path;
+    return _mapLegacyParamPath(withoutQuery) ?? path;
   }
 
-  static String? _mapExpoParamPath(String path) {
+  static String? _mapLegacyParamPath(String path) {
     final profile = RegExp(r'^/pages/profile/([^/]+)$').firstMatch(path);
     if (profile != null) {
       return fanProfile.replaceAll(':fanHandle', profile.group(1)!);

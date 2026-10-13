@@ -2,7 +2,7 @@ import 'package:crowdfans/components/post/post_avatar.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:flutter/material.dart';
 
-/// Chip de story com anel vermelho (Live). Sem navegação — Live ainda ⛔ no Expo.
+/// Chip de story com anel vermelho (Live). Sem navegação — Live ainda ⛔ no fluxo legado.
 class StoryLiveItem extends StatelessWidget {
   const StoryLiveItem({super.key, required this.name, required this.imageUri});
 

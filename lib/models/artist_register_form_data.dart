@@ -1,10 +1,10 @@
 import 'package:crowdfans/models/artist_verification_platform.dart';
 import 'package:crowdfans/models/artist_verification_status.dart';
 
-/// Campos do cadastro de artista usados nas telas atuais do Expo.
+/// Campos do cadastro de artista usados nas telas atuais de produto.
 ///
 /// Spotify, contestação de nome e consentimento parental existem no modelo
-/// legado, mas as telas estão ⛔ — não entram neste DTO até o Expo ligar.
+/// legado, mas as telas estão ⛔ — não entram neste DTO até o legado ligar.
 class ArtistRegisterFormData {
   const ArtistRegisterFormData({
     this.role = 'artist',
