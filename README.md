@@ -6,10 +6,11 @@ Reescrita do app Expo em [`crowdfans/mobile`](https://github.com/crowdfans/mobil
 
 | Trilha | Branch | Versão / API |
 |--------|--------|----------------|
-| **GCP** | [`release/0.2`](https://github.com/crowdfans/mobile_v2/tree/release/0.2) | `0.2.0+N`; API Cloud Run após staging/cutover ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
-| DO vivo | `prod` | `0.1.x`; API App Platform legada |
+| **GCP** | [`release/0.2`](https://github.com/crowdfans/mobile_v2/tree/release/0.2) | `0.2.0+N`; API Cloud Run ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
 
-Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · docs: [CF-372](https://crowd-fans.youtrack.cloud/issue/CF-372) · Git: [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md).
+Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · docs: [CF-372](https://crowd-fans.youtrack.cloud/issue/CF-372) · AGENTS: [CF-373](https://crowd-fans.youtrack.cloud/issue/CF-373) · Git: [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md).
+
+Sem DigitalOcean operacional.
 
 ## Rodar
 
@@ -21,15 +22,12 @@ flutter run
 ```
 
 API **GCP**: `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`.  
-**Proibido:** `crowdfans-app-dev*` / `crowdfans-app-prod` (DNS morto).  
-API **GCP** (builds `0.2.0+N`): hostname Cloud Run `crowdfans-server-staging` / `crowdfans-server` quando provisionado. Local:
+**Proibido:** `crowdfans-app-dev*` / `crowdfans-app-prod` / `*.ondigitalocean.app`. Local:
 
 ```
 API_MODE=local
 API_LOCAL_BASE_URL=http://localhost:8080
 ```
-
-GCP staging (`release/0.2`): `API_MODE=gcp` + `API_GCP_STAGING_BASE_URL` (placeholder até Cloud Run — ver `docs/GCP_STAGING_CONFIG.md`).
 
 Login nativo usa o Firebase **`crowdfans-prod`**.
 
@@ -56,9 +54,8 @@ Docs: [`docs/PATROL_GCP_FLAVOR.md`](docs/PATROL_GCP_FLAVOR.md).
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
-Fluxos reais contra a API (default DO legado
-`https://crowdfans-server-peefddw6nq-rj.a.run.app`; builds GCP usam
-Cloud Run quando configurado). Sem credenciais o teste fica `skip` com
+Fluxos reais contra a API GCP
+(`https://crowdfans-server-peefddw6nq-rj.a.run.app`). Sem credenciais o teste fica `skip` com
 mensagem clara — **não** finge verde.
 
 1. Copie o exemplo e preencha contas de teste (nunca committe):

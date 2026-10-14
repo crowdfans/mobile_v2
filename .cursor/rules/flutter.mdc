@@ -7,7 +7,7 @@ alwaysApply: true
 
 App mobile de produto. Expo `../mobile` / `crowdfans-mobile-rn` = referência. Não copiar `frontendapp/`.
 
-Git dual-line: GCP → **`release/0.2`**; DO legado → **`prod`**. Não misturar no mesmo PR. Leia `AGENTS.md`.
+Git: PRs → **`release/0.2`**. Sem DigitalOcean operacional. Leia `AGENTS.md`.
 
 - Telas: `lib/screens/` (estado na tela). Componentes: `lib/components/<domínio>/`, um widget público por arquivo.
 - Proibido `_Foo extends StatelessWidget` dentro de tela (vale o `State` da tela). Sem `lib/widgets/` na raiz.

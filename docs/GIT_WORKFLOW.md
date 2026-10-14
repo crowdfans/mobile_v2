@@ -2,9 +2,10 @@
 
 | Branch | Papel |
 |--------|--------|
-| **`release/0.2`** | Builds **GCP** — `pubspec` `0.2.0+N`; API Cloud Run após cutover/staging |
-| **`prod`** | Canal **DO** vivo — `0.1.x`; API `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
+| **`release/0.2`** | Builds **GCP** — `pubspec` `0.2.0+N`; API Cloud Run |
 
-PRs de migração GCP: **`--base release/0.2`**. Hotfixes DO: `--base prod`.
+PRs: **`--base release/0.2`**. Deploy por tag `v0.2.0-*`. Sem DigitalOcean operacional.
+
+**API:** `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`. Local: `API_MODE=local`.
 
 Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · mobile GCP: [CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356). SoT: Project `docs/gcp-git-flow.md`.

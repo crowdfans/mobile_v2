@@ -6,15 +6,14 @@ Não copiar `frontendapp/` (Flutter legado / Supabase). Não implementar feature
 
 ---
 
-## Git / deploy (dual-line)
+## Git / deploy (GCP)
 
 | Trilha | Branch / PR base | Versão / API |
 |--------|------------------|--------------|
-| **GCP** | **`release/0.2`** | `0.2.0+N`; API Cloud Run após staging/cutover ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
-| **DO vivo** | `prod` | `0.1.x`; API App Platform legada |
+| **GCP** | **`release/0.2`** | `0.2.0+N`; API Cloud Run ([CF-356](https://crowd-fans.youtrack.cloud/issue/CF-356)) |
 
-- Migração GCP: branch a partir de **`release/0.2`** → PR `--base release/0.2`.
-- Hotfix DO: branch a partir de **`prod`** → PR `--base prod`. **Não** misturar no mesmo PR. **Não** espelhar `prod`→`main`.
+- Branch a partir de **`release/0.2`** → PR `--base release/0.2` → deploy por tag `v0.2.0-*`.
+- Sem DigitalOcean operacional (App Platform / URLs `*.ondigitalocean.app`).
 - Épica: [CF-283](https://crowd-fans.youtrack.cloud/issue/CF-283) · [CF-373](https://crowd-fans.youtrack.cloud/issue/CF-373).
 
 ---
@@ -91,10 +90,9 @@ App Distribution, `google-services.json` e o plist **só** saem desse configure 
 
 O `.env` aceita as mesmas chaves do Expo (`EXPO_PUBLIC_FIREBASE_*`, `EXPO_PUBLIC_API_*`).
 
-**API:** nunca `crowdfans-app-dev*` nem `crowdfans-app-prod` (não resolvem DNS).  
-- Canal GCP (`release/0.2`): `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`  
-- Canal DO legado: flavor `digitalocean` / branch `prod` (não default)  
-- Localhost só com `API_MODE=local`.
+**API:** nunca `crowdfans-app-dev*` / `crowdfans-app-prod` / `*.ondigitalocean.app`.  
+- GCP: `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app`  
+- Localhost só com `API_MODE=local`. Ver `api-prod-only.mdc`.
 
 ---
 
