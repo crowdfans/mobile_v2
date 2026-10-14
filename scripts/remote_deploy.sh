@@ -30,6 +30,27 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# PATH bootstrap (Homebrew / gem) — mesmo padrão de distribute.sh. SSH zsh -lc
+# às vezes não inclui /opt/homebrew/bin onde vivem `pod` e node.
+for _cf_bindir in /opt/homebrew/bin /usr/local/bin; do
+  if [[ -d "$_cf_bindir" ]]; then
+    case ":$PATH:" in
+      *":$_cf_bindir:"*) ;;
+      *) export PATH="$_cf_bindir:$PATH" ;;
+    esac
+  fi
+done
+unset _cf_bindir
+for _cf_gem_bin in "$HOME"/.gem/ruby/*/bin; do
+  if [[ -d "$_cf_gem_bin" ]]; then
+    case ":$PATH:" in
+      *":$_cf_gem_bin:"*) ;;
+      *) export PATH="$_cf_gem_bin:$PATH" ;;
+    esac
+  fi
+done
+unset _cf_gem_bin
+
 PLATFORM='all'
 REF='prod'
 DRY_RUN=0

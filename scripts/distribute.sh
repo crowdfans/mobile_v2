@@ -79,6 +79,30 @@ fi
 
 export PATH="$ROOT/node_modules/.bin:${FLUTTER_SDK:-$HOME/sdk/flutter}/bin:$HOME/sdk/flutter/bin:$PATH"
 
+# Homebrew (Apple Silicon + Intel) — mesmo problema do nvm: Terminal interativo
+# tem /opt/homebrew/bin; SSH zsh -lc às vezes não. Precisa para node e `pod`.
+ensure_homebrew_path() {
+  for bindir in /opt/homebrew/bin /usr/local/bin; do
+    if [[ -d "$bindir" ]]; then
+      case ":$PATH:" in
+        *":$bindir:"*) ;;
+        *) export PATH="$bindir:$PATH" ;;
+      esac
+    fi
+  done
+  # gem user-install (sudo gem install cocoapods sem Homebrew)
+  local gem_bin
+  for gem_bin in "$HOME"/.gem/ruby/*/bin; do
+    if [[ -d "$gem_bin" ]]; then
+      case ":$PATH:" in
+        *":$gem_bin:"*) ;;
+        *) export PATH="$gem_bin:$PATH" ;;
+      esac
+    fi
+  done
+}
+ensure_homebrew_path
+
 # firebase-tools é um script com shebang `#!/usr/bin/env node`. Em SSH não-interativo
 # (bash -lc) o nvm do ~/.zshrc não carrega → `command -v firebase` passa mas a
 # execução falha e o erro era engolido como "Firebase CLI sem sessão".
@@ -98,6 +122,55 @@ ensure_node() {
     . "$NVM_DIR/nvm.sh"
   fi
   command -v node >/dev/null 2>&1
+}
+
+# CocoaPods no PATH (Homebrew / gem). Sem isso o Flutter reporta
+# "CocoaPods not installed or not in valid state" no meio do build.
+ensure_pod() {
+  ensure_homebrew_path
+  if command -v pod >/dev/null 2>&1; then
+    return 0
+  fi
+  for bindir in /opt/homebrew/bin /usr/local/bin; do
+    if [[ -x "$bindir/pod" ]]; then
+      export PATH="$bindir:$PATH"
+      return 0
+    fi
+  done
+  return 1
+}
+
+print_cocoapods_install_hint() {
+  cat >&2 <<EOF
+CocoaPods não está no PATH neste shell (zsh -lc / SSH).
+
+No Mac (uma vez):
+  brew install cocoapods
+  # ou: sudo gem install cocoapods
+  cd $ROOT/ios && pod install
+
+Confirme o mesmo shell que o cf usa:
+  ssh guschinaglia@mac-mini.local 'zsh -lc "command -v pod && pod --version"'
+EOF
+}
+
+# Garante `pod` + ios/Pods (idempotente: só roda pod install se Manifest.lock
+# / Pods faltarem — seguro com Podfile.lock já versionado).
+ensure_ios_pods() {
+  if ! ensure_pod; then
+    print_cocoapods_install_hint
+    return 1
+  fi
+  echo "CocoaPods: $(pod --version)"
+  local ios_dir="$ROOT/ios"
+  if [[ ! -f "$ios_dir/Podfile" ]]; then
+    echo "Podfile não encontrado em $ios_dir" >&2
+    return 1
+  fi
+  if [[ ! -d "$ios_dir/Pods" || ! -f "$ios_dir/Pods/Manifest.lock" ]]; then
+    echo "→ pod install (ios/Pods ausente ou incompleto)"
+    (cd "$ios_dir" && pod install)
+  fi
 }
 
 ensure_firebase_session() {
@@ -307,6 +380,9 @@ upload_android() {
 }
 
 build_ios() {
+  if ! ensure_ios_pods; then
+    return 1
+  fi
   if ! has_ios_signing; then
     echo "iOS pulado: não há certificado Apple no Keychain. Veja PENDENCIA.md." >&2
     return 1
