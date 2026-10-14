@@ -135,7 +135,7 @@ Tickets Mobile/Superfã/Artista recentemente **Done** relevantes à migração E
 | CF-91 | [Superfã] Fã Clube - Solicitação de entrada não existe | Done | Normal | Done no YouTrack |
 | CF-92 | [Superfã] Fã Clube - Posts sumidos | Done | Normal | Done no YouTrack |
 
-API/prod: sempre `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` (nunca `crowdfans-app-dev*` / `crowdfans-app-prod`).
+API: `https://crowdfans-server-peefddw6nq-rj.a.run.app` (nunca `crowdfans-app-dev*` / `crowdfans-app-prod` / `*.ondigitalocean.app`).
 
 ---
 

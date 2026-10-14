@@ -1,16 +1,18 @@
 ---
-description: API CrowdFans — DO vivo vs GCP Cloud Run; nunca hosts mortos
+description: API CrowdFans — GCP Cloud Run only; never dead DO hosts
 alwaysApply: true
 ---
 
 # API CrowdFans
 
-**Proibido:** `crowdfans-app-dev*` e `crowdfans-app-prod.ondigitalocean.app` (não resolvem DNS).
+**Proibido (DNS morto / não operacional):**
+- `crowdfans-app-dev*` / `crowdfans-app-prod.ondigitalocean.app`
+- `crowdfans-server-prod-*.ondigitalocean.app` (incl. `h9qb6`)
+- qualquer host App Platform DigitalOcean como target de load/seed/mobile
 
 | Canal | URL / host |
 |-------|------------|
-| **DO vivo** (`prod` / 0.1.x) | `https://crowdfans-server-prod-h9qb6.ondigitalocean.app` |
-| **GCP** (`release/0.2` / 0.2.0+N) | Cloud Run `crowdfans-server` / `crowdfans-server-staging` (após tags) |
+| **GCP** (`release/0.2` / 0.2.0+N) | Server `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app` |
 | Local | `API_MODE=local` → localhost |
 
-Não inventar fallback `dev` nem `crowdfans-app-prod`.
+Não inventar fallback `dev` nem `crowdfans-app-prod`. Fonte canônica também em `crowdfans/cursor` → `rules/api-prod-only.mdc`.
