@@ -13,7 +13,8 @@
 #   ./scripts/distribute.sh ios --testflight
 #   ./scripts/distribute.sh web --skip-build
 #
-# Variáveis opcionais: BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER.
+# Variáveis opcionais: BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER,
+#   FIREBASE_TOKEN (CI token de `firebase login:ci` — preferível em SSH sem TTY).
 # TestFlight (Mac, não commitar): ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_PATH
 #   ou ASC_USERNAME + ASC_APP_SPECIFIC_PASSWORD.
 
@@ -78,6 +79,61 @@ fi
 
 export PATH="$ROOT/node_modules/.bin:${FLUTTER_SDK:-$HOME/sdk/flutter}/bin:$HOME/sdk/flutter/bin:$PATH"
 
+# firebase-tools é um script com shebang `#!/usr/bin/env node`. Em SSH não-interativo
+# (bash -lc) o nvm do ~/.zshrc não carrega → `command -v firebase` passa mas a
+# execução falha e o erro era engolido como "Firebase CLI sem sessão".
+ensure_node() {
+  if command -v node >/dev/null 2>&1; then
+    return 0
+  fi
+  for bindir in /opt/homebrew/bin /usr/local/bin; do
+    if [[ -x "$bindir/node" ]]; then
+      export PATH="$bindir:$PATH"
+      return 0
+    fi
+  done
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+  if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    # shellcheck disable=SC1090
+    . "$NVM_DIR/nvm.sh"
+  fi
+  command -v node >/dev/null 2>&1
+}
+
+ensure_firebase_session() {
+  local err_file err_text configstore
+  err_file="$(mktemp "${TMPDIR:-/tmp}/cf-firebase-auth.XXXXXX")"
+  if firebase projects:list --project "$FIREBASE_PROJECT" >/dev/null 2>"$err_file"; then
+    rm -f "$err_file"
+    return 0
+  fi
+  err_text="$(tr '\n' ' ' <"$err_file" | sed 's/[[:space:]]\+/ /g')"
+  rm -f "$err_file"
+  configstore="${XDG_CONFIG_HOME:-$HOME/.config}/configstore/firebase-tools.json"
+  echo "Firebase CLI sem sessão (ou falha de auth) no projeto $FIREBASE_PROJECT." >&2
+  if [[ -n "$err_text" ]]; then
+    echo "  detalhe: $err_text" >&2
+  fi
+  if [[ -n "${FIREBASE_TOKEN:-}" ]]; then
+    echo "  FIREBASE_TOKEN está setado mas a chamada falhou — regenere: npm run firebase:login:ci" >&2
+  elif [[ -f "$configstore" ]]; then
+    echo "  configstore existe ($configstore) mas a sessão não autenticou." >&2
+    echo "  SSH sem node/nvm ou token inválido. Rode no Mac (login shell zsh):" >&2
+    echo "    cd $ROOT && npm run firebase:login" >&2
+    echo "  Ou gere token CI e exporte no ~/.zprofile:" >&2
+    echo "    npm run firebase:login:ci   # cole o token" >&2
+    echo "    echo 'export FIREBASE_TOKEN=…' >> ~/.zprofile" >&2
+  else
+    echo "  sem configstore em $configstore e sem FIREBASE_TOKEN." >&2
+    echo "  No Mac (Terminal / zsh): cd $ROOT && npm run firebase:login" >&2
+    echo "  Alternativa CI/SSH: npm run firebase:login:ci → export FIREBASE_TOKEN=…" >&2
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    echo "  node ainda não está no PATH — nvm/Homebrew não carregou neste shell." >&2
+  fi
+  return 1
+}
+
 if [[ -z "${JAVA_HOME:-}" ]]; then
   for jdk in "$HOME/Library/Java/JavaVirtualMachines"/*/Contents/Home; do
     if [[ -x "$jdk/bin/java" ]]; then
@@ -92,6 +148,13 @@ if [[ -z "${ANDROID_HOME:-}" && -d "$HOME/Library/Android/sdk" ]]; then
   export ANDROID_SDK_ROOT="$ANDROID_HOME"
 fi
 
+if ! ensure_node; then
+  echo "node não está no PATH (firebase-tools precisa de node)." >&2
+  echo "Em SSH, use zsh login shell (cf deploy mobile atualizado) ou:" >&2
+  echo "  brew install node   # ou carregue nvm no ~/.zprofile" >&2
+  exit 1
+fi
+
 if ! command -v firebase >/dev/null 2>&1; then
   echo "firebase-tools não encontrado. Rode: npm install" >&2
   exit 1
@@ -102,8 +165,11 @@ if ! command -v flutter >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! firebase projects:list --project "$FIREBASE_PROJECT" >/dev/null 2>&1; then
-  echo "Firebase CLI sem sessão. Rode: npm run firebase:login" >&2
+if [[ -n "${FIREBASE_TOKEN:-}" ]]; then
+  echo "Firebase: auth via FIREBASE_TOKEN"
+fi
+
+if ! ensure_firebase_session; then
   exit 1
 fi
 

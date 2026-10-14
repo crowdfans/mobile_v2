@@ -96,7 +96,12 @@ npm run ftl:android
 ```
 ## App Distribution
 
-Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm install` e `npm run firebase:login`.
+Grupo `flutter-testers` no projeto `crowdfans-prod`. Primeira vez no CLI: `npm install` e `npm run firebase:login` (Terminal no Mac — shell de login zsh).
+
+Para `cf deploy mobile` via SSH (sem TTY), o Mac precisa de **node no PATH** (nvm/Homebrew no `~/.zprofile`) e sessão Firebase. Preferências:
+
+1. `npm run firebase:login` no Mac (grava `~/.config/configstore/firebase-tools.json`), **ou**
+2. `npm run firebase:login:ci` → `export FIREBASE_TOKEN=…` no `~/.zprofile` (ou `cf` encaminha se a env existir no caller).
 
 ```bash
 npm run distribute          # gera o APK e envia (o atalho do dia a dia)
@@ -154,13 +159,19 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
 ### Setup Mac (Gustavo) — once
 
 1. Checkout `mobile_v2` em `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, branch `prod`.
-2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login`.
-3. Signing Apple Distribution no Keychain (IPA `app-store`).
-4. Credenciais ASC para upload TestFlight (env no login shell do Mac — `cf` SSHs with `bash -lc`; **não** no git):
+2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login` (no Terminal zsh do Mac).
+3. Confirme que **node** e Firebase funcionam num shell de login não-interativo (o mesmo que o `cf` usa):
+   ```bash
+   ssh guschinaglia@mac-mini.local 'zsh -lc "cd /Users/guschinaglia/Developer/CrowdFans/mobile_v2 && command -v node && npx firebase projects:list --project crowdfans-prod | head"'
+   ```
+   Se `node` faltar: coloque nvm/Homebrew no `~/.zprofile`, ou `brew install node`.
+   Alternativa: `npm run firebase:login:ci` → `echo 'export FIREBASE_TOKEN=…' >> ~/.zprofile`.
+4. Signing Apple Distribution no Keychain (IPA `app-store`).
+5. Credenciais ASC para upload TestFlight (env no **zsh** login shell do Mac — `cf` SSHs with `zsh -lc`; **não** no git):
    - `ASC_API_KEY_ID` + `ASC_API_ISSUER_ID` + `ASC_API_KEY_PATH` (`.p8`), **ou**
    - `ASC_USERNAME` + `ASC_APP_SPECIFIC_PASSWORD`
-5. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
-6. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
+6. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
+7. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
 
 Sem ASC no Mac, o IPA ainda é gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 
