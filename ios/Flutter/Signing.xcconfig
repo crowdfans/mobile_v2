@@ -1,0 +1,7 @@
+// Crowdfans iOS signing — Team id fica no Mac (não hardcodar no git).
+// Preferência no archive remoto (distribute.sh / cf deploy mobile):
+//   export APPLE_TEAM_ID=XXXXXXXXXX   # ou DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
+// Alternativa one-shot no Xcode: Runner → Signing & Capabilities → Team
+//   (grava DEVELOPMENT_TEAM no .pbxproj local).
+// Se quiser fixar neste arquivo (só neste checkout, sem commit):
+// DEVELOPMENT_TEAM = XXXXXXXXXX

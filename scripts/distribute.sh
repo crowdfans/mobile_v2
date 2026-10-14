@@ -15,6 +15,8 @@
 #
 # Variáveis opcionais: BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER,
 #   FIREBASE_TOKEN (CI token de `firebase login:ci` — preferível em SSH sem TTY).
+# iOS signing (Mac, não hardcodar no git): APPLE_TEAM_ID ou DEVELOPMENT_TEAM
+#   (também FLUTTER_XCODE_DEVELOPMENT_TEAM, ou Team já gravado no .pbxproj / Signing.xcconfig).
 # TestFlight (Mac, não commitar): ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_PATH
 #   ou ASC_USERNAME + ASC_APP_SPECIFIC_PASSWORD.
 
@@ -262,6 +264,96 @@ has_ios_signing() {
   [[ "$identities" == *"Apple Development"* || "$identities" == *"Apple Distribution"* ]]
 }
 
+# Resolve Apple Development Team id for non-interactive archive (SSH / cf deploy).
+# Prefer env on the Mac (or forwarded by cf); never invent a team id.
+resolve_ios_development_team() {
+  local team pbx xcconfig
+  team="${APPLE_TEAM_ID:-${DEVELOPMENT_TEAM:-${FLUTTER_XCODE_DEVELOPMENT_TEAM:-}}}"
+  team="$(printf '%s' "$team" | tr -d '[:space:]')"
+  if [[ -n "$team" ]]; then
+    printf '%s\n' "$team"
+    return 0
+  fi
+  pbx="$ROOT/ios/Runner.xcodeproj/project.pbxproj"
+  if [[ -f "$pbx" ]]; then
+    team="$(
+      grep -E 'DEVELOPMENT_TEAM = [A-Z0-9]+;' "$pbx" 2>/dev/null \
+        | head -1 \
+        | sed -E 's/.*DEVELOPMENT_TEAM = ([A-Z0-9]+);.*/\1/' \
+        || true
+    )"
+    team="$(printf '%s' "$team" | tr -d '[:space:]')"
+    if [[ -n "$team" ]]; then
+      printf '%s\n' "$team"
+      return 0
+    fi
+  fi
+  xcconfig="$ROOT/ios/Flutter/Signing.xcconfig"
+  if [[ -f "$xcconfig" ]]; then
+    team="$(
+      grep -E '^[[:space:]]*DEVELOPMENT_TEAM[[:space:]]*=' "$xcconfig" 2>/dev/null \
+        | grep -v '^[[:space:]]*//' \
+        | head -1 \
+        | sed -E 's/^[[:space:]]*DEVELOPMENT_TEAM[[:space:]]*=[[:space:]]*//' \
+        | tr -d '[:space:];' \
+        || true
+    )"
+    if [[ -n "$team" && "$team" != '$(DEVELOPMENT_TEAM)' ]]; then
+      printf '%s\n' "$team"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+print_ios_signing_help() {
+  cat >&2 <<EOF
+iOS signing: falta Development Team e/ou identidade Apple no Keychain.
+
+Archive remoto (cf deploy mobile / SSH) precisa de:
+  1) Identidade "Apple Development" ou "Apple Distribution" no Keychain
+  2) Team id via env (preferido) ou Xcode / xcconfig
+
+No Mac (uma vez):
+  open $ROOT/ios/Runner.xcworkspace
+  → Runner target → Signing & Capabilities
+  → login Apple ID (Xcode → Settings → Accounts)
+  → Team = Crowdfans (ou sua conta)
+  → Automatically manage signing = ON
+
+Ou grave o Team id só neste Mac (não commitar):
+  echo 'export APPLE_TEAM_ID=XXXXXXXXXX' >> ~/.zprofile
+  # aliases aceitos: DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
+
+Team id: Xcode → Settings → Accounts → Team → Team ID
+  (ou Membership em https://developer.apple.com/account)
+
+Conferir neste shell (mesmo zsh -lc do cf):
+  security find-identity -v -p codesigning
+  echo "APPLE_TEAM_ID=\${APPLE_TEAM_ID:-\${DEVELOPMENT_TEAM:-unset}}"
+EOF
+}
+
+# Fail early before flutter build ipa — clear Mac steps, no archive attempt.
+preflight_ios_signing() {
+  local team
+  if ! has_ios_signing; then
+    echo "iOS preflight: nenhuma identidade Apple Development/Distribution no Keychain." >&2
+    print_ios_signing_help
+    return 1
+  fi
+  if ! team="$(resolve_ios_development_team)"; then
+    echo "iOS preflight: DEVELOPMENT_TEAM / APPLE_TEAM_ID não definido (pbxproj sem Team)." >&2
+    print_ios_signing_help
+    return 1
+  fi
+  export DEVELOPMENT_TEAM="$team"
+  export APPLE_TEAM_ID="${APPLE_TEAM_ID:-$team}"
+  export FLUTTER_XCODE_DEVELOPMENT_TEAM="$team"
+  echo "→ iOS Development Team: $team (automatic signing)"
+  return 0
+}
+
 first_ipa() {
   shopt -s nullglob
   local ipas=(build/ios/ipa/*.ipa)
@@ -383,18 +475,19 @@ build_ios() {
   if ! ensure_ios_pods; then
     return 1
   fi
-  if ! has_ios_signing; then
-    echo "iOS pulado: não há certificado Apple no Keychain. Veja PENDENCIA.md." >&2
-    return 1
-  fi
+  preflight_ios_signing || return 1
   local export_method='ad-hoc'
   if [[ "$TESTFLIGHT" -eq 1 ]]; then
     export_method='app-store'
   fi
-  echo "→ IPA $build_name ($build_number) export-method=$export_method"
+  echo "→ IPA $build_name ($build_number) export-method=$export_method team=$DEVELOPMENT_TEAM"
+  # FLUTTER_XCODE_* é repassado ao xcodebuild; args após -- reforçam o Team.
   flutter build ipa --release --export-method "$export_method" \
     --build-name="$build_name" \
-    --build-number="$build_number"
+    --build-number="$build_number" \
+    -- \
+    DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+    CODE_SIGN_STYLE=Automatic
 }
 
 build_web() {
