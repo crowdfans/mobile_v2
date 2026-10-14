@@ -182,7 +182,7 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
    - Login Apple ID (Xcode → Settings → Accounts) → selecione o **Team** Crowdfans → **Automatically manage signing**.
    - **Ou** exporte só neste Mac (zsh login — `cf` usa `zsh -lc`; **não** commitar):
      ```bash
-     echo 'export APPLE_TEAM_ID=XXXXXXXXXX' >> ~/.zprofile   # Team ID em Accounts → Team
+     echo 'export APPLE_TEAM_ID=GS955J2P93' >> ~/.zprofile   # Crowdfans Team ID
      # aliases: DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
      ```
    - Confira: `security find-identity -v -p codesigning` (precisa Apple Development ou Distribution).

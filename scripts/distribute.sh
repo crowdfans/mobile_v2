@@ -322,11 +322,11 @@ No Mac (uma vez):
   → Automatically manage signing = ON
 
 Ou grave o Team id só neste Mac (não commitar):
-  echo 'export APPLE_TEAM_ID=XXXXXXXXXX' >> ~/.zprofile
+  echo 'export APPLE_TEAM_ID=GS955J2P93' >> ~/.zprofile   # Crowdfans
   # aliases aceitos: DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
 
-Team id: Xcode → Settings → Accounts → Team → Team ID
-  (ou Membership em https://developer.apple.com/account)
+Team id Crowdfans: GS955J2P93
+  (Xcode → Settings → Accounts → Team → Team ID)
 
 Conferir neste shell (mesmo zsh -lc do cf):
   security find-identity -v -p codesigning
@@ -481,13 +481,14 @@ build_ios() {
     export_method='app-store'
   fi
   echo "→ IPA $build_name ($build_number) export-method=$export_method team=$DEVELOPMENT_TEAM"
-  # FLUTTER_XCODE_* é repassado ao xcodebuild; args após -- reforçam o Team.
+  # NÃO passar DEVELOPMENT_TEAM=… / CODE_SIGN_STYLE=… como args posicionais
+  # (Flutter trata KEY=VAL após -- como "target file" → "Target file … not found").
+  # Team chega ao xcodebuild via env (export em preflight_ios_signing):
+  #   DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM / APPLE_TEAM_ID
+  # e/ou ios/Flutter/Signing.xcconfig (DEVELOPMENT_TEAM = …).
   flutter build ipa --release --export-method "$export_method" \
     --build-name="$build_name" \
-    --build-number="$build_number" \
-    -- \
-    DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-    CODE_SIGN_STYLE=Automatic
+    --build-number="$build_number"
 }
 
 build_web() {
