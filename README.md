@@ -138,27 +138,30 @@ The `cf` CLI is a thin SSH trigger. The caller never needs Flutter, Xcode, or th
 ```bash
 # any machine with cf + SSH key (no Flutter here)
 cf deploy mobile --dry-run              # resolved host + remote command plan
-cf deploy mobile                        # all = android + ios TestFlight + web
+cf deploy mobile                        # firebase = Android App Dist + Web Hosting
 cf deploy mobile --platform android     # optional filter
+cf deploy mobile --platform ios         # opt-in remote TestFlight (or do iOS by hand on Mac)
 ```
 
 On the Mac, SSH runs `scripts/remote_deploy.sh` (mkdir lock → git ff-only → `distribute.sh`). You can also invoke that script directly on the Mac for debugging:
 
 ```bash
 ./scripts/remote_deploy.sh --dry-run
+./scripts/remote_deploy.sh --platform firebase
 ./scripts/remote_deploy.sh --platform ios
 npm run remote-deploy:dry
 ```
 
 Defaults locked: host `mac-mini.local`, user `guschinaglia`, path
 `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, ref `prod`.
-iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; web → Hosting `testers`.
+**Happy path:** Android → App Distribution `flutter-testers`; web → Hosting `testers`.
+**iOS/TestFlight:** opt-in (`--platform ios`) or manual on the Mac — not the default remote path.
 
 ### Setup Mac (Gustavo) — once
 
 1. Checkout `mobile_v2` em `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, branch `prod`.
 2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login` (no Terminal zsh do Mac).
-3. **CocoaPods** (obrigatório para iOS / TestFlight — mesmo shell `zsh -lc` que o `cf` usa):
+3. **CocoaPods** (só se for usar iOS remoto / TestFlight — mesmo shell `zsh -lc` que o `cf` usa; **não** necessário para `cf deploy mobile` default/firebase):
    ```bash
    brew install cocoapods
    # ou: sudo gem install cocoapods
@@ -175,7 +178,7 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
    ```
    Se `node` faltar: coloque nvm/Homebrew no `~/.zprofile`, ou `brew install node`.
    Alternativa: `npm run firebase:login:ci` → `echo 'export FIREBASE_TOKEN=…' >> ~/.zprofile`.
-5. **iOS Development Team** (obrigatório para archive remoto / TestFlight):
+5. **iOS Development Team** (só para archive remoto / TestFlight opt-in; ignore no happy path Firebase):
    - Abra `ios/Runner.xcworkspace` no Xcode → target **Runner** → **Signing & Capabilities**.
    - Login Apple ID (Xcode → Settings → Accounts) → selecione o **Team** Crowdfans → **Automatically manage signing**.
    - **Ou** exporte só neste Mac (zsh login — `cf` usa `zsh -lc`; **não** commitar):
