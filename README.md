@@ -50,7 +50,7 @@ npm run test:patrol:gcp          # GRE stub Cloud Run placeholder
 npm run test:unit:gcp            # unit GRE sem device
 ```
 
-Docs: [`docs/PATROL_GCP_FLAVOR.md`](docs/PATROL_GCP_FLAVOR.md).
+Docs: [`docs/API_BACKENDS.md`](docs/API_BACKENDS.md).
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
@@ -148,4 +148,4 @@ Espelha o mobile Expo:
 
 ## Migração
 
-Ver `MIGRATION.md`. O Expo em `../mobile` continua sendo a referência de comportamento até cada tela ser marcada como feita.
+Ver `README.md`. O Expo em `../mobile` continua sendo a referência de comportamento até cada tela ser marcada como feita.

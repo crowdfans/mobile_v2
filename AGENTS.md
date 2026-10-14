@@ -107,3 +107,8 @@ Fonte: prints nas tasks YouTrack (CF-66 Superfã, CF-109 Artista) e `Downloads/S
 - [ ] `Pages.*` / `ApiUrls.*`
 - [ ] Sem `print` de debug na entrega
 - [ ] Layout igual ao print da task (não ao código legado)
+
+## Docs
+
+Não commitar scratch de agente (status, backlog YouTrack espelho, diaries). Essenciais: README, AGENTS, `docs/GIT_WORKFLOW.md`, `docs/VERSIONING.md`, e docs de cutover/API/GCS sob `docs/` que forem SoT da fatia. Scratch → Project store `internal/`.
+
