@@ -18,9 +18,10 @@
 # Env:
 #   APP_FLAVOR          gcp (default) | digitalocean
 #   TESTER_GROUP        App Distribution group (default: flutter-testers;
-#                       opcional futuro: flutter-testers-gcp)
-#   WEB_CHANNEL         Hosting preview (default: testers; gcp → testers-gcp se setado)
+#                       opcional: flutter-testers-gcp)
+#   WEB_CHANNEL         Hosting preview (default: testers)
 #   BUILD_NAME, BUILD_NUMBER, RELEASE_NOTES, JAVA_HOME, ANDROID_HOME, FLUTTER
+#   FIREBASE_TOKEN      CI token de `firebase login:ci` (SSH sem TTY)
 
 set -euo pipefail
 
@@ -79,7 +80,10 @@ if [[ -z "$NOTES" ]]; then
   NOTES="$(git -C "$ROOT" log -1 --pretty='%s' 2>/dev/null || echo 'Build Flutter para testers')"
 fi
 # Prefixo de canal/flavor nas notas (visível no App Distribution).
-NOTES="[${APP_FLAVOR}] $NOTES"
+# Não duplica se RELEASE_NOTES/--notes já trouxer "[gcp] …".
+if [[ "$NOTES" != "[${APP_FLAVOR}]"* ]]; then
+  NOTES="[${APP_FLAVOR}] $NOTES"
+fi
 
 export PATH="$ROOT/node_modules/.bin:${FLUTTER_SDK:-$HOME/sdk/flutter}/bin:$HOME/sdk/flutter/bin:$PATH"
 
