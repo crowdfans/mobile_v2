@@ -34,7 +34,8 @@ Firebase Auth ──idToken──► HttpService (API CrowdFans) ──presign�
 1. `Content-Type` = mesmo do body do presign.
 2. Remove `Authorization`.
 3. Remove `x-amz-*` (residual Spaces).
-4. Mantém só o que o server assinou (`X-Goog-SignedHeaders`, tipicamente `content-type;host`).
+4. Preserva `x-goog-content-length-range` (e demais `x-goog-*`) devolvidos pelo server (CF-446).
+5. Mantém só o que o server assinou (`X-Goog-SignedHeaders`, tipicamente `content-type;host`).
 
 ## Firebase stubs
 

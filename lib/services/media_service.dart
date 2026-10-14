@@ -9,6 +9,19 @@ import 'package:crowdfans/services/object_storage_client.dart';
 /// Pasta de mídia no object store (`users/{uid}/{kind}/` — GCS na linha 0.2).
 enum MediaKind { avatar, post, fanClub, fanLetter }
 
+/// Limites CF-446 / CF-447 (bytes) — espelho do server.
+const int kMaxAvatarBytes = 5_242_880; // 5 MiB
+const int kMaxMediaBytes = 15_728_640; // 15 MiB (post / fan-club / fan-letter)
+
+/// Content-Types de imagem aceitos no contrato GCS (CF-446).
+const Set<String> kAllowedImageContentTypes = {
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+};
+
 extension MediaKindApi on MediaKind {
   /// Valor enviado em `POST /api/v1/me/media/uploads`.
   String get apiValue {
@@ -17,6 +30,14 @@ extension MediaKindApi on MediaKind {
       MediaKind.post => 'post',
       MediaKind.fanClub => 'fan-club',
       MediaKind.fanLetter => 'fan-letter',
+    };
+  }
+
+  /// Tamanho máximo do kind (bytes).
+  int get maxBytes {
+    return switch (this) {
+      MediaKind.avatar => kMaxAvatarBytes,
+      MediaKind.post || MediaKind.fanClub || MediaKind.fanLetter => kMaxMediaBytes,
     };
   }
 }
@@ -60,10 +81,22 @@ class MediaPresignPayload {
 /// Flavor **gcp** (`release/0.2`): URLs GCS / signed `X-Goog-*` — sem Spaces.
 /// Auth Firebase só na chamada `POST /me/media/uploads` ([HttpService]);
 /// o PUT ao bucket **não** leva Bearer (CF-358).
+///
+/// Alinhado a CF-446: `contentLength` opcional, allowlist de imagem,
+/// `x-goog-content-length-range` reenviado no PUT.
 abstract final class MediaService {
   /// URL já pública (http/https) — não precisa de upload.
   static bool isRemoteMediaUrl(String uri) {
     return RegExp(r'^https?:\/\/', caseSensitive: false).hasMatch(uri.trim());
+  }
+
+  /// Content-Type de imagem permitido pelo contrato de upload (CF-446).
+  static bool isAllowedImageContentType(String contentType) {
+    final normalized = contentType.trim().toLowerCase();
+    if (normalized == 'image/jpg') {
+      return true;
+    }
+    return kAllowedImageContentTypes.contains(normalized);
   }
 
   /// Infere Content-Type a partir do mime do picker ou da extensão.
@@ -126,6 +159,8 @@ abstract final class MediaService {
   }
 
   /// Presign na API (Bearer) + PUT signed no object store (sem Bearer).
+  ///
+  /// Envia `contentLength` (CF-446) para o server rejeitar cedo (`payload_too_large`).
   static Future<String> uploadBytes({
     required Uint8List bytes,
     required MediaKind kind,
@@ -134,17 +169,38 @@ abstract final class MediaService {
     if (bytes.isEmpty) {
       throw ApiError('A imagem selecionada está vazia.', 0);
     }
+    final normalizedType = contentType.trim().toLowerCase() == 'image/jpg'
+        ? 'image/jpeg'
+        : contentType.trim();
+    if (mediaBackendExpectsGcs() &&
+        !isAllowedImageContentType(normalizedType)) {
+      throw ApiError(
+        'Tipo de mídia não suportado no upload GCS ($normalizedType). Use JPEG, PNG, WebP ou GIF.',
+        0,
+      );
+    }
+    if (bytes.length > kind.maxBytes) {
+      throw ApiError(
+        'Imagem acima do limite (${kind.maxBytes} bytes) para ${kind.apiValue}.',
+        0,
+      );
+    }
+
     final presign = await HttpService.request<MediaPresignPayload>(
       ApiUrls.meMediaUploads,
       method: Method.post,
-      body: {'kind': kind.apiValue, 'contentType': contentType},
+      body: {
+        'kind': kind.apiValue,
+        'contentType': normalizedType,
+        'contentLength': bytes.length,
+      },
       parse: MediaPresignPayload.fromJson,
     );
     _assertPresignShapes(presign);
 
     final headers = ObjectStorageClient.headersForSignedUpload(
       fromServer: presign.headers,
-      contentType: contentType,
+      contentType: normalizedType,
     );
     final status = await ObjectStorageClient.putSignedBytes(
       uploadUrl: presign.uploadUrl,

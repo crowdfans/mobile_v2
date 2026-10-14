@@ -24,6 +24,7 @@ void main() {
           'Content-Type': 'image/png',
           'Authorization': 'Bearer should-not-reach-gcs',
           'x-amz-acl': 'public-read',
+          'x-goog-content-length-range': '1,5242880',
         },
         contentType: 'image/jpeg',
       );
@@ -33,11 +34,12 @@ void main() {
         headers.keys.any((k) => k.toLowerCase().startsWith('x-amz-')),
         isFalse,
       );
+      expect(headers['x-goog-content-length-range'], '1,5242880');
     });
 
     test('HttpService.isObjectStoreUrl reconhece GCS signed', () {
       const signed =
-          'https://storage.googleapis.com/crowdfans-media-gcp/users/u1/a.jpg'
+          'https://storage.googleapis.com/crowdfans-media-staging/users/u1/a.jpg'
           '?X-Goog-Algorithm=GOOG4-RSA-SHA256'
           '&X-Goog-Credential=sa%40proj.iam.gserviceaccount.com%2F20261007%2Fauto%2Fstorage%2Fgoog4_request'
           '&X-Goog-Date=20261007T120000Z'
@@ -61,7 +63,7 @@ void main() {
     test('request a GCS public URL falha sem rede', () async {
       await expectLater(
         HttpService.request<dynamic>(
-          'https://storage.googleapis.com/crowdfans-media-gcp/users/u1/x.jpg',
+          'https://storage.googleapis.com/crowdfans-media-staging/users/u1/x.jpg',
           requireAuth: false,
         ),
         throwsA(

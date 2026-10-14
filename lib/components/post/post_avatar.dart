@@ -1,4 +1,5 @@
 import 'package:crowdfans/constants/theme.dart';
+import 'package:crowdfans/services/media_url_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Avatar circular com fallback de cor.
@@ -26,7 +27,8 @@ class PostAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CrowdFansTheme.of(context);
-    final trimmed = url.trim();
+    // Object key `users/…` → URL GCS estável (CF-339).
+    final trimmed = displayMediaUrl(url);
     final hasNetwork = trimmed.startsWith('http');
     final isAsset = trimmed.startsWith('assets/');
     return ClipOval(
