@@ -7,11 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUp(() {
     CutoverFlags.resetRemoteValues();
+    CutoverFlags.debugFetchOverride = null;
     dotenv.loadFromString(envString: 'APP_FLAVOR=gcp\n', isOptional: true);
   });
 
   tearDown(() {
     CutoverFlags.resetRemoteValues();
+    CutoverFlags.debugFetchOverride = null;
     dotenv.loadFromString(envString: '', isOptional: true);
   });
 
@@ -96,6 +98,35 @@ void main() {
       CutoverFlags.applyRemoteValues({});
       expect(apiBaseUrl(), kCrowdFansGcpStagingApi);
       expect(mediaBackendExpectsGcs(), isTrue);
+    });
+  });
+
+  group('EDGE — bootstrap RC (stub skip / fetch override)', () {
+    test('bootstrap com stubs Firebase não chama rede e mantém gcp', () async {
+      // release/0.2: apiKey REPLACE_ME_* → usingStubOptions=true → no-op.
+      await CutoverFlags.bootstrap();
+      expect(apiBaseUrl(), kCrowdFansGcpStagingApi);
+      expect(CutoverFlags.forceDigitalOcean(), isFalse);
+    });
+
+    test('bootstrap via debugFetchOverride aplica kill-switch', () async {
+      CutoverFlags.debugFetchOverride = () async => {
+            CutoverFlags.keyForceDigitalOcean: 'true',
+          };
+      await CutoverFlags.bootstrap();
+      expect(CutoverFlags.forceDigitalOcean(), isTrue);
+      expect(apiBaseUrl(), kCrowdFansDoProdApi);
+      expect(mediaBackendExpectsGcs(), isFalse);
+    });
+
+    test('bootstrap debugFetchOverride null map não sobrescreve', () async {
+      CutoverFlags.applyRemoteValues({
+        CutoverFlags.keyApiBackend: 'gcp_prod',
+      });
+      CutoverFlags.debugFetchOverride = () async => null;
+      await CutoverFlags.bootstrap();
+      expect(apiMode(), 'gcp_prod');
+      expect(apiBaseUrl(), kCrowdFansGcpProdApi);
     });
   });
 }

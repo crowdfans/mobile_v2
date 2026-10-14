@@ -86,9 +86,9 @@ void main() {
   });
 
   group('aliases', () {
-    test('prod → digitalocean', () {
+    test('prod → gcp_prod (Make/API prod = Cloud Run)', () {
       dotenv.loadFromString(envString: 'API_MODE=prod\n');
-      expect(apiMode(), 'digitalocean');
+      expect(apiMode(), 'gcp_prod');
     });
 
     test('staging → gcp', () {

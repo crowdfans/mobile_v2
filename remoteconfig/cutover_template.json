@@ -1,0 +1,37 @@
+{
+  "conditions": [],
+  "parameters": {
+    "cf_cutover_force_digitalocean": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "CF-359 kill-switch: true força API DigitalOcean server-prod + mídia Spaces (rollback dual-run).",
+      "valueType": "BOOLEAN"
+    },
+    "cf_api_backend": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "CF-359 override API: gcp | gcp_prod | digitalocean | local. Vazio = flavor/API_MODE.",
+      "valueType": "STRING"
+    },
+    "cf_media_backend": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "CF-359 override mídia: gcs | spaces. Vazio = flavor (gcp→GCS).",
+      "valueType": "STRING"
+    },
+    "cf_api_base_url": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "CF-359 URL absoluta opcional. Ignorado se kill-switch DO estiver ON. Hosts mortos rejeitados no client.",
+      "valueType": "STRING"
+    }
+  },
+  "parameterGroups": {},
+  "version": {
+    "description": "CF-359 cutover flags — defaults neutros (não forçam DO)"
+  }
+}
