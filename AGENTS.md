@@ -99,3 +99,7 @@ Fonte: prints nas tasks YouTrack (CF-66 Superfã, CF-109 Artista) e `Downloads/S
 - [ ] `Pages.*` / `ApiUrls.*`
 - [ ] Sem `print` de debug na entrega
 - [ ] Layout igual ao print da task (não ao código legado)
+
+## Docs
+
+Não commitar scratch de agente. Essenciais: README, AGENTS. Scratch → Project store `internal/`.
