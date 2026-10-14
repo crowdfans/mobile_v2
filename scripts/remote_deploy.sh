@@ -4,8 +4,9 @@
 #
 # Uso (no Mac, a partir do checkout mobile_v2):
 #   ./scripts/remote_deploy.sh
+#   ./scripts/remote_deploy.sh --platform firebase   # default: App Dist + Hosting
 #   ./scripts/remote_deploy.sh --platform android
-#   ./scripts/remote_deploy.sh --platform ios
+#   ./scripts/remote_deploy.sh --platform ios        # opt-in TestFlight
 #   ./scripts/remote_deploy.sh --platform web
 #   ./scripts/remote_deploy.sh --platform both
 #   ./scripts/remote_deploy.sh --platform all
@@ -15,13 +16,16 @@
 # Fluxo:
 #   1. mkdir lock (um deploy por vez; portátil no macOS)
 #   2. git fetch + checkout --ref + pull --ff-only
-#   3. android/web → scripts/distribute.sh
-#   4. ios → scripts/distribute.sh ios --testflight (TestFlight)
+#   3. android/web → scripts/distribute.sh (happy path = firebase)
+#   4. ios → scripts/distribute.sh ios --testflight (opt-in only)
 #      (codesign ACL / optional session unlock vivem em distribute.sh — sem senha em zprofile)
 #
-# Multi-platform (both/all): continua após um fail e imprime resumo por
+# Multi-platform (firebase/both/all): continua após um fail e imprime resumo por
 # plataforma no final (ok|fail + última linha de erro). Exit 1 se qualquer
 # plataforma falhou — o sucesso do web no final não esconde android/ios.
+#
+# Default: firebase (Android App Distribution + Web Hosting). iOS/TestFlight
+# is opt-in (--platform ios|both|all) or manual on this Mac — not the happy path.
 #
 # API do Flutter web permanece crowdfans-server-prod (ver distribute.sh).
 # Secrets (Firebase / ASC) só neste Mac — nunca no laptop.
@@ -52,7 +56,7 @@ for _cf_gem_bin in "$HOME"/.gem/ruby/*/bin; do
 done
 unset _cf_gem_bin
 
-PLATFORM='all'
+PLATFORM='firebase'
 REF='prod'
 DRY_RUN=0
 NOTES="${RELEASE_NOTES:-}"
@@ -98,9 +102,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$PLATFORM" in
-  android | ios | apple | web | both | all) ;;
+  android | ios | apple | web | firebase | both | all) ;;
   *)
-    echo "platform inválida: $PLATFORM (android|ios|apple|web|both|all)" >&2
+    echo "platform inválida: $PLATFORM (android|ios|apple|web|firebase|both|all)" >&2
     exit 1
     ;;
 esac
@@ -130,6 +134,10 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
     android) echo "  ./scripts/distribute.sh android" ;;
     ios) echo "  ./scripts/distribute.sh ios --testflight" ;;
     web) echo "  ./scripts/distribute.sh web" ;;
+    firebase)
+      echo "  ./scripts/distribute.sh android"
+      echo "  ./scripts/distribute.sh web"
+      ;;
     both)
       echo "  ./scripts/distribute.sh android"
       echo "  ./scripts/distribute.sh ios --testflight"
@@ -266,6 +274,10 @@ case "$PLATFORM" in
   android) run_android ;;
   ios) run_ios_testflight ;;
   web) run_web ;;
+  firebase)
+    run_android
+    run_web
+    ;;
   both)
     run_android
     run_ios_testflight
