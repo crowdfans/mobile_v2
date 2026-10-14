@@ -49,9 +49,6 @@ APP_FLAVOR=gcp npm run distribute:ios
 
 # Web → Hosting preview (não App Distribution)
 APP_FLAVOR=gcp npm run distribute:web
-
-# Comparar com DO legado (não misturar no mesmo release notes sem querer)
-APP_FLAVOR=digitalocean npm run distribute:android
 ```
 
 Remote via `cf` (Mac always-on; Firebase-only por default):
@@ -67,7 +64,7 @@ Artefato Android esperado:
 
 ## Notas de release
 
-O script prefixa `[gcp]` (ou `[digitalocean]`) no texto enviado ao App Distribution  
+O script prefixa `[gcp]` no texto enviado ao App Distribution  
 (não duplica se o texto já começar com `[flavor]`):
 
 ```text

@@ -1,8 +1,7 @@
-# API backends — GCP vs DigitalOcean
+# API backends — GCP
 
-Linha **GCP** (`release/0.2`): default `APP_FLAVOR=gcp` / `API_MODE=gcp` → Cloud Run.  
-Linha **DO** (`prod`): permanece `0.1.x` + server-prod DigitalOcean — **não** misturar no mesmo PR.
-
+Linha operacional (`release/0.2`): default `APP_FLAVOR=gcp` / `API_MODE=gcp` → Cloud Run.  
+Sem DigitalOcean / App Platform operacional ([CF-354](https://crowd-fans.youtrack.cloud/issue/CF-354)).
 
 ## Hosts canônicos (CF-361)
 
@@ -11,7 +10,7 @@ Linha **DO** (`prod`): permanece `0.1.x` + server-prod DigitalOcean — **não**
 | **GCP** (`release/0.2`) | `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app` |
 | **Local** | `API_MODE=local` → `http://localhost:8080` |
 
-**Proibido:** `crowdfans-app-dev*`, `crowdfans-app-prod.ondigitalocean.app` (DNS morto). Não usar DO server-prod como fallback no happy path GCP.
+**Proibido:** `crowdfans-app-dev*`, `crowdfans-app-prod.ondigitalocean.app`, `*.ondigitalocean.app` como alvo de load/seed/mobile.
 
 Constantes: `lib/services/api_config.dart`. Override: `API_BASE_URL` / `--dart-define=API_BASE_URL=…`.
 
@@ -21,13 +20,13 @@ Deep links: `lib/constants/deep_link_hosts.dart` (`crowdfans.app`, `staging.crow
 
 | Flavor | Android `--flavor` | Config | Base URL |
 |--------|--------------------|--------|----------|
-| `gcp` | `gcp` | `config/gcp.json` / `.env.gcp` | Cloud Run staging |
-| `digitalocean` | `digitalocean` | `config/digitalocean.json` | DO server-prod |
+| `gcp` | `gcp` | `config/gcp.json` / `.env.gcp` | Cloud Run |
 | `local` | `gcp` + mode local | `config/local.json` | `localhost:8080` |
+
+Flavor `digitalocean` permanece no tree só como arquivo de cutover (kill-switch Remote Config) — **não** é happy path nem CI.
 
 ```bash
 ./scripts/run_backend.sh gcp
-./scripts/run_backend.sh digitalocean
 ./scripts/run_backend.sh local
 
 # ou:
@@ -39,18 +38,14 @@ iOS: use `--dart-define-from-file=config/….json` (schemes nativos de flavor ai
 ## Env
 
 - `API_GCP_BASE_URL` / `API_GCP_STAGING_BASE_URL` / `API_GCP_PROD_BASE_URL`
-- `API_DIGITALOCEAN_BASE_URL` (só flavor DO)
 - `API_LOCAL_BASE_URL`
 - `API_BASE_URL` força qualquer modo
-- Hosts mortos (`crowdfans-app-dev*`, `crowdfans-app-prod`) → fallback do modo ativo (nunca esses hosts)
-
-Placeholders Cloud Run são provisórios até o deploy real (CF-286+). Atualizar JSON/env com a URL `.run.app` retornada pelo `gcloud run services describe`.
+- Hosts mortos (`crowdfans-app-dev*`, `crowdfans-app-prod`, `*.ondigitalocean.app`) → recusar / nunca default
 
 ## Firebase
 
 Options + `google-services` / plist **por flavor**, stubs sem segredos.  
 Detalhe: [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md).
-
 
 ## App Distribution (gcp)
 
@@ -64,8 +59,8 @@ Detalhe: [MEDIA_GCS.md](./MEDIA_GCS.md).
 
 ## Cutover flags / Remote Config (CF-359)
 
-Kill-switch e overrides de API/mídia em dual-run: [REMOTE_CONFIG_CUTOVER.md](./REMOTE_CONFIG_CUTOVER.md).  
-`cf_cutover_force_digitalocean=true` → rollback para DO server-prod.
+Kill-switch e overrides de API/mídia: [REMOTE_CONFIG_CUTOVER.md](./REMOTE_CONFIG_CUTOVER.md).  
+Não reativar App Platform / workflows DO como caminho de CI.
 
 ## Versão
 

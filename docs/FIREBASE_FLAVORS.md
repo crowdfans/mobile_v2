@@ -1,19 +1,18 @@
-# Firebase por APP_FLAVOR (gcp vs digitalocean)
+# Firebase por APP_FLAVOR (gcp)
 
-Coordena com [API_BACKENDS.md](./API_BACKENDS.md) e PR [#342](https://github.com/crowdfans/mobile_v2/pull/342).
+Coordena com [API_BACKENDS.md](./API_BACKENDS.md). Happy path = **gcp**. Flavor `digitalocean` no tree é arquivo de cutover — não CI ([CF-354](https://crowd-fans.youtrack.cloud/issue/CF-354)).
 
 ## Princípio
 
 - Stubs **sem segredos** no git (`REPLACE_ME_*`).
 - Keys reais: `flutterfire configure` local / CI secret — **não** commit.
-- Auth/FCM hoje = projeto `crowdfans-prod` (ambos os flavors até haver app Firebase dedicado).
+- Auth/FCM = projeto `crowdfans-prod`.
 
 ## Arquivos
 
 | Flavor | Dart | Android | iOS stub |
 |--------|------|---------|----------|
 | `gcp` | `lib/firebase_options_gcp.dart` | `android/app/src/gcp/google-services.json` | `ios/Firebase/gcp/GoogleService-Info.plist` |
-| `digitalocean` | `lib/firebase_options_digitalocean.dart` | `android/app/src/digitalocean/google-services.json` | `ios/Firebase/digitalocean/GoogleService-Info.plist` |
 
 Seletor: `lib/firebase_options.dart` → `DefaultFirebaseOptions` usa `appFlavor()`.
 
@@ -21,7 +20,7 @@ Seletor: `lib/firebase_options.dart` → `DefaultFirebaseOptions` usa `appFlavor
 
 ```bash
 ./scripts/sync_firebase_flavor.sh gcp
-./scripts/run_backend.sh digitalocean   # já sincroniza
+./scripts/run_backend.sh gcp
 ```
 
 ## Preencher keys (local)
@@ -30,8 +29,6 @@ Seletor: `lib/firebase_options.dart` → `DefaultFirebaseOptions` usa `appFlavor
 2. `flutterfire configure --project=crowdfans-prod --platforms=ios,android,web --yes`
 3. Copiar apiKey/appId gerados para o stub do flavor **ou** para um override local não commitado.
 4. Nunca reintroduzir keys no `release/0.2` / PRs GCP.
-
-Branch `prod` (DO `0.1.x`) pode continuar com o configure histórico — fora deste PR.
 
 ## App Distribution
 
