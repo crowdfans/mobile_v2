@@ -3,6 +3,20 @@
 Linha **GCP** (`release/0.2`): default `APP_FLAVOR=gcp` / `API_MODE=gcp` → Cloud Run.  
 Linha **DO** (`prod`): permanece `0.1.x` + server-prod DigitalOcean — **não** misturar no mesmo PR.
 
+
+## Hosts canônicos (CF-361)
+
+| Linha | API |
+|-------|-----|
+| **GCP** (`release/0.2`) | `https://crowdfans-server-peefddw6nq-rj.a.run.app` · financial `https://crowdfans-financial-peefddw6nq-rj.a.run.app` |
+| **Local** | `API_MODE=local` → `http://localhost:8080` |
+
+**Proibido:** `crowdfans-app-dev*`, `crowdfans-app-prod.ondigitalocean.app` (DNS morto). Não usar DO server-prod como fallback no happy path GCP.
+
+Constantes: `lib/services/api_config.dart`. Override: `API_BASE_URL` / `--dart-define=API_BASE_URL=…`.
+
+Deep links: `lib/constants/deep_link_hosts.dart` (`crowdfans.app`, `staging.crowdfans.app` placeholder).
+
 ## Flavors
 
 | Flavor | Android `--flavor` | Config | Base URL |
@@ -37,10 +51,6 @@ Placeholders Cloud Run são provisórios até o deploy real (CF-286+). Atualizar
 Options + `google-services` / plist **por flavor**, stubs sem segredos.  
 Detalhe: [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md).
 
-## Patrol / GRE stubs (gcp)
-
-Unit + Patrol smoke contra Cloud Run **placeholder** (pré-deploy).  
-Detalhe: [PATROL_GCP_FLAVOR.md](./PATROL_GCP_FLAVOR.md).
 
 ## App Distribution (gcp)
 
