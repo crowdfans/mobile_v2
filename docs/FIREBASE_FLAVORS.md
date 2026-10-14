@@ -35,5 +35,6 @@ Branch `prod` (DO `0.1.x`) pode continuar com o configure histórico — fora de
 
 ## App Distribution
 
-Canal testers para builds `APP_FLAVOR=gcp`: [APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md)  
+Canal testers para builds `APP_FLAVOR=gcp` ([CF-418](https://crowd-fans.youtrack.cloud/issue/CF-418)):  
+[APP_DISTRIBUTION_GCP.md](./APP_DISTRIBUTION_GCP.md)  
 (`npm run distribute:gcp` → grupo `flutter-testers`, notes `[gcp] …`).

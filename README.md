@@ -121,8 +121,10 @@ npm run ftl:android
 ```
 ## App Distribution
 
-Grupo `flutter-testers` no projeto `crowdfans-prod`. Linha **`release/0.2`**: flavor **gcp** (Cloud Run).  
-Docs: [`docs/APP_DISTRIBUTION_GCP.md`](docs/APP_DISTRIBUTION_GCP.md). Primeira vez: `npm install` + `npm run firebase:login`.
+Grupo `flutter-testers` no projeto `crowdfans-prod`. Linha **`release/0.2`**: flavor **gcp**  
+(API Cloud Run via `config/gcp.json`). Flavors Firebase: [`docs/FIREBASE_FLAVORS.md`](docs/FIREBASE_FLAVORS.md).  
+Docs do canal: [`docs/APP_DISTRIBUTION_GCP.md`](docs/APP_DISTRIBUTION_GCP.md) ([CF-418](https://crowd-fans.youtrack.cloud/issue/CF-418)).  
+Primeira vez: `npm install` + `npm run firebase:login`.
 
 ```bash
 npm run distribute:gcp      # Android --flavor gcp → App Distribution (atalho release/0.2)
