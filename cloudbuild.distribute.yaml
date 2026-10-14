@@ -1,0 +1,94 @@
+# Cloud Build — optional Android → Firebase App Distribution (CF-353).
+# Default _DISTRIBUTE=false / _DRY_RUN=true — sem upload até ship + aprovação.
+# Group: flutter-testers · project: crowdfans-prod
+# IPA/TestFlight: fora de escopo (Mac only).
+# Doc: docs/CLOUD_BUILD_FLUTTER.md
+
+substitutions:
+  _FLUTTER_VERSION: "3.35.3"
+  _API_BASE_URL: "https://crowdfans-server-peefddw6nq-rj.a.run.app"
+  _FIREBASE_PROJECT: crowdfans-prod
+  _ANDROID_APP_ID: "1:658897248078:android:edd3c987eb54bcdc2c881f"
+  _TESTER_GROUP: flutter-testers
+  _DISTRIBUTE: "false"
+  _DRY_RUN: "true"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+  secretEnv: ["FIREBASE_TOKEN"]
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/FIREBASE_TOKEN/versions/latest
+      env: FIREBASE_TOKEN
+
+steps:
+  - id: flutter-setup
+    name: gcr.io/cloud-builders/wget
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        curl -fsSL -o /tmp/flutter.tar.xz \
+          "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${_FLUTTER_VERSION}-stable.tar.xz"
+        tar -C /workspace -xf /tmp/flutter.tar.xz
+        export PATH="/workspace/flutter/bin:$$PATH"
+        flutter config --no-analytics
+        flutter precache --android
+        echo "/workspace/flutter/bin" > /workspace/flutter_path.txt
+
+  - id: build-apk
+    name: gcr.io/cloud-builders/wget
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        export PATH="$$(cat /workspace/flutter_path.txt):$$PATH"
+        flutter pub get
+        PUB_VER="$$(awk '/^version:/ { print $$2; exit }' pubspec.yaml)"
+        BUILD_NAME="$${PUB_VER%%+*}"
+        BUILD_NUMBER="$${BUILD_NUMBER:-$$(git rev-list --count HEAD)}"
+        flutter build apk --release \
+          --flavor gcp \
+          --dart-define-from-file=config/gcp.json \
+          --build-name="$$BUILD_NAME" \
+          --build-number="$$BUILD_NUMBER" \
+          --dart-define=API_BASE_URL="${_API_BASE_URL}"
+        test -f build/app/outputs/flutter-apk/app-gcp-release.apk \
+          || test -f build/app/outputs/flutter-apk/app-release.apk
+
+  - id: app-distribution
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        APK=""
+        for cand in \
+          build/app/outputs/flutter-apk/app-gcp-release.apk \
+          build/app/outputs/flutter-apk/app-release.apk; do
+          if [[ -f "$$cand" ]]; then APK="$$cand"; break; fi
+        done
+        if [[ -z "$$APK" ]]; then
+          echo "Missing APK after build" >&2
+          exit 1
+        fi
+        NOTES="Cloud Build $$SHORT_SHA (CF-353)"
+        echo "Would distribute $$APK → ${_FIREBASE_PROJECT} group=${_TESTER_GROUP}"
+        if [[ "${_DRY_RUN}" == "true" || "${_DISTRIBUTE}" != "true" ]]; then
+          echo "DRY_RUN/DISTRIBUTE gated — no firebase appdistribution:distribute"
+          exit 0
+        fi
+        npm install -g firebase-tools
+        firebase appdistribution:distribute "$$APK" \
+          --app "${_ANDROID_APP_ID}" \
+          --project "${_FIREBASE_PROJECT}" \
+          --groups "${_TESTER_GROUP}" \
+          --release-notes "$$NOTES" \
+          --token "$$FIREBASE_TOKEN"
+
+timeout: 3600s

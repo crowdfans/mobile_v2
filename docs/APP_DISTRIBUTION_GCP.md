@@ -24,6 +24,11 @@ TESTER_GROUP=flutter-testers-gcp npm run distribute:gcp
 
 Até o grupo existir, use o default `flutter-testers` — as **release notes** levam prefixo `[gcp]` para distinguir no painel.
 
+## Cloud Build (opcional — CF-353)
+
+CI APK / App Dist gated: ver [CLOUD_BUILD_FLUTTER.md](./CLOUD_BUILD_FLUTTER.md).
+Happy path continua neste doc + `cf deploy mobile` (Mac).
+
 ## Pré-requisitos
 
 1. `npm install` + `npm run firebase:login` (projeto `crowdfans-prod`)

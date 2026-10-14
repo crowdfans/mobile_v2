@@ -1,0 +1,74 @@
+# Cloud Build — CI Flutter Android APK (CF-353).
+# Does NOT distribute. Happy path App Dist = cf deploy mobile → Mac.
+# Versioning: pubspec name+number (not v0.2.0-* SemVer tags).
+# Triggers: cloud/cloudbuild/triggers.example.yaml (disabled until ship).
+#
+# Stub portátil: baixa Flutter SDK no build. Em ship, preferir imagem
+# Artifact Registry com Flutter+Android SDK.
+
+substitutions:
+  _FLUTTER_VERSION: "3.35.3"
+  _API_BASE_URL: "https://crowdfans-server-peefddw6nq-rj.a.run.app"
+  _DRY_RUN: "true"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+steps:
+  - id: flutter-setup
+    name: gcr.io/cloud-builders/wget
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        curl -fsSL -o /tmp/flutter.tar.xz \
+          "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${_FLUTTER_VERSION}-stable.tar.xz"
+        tar -C /workspace -xf /tmp/flutter.tar.xz
+        export PATH="/workspace/flutter/bin:$$PATH"
+        flutter config --no-analytics
+        flutter --version
+        flutter precache --android
+        echo "/workspace/flutter/bin" > /workspace/flutter_path.txt
+
+  - id: pub-get-analyze
+    name: gcr.io/cloud-builders/wget
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        export PATH="$$(cat /workspace/flutter_path.txt):$$PATH"
+        flutter pub get
+        flutter analyze --no-fatal-infos
+        flutter test
+
+  - id: apk-release
+    name: gcr.io/cloud-builders/wget
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -eu
+        export PATH="$$(cat /workspace/flutter_path.txt):$$PATH"
+        PUB_VER="$$(awk '/^version:/ { print $$2; exit }' pubspec.yaml)"
+        BUILD_NAME="$${PUB_VER%%+*}"
+        BUILD_NUMBER="$${BUILD_NUMBER:-$$(git rev-list --count HEAD)}"
+        flutter build apk --release \
+          --flavor gcp \
+          --dart-define-from-file=config/gcp.json \
+          --build-name="$$BUILD_NAME" \
+          --build-number="$$BUILD_NUMBER" \
+          --dart-define=API_BASE_URL="${_API_BASE_URL}"
+        ls -la build/app/outputs/flutter-apk/
+        echo "apk-release ok dry_run=${_DRY_RUN} name=$$BUILD_NAME number=$$BUILD_NUMBER"
+
+# Requer bucket gs://${PROJECT_ID}-cloudbuild-artifacts (criar no ship) ou remova este bloco.
+artifacts:
+  objects:
+    location: gs://${PROJECT_ID}-cloudbuild-artifacts/mobile_v2/$COMMIT_SHA
+    paths:
+      - build/app/outputs/flutter-apk/*.apk
+
+timeout: 3600s
