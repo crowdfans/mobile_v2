@@ -3,6 +3,7 @@ import 'package:crowdfans/components/post/post_media_lightbox.dart';
 import 'package:crowdfans/components/post/post_video_preview.dart';
 import 'package:crowdfans/constants/theme.dart';
 import 'package:crowdfans/models/feed_post.dart';
+import 'package:crowdfans/services/media_url_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Mídia do card (imagem, carrossel, vídeo ou membership) — quadrada no PDF.
@@ -65,25 +66,32 @@ class PostMedia extends StatelessWidget {
     }
     if (post.type == PostType.video ||
         (post.videoThumbnailUri ?? '').trim().isNotEmpty) {
+      final thumb = displayMediaUrl(
+        post.videoThumbnailUri ?? post.imageUri ?? '',
+      );
       return Padding(
         padding: const EdgeInsets.only(top: 12),
         child: PostVideoPreview(
-          thumbnailUri: post.videoThumbnailUri ?? post.imageUri,
+          thumbnailUri: thumb.isEmpty ? null : thumb,
           videoUri: post.videoUri,
           duration: post.videoDuration,
         ),
       );
     }
     if (post.carouselUris.length > 1 || post.type == PostType.carousel) {
-      final uris = post.carouselUris.isNotEmpty
+      final raw = post.carouselUris.isNotEmpty
           ? post.carouselUris
           : [if ((post.imageUri ?? '').trim().isNotEmpty) post.imageUri!];
+      final uris = [
+        for (final u in raw)
+          displayMediaUrl(u),
+      ].where((u) => u.isNotEmpty).toList();
       return Padding(
         padding: const EdgeInsets.only(top: 12),
         child: PostCarousel(uris: uris),
       );
     }
-    final image = post.imageUri?.trim() ?? '';
+    final image = displayMediaUrl(post.imageUri ?? '');
     if (image.isEmpty) {
       return const SizedBox.shrink();
     }

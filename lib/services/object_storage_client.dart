@@ -17,6 +17,7 @@ abstract final class ObjectStorageClient {
   /// - Sempre define `Content-Type` = [contentType] (deve bater com o presign).
   /// - Remove `Authorization` / `Bearer`.
   /// - No flavor gcp: remove `x-amz-*` (Spaces).
+  /// - Preserva `x-goog-content-length-range` e demais `x-goog-*` do server (CF-446).
   static Map<String, String> headersForSignedUpload({
     required Map<String, String> fromServer,
     required String contentType,

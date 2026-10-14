@@ -9,8 +9,8 @@ import 'package:crowdfans/services/env_service.dart';
 /// Signed PUT: query `X-Goog-*` no host storage.googleapis.com.
 /// Sem live bucket — só reconhecimento de shape (CF-339).
 
-/// Bucket GCS placeholder (staging) até TF/CF-286.
-const kCrowdFansGcsMediaBucketStub = 'crowdfans-media-gcp';
+/// Bucket GCS placeholder alinhado ao TF (`crowdfans-media-{env}`) até CF-286 apply.
+const kCrowdFansGcsMediaBucketStub = 'crowdfans-media-staging';
 
 /// Base pública default GCS (path-style).
 String kCrowdFansGcsPublicBaseDefault([String bucket = kCrowdFansGcsMediaBucketStub]) =>
@@ -155,4 +155,27 @@ String buildGcsPublicObjectUrl(String objectKey, {String? bucket}) {
           kCrowdFansGcsPublicBaseDefault(bucket.trim()))
       : mediaGcsPublicBaseUrl();
   return '$base/$key';
+}
+
+/// Normaliza valor da API para URL HTTPS de preview em widgets (CF-339 / CF-307).
+///
+/// - `http(s)://…` → passa direto (Spaces legado só é barrado no **upload** gcp)
+/// - `assets/…` → asset local
+/// - object key `users/…` ou `temp/…` no flavor GCS → [buildGcsPublicObjectUrl]
+String displayMediaUrl(String raw) {
+  final trimmed = raw.trim();
+  if (trimmed.isEmpty) {
+    return '';
+  }
+  if (RegExp(r'^https?:\/\/', caseSensitive: false).hasMatch(trimmed)) {
+    return trimmed;
+  }
+  if (trimmed.startsWith('assets/')) {
+    return trimmed;
+  }
+  if (mediaBackendExpectsGcs() &&
+      (trimmed.startsWith('users/') || trimmed.startsWith('temp/'))) {
+    return buildGcsPublicObjectUrl(trimmed);
+  }
+  return trimmed;
 }
