@@ -377,16 +377,54 @@ if [[ "$TESTFLIGHT" -eq 1 ]]; then
 fi
 echo "Notas: $NOTES"
 
+# Em `all`: continua após um fail e resume ok|fail (não engole exit).
 status=0
+ALL_RESULTS=()
+
+record_all() {
+  local name="$1"
+  local ec="$2"
+  local hint="${3:-}"
+  if [[ "$ec" -eq 0 ]]; then
+    ALL_RESULTS+=("${name}|ok|")
+  else
+    ALL_RESULTS+=("${name}|fail|${hint}")
+    status=1
+  fi
+}
+
 case "$PLATFORM" in
   android) run_android ;;
   ios) run_ios || status=1 ;;
   web) run_web ;;
   all)
+    set +e
     run_android
+    record_all android $? "veja log Android acima"
     # Em `all` local: App Distribution ad-hoc, a menos que --testflight.
-    run_ios || echo "Android enviado; iOS não."
-    run_web || echo "Web não enviada."
+    run_ios
+    record_all ios $? "signing/Keychain ou upload — veja PENDENCIA.md / ASC"
+    run_web
+    record_all web $? "veja log Web/Hosting acima"
+    set -e
+    echo
+    echo "======== platform summary ========"
+    echo "CF_PLATFORM_SUMMARY_BEGIN"
+    for entry in "${ALL_RESULTS[@]}"; do
+      name="${entry%%|*}"
+      rest="${entry#*|}"
+      result="${rest%%|*}"
+      detail="${rest#*|}"
+      if [[ "$result" == "ok" ]]; then
+        echo "${name}: ok"
+        echo "[ok]   ${name}"
+      else
+        echo "${name}: fail | ${detail}"
+        echo "[fail] ${name} — ${detail}"
+      fi
+    done
+    echo "CF_PLATFORM_SUMMARY_END"
+    echo "======== end platform summary ========"
     ;;
 esac
 
