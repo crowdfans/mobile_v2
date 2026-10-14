@@ -133,6 +133,9 @@ bool isAllowedPublicMediaUrl(String url) {
 }
 
 /// Upload URL aceitável no flavor ativo.
+///
+/// No flavor GCS: exige signed PUT (`X-Goog-*`). URL pública sem assinatura
+/// não serve para upload (evita PUT acidental em object URL estável).
 bool isAllowedUploadUrl(String url) {
   final trimmed = url.trim();
   if (trimmed.isEmpty) {
@@ -142,7 +145,7 @@ bool isAllowedUploadUrl(String url) {
     if (isSpacesMediaUrl(trimmed)) {
       return false;
     }
-    return isGcsSignedUploadUrl(trimmed) || isGcsPublicUrl(trimmed);
+    return isGcsSignedUploadUrl(trimmed);
   }
   return trimmed.startsWith('http');
 }
@@ -159,7 +162,7 @@ String buildGcsPublicObjectUrl(String objectKey, {String? bucket}) {
 
 /// Normaliza valor da API para URL HTTPS de preview em widgets (CF-339 / CF-307).
 ///
-/// - `http(s)://…` → passa direto (Spaces legado só é barrado no **upload** gcp)
+/// - `http(s)://…` → passa se for URL pública permitida no flavor; Spaces no gcp → vazio
 /// - `assets/…` → asset local
 /// - object key `users/…` ou `temp/…` no flavor GCS → [buildGcsPublicObjectUrl]
 String displayMediaUrl(String raw) {
@@ -168,6 +171,9 @@ String displayMediaUrl(String raw) {
     return '';
   }
   if (RegExp(r'^https?:\/\/', caseSensitive: false).hasMatch(trimmed)) {
+    if (mediaBackendExpectsGcs() && isSpacesMediaUrl(trimmed)) {
+      return '';
+    }
     return trimmed;
   }
   if (trimmed.startsWith('assets/')) {

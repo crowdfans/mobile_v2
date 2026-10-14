@@ -37,6 +37,14 @@ void main() {
       expect(isAllowedUploadUrl(url), isTrue);
     });
 
+    test('URL pública GCS sem X-Goog-* não é upload URL', () {
+      const url =
+          'https://storage.googleapis.com/crowdfans-media-staging/users/u1/posts/a.jpg';
+      expect(isGcsPublicUrl(url), isTrue);
+      expect(isGcsSignedUploadUrl(url), isFalse);
+      expect(isAllowedUploadUrl(url), isFalse);
+    });
+
     test('buildGcsPublicObjectUrl alinha ao server PublicURL', () {
       expect(
         buildGcsPublicObjectUrl('users/111/posts/2026/10/obj.jpg'),
@@ -55,6 +63,21 @@ void main() {
         ),
         'https://storage.googleapis.com/crowdfans-media-staging/users/u/a.png',
       );
+    });
+
+    test('displayMediaUrl no gcp apaga Spaces legado', () {
+      const spaces =
+          'https://crowdfans-media-prod.nyc3.digitaloceanspaces.com/users/u/posts/a.jpg';
+      expect(displayMediaUrl(spaces), isEmpty);
+    });
+
+    test('inferContentType no gcp não promove vídeo por extensão', () {
+      expect(MediaService.inferContentType('clip.mp4'), 'image/jpeg');
+      expect(
+        MediaService.inferContentType('clip.mp4', 'video/mp4'),
+        'image/jpeg',
+      );
+      expect(MediaService.inferContentType('a.png'), 'image/png');
     });
 
     test('resolveMediaUrl aceita https GCS sem upload', () async {

@@ -100,13 +100,19 @@ abstract final class MediaService {
   }
 
   /// Infere Content-Type a partir do mime do picker ou da extensão.
+  ///
+  /// No flavor GCS o contrato de upload é só imagem (CF-446): não infere `video/*`
+  /// a partir da extensão — cai em `image/jpeg` e a allowlist rejeita se for vídeo.
   static String inferContentType(String uri, [String? mimeType]) {
     final explicit = mimeType?.trim().toLowerCase();
     if (explicit != null && explicit.isNotEmpty) {
       if (explicit == 'image/jpg') {
         return 'image/jpeg';
       }
-      if (explicit.startsWith('image/') || explicit.startsWith('video/')) {
+      if (explicit.startsWith('image/')) {
+        return explicit;
+      }
+      if (explicit.startsWith('video/') && !mediaBackendExpectsGcs()) {
         return explicit;
       }
     }
@@ -120,7 +126,10 @@ abstract final class MediaService {
     if (path.endsWith('.gif')) {
       return 'image/gif';
     }
-    if (path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.m4v')) {
+    if (!mediaBackendExpectsGcs() &&
+        (path.endsWith('.mp4') ||
+            path.endsWith('.mov') ||
+            path.endsWith('.m4v'))) {
       return 'video/mp4';
     }
     return 'image/jpeg';
