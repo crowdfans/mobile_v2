@@ -175,14 +175,22 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
    ```
    Se `node` faltar: coloque nvm/Homebrew no `~/.zprofile`, ou `brew install node`.
    Alternativa: `npm run firebase:login:ci` → `echo 'export FIREBASE_TOKEN=…' >> ~/.zprofile`.
-5. Signing Apple Distribution no Keychain (IPA `app-store`).
-6. Credenciais ASC para upload TestFlight (env no **zsh** login shell do Mac — `cf` SSHs with `zsh -lc`; **não** no git):
+5. **iOS Development Team** (obrigatório para archive remoto / TestFlight):
+   - Abra `ios/Runner.xcworkspace` no Xcode → target **Runner** → **Signing & Capabilities**.
+   - Login Apple ID (Xcode → Settings → Accounts) → selecione o **Team** Crowdfans → **Automatically manage signing**.
+   - **Ou** exporte só neste Mac (zsh login — `cf` usa `zsh -lc`; **não** commitar):
+     ```bash
+     echo 'export APPLE_TEAM_ID=XXXXXXXXXX' >> ~/.zprofile   # Team ID em Accounts → Team
+     # aliases: DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
+     ```
+   - Confira: `security find-identity -v -p codesigning` (precisa Apple Development ou Distribution).
+6. Credenciais ASC para upload TestFlight (env no **zsh** login shell do Mac — **não** no git):
    - `ASC_API_KEY_ID` + `ASC_API_ISSUER_ID` + `ASC_API_KEY_PATH` (`.p8`), **ou**
    - `ASC_USERNAME` + `ASC_APP_SPECIFIC_PASSWORD`
 7. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
 8. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
 
-Sem ASC no Mac, o IPA ainda é gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
+Sem Team id / identidade Apple, `distribute.sh ios --testflight` falha no **preflight** (antes do archive) com os passos acima. Sem ASC no Mac, o IPA ainda pode ser gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 
 ## Estrutura
 
