@@ -22,7 +22,9 @@ android {
         applicationId = "com.crowdfans.crowdfans"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // cometchat_calls_sdk declara minSdk 26; flutter.minSdkVersion (24) quebra
+        // assembleRelease no manifest merger ("Gradle task assembleRelease failed").
+        minSdk = 26
         targetSdk = 37
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
