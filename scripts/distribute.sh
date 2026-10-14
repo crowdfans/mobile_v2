@@ -525,9 +525,24 @@ upload_ios() {
 
 build_android() {
   echo "→ APK $build_name ($build_number)"
+  local log ec
+  log="$(mktemp "${TMPDIR:-/tmp}/cf-android-apk.XXXXXX")"
+  set +e
   flutter build apk --release \
     --build-name="$build_name" \
-    --build-number="$build_number"
+    --build-number="$build_number" 2>&1 | tee "$log"
+  ec=${PIPESTATUS[0]}
+  set -e
+  if [[ "$ec" -ne 0 ]]; then
+    if grep -qE 'minSdkVersion .* cannot be smaller than|Manifest merger failed' "$log"; then
+      echo >&2
+      echo "Android assembleRelease: manifest merger / minSdk. Confira android/app/build.gradle.kts (minSdk)." >&2
+    fi
+    rm -f "$log"
+    return "$ec"
+  fi
+  rm -f "$log"
+  return 0
 }
 
 upload_android() {
