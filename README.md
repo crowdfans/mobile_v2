@@ -1,6 +1,6 @@
 # CrowdFans mobile_v2 (Flutter)
 
-Reescrita do app Expo em [`crowdfans/mobile`](https://github.com/crowdfans/mobile) para Flutter.
+App Flutter CrowdFans (`mobile_v2`).
 
 ## Rodar
 
@@ -74,15 +74,25 @@ patrol test -t integration_test/e2e_artist_edit_delete_post_test.dart \
 ```
 
 Opcionais: `E2E_ARTIST_UID`, `E2E_FAN_UID`, `E2E_FAN_HANDLE`, `E2E_SEED_POST_ID`
-(espelho do Expo `../mobile/.env.e2e.example`).
+.
 
 | Ticket | Arquivo | Credenciais |
 |---|---|---|
 | CF-128 | `e2e_artist_post_fan_comment_test.dart` | artista + fã |
 | CF-129 | `e2e_superfan_vote_club_logout_test.dart` | fã (+ `E2E_ARTIST_UID` recomendado) |
-| CF-130 | `e2e_artist_edit_delete_post_test.dart` | artista |
+| CF-130 | `e2e_artist_edit_delete_post_test.dart` | artista | green: editar+apagar via `create-menu-my-posts`; red: login inválido / cancelar delete; edge: texto 280 |
 
 Helpers: `integration_test/helpers/e2e_env.dart`, `e2e_auth.dart`.
+
+**CF-128 green / red / edge (obrigatório):**
+
+| Grupo | Patrol (`e2e_artist_post_fan_comment_test.dart`) | Widget (`test/components/cf128_artist_post_fan_comment_test.dart`) |
+|---|---|---|
+| GREEN | artista posta → superfã comenta → texto visível | `comment-submit` com rascunho; `post-comments`; publish com texto |
+| RED | senha inválida fica no login; composer vazio sem `comment-submit` | draft vazio / publish desabilitado |
+| EDGE | comentário longo visível | teclado `viewInsets`; zero comentários; limite 280 |
+
+Widget suite: `flutter test test/components/cf128_artist_post_fan_comment_test.dart`.
 
 ### Firebase Test Lab (CF-125 / CF-126)
 
@@ -105,7 +115,8 @@ Para `cf deploy mobile` via SSH (sem TTY), o Mac precisa de **node no PATH** (nv
 
 ```bash
 npm run distribute          # gera o APK e envia (o atalho do dia a dia)
-npm run distribute:ios      # IPA ad-hoc, se o signing Apple existir
+npm run distribute:ios      # IPA ad-hoc → App Distribution (se signing existir)
+npm run distribute:ios:testflight  # IPA app-store → TestFlight (ASC no Mac)
 npm run distribute:web      # Flutter web no Hosting (canal testers)
 npm run distribute:all
 ```
@@ -113,19 +124,6 @@ npm run distribute:all
 Web **não** entra no App Distribution (só APK/IPA). O script sobe um [preview channel](https://firebase.google.com/docs/hosting/manage-preview-channels) `testers` em `crowdfans-prod` (expira em 14 dias) e imprime o URL. No console: Authentication → Authorized domains → cole esse host. OTP no browser ainda precisa do reCAPTCHA (`PENDENCIA.md`).
 
 No Cursor: **Terminal → Run Task… → App Distribution: Android** (ou Web). Notas padrão = último commit; override com `./scripts/distribute.sh android --notes "…"`.
-
-## Estrutura
-
-Espelha o mobile Expo:
-
-- `lib/constants/pages.dart` — rotas (`Pages.*`)
-- `lib/api/api_urls.dart` — endpoints (`ApiUrls.*`)
-- `lib/services/` — facade (`AuthService`, `HttpService`, `ProfileService`)
-- `lib/screens/` — telas (estado da tela no próprio arquivo)
-
-## Migração
-
-Ver `MIGRATION.md`. O Expo em `../mobile` continua sendo a referência de comportamento até cada tela ser marcada como feita.
 
 ## Remote deploy (Mac always-on)
 
@@ -140,27 +138,30 @@ The `cf` CLI is a thin SSH trigger. The caller never needs Flutter, Xcode, or th
 ```bash
 # any machine with cf + SSH key (no Flutter here)
 cf deploy mobile --dry-run              # resolved host + remote command plan
-cf deploy mobile                        # all = android + ios TestFlight + web
+cf deploy mobile                        # firebase = Android App Dist + Web Hosting
 cf deploy mobile --platform android     # optional filter
+cf deploy mobile --platform ios         # opt-in remote TestFlight (or do iOS by hand on Mac)
 ```
 
 On the Mac, SSH runs `scripts/remote_deploy.sh` (mkdir lock → git ff-only → `distribute.sh`). You can also invoke that script directly on the Mac for debugging:
 
 ```bash
 ./scripts/remote_deploy.sh --dry-run
+./scripts/remote_deploy.sh --platform firebase
 ./scripts/remote_deploy.sh --platform ios
 npm run remote-deploy:dry
 ```
 
 Defaults locked: host `mac-mini.local`, user `guschinaglia`, path
 `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, ref `prod`.
-iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; web → Hosting `testers`.
+**Happy path:** Android → App Distribution `flutter-testers`; web → Hosting `testers`.
+**iOS/TestFlight:** opt-in (`--platform ios`) or manual on the Mac — not the default remote path.
 
 ### Setup Mac (Gustavo) — once
 
 1. Checkout `mobile_v2` em `/Users/guschinaglia/Developer/CrowdFans/mobile_v2`, branch `prod`.
 2. Flutter, Xcode, Android SDK, `npm install`, `npm run firebase:login` (no Terminal zsh do Mac).
-3. **CocoaPods** (obrigatório para iOS / TestFlight — mesmo shell `zsh -lc` que o `cf` usa):
+3. **CocoaPods** (só se for usar iOS remoto / TestFlight — mesmo shell `zsh -lc` que o `cf` usa; **não** necessário para `cf deploy mobile` default/firebase):
    ```bash
    brew install cocoapods
    # ou: sudo gem install cocoapods
@@ -177,7 +178,7 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
    ```
    Se `node` faltar: coloque nvm/Homebrew no `~/.zprofile`, ou `brew install node`.
    Alternativa: `npm run firebase:login:ci` → `echo 'export FIREBASE_TOKEN=…' >> ~/.zprofile`.
-5. **iOS Development Team** (obrigatório para archive remoto / TestFlight):
+5. **iOS Development Team** (só para archive remoto / TestFlight opt-in; ignore no happy path Firebase):
    - Abra `ios/Runner.xcworkspace` no Xcode → target **Runner** → **Signing & Capabilities**.
    - Login Apple ID (Xcode → Settings → Accounts) → selecione o **Team** Crowdfans → **Automatically manage signing**.
    - **Ou** exporte só neste Mac (zsh login — `cf` usa `zsh -lc`; **não** commitar):
@@ -207,3 +208,15 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
 
 Sem Team id / identidade Apple, `distribute.sh ios --testflight` falha no **preflight** (antes do archive) com os passos acima. Sem ASC no Mac, o IPA ainda pode ser gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 
+## Estrutura
+
+Espelha o fluxo mobile:
+
+- `lib/constants/pages.dart` — rotas (`Pages.*`)
+- `lib/api/api_urls.dart` — endpoints (`ApiUrls.*`)
+- `lib/services/` — facade (`AuthService`, `HttpService`, `ProfileService`)
+- `lib/screens/` — telas (estado da tela no próprio arquivo)
+
+## Migração
+
+Ver `MIGRATION.md`. Layout: prints YouTrack / `Downloads/Screens`.
