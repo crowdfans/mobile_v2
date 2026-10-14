@@ -1,25 +1,27 @@
 # Remote Config / feature flags — cutover GCP (`CF-359`)
 
 Linha **`release/0.2`**. Flags para dual-run API/mídia e **kill-switch** de rollback URL.  
-PR [#342](https://github.com/crowdfans/mobile_v2/pull/342) · code: `lib/services/cutover_flags.dart`.
+Code: `lib/services/cutover_flags.dart` · template: `remoteconfig/cutover_template.json`.
 
 ## Aceite
 
 | Critério | Status |
 |----------|--------|
-| Flag documentada | Este doc + chaves abaixo |
+| Flag documentada | Este doc + chaves abaixo + template JSON |
 | Kill-switch rollback URL | `cf_cutover_force_digitalocean` → API DO viva |
 
-## Por que sem pacote `firebase_remote_config` ainda
+## Hydrate (ordem)
 
-Options Firebase nesta linha ainda são stubs `REPLACE_ME_*` ([FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md)). Fetch live do RC falharia / exigiria secrets.  
-**Mesmas chaves** que o console Firebase; hydrate hoje via:
+1. **Firebase Remote Config** (live) — só se `FirebaseService.usingStubOptions == false`
+2. `CutoverFlags.applyRemoteValues({…})` (mapa RC / fixture / testes)
+3. `--dart-define=cf_*=…`
+4. `.env`: `CF_CUTOVER_FORCE_DIGITALOCEAN`, `CF_API_BACKEND`, `CF_MEDIA_BACKEND`, `CF_API_BASE_URL`
 
-1. `CutoverFlags.applyRemoteValues({…})` (mapa RC / fixture)
-2. `--dart-define=cf_*=…`
-3. `.env`: `CF_CUTOVER_FORCE_DIGITALOCEAN`, `CF_API_BACKEND`, `CF_MEDIA_BACKEND`, `CF_API_BASE_URL`
+Com stubs `REPLACE_ME_*` ([FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md)), `bootstrap()` **não** faz fetch (fail-safe). Env / dart-define / `applyRemoteValues` continuam válidos.
 
-Quando apiKey real existir: fetch RC → `applyRemoteValues` no `bootstrap()` (hook já em `main.dart`).
+`main.dart`: `FirebaseService.initialize()` → `CutoverFlags.bootstrap()`.
+
+Fail-open: erro de rede/RC não derruba o app.
 
 ## Defaults seguros
 
@@ -44,10 +46,22 @@ Para um build **digitalocean** (linha `prod` / flavor DO), defaults já são DO 
 3. `cf_api_base_url`  
 4. Mode (`cf_api_backend` / `API_MODE` / flavor) → Cloud Run ou DO  
 
-## Console Firebase (quando keys reais)
+## Console Firebase / template
 
-Criar parâmetros com defaults **neutros** (vazio / `false`) para builds gcp.  
-Em incidente dual-run: set `cf_cutover_force_digitalocean=true` → publicar → apps buscam RC no próximo `bootstrap`/fetch.
+Template versionado (defaults **neutros**):
+
+```bash
+# NÃO deployar no batch-then-ship — só quando Gustavo autorizar ship:
+# npx firebase-tools@latest deploy --only remoteconfig --project=crowdfans-prod
+```
+
+`firebase.json` aponta `remoteconfig.template` → `remoteconfig/cutover_template.json`.
+
+Em incidente dual-run (após template publicado + keys reais no app):
+
+1. Console Firebase → Remote Config → `cf_cutover_force_digitalocean=true`
+2. Publicar  
+3. Apps buscam no próximo cold start (`bootstrap` / fetch; release min interval 1h)
 
 ## Testes GRE
 
@@ -60,3 +74,4 @@ flutter test test/services/cutover_flags_test.dart
 - [API_BACKENDS.md](./API_BACKENDS.md) — flavors / Cloud Run  
 - [MEDIA_GCS.md](./MEDIA_GCS.md) — shapes GCS  
 - [STORAGE_AUTH_CLIENTS.md](./STORAGE_AUTH_CLIENTS.md) — Bearer vs signed PUT  
+- [FIREBASE_FLAVORS.md](./FIREBASE_FLAVORS.md) — stubs vs keys reais  

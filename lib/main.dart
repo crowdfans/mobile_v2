@@ -11,9 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EnvService.load();
-  await CutoverFlags.bootstrap();
   await SentryService.initialize();
+  // Firebase antes do cutover: RC live precisa de [Firebase.initializeApp].
   await FirebaseService.initialize();
+  await CutoverFlags.bootstrap();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   runApp(const ProviderScope(child: CrowdFansApp()));
 }

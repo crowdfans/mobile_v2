@@ -1,4 +1,7 @@
 {
+  "remoteconfig": {
+    "template": "remoteconfig/cutover_template.json"
+  },
   "flutter": {
     "platforms": {
       "android": {

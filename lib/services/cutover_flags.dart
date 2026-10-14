@@ -1,11 +1,13 @@
 import 'package:crowdfans/services/env_service.dart';
+import 'package:crowdfans/services/firebase_service.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 
 /// Feature flags de cutover GCP ↔ DigitalOcean (dual-run).
 ///
-/// Chaves alinhadas ao Firebase Remote Config (mesmos nomes). Até keys reais
-/// (stubs CF-416), hydrate via `--dart-define` / `.env` / [applyRemoteValues]
-/// sem rede — ver `docs/REMOTE_CONFIG_CUTOVER.md` (CF-359).
+/// Chaves alinhadas ao Firebase Remote Config (mesmos nomes).
+/// Hydrate: RC live (quando apiKey ≠ stub) → `--dart-define` → `.env` →
+/// [applyRemoteValues] — ver `docs/REMOTE_CONFIG_CUTOVER.md` (CF-359).
 ///
 /// **Defaults seguros:** sem override → comportamento do flavor atual
 /// (`gcp` na linha `release/0.2`). Kill-switch força rollback para API DO.
@@ -22,8 +24,20 @@ abstract final class CutoverFlags {
   /// URL absoluta opcional (após safe-host). Vazio = resolver por mode/flavor.
   static const keyApiBaseUrl = 'cf_api_base_url';
 
+  /// Defaults in-app / template Firebase (neutros — não forçam DO).
+  static const Map<String, Object> inAppDefaults = {
+    keyForceDigitalOcean: false,
+    keyApiBackend: '',
+    keyMediaBackend: '',
+    keyApiBaseUrl: '',
+  };
+
   /// Valores vindos do Remote Config (ou testes).
   static final Map<String, String> _remote = {};
+
+  /// Override de fetch para unit tests (não chama Firebase).
+  @visibleForTesting
+  static Future<Map<String, String>?> Function()? debugFetchOverride;
 
   /// Injeta mapa RC (Firebase ou fixture). Não faz fetch de rede.
   static void applyRemoteValues(Map<String, String> values) {
@@ -40,8 +54,59 @@ abstract final class CutoverFlags {
     _remote.clear();
   }
 
-  /// Hook pós-[EnvService.load]. Fetch Firebase RC = quando apiKey ≠ stub.
-  static Future<void> bootstrap() async {}
+  /// Pós-[FirebaseService.initialize]: fetch RC se keys reais; senão no-op.
+  ///
+  /// Fail-open: erro de rede/RC não derruba o app — mantém env/dart-define.
+  static Future<void> bootstrap() async {
+    if (debugFetchOverride != null) {
+      final values = await debugFetchOverride!();
+      if (values != null) {
+        applyRemoteValues(values);
+      }
+      return;
+    }
+
+    if (FirebaseService.usingStubOptions) {
+      // Stubs REPLACE_ME_* — fetch live falharia; env/dart-define bastam.
+      return;
+    }
+
+    try {
+      final values = await _fetchLiveRemoteConfig();
+      if (values != null) {
+        applyRemoteValues(values);
+      }
+    } catch (error, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[CutoverFlags] Remote Config indisponível (fail-open): $error\n$stack',
+        );
+      }
+    }
+  }
+
+  /// Lê parâmetros cutover do Firebase Remote Config e devolve mapa string.
+  static Future<Map<String, String>?> _fetchLiveRemoteConfig() async {
+    final remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        // Debug: fetch rápido; release: 1h (próximo cold start).
+        minimumFetchInterval:
+            kDebugMode ? Duration.zero : const Duration(hours: 1),
+      ),
+    );
+    await remoteConfig.setDefaults(inAppDefaults);
+    await remoteConfig.fetchAndActivate();
+
+    final forceDo = remoteConfig.getBool(keyForceDigitalOcean);
+    return {
+      keyForceDigitalOcean: forceDo ? 'true' : 'false',
+      keyApiBackend: remoteConfig.getString(keyApiBackend),
+      keyMediaBackend: remoteConfig.getString(keyMediaBackend),
+      keyApiBaseUrl: remoteConfig.getString(keyApiBaseUrl),
+    };
+  }
 
   static String _raw(String key) {
     final remote = _remote[key];
@@ -105,9 +170,10 @@ abstract final class CutoverFlags {
       return null;
     }
     return switch (raw) {
-      'do' || 'digital_ocean' || 'prod' => 'digitalocean',
+      'do' || 'digital_ocean' => 'digitalocean',
+      // `prod` = Make/API GCP prod (mesmo host Cloud Run hoje); DO = kill-switch.
+      'gcp_prod' || 'prod' => 'gcp_prod',
       'gcp_staging' || 'staging' => 'gcp',
-      'gcp_prod' => 'gcp_prod',
       'gcp' || 'digitalocean' || 'local' => raw,
       _ => null,
     };
