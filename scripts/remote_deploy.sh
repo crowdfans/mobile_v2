@@ -175,9 +175,49 @@ fi
 # Linhas "name|ok|" ou "name|fail|última mensagem" — impressas no resumo final.
 PLATFORM_RESULTS=()
 
-# Última linha útil do log (ignora spinners/checkmarks do Firebase).
+# Melhor linha de erro do log (não a última genérica do Flutter).
+# Prefere Manifest merger / "What went wrong" / Flutter Fix a
+# "Gradle task assembleRelease failed with exit code 1".
 last_error_line() {
   local log="$1"
+  local preferred
+  preferred="$(awk '
+    BEGIN { pref = "" }
+    {
+      line = $0
+      gsub(/\r/, "", line)
+      # Manifest merger (causa real do assembleRelease em vários casos)
+      if (line ~ /uses-sdk:minSdkVersion .* cannot be smaller than/) {
+        sub(/^[[:space:]]*>[[:space:]]*/, "", line)
+        pref = line; next
+      }
+      if (line ~ /Manifest merger failed/) {
+        sub(/^[[:space:]]*>[[:space:]]*/, "", line)
+        pref = line; next
+      }
+      # Bloco Gradle
+      if (line ~ /^\* What went wrong:/) { grab = 1; next }
+      if (grab == 1) {
+        if (line ~ /^[[:space:]]*$/ || line ~ /^\* Try:/) { grab = 0; next }
+        if (line ~ /^>/) {
+          sub(/^>[[:space:]]*/, "", line)
+          if (line != "") pref = line
+          grab = 0
+        } else if (line !~ /^Execution failed/ && line != "") {
+          pref = line
+        }
+        next
+      }
+      # Flutter Fix one-liner (minSdk etc.)
+      if (line ~ /requires a higher Android SDK version/) { pref = line; next }
+    }
+    END { if (pref != "") print pref }
+  ' "$log")"
+  if [[ -n "$preferred" ]]; then
+    # enxuga espaços excessivos
+    echo "$preferred" | tr -s '[:space:]' ' ' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+    return 0
+  fi
   awk '
     NF {
       line = $0
@@ -186,6 +226,9 @@ last_error_line() {
       if (line ~ /^(→|==>|✔|✓|✔️|i |\[.*\] (dns|tcp|ssh|plan|info))/) next
       if (line ~ /^CrowdFans /) next
       if (line ~ /^  (root|ref|platform|dry-run|Notas):/) next
+      # ignora wrapper genérico do Flutter (esconde a causa)
+      if (line ~ /^Gradle task .+ failed with exit code/) next
+      if (line ~ /^Running Gradle task/) next
       useful = line
     }
     END { if (useful != "") print useful }
