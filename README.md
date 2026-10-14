@@ -184,11 +184,24 @@ iOS remoto → **TestFlight**; Android → App Distribution `flutter-testers`; w
      # aliases: DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM
      ```
    - Confira: `security find-identity -v -p codesigning` (precisa Apple Development ou Distribution).
-6. Credenciais ASC para upload TestFlight (env no **zsh** login shell do Mac — **não** no git):
+6. **iOS codesign over SSH** (se archive falhar com `errSecInternalComponent`):
+   - Causa clássica: SSH sem TTY → `codesign` não consegue autorizar a chave privada.
+   - **Happy path (uma vez, no Mac — sem gravar senha em arquivo):**
+     1. Keychain Access → login → Keys → chave privada Apple Distribution/Development → Get Info → Access Control → permitir `codesign` / Xcode (ou Allow all **só nesta chave**), **ou**
+     2. Terminal local (prompt interativo — senha só na memória, **não** em `~/.zprofile`):
+        ```bash
+        read -s -p 'login keychain password: ' KC_PASS; echo
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s \
+          -k "$KC_PASS" "$HOME/Library/Keychains/login.keychain-db"
+        unset KC_PASS
+        ```
+   - Depois da ACL/partition, `cf deploy mobile --platform ios` costuma funcionar sem senha na sessão.
+   - **Não** coloque a senha do login keychain em `~/.zprofile`. `KEYCHAIN_PASSWORD` na sessão é last resort apenas.
+7. Credenciais ASC para upload TestFlight (env no **zsh** login shell do Mac — **não** no git):
    - `ASC_API_KEY_ID` + `ASC_API_ISSUER_ID` + `ASC_API_KEY_PATH` (`.p8`), **ou**
    - `ASC_USERNAME` + `ASC_APP_SPECIFIC_PASSWORD`
-7. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
-8. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
+8. Em cada máquina que dispara deploy: chave SSH (`~/.ssh/cf_mobile_deploy`) → `guschinaglia@mac-mini.local`.
+9. mDNS/DNS resolve `mac-mini.local` na LAN; TCP `:22` responde.
 
 Sem Team id / identidade Apple, `distribute.sh ios --testflight` falha no **preflight** (antes do archive) com os passos acima. Sem ASC no Mac, o IPA ainda pode ser gerado em `build/ios/ipa/` (Transporter manual). `cf deploy mobile --dry-run` no caller só imprime o plano remoto — sem build local.
 

@@ -17,6 +17,7 @@
 #   2. git fetch + checkout --ref + pull --ff-only
 #   3. android/web → scripts/distribute.sh
 #   4. ios → scripts/distribute.sh ios --testflight (TestFlight)
+#      (codesign ACL / optional session unlock vivem em distribute.sh — sem senha em zprofile)
 #
 # Multi-platform (both/all): continua após um fail e imprime resumo por
 # plataforma no final (ok|fail + última linha de erro). Exit 1 se qualquer
@@ -218,6 +219,7 @@ run_android() {
 run_ios_testflight() {
   echo
   echo "==> iOS → TestFlight"
+  # distribute.sh: ACL/partition happy path; optional session KEYCHAIN_PASSWORD only.
   run_tracked ios ./scripts/distribute.sh ios --testflight "${DIST_ARGS[@]+"${DIST_ARGS[@]}"}"
 }
 

@@ -17,6 +17,9 @@
 #   FIREBASE_TOKEN (CI token de `firebase login:ci` — preferível em SSH sem TTY).
 # iOS signing (Mac, não hardcodar no git): APPLE_TEAM_ID ou DEVELOPMENT_TEAM
 #   (também FLUTTER_XCODE_DEVELOPMENT_TEAM, ou Team já gravado no .pbxproj / Signing.xcconfig).
+# iOS codesign over SSH: prefer one-time Keychain Access ACL / set-key-partition-list
+#   on the Mac (no password on disk). Optional last resort: KEYCHAIN_PASSWORD already
+#   in the session env (never write it to ~/.zprofile — see print_keychain_codesign_help).
 # TestFlight (Mac, não commitar): ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_PATH
 #   ou ASC_USERNAME + ASC_APP_SPECIFIC_PASSWORD.
 
@@ -334,6 +337,75 @@ Conferir neste shell (mesmo zsh -lc do cf):
 EOF
 }
 
+print_keychain_codesign_help() {
+  cat >&2 <<EOF
+iOS codesign: errSecInternalComponent (private key ACL / locked keychain over SSH).
+
+SSH não-interativo não abre UI para autorizar a chave.
+Team Crowdfans: GS955J2P93 · identity tipicamente 7248BFB5…
+
+No Mac — happy path (uma vez, interativo; NÃO grave senha em arquivo):
+
+  # Opção A — Keychain Access (recomendado):
+  # open -a "Keychain Access"
+  # → login → Keys → chave privada do Apple Distribution/Development
+  # → Get Info → Access Control
+  # → Allow: codesign, Xcode, xcodebuild  (ou "Allow all applications" só nesta chave)
+  # Confirme com a senha do login keychain na UI — senha NÃO vai para disco via script.
+
+  # Opção B — partition ACL one-shot (Terminal local no Mac; senha só na memória):
+  read -s -p 'login keychain password: ' KC_PASS; echo
+  security set-key-partition-list -S apple-tool:,apple:,codesign: -s \\
+    -k "\$KC_PASS" "\$HOME/Library/Keychains/login.keychain-db"
+  unset KC_PASS
+  # Depois disso, SSH codesign costuma funcionar sem KEYCHAIN_PASSWORD.
+
+  # Opção C (avançado): keychain dedicado só com identidades de signing
+  # (não usar a senha do login keychain em env permanente).
+
+Last resort (desencorajado): KEYCHAIN_PASSWORD / MAC_KEYCHAIN_PASSWORD já na
+sessão atual (export manual no Terminal). NUNCA echo >> ~/.zprofile / git.
+
+Retry: cf deploy mobile --platform ios
+EOF
+}
+
+resolve_login_keychain() {
+  if [[ -f "$HOME/Library/Keychains/login.keychain-db" ]]; then
+    printf '%s\n' "$HOME/Library/Keychains/login.keychain-db"
+  elif [[ -f "$HOME/Library/Keychains/login.keychain" ]]; then
+    printf '%s\n' "$HOME/Library/Keychains/login.keychain"
+  else
+    printf '%s\n' "$HOME/Library/Keychains/login.keychain-db"
+  fi
+}
+
+# Optional session unlock when KEYCHAIN_PASSWORD is already in the environment.
+# Happy path is one-time Keychain Access ACL / partition-list (no password on disk).
+# Never write the password to ~/.zprofile from this script.
+maybe_unlock_ios_keychain() {
+  local pass kc
+  pass="${KEYCHAIN_PASSWORD:-${MAC_KEYCHAIN_PASSWORD:-}}"
+  kc="$(resolve_login_keychain)"
+  if [[ -z "$pass" ]]; then
+    echo "→ iOS keychain: sem KEYCHAIN_PASSWORD na sessão — OK se ACL/partition já permite codesign"
+    echo "  (errSecInternalComponent → Keychain Access Allow codesign, ou partition-list one-shot)"
+    return 0
+  fi
+  echo "→ KEYCHAIN_PASSWORD na sessão (last resort) — unlock + partition para este archive"
+  if ! security unlock-keychain -p "$pass" "$kc"; then
+    echo "Falha ao unlock-keychain ($kc). Prefira Keychain Access ACL; senha de sessão inválida?" >&2
+    print_keychain_codesign_help
+    return 1
+  fi
+  if ! security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$pass" "$kc" >/dev/null 2>&1; then
+    echo "Aviso: set-key-partition-list falhou — rode Opção A/B (Keychain Access / one-shot)." >&2
+  else
+    echo "→ key-partition-list: apple-tool:,apple:,codesign: OK (sessão)"
+  fi
+  return 0
+}
+
 # Fail early before flutter build ipa — clear Mac steps, no archive attempt.
 preflight_ios_signing() {
   local team
@@ -476,6 +548,7 @@ build_ios() {
     return 1
   fi
   preflight_ios_signing || return 1
+  maybe_unlock_ios_keychain || return 1
   local export_method='ad-hoc'
   if [[ "$TESTFLIGHT" -eq 1 ]]; then
     export_method='app-store'
@@ -486,9 +559,28 @@ build_ios() {
   # Team chega ao xcodebuild via env (export em preflight_ios_signing):
   #   DEVELOPMENT_TEAM / FLUTTER_XCODE_DEVELOPMENT_TEAM / APPLE_TEAM_ID
   # e/ou ios/Flutter/Signing.xcconfig (DEVELOPMENT_TEAM = …).
+  local log ec
+  log="$(mktemp "${TMPDIR:-/tmp}/cf-ios-ipa.XXXXXX")"
+  set +e
   flutter build ipa --release --export-method "$export_method" \
     --build-name="$build_name" \
-    --build-number="$build_number"
+    --build-number="$build_number" 2>&1 | tee "$log"
+  ec=${PIPESTATUS[0]}
+  set -e
+  if [[ "$ec" -ne 0 ]]; then
+    if grep -qE 'errSecInternalComponent|CSSMERR_CSP_DISABLED|Failed to codesign' "$log"; then
+      echo >&2
+      print_keychain_codesign_help
+    elif grep -qE 'Encountered error while archiving for device|archiving for device' "$log"; then
+      echo >&2
+      echo "Archive iOS falhou. Se o log acima tem errSecInternalComponent / Failed to codesign:" >&2
+      print_keychain_codesign_help
+    fi
+    rm -f "$log"
+    return "$ec"
+  fi
+  rm -f "$log"
+  return 0
 }
 
 build_web() {
