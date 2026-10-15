@@ -55,5 +55,22 @@ void main() {
         DigitalOceanFirebaseOptions.android.apiKey,
       );
     });
+
+    test('FIREBASE_ANDROID_* no .env substitui o stub', () {
+      dotenv.loadFromString(
+        envString: '''
+APP_FLAVOR=gcp
+FIREBASE_ANDROID_API_KEY=local-android-key
+FIREBASE_ANDROID_APP_ID=1:658897248078:android:local
+FIREBASE_MESSAGING_SENDER_ID=658897248078
+FIREBASE_API_KEY=local-web-key-must-not-leak
+''',
+      );
+      final options = DefaultFirebaseOptions.currentPlatform;
+      expect(options.apiKey, 'local-android-key');
+      expect(options.appId, '1:658897248078:android:local');
+      expect(options.messagingSenderId, '658897248078');
+      expect(options.projectId, 'crowdfans-prod');
+    });
   });
 }
