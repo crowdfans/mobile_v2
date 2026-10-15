@@ -11,7 +11,7 @@ flutter pub get
 flutter run
 ```
 
-API padrão: `https://crowdfans-server-prod-h9qb6.ondigitalocean.app`. Para o Go local:
+API padrão (Cloud Run): `https://crowdfans-server-peefddw6nq-rj.a.run.app`. Para o Go local:
 
 ```
 API_MODE=local
@@ -39,8 +39,8 @@ patrol test -t integration_test/superfan_onboarding_login_test.dart
 
 ### E2E autenticados (CF-128 / CF-129 / CF-130)
 
-Fluxos reais contra a API de produção
-(`https://crowdfans-server-prod-h9qb6.ondigitalocean.app`). Sem credenciais o
+Fluxos reais contra a API de produção no Cloud Run
+(`https://crowdfans-server-peefddw6nq-rj.a.run.app`). Sem credenciais o
 teste fica `skip` com mensagem clara — **não** finge verde.
 
 1. Copie o exemplo e preencha contas de teste (nunca committe):

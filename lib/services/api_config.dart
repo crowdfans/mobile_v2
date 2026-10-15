@@ -1,16 +1,18 @@
 import 'package:crowdfans/services/env_service.dart';
 import 'package:flutter/foundation.dart';
 
-/// Única API DigitalOcean válida (responde de verdade).
-/// Nunca usar crowdfans-app-dev* nem crowdfans-app-prod (DNS morto).
+/// API de produção no Cloud Run (projeto `crowdfans-prod`, região
+/// `southamerica-east1`, serviço `crowdfans-server`).
 const kCrowdFansProdApi =
-    'https://crowdfans-server-prod-h9qb6.ondigitalocean.app';
+    'https://crowdfans-server-peefddw6nq-rj.a.run.app';
 
 String _cleanUrl(String value) => value.replaceAll(RegExp(r'/$'), '');
 
 bool _isForbiddenApiHost(String url) {
   final lower = url.toLowerCase();
-  return lower.contains('crowdfans-app-dev') ||
+  return lower.contains('ondigitalocean.app') ||
+      lower.contains('digitaloceanspaces.com') ||
+      lower.contains('crowdfans-app-dev') ||
       lower.contains('crowdfans-dev-3zqbt') ||
       lower.contains('crowdfans-app-prod');
 }
@@ -19,6 +21,7 @@ bool _isForbiddenApiHost(String url) {
 ///
 /// No **web**, ignora `.env`/dart-define e usa sempre [kCrowdFansProdApi]
 /// (Firebase Hosting ignora `**/.*`, então o `.env` do bundle não sobe).
+/// `API_MODE=local` continua em localhost (no Android, `10.0.2.2`).
 String apiBaseUrl() {
   if (kIsWeb) {
     return kCrowdFansProdApi;
@@ -32,29 +35,22 @@ String apiBaseUrl() {
     return _ensureProd(_rewriteLocalhost(forced));
   }
 
-  final mode = EnvService.get('API_MODE', 'digitalocean').toLowerCase();
-
-  final digitalOcean = _ensureProd(
-    _cleanUrl(
-      EnvService.get(
-        'API_DIGITALOCEAN_BASE_URL',
-        EnvService.get('API_PROD_BASE_URL', kCrowdFansProdApi),
-      ),
-    ),
-  );
+  final mode = EnvService.get('API_MODE', 'gcp').toLowerCase();
 
   if (mode == 'local') {
     final local = _cleanUrl(
       EnvService.get('API_LOCAL_BASE_URL', 'http://localhost:8080'),
     );
     final resolved = _rewriteLocalhost(local);
-    if (resolved.contains('localhost') || resolved.contains('127.0.0.1')) {
-      return digitalOcean;
+    if (_isForbiddenApiHost(resolved)) {
+      return _rewriteLocalhost('http://localhost:8080');
     }
     return resolved;
   }
 
-  return digitalOcean;
+  return _ensureProd(
+    _cleanUrl(EnvService.get('API_PROD_BASE_URL', kCrowdFansProdApi)),
+  );
 }
 
 /// Snapshot para debug na tela de login / erros de rede.
@@ -62,8 +58,8 @@ String apiBaseUrl() {
   return (
     baseUrl: apiBaseUrl(),
     mode: kIsWeb
-        ? 'digitalocean'
-        : EnvService.get('API_MODE', 'digitalocean').toLowerCase(),
+        ? 'gcp'
+        : EnvService.get('API_MODE', 'gcp').toLowerCase(),
   );
 }
 

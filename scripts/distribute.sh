@@ -36,8 +36,8 @@ WEB_CHANNEL='testers'
 WEB_EXPIRES='14d'
 APK_PATH='build/app/outputs/flutter-apk/app-release.apk'
 WEB_INDEX='build/web/index.html'
-# API viva — nunca crowdfans-app-dev* / crowdfans-app-prod.
-API_PROD_BASE_URL='https://crowdfans-server-prod-h9qb6.ondigitalocean.app'
+# Cloud Run crowdfans-server (projeto crowdfans-prod).
+API_PROD_BASE_URL='https://crowdfans-server-peefddw6nq-rj.a.run.app'
 
 PLATFORM='android'
 SKIP_BUILD=0
